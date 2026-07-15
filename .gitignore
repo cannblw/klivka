@@ -36,3 +36,7 @@
 # IDEs
 .idea
 .vscode
+
+# Assets build
+/app/assets/builds/*
+!/app/assets/builds/.keep
