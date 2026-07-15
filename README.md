@@ -1,24 +1,37 @@
-# README
+# Friend CRM
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A low-friction personal CRM to keep track of your friends.
 
-Things you may want to cover:
+The core principle: **adding a friend requires a name. Nothing else.** Met someone today and know nothing about them yet? Add their name, done. Everything else is an optional entry you attach to their profile whenever you learn it.
 
-* Ruby version
+## Stack
 
-* System dependencies
+- Ruby on Rails 8.1 (Ruby 4.0)
+- Hotwire (Turbo + Stimulus via importmap), Propshaft — no Node required
+- Tailwind CSS (standalone binary) + ViewComponent
+- SQLite by default; PostgreSQL also supported
+- Solid Queue / Cache / Cable; deployable with Kamal
 
-* Configuration
+## Getting started
 
-* Database creation
+```bash
+bin/setup
+bin/dev
+```
 
-* Database initialization
+Then open http://localhost:3000.
 
-* How to run the test suite
+## Development
 
-* Services (job queues, cache servers, search engines, etc.)
+- `bin/dev` — run the app (Rails server + Tailwind watcher)
+- `bin/rails test` — run the test suite (Minitest)
+- `bin/rubocop` — lint
+- `bin/ci` — full CI suite locally
 
-* Deployment instructions
+## Database support
 
-* ...
+SQLite and PostgreSQL are both first-class. The schema and queries stick to a portable subset.
+
+## License
+
+[AGPL-3.0](LICENSE)
