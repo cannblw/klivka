@@ -1,0 +1,25 @@
+es:
+  activerecord:
+    attributes:
+      friend:
+        name: "Nombre"
+
+  friends:
+    index:
+      title: "Amigos"
+      heading: "Amigos"
+      add_friend: "Añadir amigo"
+      modal:
+        heading: "Añade un amigo"
+        hint: "Solo necesitas un nombre."
+        name_placeholder: "Nombre"
+        cancel: "Cancelar"
+        submit: "Añadir amigo"
+      empty:
+        heading: "Aún no hay amigos"
+        hint: "Añade a tu primer amigo. Solo necesitas un nombre."
+    show:
+      back: "← Amigos"
+      no_entries: "Aún no hay entradas."
+    create:
+      created: "Se ha añadido a %{name}."

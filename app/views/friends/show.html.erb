@@ -1,7 +1,7 @@
 <% content_for :title, @friend.name %>
 
-<%= link_to "← Friends", root_path, class: "text-sm text-gray-500 hover:text-gray-900" %>
+<%= link_to t(".back"), root_path, class: "text-sm text-gray-500 hover:text-gray-900" %>
 
 <h1 class="mt-4 text-2xl font-bold"><%= @friend.name %></h1>
 
-<p class="mt-8 text-sm text-gray-500">No entries yet.</p>
+<p class="mt-8 text-sm text-gray-500"><%= t(".no_entries") %></p>

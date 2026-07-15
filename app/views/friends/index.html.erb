@@ -1,24 +1,24 @@
-<% content_for :title, "Friends" %>
+<% content_for :title, t(".title") %>
 
 <div data-controller="dialog" data-dialog-open-value="<%= @friend.errors.any? %>">
   <div class="flex flex-wrap items-center justify-between gap-4">
-    <h1 class="text-2xl font-bold">Friends</h1>
+    <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
 
     <button type="button" data-action="dialog#open"
             class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">
-      Add friend
+      <%= t(".add_friend") %>
     </button>
   </div>
 
   <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
           class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-gray-900/50">
     <div class="p-6">
-      <h2 class="text-lg font-semibold">Add a friend</h2>
-      <p class="mt-1 text-sm text-gray-500">All you need is a name.</p>
+      <h2 class="text-lg font-semibold"><%= t(".modal.heading") %></h2>
+      <p class="mt-1 text-sm text-gray-500"><%= t(".modal.hint") %></p>
 
       <%= form_with model: @friend, class: "mt-4" do |form| %>
         <%= form.text_field :name,
-              placeholder: "Name",
+              placeholder: t(".modal.name_placeholder"),
               autofocus: true,
               autocomplete: "off",
               class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
@@ -29,9 +29,9 @@
         <div class="mt-4 flex justify-end gap-2">
           <button type="button" data-action="dialog#close"
                   class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">
-            Cancel
+            <%= t(".modal.cancel") %>
           </button>
-          <%= form.submit "Add friend", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+          <%= form.submit t(".modal.submit"), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
         </div>
       <% end %>
     </div>
@@ -44,7 +44,7 @@
   </div>
 <% else %>
   <div class="mt-16 text-center text-gray-500">
-    <p class="text-lg font-medium">No friends yet</p>
-    <p class="mt-1 text-sm">Add your first friend — all you need is a name.</p>
+    <p class="text-lg font-medium"><%= t(".empty.heading") %></p>
+    <p class="mt-1 text-sm"><%= t(".empty.hint") %></p>
   </div>
 <% end %>
