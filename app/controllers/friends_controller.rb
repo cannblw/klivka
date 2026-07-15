@@ -1,20 +1,20 @@
 class FriendsController < ApplicationController
   def index
-    @friends = Friend.order(:name)
+    @friends = Current.user.friends.order(:name)
     @friend = Friend.new
   end
 
   def show
-    @friend = Friend.find(params[:id])
+    @friend = Current.user.friends.find(params[:id])
   end
 
   def create
-    @friend = Friend.new(friend_params)
+    @friend = Current.user.friends.new(friend_params)
 
     if @friend.save
       redirect_to @friend, notice: t(".created", name: @friend.name)
     else
-      @friends = Friend.order(:name)
+      @friends = Current.user.friends.order(:name)
       render :index, status: :unprocessable_entity
     end
   end

@@ -2,6 +2,12 @@
 
 ada:
   name: Ada Lovelace
+  user: one
 
 grace:
   name: Grace Hopper
+  user: one
+
+bob:
+  name: Bob Ross
+  user: two

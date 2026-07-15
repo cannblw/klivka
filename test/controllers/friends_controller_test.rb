@@ -47,6 +47,26 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "main", /can't be blank/
   end
 
+  test "index only lists the current user's friends" do
+    get root_url
+
+    assert_response :success
+    assert_select "main", /Ada Lovelace/
+    assert_select "main", { text: /Bob Ross/, count: 0 }
+  end
+
+  test "show returns 404 for another user's friend" do
+    get friend_url(friends(:bob))
+
+    assert_response :not_found
+  end
+
+  test "created friends belong to the current user" do
+    post friends_url, params: { friend: { name: "Marie Curie" } }
+
+    assert_equal users(:one), Friend.find_by!(name: "Marie Curie").user
+  end
+
   test "show displays the friend" do
     get friend_url(friends(:ada))
 
