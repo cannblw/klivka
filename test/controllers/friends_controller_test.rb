@@ -18,4 +18,30 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "main", /No friends yet/
   end
+
+  test "create adds a friend and redirects to their page" do
+    assert_difference "Friend.count", 1 do
+      post friends_url, params: { friend: { name: "Marie Curie" } }
+    end
+
+    assert_redirected_to friend_url(Friend.find_by!(name: "Marie Curie"))
+    follow_redirect!
+    assert_select "h1", "Marie Curie"
+  end
+
+  test "create with a blank name saves nothing and shows the error" do
+    assert_no_difference "Friend.count" do
+      post friends_url, params: { friend: { name: "" } }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "main", /can't be blank/
+  end
+
+  test "show displays the friend" do
+    get friend_url(friends(:ada))
+
+    assert_response :success
+    assert_select "h1", "Ada Lovelace"
+  end
 end

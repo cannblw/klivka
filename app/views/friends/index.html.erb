@@ -1,6 +1,42 @@
 <% content_for :title, "Friends" %>
 
-<h1 class="text-2xl font-bold">Friends</h1>
+<div data-controller="dialog" data-dialog-open-value="<%= @friend.errors.any? %>">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold">Friends</h1>
+
+    <button type="button" data-action="dialog#open"
+            class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">
+      Add friend
+    </button>
+  </div>
+
+  <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
+          class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-gray-900/50">
+    <div class="p-6">
+      <h2 class="text-lg font-semibold">Add a friend</h2>
+      <p class="mt-1 text-sm text-gray-500">All you need is a name.</p>
+
+      <%= form_with model: @friend, class: "mt-4" do |form| %>
+        <%= form.text_field :name,
+              placeholder: "Name",
+              autofocus: true,
+              autocomplete: "off",
+              class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        <% @friend.errors.full_messages_for(:name).each do |message| %>
+          <p class="mt-1 text-sm text-red-600"><%= message %></p>
+        <% end %>
+
+        <div class="mt-4 flex justify-end gap-2">
+          <button type="button" data-action="dialog#close"
+                  class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">
+            Cancel
+          </button>
+          <%= form.submit "Add friend", class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
+</div>
 
 <% if @friends.any? %>
   <div class="mt-6 grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
@@ -9,6 +45,6 @@
 <% else %>
   <div class="mt-16 text-center text-gray-500">
     <p class="text-lg font-medium">No friends yet</p>
-    <p class="mt-1 text-sm">Add your first friend. All you need is a name.</p>
+    <p class="mt-1 text-sm">Add your first friend — all you need is a name.</p>
   </div>
 <% end %>
