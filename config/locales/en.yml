@@ -45,6 +45,7 @@ en:
       register: "Register"
     create:
       invalid_credentials: "Try another email address or password."
+      unconfirmed: "Please confirm your email address before signing in."
 
   registrations:
     new:
@@ -57,6 +58,19 @@ en:
       sign_in: "Sign in"
     create:
       created: "Welcome! Your account has been created."
+      check_email: "Almost there! Check your email to confirm your account."
+
+  confirmations:
+    show:
+      confirmed: "Email confirmed. You can sign in now."
+      invalid_token: "Confirmation link is invalid or has expired."
+
+  confirmations_mailer:
+    confirm:
+      subject: "Confirm your email address"
+      instructions: "Confirm your email address on"
+      link_text: "this confirmation page"
+      expires: "This link will expire in 2 days."
 
   passwords:
     invalid_token: "Password reset link is invalid or has expired."

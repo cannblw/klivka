@@ -19,6 +19,9 @@ module FriendCrm
     config.i18n.available_locales = [ :en, :es ]
     config.i18n.default_locale = :en
 
+    # Optional email confirmation for registrations; see .env.example
+    config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

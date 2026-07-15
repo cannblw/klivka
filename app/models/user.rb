@@ -9,4 +9,24 @@ class User < ApplicationRecord
 
   # Skipped in development so the seeded admin@example.com/admin account works
   validates :password, length: { minimum: 8 }, allow_nil: true, unless: -> { Rails.env.development? }
+
+  generates_token_for :email_confirmation, expires_in: 2.days do
+    email_address
+  end
+
+  before_create :autoconfirm, unless: -> { Rails.application.config.x.require_email_confirmation }
+
+  def confirmed?
+    confirmed_at.present?
+  end
+
+  def confirm!
+    update!(confirmed_at: Time.current) unless confirmed?
+  end
+
+  private
+
+  def autoconfirm
+    self.confirmed_at = Time.current
+  end
 end

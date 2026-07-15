@@ -11,6 +11,12 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    def with_email_confirmation_required
+      original = Rails.application.config.x.require_email_confirmation
+      Rails.application.config.x.require_email_confirmation = true
+      yield
+    ensure
+      Rails.application.config.x.require_email_confirmation = original
+    end
   end
 end

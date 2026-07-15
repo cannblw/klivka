@@ -45,6 +45,7 @@ es:
       register: "Regístrate"
     create:
       invalid_credentials: "Prueba con otro correo electrónico u otra contraseña."
+      unconfirmed: "Confirma tu correo electrónico antes de iniciar sesión."
 
   registrations:
     new:
@@ -57,6 +58,19 @@ es:
       sign_in: "Inicia sesión"
     create:
       created: "¡Bienvenido! Tu cuenta se ha creado."
+      check_email: "¡Casi listo! Revisa tu correo para confirmar tu cuenta."
+
+  confirmations:
+    show:
+      confirmed: "Correo confirmado. Ya puedes iniciar sesión."
+      invalid_token: "El enlace de confirmación no es válido o ha caducado."
+
+  confirmations_mailer:
+    confirm:
+      subject: "Confirma tu correo electrónico"
+      instructions: "Confirma tu correo electrónico en"
+      link_text: "esta página de confirmación"
+      expires: "Este enlace caducará en 2 días."
 
   passwords:
     invalid_token: "El enlace para restablecer la contraseña no es válido o ha caducado."

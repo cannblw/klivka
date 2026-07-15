@@ -40,3 +40,4 @@
 # Assets build
 /app/assets/builds/*
 !/app/assets/builds/.keep
+!/.env.example

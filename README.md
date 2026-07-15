@@ -35,6 +35,12 @@ This user is never created in production. Password length limits are only enforc
 - `bin/rubocop` — lint
 - `bin/ci` — full CI suite locally
 
+## Configuration
+
+Optional settings are read from environment variables; see [.env.example](.env.example). Copy it to `.env` for local overrides.
+
+- `REQUIRE_EMAIL_CONFIRMATION` (default `false`): when `true`, new users must confirm their email address before signing in. Requires working SMTP settings in production.
+
 ## Database support
 
 SQLite and PostgreSQL are both first-class. The schema and queries stick to a portable subset.

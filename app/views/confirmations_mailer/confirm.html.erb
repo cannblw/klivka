@@ -1,0 +1,5 @@
+<p>
+  <%= t(".instructions") %>
+  <%= link_to t(".link_text"), confirmation_url(@user.generate_token_for(:email_confirmation)) %>.
+  <%= t(".expires") %>
+</p>

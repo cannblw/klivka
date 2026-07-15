@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   get "signup", to: "registrations#new"
   post "signup", to: "registrations#create"
+  get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resources :friends, only: [ :index, :show, :create ]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

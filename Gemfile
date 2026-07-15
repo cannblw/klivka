@@ -69,3 +69,5 @@ gem "tailwindcss-rails", "~> 4.6"
 gem "view_component", "~> 4.12"
 
 gem "rails-i18n", "~> 8.1"
+
+gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
