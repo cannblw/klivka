@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  get "signup", to: "registrations#new"
+  post "signup", to: "registrations#create"
   resources :friends, only: [ :index, :show, :create ]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -41,8 +41,22 @@ en:
       password_placeholder: "Password"
       submit: "Sign in"
       forgot_password: "Forgot password?"
+      no_account: "Don't have an account yet?"
+      register: "Register"
     create:
       invalid_credentials: "Try another email address or password."
+
+  registrations:
+    new:
+      title: "Create your account"
+      heading: "Create your account"
+      email_placeholder: "Email address"
+      password_placeholder: "Password"
+      submit: "Sign up"
+      have_account: "Already have an account?"
+      sign_in: "Sign in"
+    create:
+      created: "Welcome! Your account has been created."
 
   passwords:
     invalid_token: "Password reset link is invalid or has expired."

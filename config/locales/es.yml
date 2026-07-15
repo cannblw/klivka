@@ -41,8 +41,22 @@ es:
       password_placeholder: "Contraseña"
       submit: "Iniciar sesión"
       forgot_password: "¿Has olvidado tu contraseña?"
+      no_account: "¿Aún no tienes cuenta?"
+      register: "Regístrate"
     create:
       invalid_credentials: "Prueba con otro correo electrónico u otra contraseña."
+
+  registrations:
+    new:
+      title: "Crea tu cuenta"
+      heading: "Crea tu cuenta"
+      email_placeholder: "Correo electrónico"
+      password_placeholder: "Contraseña"
+      submit: "Registrarse"
+      have_account: "¿Ya tienes cuenta?"
+      sign_in: "Inicia sesión"
+    create:
+      created: "¡Bienvenido! Tu cuenta se ha creado."
 
   passwords:
     invalid_token: "El enlace para restablecer la contraseña no es válido o ha caducado."

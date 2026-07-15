@@ -1,0 +1,35 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto mt-8 w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+  <h1 class="text-xl font-bold"><%= t(".heading") %></h1>
+
+  <%= form_with model: @user, url: signup_path, class: "mt-4" do |form| %>
+    <div class="space-y-3">
+      <div>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username",
+              placeholder: t(".email_placeholder"),
+              class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        <% @user.errors.full_messages_for(:email_address).each do |message| %>
+          <p class="mt-1 text-sm text-red-600"><%= message %></p>
+        <% end %>
+      </div>
+      <div>
+        <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72,
+              placeholder: t(".password_placeholder"),
+              class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        <% @user.errors.full_messages_for(:password).each do |message| %>
+          <p class="mt-1 text-sm text-red-600"><%= message %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <%= form.submit t(".submit"), class: "w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+    </div>
+  <% end %>
+
+  <p class="mt-4 text-sm text-gray-500">
+    <%= t(".have_account") %>
+    <%= link_to t(".sign_in"), new_session_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+  </p>
+</div>
