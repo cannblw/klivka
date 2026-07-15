@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Friend Crm" %></title>
+    <title><%= content_for(:title) || "Friend CRM" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Friend Crm">
+    <meta name="application-name" content="Friend CRM">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -23,8 +23,13 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <header class="border-b border-gray-200 bg-white">
+      <div class="mx-auto flex h-14 max-w-6xl items-center px-4">
+        <%= link_to "Friend CRM", "/", class: "text-lg font-semibold tracking-tight" %>
+      </div>
+    </header>
+    <main class="mx-auto max-w-6xl px-4 py-8">
       <%= yield %>
     </main>
   </body>
