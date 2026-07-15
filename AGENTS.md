@@ -25,4 +25,5 @@
 - Tailwind is used as intended: utilities inline in markup; deduplicate by extracting components, never with `@apply`.
 - Validations live in the model AND as DB constraints (`null: false`, FKs) — both, not either.
 - Responsive design is mandatory: mobile-first (base styles target small screens, `sm:`/`md:`/`lg:` scale up), but layouts must feel natural on desktop too — no mobile-only or desktop-only UI.
+- All UI strings go through i18n (`t(...)`, lazy lookup keys). Supported locales: English (`en`, default) and Spanish (`es`); every key must exist in both. No hardcoded UI strings in views, components, or code-triggered UI (flash messages, validation-facing attribute names, etc.).
 - Never commit without being asked. `db/schema.rb` is committed alongside migrations.
