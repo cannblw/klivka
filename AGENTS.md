@@ -21,7 +21,7 @@
 ## Code conventions
 
 - Comments explain **why**, never what. No comments that restate the code. Prefer no comment over an obvious one.
-- Views: ViewComponent-first. Any reusable or logic-bearing UI is a component (Ruby class + template + test) with an explicit initializer interface. Plain ERB only for page templates and layouts; no shared partials.
+- Views: hybrid. UI that is reusable, parameterized, or logic-bearing is a ViewComponent (Ruby class + template + test) with an explicit initializer interface. Plain ERB for layouts, page templates, and one-off page chrome. No shared partials — anything rendered from 2+ places becomes a component.
 - Tailwind is used as intended: utilities inline in markup; deduplicate by extracting components, never with `@apply`.
 - Validations live in the model AND as DB constraints (`null: false`, FKs) — both, not either.
 - Never commit without being asked. `db/schema.rb` is committed alongside migrations.
