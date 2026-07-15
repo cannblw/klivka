@@ -3,6 +3,15 @@ en:
     attributes:
       friend:
         name: "Name"
+      user:
+        email_address: "Email address"
+        password: "Password"
+
+  auth:
+    rate_limited: "Try again later."
+
+  nav:
+    sign_out: "Sign out"
 
   friends:
     index:
@@ -23,3 +32,42 @@ en:
       no_entries: "No entries yet."
     create:
       created: "%{name} added."
+
+  sessions:
+    new:
+      title: "Sign in"
+      heading: "Sign in"
+      email_placeholder: "Email address"
+      password_placeholder: "Password"
+      submit: "Sign in"
+      forgot_password: "Forgot password?"
+    create:
+      invalid_credentials: "Try another email address or password."
+
+  passwords:
+    invalid_token: "Password reset link is invalid or has expired."
+    new:
+      title: "Forgot your password?"
+      heading: "Forgot your password?"
+      hint: "We'll email you instructions to reset it."
+      email_placeholder: "Email address"
+      submit: "Email reset instructions"
+      back: "Back to sign in"
+    edit:
+      title: "Update your password"
+      heading: "Update your password"
+      password_placeholder: "New password"
+      password_confirmation_placeholder: "Repeat new password"
+      submit: "Save"
+    create:
+      sent: "Password reset instructions sent (if a user with that email address exists)."
+    update:
+      reset: "Password has been reset."
+      mismatch: "Passwords did not match."
+
+  passwords_mailer:
+    reset:
+      subject: "Reset your password"
+      instructions: "You can reset your password on"
+      link_text: "this password reset page"
+      expires: "This link will expire in %{time}."

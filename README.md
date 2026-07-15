@@ -21,6 +21,13 @@ bin/dev
 
 Then open http://localhost:3000.
 
+In DEVELOPMENT, a default user is seeded so you can sign in right away:
+
+- Email: `admin@example.com`
+- Password: `admin`
+
+This user is never created in production. Password length limits are only enforced outside development.
+
 ## Development
 
 - `bin/dev` — run the app (Rails server + Tailwind watcher)

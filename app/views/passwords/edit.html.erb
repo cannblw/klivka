@@ -1,0 +1,20 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto mt-8 w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+  <h1 class="text-xl font-bold"><%= t(".heading") %></h1>
+
+  <%= form_with url: password_path(params[:token]), method: :put, class: "mt-4" do |form| %>
+    <div class="space-y-3">
+      <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72,
+            placeholder: t(".password_placeholder"),
+            class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72,
+            placeholder: t(".password_confirmation_placeholder"),
+            class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+    </div>
+
+    <div class="mt-4">
+      <%= form.submit t(".submit"), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+    </div>
+  <% end %>
+</div>

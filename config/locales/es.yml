@@ -3,6 +3,15 @@ es:
     attributes:
       friend:
         name: "Nombre"
+      user:
+        email_address: "Correo electrónico"
+        password: "Contraseña"
+
+  auth:
+    rate_limited: "Inténtalo de nuevo más tarde."
+
+  nav:
+    sign_out: "Cerrar sesión"
 
   friends:
     index:
@@ -23,3 +32,42 @@ es:
       no_entries: "Aún no hay entradas."
     create:
       created: "Se ha añadido a %{name}."
+
+  sessions:
+    new:
+      title: "Iniciar sesión"
+      heading: "Iniciar sesión"
+      email_placeholder: "Correo electrónico"
+      password_placeholder: "Contraseña"
+      submit: "Iniciar sesión"
+      forgot_password: "¿Has olvidado tu contraseña?"
+    create:
+      invalid_credentials: "Prueba con otro correo electrónico u otra contraseña."
+
+  passwords:
+    invalid_token: "El enlace para restablecer la contraseña no es válido o ha caducado."
+    new:
+      title: "¿Has olvidado tu contraseña?"
+      heading: "¿Has olvidado tu contraseña?"
+      hint: "Te enviaremos instrucciones por correo para restablecerla."
+      email_placeholder: "Correo electrónico"
+      submit: "Enviar instrucciones"
+      back: "Volver a iniciar sesión"
+    edit:
+      title: "Actualiza tu contraseña"
+      heading: "Actualiza tu contraseña"
+      password_placeholder: "Nueva contraseña"
+      password_confirmation_placeholder: "Repite la nueva contraseña"
+      submit: "Guardar"
+    create:
+      sent: "Instrucciones enviadas (si existe un usuario con ese correo electrónico)."
+    update:
+      reset: "La contraseña se ha restablecido."
+      mismatch: "Las contraseñas no coinciden."
+
+  passwords_mailer:
+    reset:
+      subject: "Restablece tu contraseña"
+      instructions: "Puedes restablecer tu contraseña en"
+      link_text: "esta página de restablecimiento"
+      expires: "Este enlace caducará en %{time}."

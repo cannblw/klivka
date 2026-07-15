@@ -1,6 +1,8 @@
 require "test_helper"
 
 class LocaleTest < ActionDispatch::IntegrationTest
+  setup { sign_in_as users(:one) }
+
   test "renders in Spanish when the browser prefers it" do
     get root_url, headers: { "Accept-Language" => "es-ES,es;q=0.9,en;q=0.8" }
 

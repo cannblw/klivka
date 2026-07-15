@@ -1,6 +1,15 @@
 require "test_helper"
 
 class FriendsControllerTest < ActionDispatch::IntegrationTest
+  setup { sign_in_as users(:one) }
+
+  test "redirects to sign in when unauthenticated" do
+    sign_out
+    get root_url
+
+    assert_redirected_to new_session_url
+  end
+
   test "index is the root page and lists friends" do
     get root_url
 
