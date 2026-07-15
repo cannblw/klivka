@@ -39,7 +39,7 @@
 </div>
 
 <% if @friends.any? %>
-  <div class="mt-6 grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+  <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
     <%= render FriendCardComponent.with_collection(@friends) %>
   </div>
 <% else %>
