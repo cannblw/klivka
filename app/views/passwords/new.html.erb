@@ -10,7 +10,7 @@
           class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
 
     <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <%= form.submit t(".submit"), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+      <%= render ButtonComponent.new(type: :submit) { t(".submit") } %>
       <%= link_to t(".back"), new_session_path, class: "text-sm text-gray-500 hover:text-gray-900" %>
     </div>
   <% end %>

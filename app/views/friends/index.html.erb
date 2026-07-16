@@ -4,10 +4,9 @@
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
 
-    <button type="button" data-action="dialog#open"
-            class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">
+    <%= render ButtonComponent.new(data: { action: "dialog#open" }) do %>
       <%= t(".add_friend") %>
-    </button>
+    <% end %>
   </div>
 
   <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
@@ -27,11 +26,10 @@
         <% end %>
 
         <div class="mt-4 flex justify-end gap-2">
-          <button type="button" data-action="dialog#close"
-                  class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">
+          <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
             <%= t(".modal.cancel") %>
-          </button>
-          <%= form.submit t(".modal.submit"), class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+          <% end %>
+          <%= render ButtonComponent.new(type: :submit) { t(".modal.submit") } %>
         </div>
       <% end %>
     </div>

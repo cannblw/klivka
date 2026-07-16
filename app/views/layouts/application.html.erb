@@ -28,8 +28,9 @@
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <%= link_to "Friend CRM", "/", class: "text-lg font-semibold tracking-tight" %>
         <% if authenticated? %>
-          <%= button_to t("nav.sign_out"), session_path, method: :delete,
-                class: "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100" %>
+          <%= form_with url: session_path, method: :delete do %>
+            <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) { t("nav.sign_out") } %>
+          <% end %>
         <% end %>
       </div>
     </header>
