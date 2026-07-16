@@ -1,7 +1,7 @@
 class FlashComponent < ViewComponent::Base
   KINDS = {
-    notice: { background: "bg-emerald-600", role: "status" },
-    alert: { background: "bg-red-500", role: "alert" }
+    notice: { background: "bg-emerald-600 dark:bg-emerald-700", role: "status" },
+    alert: { background: "bg-red-500 dark:bg-red-600", role: "alert" }
   }.freeze
 
   def initialize(kind:, message:)
