@@ -28,11 +28,14 @@
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <%= link_to "Friend CRM", "/", class: "text-lg font-semibold tracking-tight" %>
         <% if authenticated? %>
-          <%= form_with url: session_path, method: :delete do %>
-            <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
-              <%= t("nav.sign_out") %>
+          <div class="flex items-center gap-3">
+            <%= link_to t("nav.settings"), settings_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900" %>
+            <%= form_with url: session_path, method: :delete do %>
+              <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
+                <%= t("nav.sign_out") %>
+              <% end %>
             <% end %>
-          <% end %>
+          </div>
         <% end %>
       </div>
     </header>

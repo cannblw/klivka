@@ -12,9 +12,28 @@ en:
 
   nav:
     sign_out: "Sign out"
+    settings: "Settings"
 
   flash:
     dismiss: "Dismiss"
+
+  settings:
+    show:
+      title: "Settings"
+      heading: "Settings"
+      email: "Email"
+      password_note: "To change your password, click"
+      password_link: "here"
+      language: "Language"
+      theme: "Theme"
+      locales:
+        en: "English"
+        es: "Spanish"
+      themes:
+        light: "Light"
+        dark: "Dark"
+    update:
+      updated: "Settings saved."
 
   friends:
     index:

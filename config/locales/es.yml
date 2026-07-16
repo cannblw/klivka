@@ -12,9 +12,28 @@ es:
 
   nav:
     sign_out: "Cerrar sesión"
+    settings: "Ajustes"
 
   flash:
     dismiss: "Descartar"
+
+  settings:
+    show:
+      title: "Ajustes"
+      heading: "Ajustes"
+      email: "Correo electrónico"
+      password_note: "Para cambiar tu contraseña, haz clic"
+      password_link: "aquí"
+      language: "Idioma"
+      theme: "Tema"
+      locales:
+        en: "English"
+        es: "Español"
+      themes:
+        light: "Claro"
+        dark: "Oscuro"
+    update:
+      updated: "Ajustes guardados."
 
   friends:
     index:
