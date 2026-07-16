@@ -1,0 +1,6 @@
+<div>
+  <%= form.public_send(field_method, field, class: input_classes, **options) %>
+  <% form.object&.errors&.full_messages_for(field)&.each do |message| %>
+    <p class="mt-1 text-sm text-red-600"><%= message %></p>
+  <% end %>
+</div>

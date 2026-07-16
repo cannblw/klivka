@@ -16,15 +16,11 @@
       <p class="mt-1 text-sm text-gray-500"><%= t(".modal.hint") %></p>
 
       <%= form_with model: @friend, class: "mt-4" do |form| %>
-        <%= form.text_field :name,
+        <%= render InputFieldComponent.new(form, :name, type: :text,
               placeholder: t(".modal.name_placeholder"),
               autofocus: true,
               autocomplete: "off",
-              class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
-        <% @friend.errors.full_messages_for(:name).each do |message| %>
-          <p class="mt-1 text-sm text-red-600"><%= message %></p>
-        <% end %>
-
+              class: "w-full") %>
         <div class="mt-4 flex justify-end gap-2">
           <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
             <%= t(".modal.cancel") %>
