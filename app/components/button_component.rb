@@ -1,7 +1,7 @@
 class ButtonComponent < ViewComponent::Base
   VARIANTS = {
-    primary: "bg-indigo-600 text-white hover:bg-indigo-500",
-    ghost: "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+    primary: "bg-amber-600 text-white hover:bg-amber-500",
+    ghost: "text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700"
   }.freeze
 
   SIZES = {

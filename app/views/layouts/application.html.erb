@@ -23,13 +23,13 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-    <header class="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+  <body class="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-900 dark:text-stone-100">
+    <header class="border-b border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800">
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <%= link_to "Friend CRM", "/", class: "text-lg font-semibold tracking-tight dark:text-gray-100" %>
+        <%= link_to "Friend CRM", "/", class: "text-lg font-semibold tracking-tight dark:text-stone-100" %>
         <% if authenticated? %>
           <div class="flex items-center gap-3">
-            <%= link_to t("nav.settings"), settings_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" %>
+            <%= link_to t("nav.settings"), settings_path, class: "text-sm font-medium text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100" %>
             <%= form_with url: session_path, method: :delete do %>
               <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
                 <%= t("nav.sign_out") %>

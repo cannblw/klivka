@@ -2,7 +2,7 @@
 
 <%= render CardComponent.new do %>
   <h1 class="text-xl font-bold"><%= t(".heading") %></h1>
-  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"><%= t(".hint") %></p>
+  <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".hint") %></p>
 
   <%= form_with url: passwords_path, class: "mt-4" do |form| %>
     <%= render InputFieldComponent.new(form, :email_address, type: :email,
@@ -13,7 +13,7 @@
       <%= render ButtonComponent.new(type: :submit) do %>
         <%= t(".submit") %>
       <% end %>
-      <%= link_to t(".back"), new_session_path, class: "text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200" %>
+      <%= link_to t(".back"), new_session_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
     </div>
   <% end %>
 <% end %>

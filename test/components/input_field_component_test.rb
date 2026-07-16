@@ -34,7 +34,7 @@ class InputFieldComponentTest < ViewComponent::TestCase
       required: true, placeholder: "Email")
 
     assert_selector "input[type='email'][required][placeholder='Email']"
-    assert_selector "[class*='rounded-lg'][class*='border-gray-300']"
+    assert_selector "[class*='rounded-lg'][class*='border-stone-300']"
   end
 
   test "renders a password field" do
