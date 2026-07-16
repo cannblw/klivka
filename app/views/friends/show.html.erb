@@ -6,12 +6,59 @@
 
 <div data-controller="toggle" class="mt-4">
   <div class="flex flex-wrap items-center justify-between gap-4">
-    <h1 class="text-2xl font-bold"><%= @friend.name %></h1>
+    <div data-controller="toggle" class="flex items-center gap-2">
+      <h1 class="text-2xl font-bold" data-toggle-target="content"><%= @friend.name %></h1>
 
-    <button type="button" data-action="toggle#toggle"
-            class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500 cursor-pointer">
-      <%= t("entries.add") %>
-    </button>
+      <div data-toggle-target="content" class="hidden">
+        <%= form_with model: @friend, method: :patch, class: "flex items-start gap-2" do |form| %>
+          <div>
+            <%= form.text_field :name, value: @friend.name,
+                  class: "w-48 rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm font-bold focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            <% @friend.errors.full_messages_for(:name).each do |message| %>
+              <p class="mt-1 text-sm text-red-600"><%= message %></p>
+            <% end %>
+          </div>
+          <%= render ButtonComponent.new(type: :submit, size: :sm, class: "font-bold") do %>
+            <%= t("friends.rename.save") %>
+          <% end %>
+          <button type="button" data-action="toggle#toggle"
+                  class="rounded-lg px-2 py-1.5 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700">
+            <%= t("friends.rename.cancel") %>
+          </button>
+        <% end %>
+      </div>
+
+      <button type="button" data-action="toggle#toggle"
+              class="shrink-0 text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
+              aria-label="<%= t("friends.rename.link") %>">
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button type="button" data-action="toggle#toggle"
+              class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500 cursor-pointer">
+        <%= t("entries.add") %>
+      </button>
+
+      <div data-controller="dropdown" class="relative">
+        <button type="button" data-action="dropdown#toggle"
+                class="rounded-lg px-2 py-2 text-sm font-medium text-stone-400 hover:bg-stone-200 hover:text-stone-600 dark:text-stone-500 dark:hover:bg-stone-700 dark:hover:text-stone-300 cursor-pointer">
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/>
+          </svg>
+        </button>
+
+        <div data-dropdown-target="menu" data-action="click->dropdown#close"
+             class="absolute right-0 z-40 mt-1 hidden w-44 rounded-lg border border-stone-200 bg-stone-50 py-1 shadow-lg dark:border-stone-700 dark:bg-stone-800">
+          <%= link_to t(".delete"), "#",
+                data: { controller: "delete-friend", delete_friend_url: friend_path(@friend), action: "click->delete-friend#click" },
+                class: "block px-4 py-2 text-sm text-red-600 hover:bg-stone-100 dark:text-red-400 dark:hover:bg-stone-700" %>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div data-toggle-target="content" class="hidden mt-4">

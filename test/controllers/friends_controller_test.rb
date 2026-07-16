@@ -71,6 +71,40 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     get friend_url(friends(:ada))
 
     assert_response :success
-    assert_select "h1", "Ada Lovelace"
+    assert_select "h1", /Ada Lovelace/
+  end
+
+  test "update renames the friend" do
+    patch friend_url(friends(:ada)), params: { friend: { name: "Ada King" } }
+
+    assert_redirected_to friend_url(friends(:ada))
+    assert_equal "Ada King", friends(:ada).reload.name
+  end
+
+  test "update with blank name re-renders with error" do
+    patch friend_url(friends(:ada)), params: { friend: { name: "" } }
+
+    assert_response :unprocessable_entity
+    assert_select "main", /can't be blank/
+  end
+
+  test "destroy removes the friend and redirects to root" do
+    assert_difference "Friend.count", -1 do
+      delete friend_url(friends(:ada))
+    end
+
+    assert_redirected_to root_url
+  end
+
+  test "cross-user returns 404 for update" do
+    patch friend_url(friends(:bob)), params: { friend: { name: "Nope" } }
+
+    assert_response :not_found
+  end
+
+  test "cross-user returns 404 for destroy" do
+    delete friend_url(friends(:bob))
+
+    assert_response :not_found
   end
 end

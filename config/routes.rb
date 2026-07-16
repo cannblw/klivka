@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   post "signup", to: "registrations#create"
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resource :settings, only: %i[ show update ]
-  resources :friends, only: [ :index, :show, :create ] do
+  resources :friends, only: [ :index, :show, :create, :update, :destroy ] do
     resources :entries, only: %i[ create edit update destroy ]
   end
 

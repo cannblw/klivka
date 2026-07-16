@@ -9,6 +9,24 @@ class FriendsController < ApplicationController
     @new_entry = Entry.new
   end
 
+  def update
+    @friend = Current.user.friends.find(params[:id])
+
+    if @friend.update(friend_params)
+      redirect_to @friend
+    else
+      @new_entry = Entry.new
+      render :show, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    friend = Current.user.friends.find(params[:id])
+    friend.destroy
+
+    redirect_to root_path, notice: t(".deleted", name: friend.name)
+  end
+
   def create
     @friend = Current.user.friends.new(friend_params)
 

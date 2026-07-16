@@ -90,9 +90,25 @@ en:
         hint: "Add your first friend. All you need is a name."
     show:
       back: "← Friends"
-      no_entries: "No entries yet."
+      delete: "Delete friend"
     create:
       created: "%{name} added."
+    update:
+      updated: "Friend renamed."
+    destroy:
+      deleted: "%{name} has been deleted."
+    delete_confirm_title: "Delete friend?"
+    delete_confirm_body: "All entries will also be deleted. This cannot be undone."
+    rename:
+      created: "%{name} added."
+    update:
+      updated: "Friend renamed."
+    destroy:
+      deleted: "%{name} has been deleted."
+    rename:
+      link: "Rename"
+      save: "Save"
+      cancel: "Cancel"
 
   sessions:
     new:

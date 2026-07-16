@@ -90,9 +90,19 @@ es:
         hint: "Añade a tu primer amigo. Solo necesitas un nombre."
     show:
       back: "← Amigos"
-      no_entries: "Aún no hay entradas."
+      delete: "Eliminar amigo"
     create:
       created: "Se ha añadido a %{name}."
+    update:
+      updated: "Amigo renombrado."
+    destroy:
+      deleted: "%{name} ha sido eliminado."
+    delete_confirm_title: "¿Eliminar amigo?"
+    delete_confirm_body: "Todas las entradas también se eliminarán. No se puede deshacer."
+    rename:
+      link: "Renombrar"
+      save: "Guardar"
+      cancel: "Cancelar"
 
   sessions:
     new:
