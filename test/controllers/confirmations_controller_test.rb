@@ -13,7 +13,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_url
     assert @user.reload.confirmed?
     follow_redirect!
-    assert_select "main", /Email confirmed/
+    assert_select "#flash", /Email confirmed/
   end
 
   test "show rejects an invalid token" do
@@ -22,7 +22,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_url
     assert_not @user.reload.confirmed?
     follow_redirect!
-    assert_select "main", /invalid or has expired/
+    assert_select "#flash", /invalid or has expired/
   end
 
   test "show rejects an expired token" do

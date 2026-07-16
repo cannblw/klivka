@@ -33,13 +33,13 @@
         <% end %>
       </div>
     </header>
+    <% if notice.present? || alert.present? %>
+      <div id="flash" class="pointer-events-none fixed inset-x-4 top-4 z-50 flex flex-col items-center gap-2 sm:inset-x-auto sm:right-4 sm:items-end">
+        <%= render FlashComponent.new(kind: :notice, message: notice) if notice.present? %>
+        <%= render FlashComponent.new(kind: :alert, message: alert) if alert.present? %>
+      </div>
+    <% end %>
     <main class="mx-auto max-w-6xl px-4 py-8">
-      <% if notice %>
-        <p class="mb-4 rounded-lg bg-green-50 px-4 py-2 text-sm text-green-800"><%= notice %></p>
-      <% end %>
-      <% if alert %>
-        <p class="mb-4 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-800"><%= alert %></p>
-      <% end %>
       <%= yield %>
     </main>
   </body>

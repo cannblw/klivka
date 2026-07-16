@@ -13,6 +13,9 @@ es:
   nav:
     sign_out: "Cerrar sesión"
 
+  flash:
+    dismiss: "Descartar"
+
   friends:
     index:
       title: "Amigos"

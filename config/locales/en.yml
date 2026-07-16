@@ -13,6 +13,9 @@ en:
   nav:
     sign_out: "Sign out"
 
+  flash:
+    dismiss: "Dismiss"
+
   friends:
     index:
       title: "Friends"
