@@ -29,7 +29,9 @@
         <%= link_to "Friend CRM", "/", class: "text-lg font-semibold tracking-tight" %>
         <% if authenticated? %>
           <%= form_with url: session_path, method: :delete do %>
-            <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) { t("nav.sign_out") } %>
+            <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
+              <%= t("nav.sign_out") %>
+            <% end %>
           <% end %>
         <% end %>
       </div>

@@ -14,7 +14,9 @@
     </div>
 
     <div class="mt-4">
-      <%= render ButtonComponent.new(type: :submit, class: "w-full") { t(".submit") } %>
+      <%= render ButtonComponent.new(type: :submit, class: "w-full") do %>
+        <%= t(".submit") %>
+      <% end %>
     </div>
   <% end %>
 

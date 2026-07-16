@@ -14,7 +14,9 @@
     </div>
 
     <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <%= render ButtonComponent.new(type: :submit) { t(".submit") } %>
+      <%= render ButtonComponent.new(type: :submit) do %>
+        <%= t(".submit") %>
+      <% end %>
       <%= link_to t(".forgot_password"), new_password_path, class: "text-sm text-gray-500 hover:text-gray-900" %>
     </div>
   <% end %>

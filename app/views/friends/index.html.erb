@@ -25,7 +25,9 @@
           <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
             <%= t(".modal.cancel") %>
           <% end %>
-          <%= render ButtonComponent.new(type: :submit) { t(".modal.submit") } %>
+          <%= render ButtonComponent.new(type: :submit) do %>
+            <%= t(".modal.submit") %>
+          <% end %>
         </div>
       <% end %>
     </div>
