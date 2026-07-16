@@ -1,5 +1,3 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 # == Schema Information
 #
 # Table name: entries
@@ -21,18 +19,6 @@
 #
 #  friend_id  (friend_id => friends.id)
 #
-phone:
-  friend: ada
-  type: Entry::Phone
-  content: {"number": "555-1234"}
-
-note:
-  friend: grace
-  type: Entry::Note
-  content: {"text": "Met at the climbing gym"}
-
-ada_birthday:
-  friend: ada
-  type: Entry::Birthday
-  entry_date: 1815-12-10
-  content: {}
+class Entry::Date < Entry
+  validates :entry_date, presence: true
+end

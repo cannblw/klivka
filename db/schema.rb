@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_162554) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_16_172319) do
   create_table "entries", force: :cascade do |t|
     t.json "content"
     t.datetime "created_at", null: false
+    t.date "entry_date"
     t.integer "friend_id", null: false
-    t.string "kind", null: false
+    t.string "type", null: false
     t.datetime "updated_at", null: false
+    t.index ["entry_date"], name: "index_entries_on_entry_date"
     t.index ["friend_id"], name: "index_entries_on_friend_id"
   end
 

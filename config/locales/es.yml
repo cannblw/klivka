@@ -6,6 +6,12 @@ es:
       user:
         email_address: "Correo electrónico"
         password: "Contraseña"
+    errors:
+      models:
+        entry/birthday:
+          attributes:
+            friend_id:
+              one_birthday_per_friend: "ya tiene un cumpleaños"
 
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."

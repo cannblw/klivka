@@ -6,6 +6,12 @@ en:
       user:
         email_address: "Email address"
         password: "Password"
+    errors:
+      models:
+        entry/birthday:
+          attributes:
+            friend_id:
+              one_birthday_per_friend: "already has a birthday"
 
   auth:
     rate_limited: "Try again later."
