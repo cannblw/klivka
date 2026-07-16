@@ -62,4 +62,11 @@ class LocaleTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "html[data-theme='']"
   end
+
+  test "layout renders discard changes dialog" do
+    get root_url
+
+    assert_select "dialog#discard-changes-dialog"
+    assert_select "#discard-changes-confirm-link"
+  end
 end

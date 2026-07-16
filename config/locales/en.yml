@@ -23,6 +23,12 @@ en:
   flash:
     dismiss: "Dismiss"
 
+  discard_changes:
+    title: "Discard changes?"
+    body: "You have unsaved changes. If you leave, they will be lost."
+    keep_editing: "Keep editing"
+    discard: "Discard"
+
   settings:
     show:
       title: "Settings"

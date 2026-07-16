@@ -23,6 +23,12 @@ es:
   flash:
     dismiss: "Descartar"
 
+  discard_changes:
+    title: "¿Descartar cambios?"
+    body: "Tienes cambios sin guardar. Si sales, se perderán."
+    keep_editing: "Seguir editando"
+    discard: "Descartar"
+
   settings:
     show:
       title: "Ajustes"

@@ -48,5 +48,22 @@
     <main class="mx-auto max-w-6xl px-4 py-8">
       <%= yield %>
     </main>
+    <dialog id="discard-changes-dialog" data-controller="dialog" data-action="click->dialog#closeOnBackdrop"
+            class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
+      <div class="p-6">
+        <h2 class="text-lg font-semibold dark:text-stone-100"><%= t("discard_changes.title") %></h2>
+        <p class="mt-2 text-sm text-stone-500 dark:text-stone-400"><%= t("discard_changes.body") %></p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button type="button" data-action="dialog#close" autofocus
+                  class="cursor-pointer rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700">
+            <%= t("discard_changes.keep_editing") %>
+          </button>
+          <a id="discard-changes-confirm-link" href="#"
+             class="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500">
+            <%= t("discard_changes.discard") %>
+          </a>
+        </div>
+      </div>
+    </dialog>
   </body>
 </html>
