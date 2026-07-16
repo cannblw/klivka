@@ -34,5 +34,5 @@ note:
 ada_birthday:
   friend: ada
   type: Entry::Birthday
-  entry_date: 1815-12-10
+  entry_date: "1815-12-10"
   content: {}

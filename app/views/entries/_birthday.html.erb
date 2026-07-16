@@ -1,0 +1,7 @@
+<% date = entry.entry_date %>
+<% if date %>
+  <%= l(date, format: :long) %>
+  <% if date.year < Date.current.year %>
+    <span class="text-stone-500 dark:text-stone-400">(<%= Date.current.year - date.year %> <%= t("entries.age") %>)</span>
+  <% end %>
+<% end %>

@@ -6,6 +6,7 @@ class FriendsController < ApplicationController
 
   def show
     @friend = Current.user.friends.find(params[:id])
+    @new_entry = Entry.new
   end
 
   def create

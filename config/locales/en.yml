@@ -29,6 +29,33 @@ en:
     keep_editing: "Keep editing"
     discard: "Discard"
 
+  entries:
+    add: "Add entry"
+    edit_label: "Edit"
+    save: "Save changes"
+    cancel: "Cancel"
+    delete: "Delete"
+    delete_confirm_title: "Delete this entry?"
+    delete_confirm_body: "This cannot be undone."
+    kind_label: "Type"
+    kinds:
+      phone: "Phone"
+      note: "Note"
+      birthday: "Birthday"
+    phone_number_placeholder: "Phone number"
+    phone_label_placeholder: "Label (optional)"
+    note_placeholder: "Write a note..."
+    age: "years old"
+    added_on: "Added on %{date}"
+    empty_title: "No entries yet"
+    empty_hint: "Add your first entry to get started."
+    create:
+      created: "Entry added."
+    update:
+      updated: "Entry updated."
+    destroy:
+      deleted: "Entry removed."
+
   settings:
     show:
       title: "Settings"

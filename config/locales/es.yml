@@ -29,6 +29,33 @@ es:
     keep_editing: "Seguir editando"
     discard: "Descartar"
 
+  entries:
+    add: "Añadir entrada"
+    edit_label: "Editar"
+    save: "Guardar cambios"
+    cancel: "Cancelar"
+    delete: "Eliminar"
+    delete_confirm_title: "¿Eliminar esta entrada?"
+    delete_confirm_body: "No se puede deshacer."
+    kind_label: "Tipo"
+    kinds:
+      phone: "Teléfono"
+      note: "Nota"
+      birthday: "Cumpleaños"
+    phone_number_placeholder: "Número de teléfono"
+    phone_label_placeholder: "Etiqueta (opcional)"
+    note_placeholder: "Escribe una nota..."
+    age: "años"
+    added_on: "Añadido el %{date}"
+    empty_title: "Aún no hay entradas"
+    empty_hint: "Añade tu primera entrada para empezar."
+    create:
+      created: "Entrada añadida."
+    update:
+      updated: "Entrada actualizada."
+    destroy:
+      deleted: "Entrada eliminada."
+
   settings:
     show:
       title: "Ajustes"

@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   post "signup", to: "registrations#create"
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resource :settings, only: %i[ show update ]
-  resources :friends, only: [ :index, :show, :create ]
+  resources :friends, only: [ :index, :show, :create ] do
+    resources :entries, only: %i[ create edit update destroy ]
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
