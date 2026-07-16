@@ -7,7 +7,9 @@ require "test_helper"
 #  id              :integer          not null, primary key
 #  confirmed_at    :datetime
 #  email_address   :string           not null
+#  locale          :string
 #  password_digest :string           not null
+#  theme           :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
@@ -26,5 +28,15 @@ class UserTest < ActiveSupport::TestCase
 
     assert_not user.valid?
     assert user.errors.of_kind?(:password, :too_short)
+  end
+
+  test "stores a locale preference" do
+    user = User.new(email_address: "loc@example.com", password: "a-safe-password", locale: "es")
+    assert_equal "es", user.locale
+  end
+
+  test "stores a theme preference" do
+    user = User.new(email_address: "theme@example.com", password: "a-safe-password", theme: "dark")
+    assert_equal "dark", user.theme
   end
 end

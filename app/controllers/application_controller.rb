@@ -16,7 +16,13 @@ class ApplicationController < ActionController::Base
 
   # Header order approximates preference; full q-value parsing isn't worth a dependency
   def preferred_locale
-    requested = request.env["HTTP_ACCEPT_LANGUAGE"].to_s.split(",").map { |lang| lang.strip[0, 2].downcase }
-    requested.find { |code| code.in?(I18n.available_locales.map(&:to_s)) } || I18n.default_locale
+    Current.user&.locale&.presence ||
+      requested_locale_from_header ||
+      I18n.default_locale
+  end
+
+  def requested_locale_from_header
+    request.env["HTTP_ACCEPT_LANGUAGE"].to_s.split(",").map { |lang| lang.strip[0, 2].downcase }
+      .find { |code| code.in?(I18n.available_locales.map(&:to_s)) }
   end
 end
