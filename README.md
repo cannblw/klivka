@@ -43,7 +43,7 @@ Optional settings are read from environment variables; see [.env.example](.env.e
 
 ## Database support
 
-SQLite and PostgreSQL are both first-class. The schema and queries stick to a portable subset.
+SQLite and PostgreSQL are both first-class.
 
 ## License
 

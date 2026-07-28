@@ -11,7 +11,7 @@
 
 - Only portable column types: `string`, `text`, `integer`, `decimal`, `boolean`, `datetime`, `json`, `date`. Never `jsonb`, PG arrays, or `uuid` columns.
 - No adapter-conditional migrations. `schema.rb` must load identically on both adapters.
-- Avoid raw SQL; use ActiveRecord/Arel. If raw SQL is unavoidable, isolate it in one scope/query object with an adapter branch.
+- Avoid raw SQL; use ActiveRecord/Arel. If raw SQL is unavoidable and must differ by adapter, use `ApplicationRecord.adapter_sql(sqlite:, postgres:)` to branch cleanly.
 
 ## Product principles
 
