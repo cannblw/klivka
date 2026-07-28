@@ -21,4 +21,8 @@ class Friend < ApplicationRecord
   has_many :entries, dependent: :destroy
 
   validates :name, presence: true
+
+  def initials
+    name.split.take(2).map { |part| part[0] }.join.upcase
+  end
 end

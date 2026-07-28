@@ -56,6 +56,13 @@ en:
     destroy:
       deleted: "Entry removed."
 
+  birthdays:
+    index:
+      title: "Birthdays"
+      heading: "Birthdays"
+      empty_title: "No birthdays this month"
+      empty_hint: "Birthdays for your friends will appear here."
+
   settings:
     show:
       title: "Settings"

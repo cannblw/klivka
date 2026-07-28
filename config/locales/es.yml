@@ -56,6 +56,13 @@ es:
     destroy:
       deleted: "Entrada eliminada."
 
+  birthdays:
+    index:
+      title: "Cumpleaños"
+      heading: "Cumpleaños"
+      empty_title: "No hay cumpleaños este mes"
+      empty_hint: "Los cumpleaños de tus amigos aparecerán aquí."
+
   settings:
     show:
       title: "Ajustes"
