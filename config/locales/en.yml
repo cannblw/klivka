@@ -45,6 +45,7 @@ en:
       birthday: "Birthday"
     phone_number_placeholder: "Phone number"
     phone_label_placeholder: "Label (optional)"
+    copy: "Copy"
     note_placeholder: "Write a note..."
     age: "years old"
     added_on: "Added on %{date}"
