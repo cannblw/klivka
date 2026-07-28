@@ -45,6 +45,18 @@ Optional settings are read from environment variables; see [.env.example](.env.e
 
 SQLite and PostgreSQL are both first-class.
 
+For most cases, plain SQLite is all you need. I won't judge you, my friends also fit in a SQLite database 🙂
+
+If you prefer PostgreSQL, set these env vars:
+
+```
+DB_ADAPTER=postgresql
+DB_HOST=localhost
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=friend_crm
+```
+
 ## License
 
 [AGPL-3.0](LICENSE)
