@@ -17,6 +17,7 @@ en:
     rate_limited: "Try again later."
 
   nav:
+    birthdays: "Birthdays"
     sign_out: "Sign out"
     settings: "Settings"
 

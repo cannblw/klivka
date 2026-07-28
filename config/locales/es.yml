@@ -17,6 +17,7 @@ es:
     rate_limited: "Inténtalo de nuevo más tarde."
 
   nav:
+    birthdays: "Cumpleaños"
     sign_out: "Cerrar sesión"
     settings: "Ajustes"
 
