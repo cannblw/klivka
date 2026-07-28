@@ -22,4 +22,14 @@
 class Entry::Birthday < Entry
   validates :entry_date, presence: true
   validates :friend_id, uniqueness: { message: :one_birthday_per_friend }
+
+  def age(on: ::Date.current)
+    return nil unless entry_date
+
+    years = on.year - entry_date.year
+    past = (on.month > entry_date.month) ||
+           (on.month == entry_date.month && on.day >= entry_date.day)
+    years -= 1 unless past
+    years
+  end
 end

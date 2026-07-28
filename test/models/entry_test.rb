@@ -56,6 +56,34 @@ class EntryTest < ActiveSupport::TestCase
     assert date_entry.errors.of_kind?(:entry_date, :blank)
   end
 
+  test "age returns years after birthday has passed this year" do
+    travel_to Date.new(2026, 12, 31) do
+      assert_equal 211, entries(:ada_birthday).age
+    end
+  end
+
+  test "age subtracts one before birthday has occurred this year" do
+    travel_to Date.new(2026, 7, 28) do
+      assert_equal 210, entries(:ada_birthday).age
+    end
+  end
+
+  test "age is correct on the birthday itself" do
+    travel_to Date.new(2026, 12, 10) do
+      assert_equal 211, entries(:ada_birthday).age
+    end
+  end
+
+  test "age returns nil without entry_date" do
+    birthday = Entry::Birthday.new(friend: friends(:ada), entry_date: nil)
+
+    assert_nil birthday.age
+  end
+
+  test "age accepts an on: parameter" do
+    assert_equal 200, entries(:ada_birthday).age(on: Date.new(2015, 12, 10))
+  end
+
   test "friend.entries includes all types" do
     entries = friends(:ada).entries
 
