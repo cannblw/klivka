@@ -23,6 +23,14 @@ class Entry::Birthday < Entry
   validates :entry_date, presence: true
   validates :friend_id, uniqueness: { message: :one_birthday_per_friend }
 
+  scope :for_month, ->(date = ::Date.current) {
+    month = date.month
+    where(adapter_sql(
+      sqlite: "CAST(strftime('%m', entry_date) AS INTEGER) = ?",
+      postgres: "EXTRACT(MONTH FROM entry_date) = ?"
+    ), month)
+  }
+
   def age(on: ::Date.current)
     return nil unless entry_date
 

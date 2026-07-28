@@ -36,3 +36,9 @@ ada_birthday:
   type: Entry::Birthday
   entry_date: "1815-12-10"
   content: {}
+
+grace_birthday:
+  friend: grace
+  type: Entry::Birthday
+  entry_date: "1906-07-09"
+  content: {}

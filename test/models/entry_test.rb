@@ -84,6 +84,27 @@ class EntryTest < ActiveSupport::TestCase
     assert_equal 200, entries(:ada_birthday).age(on: Date.new(2015, 12, 10))
   end
 
+  test "for_month defaults to current month" do
+    travel_to Date.new(2026, 7, 1) do
+      results = Entry::Birthday.for_month
+      assert_includes results, entries(:grace_birthday)
+      assert_not_includes results, entries(:ada_birthday)
+    end
+  end
+
+  test "for_month with explicit month returns matching birthdays" do
+    results = Entry::Birthday.for_month(Date.new(2026, 12, 1))
+
+    assert_includes results, entries(:ada_birthday)
+    assert_not_includes results, entries(:grace_birthday)
+  end
+
+  test "for_month returns empty for month with no birthdays" do
+    results = Entry::Birthday.for_month(Date.new(2026, 1, 1))
+
+    assert_empty results
+  end
+
   test "friend.entries includes all types" do
     entries = friends(:ada).entries
 
