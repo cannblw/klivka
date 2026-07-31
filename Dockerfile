@@ -2,8 +2,8 @@
 # check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t friend_crm .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name friend_crm friend_crm
+# docker build -t klivka .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name klivka klivka
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
