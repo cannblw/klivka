@@ -19,6 +19,11 @@ module FriendCrm
     config.i18n.available_locales = [ :en, :es ]
     config.i18n.default_locale = :en
 
+    # Maximum number of matching friends the user sees in search results.
+    # FriendSearch applies the cap so broad searches do not load and render an unbounded number of friends.
+    config.x.friend_search_max_results = Integer(ENV.fetch("FRIEND_SEARCH_MAX_RESULTS", "50"), 10)
+    raise ArgumentError, "FRIEND_SEARCH_MAX_RESULTS must be positive" unless config.x.friend_search_max_results.positive?
+
     # Optional email confirmation for registrations; see .env.example
     config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
 
