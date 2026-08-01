@@ -1,6 +1,7 @@
 class FriendsController < ApplicationController
   def index
-    @friends = FriendSearch.call(Current.user, params[:query])
+    @sort = params[:sort].presence_in(FriendSearch::SORTS.keys) || FriendSearch::DEFAULT_SORT
+    @friends = FriendSearch.call(Current.user, params[:query], sort: @sort)
     @friend = Friend.new
   end
 

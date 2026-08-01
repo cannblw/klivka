@@ -7,6 +7,32 @@ class FriendSearchTest < ActiveSupport::TestCase
     assert_equal [ "Ada Lovelace", "Grace Hopper" ], FriendSearch.call(@user, "  ").map(&:name)
   end
 
+  test "supports each sort and direction for matching queries" do
+    alice = Friend.create!(user: @user, name: "Alice Contact")
+    maria = Friend.create!(user: @user, name: "Maria Contact")
+    zoe = Friend.create!(user: @user, name: "Zoe Contact")
+    now = Time.current
+
+    alice.update_columns(created_at: now + 2.minutes, updated_at: now + 1.minute)
+    maria.update_columns(created_at: now + 1.minute, updated_at: now + 3.minutes)
+    zoe.update_columns(created_at: now + 3.minutes, updated_at: now + 2.minutes)
+
+    sort_cases = {
+      "name" => [ "Alice Contact", "Maria Contact", "Zoe Contact" ],
+      "recently_added" => [ "Zoe Contact", "Alice Contact", "Maria Contact" ],
+      "recently_updated" => [ "Maria Contact", "Zoe Contact", "Alice Contact" ]
+    }
+
+    sort_cases.each do |sort, expected_names|
+      assert_equal expected_names, FriendSearch.call(@user, "contact", sort: sort).map(&:name), sort
+    end
+  end
+
+  test "falls back to name sorting for an invalid sort" do
+    assert_equal [ "Ada Lovelace", "Grace Hopper" ],
+      FriendSearch.call(@user, nil, sort: "updated_at desc; drop table friends").map(&:name)
+  end
+
   test "only searches the given user's friends" do
     Friend.create!(user: users(:two), name: "Bob")
 

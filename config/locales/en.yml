@@ -90,6 +90,11 @@ en:
       add_friend: "Add friend"
       search_label: "Search friends"
       search_placeholder: "Search friends..."
+      sort_label: "Sort friends"
+      sort_options:
+        name: "Name"
+        recently_added: "Recently added"
+        recently_updated: "Recently updated"
       no_results: "No friends matching '%{query}'"
       modal:
         heading: "Add a friend"

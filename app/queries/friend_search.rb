@@ -1,4 +1,11 @@
 class FriendSearch
+  SORTS = {
+    "name" => { name: :asc, id: :asc },
+    "recently_added" => { created_at: :desc, name: :asc, id: :asc },
+    "recently_updated" => { updated_at: :desc, name: :asc, id: :asc }
+  }.freeze
+  DEFAULT_SORT = "name"
+
   # Fixed score bands ensure literal matches always rank ahead of fuzzy matches.
   MATCH_SCORE_PERCENTAGES = {
     exact: 100,
@@ -14,18 +21,19 @@ class FriendSearch
   THREE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.72
   FOUR_OR_MORE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.65
 
-  def self.call(user, query)
-    new(user, query).call
+  def self.call(user, query, sort: DEFAULT_SORT)
+    new(user, query, sort: sort).call
   end
 
-  def initialize(user, query)
+  def initialize(user, query, sort: DEFAULT_SORT)
     @friends = user.friends
     @query = normalize(query)
     @query_tokens = @query.split
+    @sort = SORTS.key?(sort.to_s) ? sort.to_s : DEFAULT_SORT
   end
 
   def call
-    return friends.order(:name).to_a if query.blank?
+    return friends.order(SORTS.fetch(sort)).to_a if query.blank?
 
     ranked_friend_ids = friends.pluck(:id, :name)
       .filter_map do |id, name|
@@ -33,19 +41,18 @@ class FriendSearch
         candidate_score = score(normalized_name, normalized_name.split)
         [ id, normalized_name, candidate_score ] if candidate_score
       end
-      .sort_by { |id, name, candidate_score| [ -candidate_score, name, id ] }
-      .first(Rails.application.config.x.friend_search_max_results)
       .map(&:first)
 
     return [] if ranked_friend_ids.empty?
 
-    friends_by_id = friends.where(id: ranked_friend_ids).index_by(&:id)
-    ranked_friend_ids.filter_map { |id| friends_by_id[id] }
+    friends.where(id: ranked_friend_ids)
+      .order(SORTS.fetch(sort))
+      .first(Rails.application.config.x.friend_search_max_results)
   end
 
   private
 
-  attr_reader :friends, :query, :query_tokens
+  attr_reader :friends, :query, :query_tokens, :sort
 
   def score(name, name_tokens)
     return MATCH_SCORE_PERCENTAGES[:exact] if name == query

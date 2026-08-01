@@ -90,6 +90,11 @@ es:
       add_friend: "Añadir amigo"
       search_label: "Buscar amigos"
       search_placeholder: "Buscar amigos..."
+      sort_label: "Ordenar amigos"
+      sort_options:
+        name: "Nombre"
+        recently_added: "Añadidos recientemente"
+        recently_updated: "Actualizados recientemente"
       no_results: "Ningún amigo coincide con '%{query}'"
       modal:
         heading: "Añade un amigo"

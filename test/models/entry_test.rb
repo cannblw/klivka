@@ -112,4 +112,23 @@ class EntryTest < ActiveSupport::TestCase
     assert_includes entries.map(&:type), "Entry::Phone"
     assert_includes entries.map(&:type), "Entry::Birthday"
   end
+
+  test "entry changes touch the friend" do
+    friend = friends(:ada)
+    original_updated_at = friend.reload.updated_at
+
+    travel 1.minute
+    entry = friend.entries.create!(type: "Entry::Note", content: { text: "old" })
+    assert_operator friend.reload.updated_at, :>, original_updated_at
+    created_at = friend.updated_at
+
+    travel 1.minute
+    entry.update!(content: { text: "updated" })
+    assert_operator friend.reload.updated_at, :>, created_at
+    updated_at = friend.updated_at
+
+    travel 1.minute
+    entry.destroy!
+    assert_operator friend.reload.updated_at, :>, updated_at
+  end
 end
