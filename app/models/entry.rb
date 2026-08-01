@@ -23,7 +23,7 @@
 # anniversaries, reminders) are portable-queryable across SQLite and PostgreSQL without
 # adapter-specific JSON extraction.
 class Entry < ApplicationRecord
-  belongs_to :friend
+  belongs_to :friend, touch: true
 
   validates :type, presence: true
 end
