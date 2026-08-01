@@ -22,6 +22,49 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "555-9876", entry.content["number"]
   end
 
+  test "create adds a normalized email entry" do
+    assert_difference -> { friends(:ada).entries.count }, 1 do
+      post friend_entries_url(friends(:ada)),
+        params: { entry: { type: "Entry::Email", content: { email: "  ADA@EXAMPLE.COM ", label: "Work" } } }
+    end
+
+    assert_redirected_to friend_url(friends(:ada))
+    entry = friends(:ada).entries.last
+    assert_equal "Entry::Email", entry.type
+    assert_equal "ada@example.com", entry.content["email"]
+    assert_equal "Work", entry.content["label"]
+  end
+
+  test "create with an invalid email re-renders the friend page" do
+    assert_no_difference -> { friends(:ada).entries.count } do
+      post friend_entries_url(friends(:ada)),
+        params: { entry: { type: "Entry::Email", content: { email: "not-an-email" } } }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "#email-fields:not([disabled]) input[type='email'][value='not-an-email']"
+    assert_select "#phone-fields[disabled] input"
+    assert_select "main", /Email/
+  end
+
+  test "create rejects an unsupported entry type" do
+    assert_no_difference -> { friends(:ada).entries.count } do
+      post friend_entries_url(friends(:ada)),
+        params: { entry: { type: "User", content: {} } }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "main", /Type/
+  end
+
+  test "create with a missing entry type returns an error" do
+    assert_no_difference -> { friends(:ada).entries.count } do
+      post friend_entries_url(friends(:ada)), params: { entry: { content: { email: "ada@example.com" } } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "create with validation error re-renders friend page" do
     post friend_entries_url(friends(:ada)),
       params: { entry: { type: "Entry::Birthday", entry_date: "" } }
@@ -48,6 +91,26 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "updated", entry.reload.content["text"]
     assert_select "turbo-frame"
+  end
+
+  test "update normalizes an email and renders its mail link" do
+    patch friend_entry_url(friends(:ada), entries(:email)),
+      params: { entry: { content: { email: " NEW@EXAMPLE.COM ", label: " Personal " } } },
+      headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_equal "new@example.com", entries(:email).reload.email
+    assert_equal "Personal", entries(:email).label
+    assert_select "a[href='mailto:new@example.com']", text: "new@example.com"
+  end
+
+  test "update with an invalid email re-renders the edit form" do
+    patch friend_entry_url(friends(:ada), entries(:email)),
+      params: { entry: { content: { email: "invalid", label: "Work" } } }
+
+    assert_response :unprocessable_entity
+    assert_select "#email-fields:not([disabled]) input[type='email'][value='invalid']"
+    assert_select "main", /Email/
   end
 
   test "update with validation error re-renders edit form" do

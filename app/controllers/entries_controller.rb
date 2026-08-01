@@ -5,9 +5,17 @@ class EntriesController < ApplicationController
 
   def create
     @friend = Current.user.friends.find(params[:friend_id])
-    klass = entry_params[:type]&.constantize || Entry
+    klass = Entry.creatable_type(entry_params[:type])
+
+    unless klass
+      @entry = Entry.new(friend: @friend)
+      @entry.errors.add(:type, entry_params[:type].present? ? :inclusion : :blank)
+      @new_entry = @entry
+      return render "friends/show", status: :unprocessable_entity
+    end
+
     @entry = klass.new(friend: @friend)
-    @entry.assign_attributes(entry_params) if entry_params[:type].present?
+    @entry.assign_attributes(entry_params)
 
     if @entry.save
       redirect_to @friend, notice: t(".created")

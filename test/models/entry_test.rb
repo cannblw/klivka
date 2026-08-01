@@ -28,10 +28,34 @@ class EntryTest < ActiveSupport::TestCase
     assert_equal "Entry::Phone", phone.type
   end
 
+  test "email exposes normalized email and optional label" do
+    email = Entry::Email.new(friend: friends(:ada), content: { email: "  ADA@EXAMPLE.COM ", label: " Work " })
+
+    assert email.valid?
+    assert_equal "ada@example.com", email.email
+    assert_equal "Work", email.label
+  end
+
+  test "email requires a valid email" do
+    email = Entry::Email.new(friend: friends(:ada), content: { email: "not-an-email" })
+
+    assert_not email.valid?
+    assert email.errors.of_kind?(:email, :invalid)
+  end
+
+  test "email reports only the presence error when blank" do
+    email = Entry::Email.new(friend: friends(:ada), content: { email: "" })
+
+    assert_not email.valid?
+    assert email.errors.of_kind?(:email, :blank)
+    assert_not email.errors.of_kind?(:email, :invalid)
+  end
+
   test "queries return typed objects" do
     assert_instance_of Entry::Phone, entries(:phone)
     assert_instance_of Entry::Note, entries(:note)
     assert_instance_of Entry::Birthday, entries(:ada_birthday)
+    assert_instance_of Entry::Email, entries(:email)
   end
 
   test "birthday validates entry_date presence" do
@@ -108,9 +132,10 @@ class EntryTest < ActiveSupport::TestCase
   test "friend.entries includes all types" do
     entries = friends(:ada).entries
 
-    assert_equal 2, entries.size
+    assert_equal 3, entries.size
     assert_includes entries.map(&:type), "Entry::Phone"
     assert_includes entries.map(&:type), "Entry::Birthday"
+    assert_includes entries.map(&:type), "Entry::Email"
   end
 
   test "entry changes touch the friend" do

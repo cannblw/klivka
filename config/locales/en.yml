@@ -6,6 +6,8 @@ en:
       user:
         email_address: "Email address"
         password: "Password"
+      entry/email:
+        email: "Email"
     errors:
       models:
         entry/birthday:
@@ -43,9 +45,15 @@ en:
       phone: "Phone"
       note: "Note"
       birthday: "Birthday"
+      email: "Email"
     phone_number_placeholder: "Phone number"
     phone_label_placeholder: "Label (optional)"
+    email_address_placeholder: "Email address"
+    email_label_placeholder: "Label (optional)"
+    email_field_label: "Email"
+    email_label_field_label: "Email label (optional)"
     copy: "Copy"
+    copy_email: "Copy email address"
     note_placeholder: "Write a note..."
     age: "years old"
     added_on: "Added on %{date}"
