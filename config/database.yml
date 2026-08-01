@@ -10,7 +10,7 @@ default: &default
 
 development:
   <<: *default
-  database: <%= ENV["DB_ADAPTER"] == "postgresql" ? "friend_crm_dev" : "storage/development.sqlite3" %>
+  database: <%= ENV["DB_ADAPTER"] == "postgresql" ? "klivka_dev" : "storage/development.sqlite3" %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 # Warning: The database defined as "test" will be erased and
@@ -18,13 +18,13 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: <%= ENV["DB_ADAPTER"] == "postgresql" ? "friend_crm_test" : "storage/test.sqlite3" %>
+  database: <%= ENV["DB_ADAPTER"] == "postgresql" ? "klivka_test" : "storage/test.sqlite3" %>
   pool: 5
 
 production:
   primary:
     <<: *default
-    database: <%= ENV["DB_ADAPTER"] == "postgresql" ? ENV.fetch("DB_NAME", "friend_crm") : "storage/production.sqlite3" %>
+    database: <%= ENV["DB_ADAPTER"] == "postgresql" ? ENV.fetch("DB_NAME", "klivka") : "storage/production.sqlite3" %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   cache:
     <<: *default

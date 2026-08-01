@@ -1,4 +1,4 @@
-# Friend CRM
+# Klivka
 
 A low-friction personal CRM to keep track of your friends.
 
@@ -54,7 +54,7 @@ DB_ADAPTER=postgresql
 DB_HOST=localhost
 DB_USERNAME=postgres
 DB_PASSWORD=postgres
-DB_NAME=friend_crm
+DB_NAME=klivka
 ```
 
 ## License
