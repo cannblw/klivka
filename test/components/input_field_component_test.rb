@@ -12,6 +12,10 @@ class InputFieldComponentTest < ViewComponent::TestCase
       tag(:password, options)
     end
 
+    def search_field(field, **options)
+      tag(:search, options)
+    end
+
     def text_field(field, **options)
       tag(:text, options)
     end
@@ -42,6 +46,13 @@ class InputFieldComponentTest < ViewComponent::TestCase
       maxlength: 72)
 
     assert_selector "input[type='password'][maxlength='72']"
+  end
+
+  test "renders a search field" do
+    render_inline InputFieldComponent.new(FakeForm.new, :query, type: :search,
+      placeholder: "Search")
+
+    assert_selector "input[type='search'][placeholder='Search']"
   end
 
   test "appends extra classes" do
