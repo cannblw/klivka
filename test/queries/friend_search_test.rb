@@ -8,9 +8,9 @@ class FriendSearchTest < ActiveSupport::TestCase
   end
 
   test "only searches the given user's friends" do
-    Friend.create!(user: users(:two), name: "Other")
+    Friend.create!(user: users(:two), name: "Bob")
 
-    assert_empty FriendSearch.call(@user, "Other")
+    assert_empty FriendSearch.call(@user, "Bob")
   end
 
   test "ranks exact names before prefix matches" do

@@ -52,7 +52,7 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index only lists the current user's friends" do
-    get root_url
+    get root_url, params: { query: "ada" }
 
     assert_response :success
     assert_select "input[type='search'][value='ada']"
