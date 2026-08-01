@@ -55,6 +55,29 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "main", { text: /Bob Ross/, count: 0 }
   end
 
+  test "index searches the current user's friends" do
+    get root_url, params: { query: "ada" }
+
+    assert_response :success
+    assert_select "main", /Ada Lovelace/
+    assert_select "main", { text: /Grace Hopper/, count: 0 }
+  end
+
+  test "index does not return another user's friend in search results" do
+    get root_url, params: { query: "bob" }
+
+    assert_response :success
+    assert_select "main", { text: /Bob Ross/, count: 0 }
+  end
+
+  test "index returns no friends for a query with no matches" do
+    get root_url, params: { query: "zzzz" }
+
+    assert_response :success
+    assert_select "main", { text: /Ada Lovelace/, count: 0 }
+    assert_select "main", { text: /Grace Hopper/, count: 0 }
+  end
+
   test "show returns 404 for another user's friend" do
     get friend_url(friends(:bob))
 

@@ -1,6 +1,6 @@
 class FriendsController < ApplicationController
   def index
-    @friends = Current.user.friends.order(:name)
+    @friends = FriendSearch.call(Current.user, params[:query])
     @friend = Friend.new
   end
 
