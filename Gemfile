@@ -74,4 +74,4 @@ gem "rails-i18n", "~> 8.1"
 
 gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
 
-gem "annotaterb", "~> 4.23", group: :development
+gem "annotaterb", "~> 4.24", group: :development
