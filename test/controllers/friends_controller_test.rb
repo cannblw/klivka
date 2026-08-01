@@ -15,6 +15,10 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "Friends"
+    assert_select "form[data-controller='search'][data-turbo-frame='friends_grid']"
+    assert_select "form[data-search-delay-value='#{Rails.application.config.x.friend_search_debounce_milliseconds}']"
+    assert_select "input[type='search'][name='query']"
+    assert_select "turbo-frame#friends_grid"
     assert_select "main", /Ada Lovelace/
     assert_select "main", /Grace Hopper/
   end
@@ -51,6 +55,7 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     get root_url
 
     assert_response :success
+    assert_select "input[type='search'][value='ada']"
     assert_select "main", /Ada Lovelace/
     assert_select "main", { text: /Bob Ross/, count: 0 }
   end
@@ -74,6 +79,7 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     get root_url, params: { query: "zzzz" }
 
     assert_response :success
+    assert_select "main", /No friends matching 'zzzz'/
     assert_select "main", { text: /Ada Lovelace/, count: 0 }
     assert_select "main", { text: /Grace Hopper/, count: 0 }
   end

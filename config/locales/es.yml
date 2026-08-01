@@ -88,6 +88,9 @@ es:
       title: "Amigos"
       heading: "Amigos"
       add_friend: "Añadir amigo"
+      search_label: "Buscar amigos"
+      search_placeholder: "Buscar amigos..."
+      no_results: "Ningún amigo coincide con '%{query}'"
       modal:
         heading: "Añade un amigo"
         hint: "Solo necesitas un nombre."

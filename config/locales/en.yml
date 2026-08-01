@@ -88,6 +88,9 @@ en:
       title: "Friends"
       heading: "Friends"
       add_friend: "Add friend"
+      search_label: "Search friends"
+      search_placeholder: "Search friends..."
+      no_results: "No friends matching '%{query}'"
       modal:
         heading: "Add a friend"
         hint: "All you need is a name."

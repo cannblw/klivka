@@ -24,6 +24,11 @@ module FriendCrm
     config.x.friend_search_max_results = Integer(ENV.fetch("FRIEND_SEARCH_MAX_RESULTS", "50"), 10)
     raise ArgumentError, "FRIEND_SEARCH_MAX_RESULTS must be positive" unless config.x.friend_search_max_results.positive?
 
+    # This is how long the user must pause typing before the search runs.
+    # The delay keeps rapid keystrokes from sending a request for every character.
+    config.x.friend_search_debounce_milliseconds = Integer(ENV.fetch("FRIEND_SEARCH_DEBOUNCE_MILLISECONDS", "100"), 10)
+    raise ArgumentError, "FRIEND_SEARCH_DEBOUNCE_MILLISECONDS must be positive" unless config.x.friend_search_debounce_milliseconds.positive?
+
     # Optional email confirmation for registrations; see .env.example
     config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
 

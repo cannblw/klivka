@@ -34,13 +34,37 @@
   </dialog>
 </div>
 
-<% if @friends.any? %>
-  <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
-    <%= render FriendCardComponent.with_collection(@friends) %>
-  </div>
-<% else %>
+<div class="mt-8 rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800/80 sm:p-6">
+  <%= form_with url: root_path, method: :get,
+        data: {
+          controller: "search",
+          turbo_frame: "friends_grid",
+          search_delay_value: Rails.application.config.x.friend_search_debounce_milliseconds
+        },
+        class: "w-full" do |form| %>
+    <%= render InputFieldComponent.new(form, :query, type: :search,
+          value: params[:query],
+          placeholder: t(".search_placeholder"),
+          autocomplete: "off",
+          aria: { label: t(".search_label") },
+          data: { action: "input->search#debounce" },
+          class: "w-full rounded-xl !border-amber-300 px-4 py-3 text-base shadow-inner focus:!border-amber-500 dark:!border-amber-700 dark:focus:!border-amber-500") %>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "friends_grid" do %>
+  <% if @friends.any? %>
+    <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+      <%= render FriendCardComponent.with_collection(@friends) %>
+    </div>
+  <% elsif params[:query].present? %>
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
-    <p class="text-lg font-medium"><%= t(".empty.heading") %></p>
-    <p class="mt-1 text-sm"><%= t(".empty.hint") %></p>
-  </div>
+      <p class="text-lg font-medium"><%= t(".no_results", query: params[:query]) %></p>
+    </div>
+  <% else %>
+    <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
+      <p class="text-lg font-medium"><%= t(".empty.heading") %></p>
+      <p class="mt-1 text-sm"><%= t(".empty.hint") %></p>
+    </div>
+  <% end %>
 <% end %>
