@@ -68,7 +68,7 @@ en:
 
   contact_actions:
     title: "Contact methods"
-    quick_actions: "Quick contact actions"
+    heading: "Contact actions"
     view_all: "View all contact methods (%{count})"
     close: "Close"
     phone: "Call %{value}"

@@ -68,7 +68,7 @@ es:
 
   contact_actions:
     title: "Métodos de contacto"
-    quick_actions: "Acciones rápidas de contacto"
+    heading: "Acciones de contacto"
     view_all: "Ver todos los métodos de contacto (%{count})"
     close: "Cerrar"
     phone: "Llamar a %{value}"

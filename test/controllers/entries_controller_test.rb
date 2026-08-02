@@ -96,11 +96,13 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
   test "update normalizes an email and renders its mail link" do
     patch friend_entry_url(friends(:ada), entries(:email)),
       params: { entry: { content: { email: " NEW@EXAMPLE.COM ", label: " Personal " } } },
-      headers: { "Turbo-Frame" => "true" }
+      as: :turbo_stream
 
     assert_response :success
     assert_equal "new@example.com", entries(:email).reload.email
     assert_equal "Personal", entries(:email).label
+    assert_select "turbo-stream[action='replace'][target='#{ActionView::RecordIdentifier.dom_id(entries(:email))}']"
+    assert_select "turbo-stream[action='replace'][target='friend_contact_actions']"
     assert_select "a[href='mailto:new@example.com']", text: "new@example.com"
   end
 
@@ -131,6 +133,8 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
+    assert_select "turbo-stream[action='remove'][target='#{ActionView::RecordIdentifier.dom_id(entry)}']"
+    assert_select "turbo-stream[action='replace'][target='friend_contact_actions']"
   end
 
   test "cross-user returns 404 for edit" do

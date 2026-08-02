@@ -1,4 +1,5 @@
 class FriendContactActionsComponent < ViewComponent::Base
+  DOM_ID = "friend_contact_actions"
   INITIAL_ACTION_LIMIT = 2
 
   def initialize(entries:)
@@ -43,10 +44,6 @@ class FriendContactActionsComponent < ViewComponent::Base
 
   def label_for(entry)
     entry.content&.dig("label")
-  end
-
-  def display_value_for(entry)
-    label_for(entry).presence || value_for(entry)
   end
 
   def href_for(entry)
