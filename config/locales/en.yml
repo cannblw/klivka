@@ -66,6 +66,16 @@ en:
     destroy:
       deleted: "Entry removed."
 
+  contact_actions:
+    title: "Contact methods"
+    quick_actions: "Quick contact actions"
+    view_all: "View all contact methods (%{count})"
+    close: "Close"
+    phone: "Call %{value}"
+    email: "Email %{value}"
+    copy_phone: "Copy phone number %{value}"
+    copy_email: "Copy email %{value}"
+
   birthdays:
     index:
       title: "Birthdays"
