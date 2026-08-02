@@ -18,7 +18,7 @@ class FriendSearch
   MINIMUM_FUZZY_QUERY_LENGTH = 2
   # Short queries need stricter thresholds because a few shared characters otherwise produce noisy matches.
   TWO_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.85
-  THREE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.72
+  THREE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.78
   FOUR_OR_MORE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.65
 
   def self.call(user, query, sort: DEFAULT_SORT)
