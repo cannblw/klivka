@@ -1,0 +1,4 @@
+<% if entry.label.present? %>
+  <span class="mr-2 rounded-full bg-stone-200 px-2 py-0.5 text-xs text-stone-600 dark:bg-stone-700 dark:text-stone-300"><%= entry.label %></span>
+<% end %>
+<span class="text-sm"><%= l(entry.entry_date, format: :long) if entry.entry_date %></span>

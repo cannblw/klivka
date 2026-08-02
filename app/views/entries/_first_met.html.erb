@@ -1,0 +1,4 @@
+<span class="text-sm"><%= l(entry.entry_date, format: :long) if entry.entry_date %></span>
+<% if entry.note.present? %>
+  <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= entry.note %></p>
+<% end %>

@@ -122,6 +122,20 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#contact-actions-heading", text: "Contact actions"
     assert_select "[aria-labelledby='contact-actions-heading'] a[href='tel:555-1234'] .break-all", text: "555-1234"
     assert_select "[aria-labelledby='contact-actions-heading'] a[href='mailto:ada@example.com']"
+    assert_select "#entries-feed turbo-frame", count: 3
+    assert_select "#entries-feed", /Phone/
+    assert_select "#entries-feed", /Email/
+    assert_select "#entries-feed", /Birthday/
+  end
+
+  test "show omits the empty entries feed for a friend with only a name" do
+    friend = Current.user.friends.create!(name: "Name Only")
+
+    get friend_url(friend)
+
+    assert_response :success
+    assert_select "#entries-feed", count: 0
+    assert_select "main", { text: /No entries yet/, count: 0 }
   end
 
   test "update renames the friend" do

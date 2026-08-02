@@ -1,0 +1,27 @@
+<%= helpers.turbo_frame_tag helpers.dom_id(entry), data: { entry_sortable_target: "item", entry_id: entry.id } do %>
+  <div class="group flex items-center justify-between rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800">
+    <button type="button" draggable="true"
+            data-entry-sortable-target="handle"
+            class="mr-3 shrink-0 cursor-grab touch-none text-stone-300 hover:text-stone-500 active:cursor-grabbing dark:text-stone-600 dark:hover:text-stone-400"
+            aria-label="<%= t("entries.drag_handle") %>">
+      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <circle cx="7" cy="5" r="1.25"/><circle cx="13" cy="5" r="1.25"/>
+        <circle cx="7" cy="10" r="1.25"/><circle cx="13" cy="10" r="1.25"/>
+        <circle cx="7" cy="15" r="1.25"/><circle cx="13" cy="15" r="1.25"/>
+      </svg>
+    </button>
+    <div class="min-w-0 flex-1">
+      <p class="mb-1 text-xs font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500"><%= t("entries.kinds.#{kind_key}") %></p>
+      <%= render "entries/#{kind_key}", entry: entry %>
+      <p class="mt-1 text-xs text-stone-400 dark:text-stone-500"><%= t("entries.added_on", date: l(entry.created_at.to_date, format: :long)) %></p>
+    </div>
+    <%= link_to edit_friend_entry_path(friend_id: friend.id, id: entry.id),
+          data: { turbo_frame: helpers.dom_id(entry) },
+          class: "ml-3 shrink-0 text-stone-400 opacity-0 group-hover:opacity-100 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 transition",
+          aria: { label: t("entries.edit_label") } do %>
+      <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"/>
+      </svg>
+    <% end %>
+  </div>
+<% end %>

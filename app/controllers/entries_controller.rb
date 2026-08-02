@@ -33,11 +33,11 @@ class EntriesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(dom_id(@entry), partial: "entries/card", locals: { entry: @entry, friend: @friend }),
+            turbo_stream.replace(dom_id(@entry), render_to_string(EntryCardComponent.new(entry: @entry, friend: @friend))),
             contact_actions_stream
           ]
         end
-        format.html { render partial: "entries/card", locals: { entry: @entry, friend: @friend } }
+        format.html { render EntryCardComponent.new(entry: @entry, friend: @friend) }
       end
     else
       render :edit, status: :unprocessable_entity
@@ -58,6 +58,29 @@ class EntriesController < ApplicationController
     end
   end
 
+  def reorder
+    @friend = Current.user.friends.find(params[:friend_id])
+    requested_ids = params.expect(entry_ids: []).map(&:to_i)
+    entries = @friend.entries.index_by(&:id)
+
+    unless requested_ids.length == entries.length &&
+        requested_ids.uniq.length == entries.length &&
+        requested_ids.all? { |entry_id| entries.key?(entry_id) }
+      return render json: { error: t("entries.reorder.invalid_order") }, status: :unprocessable_entity
+    end
+
+    Entry.transaction do
+      requested_ids.each_with_index do |entry_id, position|
+        entries.fetch(entry_id).update_columns(position: position, updated_at: Time.current)
+      end
+      @friend.touch
+    end
+
+    head :no_content
+  rescue ActionController::ParameterMissing
+    render json: { error: t("entries.reorder.invalid_order") }, status: :unprocessable_entity
+  end
+
   private
 
   def set_friend
@@ -71,7 +94,7 @@ class EntriesController < ApplicationController
   def contact_actions_stream
     turbo_stream.replace(
       FriendContactActionsComponent::DOM_ID,
-      render_to_string(FriendContactActionsComponent.new(entries: @friend.entries.order(created_at: :desc, id: :desc)))
+      render_to_string(FriendContactActionsComponent.new(entries: @friend.entries.ordered))
     )
   end
 

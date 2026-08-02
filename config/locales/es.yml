@@ -58,7 +58,10 @@ es:
       phone: "Teléfono"
       note: "Nota"
       birthday: "Cumpleaños"
+      date: "Fecha"
       email: "Correo electrónico"
+      first_met: "Primer encuentro"
+      gift_list: "Ideas de regalos"
     phone_number_placeholder: "Número de teléfono"
     phone_label_placeholder: "Etiqueta (opcional)"
     email_address_placeholder: "Correo electrónico"
@@ -72,6 +75,11 @@ es:
     added_on: "Añadido el %{date}"
     empty_title: "Aún no hay entradas"
     empty_hint: "Añade tu primera entrada para empezar."
+    drag_handle: "Arrastra la entrada para reordenarla"
+    reorder:
+      invalid_order: "No se ha podido guardar el orden de las entradas."
+    gift_list_untitled: "Ideas de regalos"
+    gift_list_item_status: "%{text}"
     create:
       created: "Entrada añadida."
     update:

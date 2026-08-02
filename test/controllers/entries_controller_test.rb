@@ -20,6 +20,76 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     entry = friends(:ada).entries.last
     assert_equal "Entry::Phone", entry.type
     assert_equal "555-9876", entry.content["number"]
+    assert_equal entry, friends(:ada).entries.ordered.first
+  end
+
+  test "reorder saves the requested entry order" do
+    ordered_ids = [ entries(:ada_birthday).id, entries(:email).id, entries(:phone).id ]
+
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: ordered_ids },
+      as: :json
+
+    assert_response :no_content
+    assert_equal ordered_ids, friends(:ada).entries.ordered.pluck(:id)
+  end
+
+  test "reorder rejects an incomplete order without changing anything" do
+    original_ids = friends(:ada).entries.ordered.pluck(:id)
+
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: [ entries(:phone).id, entries(:email).id ] },
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal original_ids, friends(:ada).entries.ordered.pluck(:id)
+  end
+
+  test "reorder rejects a missing order" do
+    patch reorder_friend_entries_url(friends(:ada)), params: {}, as: :json
+
+    assert_response :unprocessable_entity
+  end
+
+  test "reorder rejects a duplicate order without changing anything" do
+    original_ids = friends(:ada).entries.ordered.pluck(:id)
+
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: [ entries(:phone).id, entries(:phone).id, entries(:ada_birthday).id ] },
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal original_ids, friends(:ada).entries.ordered.pluck(:id)
+  end
+
+  test "reorder rejects an entry belonging to another friend" do
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: [ entries(:phone).id, entries(:email).id, entries(:note).id ] },
+      as: :json
+
+    assert_response :unprocessable_entity
+  end
+
+  test "reorder returns 404 for another user's friend" do
+    patch reorder_friend_entries_url(friends(:bob)), params: { entry_ids: [] }, as: :json
+
+    assert_response :not_found
+  end
+
+  test "generic date entries render in the profile feed" do
+    post friend_entries_url(friends(:ada)),
+      params: {
+        entry: {
+          type: "Entry::Date",
+          entry_date: "2020-01-02",
+          content: { label: "Dad's first iguana" }
+        }
+      }
+
+    assert_redirected_to friend_url(friends(:ada))
+    follow_redirect!
+    assert_select "#entries-feed", /Date/
+    assert_select "#entries-feed", /Dad's first iguana/
   end
 
   test "create adds a normalized email entry" do

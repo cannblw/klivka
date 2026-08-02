@@ -58,7 +58,10 @@ en:
       phone: "Phone"
       note: "Note"
       birthday: "Birthday"
+      date: "Date"
       email: "Email"
+      first_met: "First met"
+      gift_list: "Gift ideas"
     phone_number_placeholder: "Phone number"
     phone_label_placeholder: "Label (optional)"
     email_address_placeholder: "Email address"
@@ -72,6 +75,11 @@ en:
     added_on: "Added on %{date}"
     empty_title: "No entries yet"
     empty_hint: "Add your first entry to get started."
+    drag_handle: "Drag entry to reorder"
+    reorder:
+      invalid_order: "The entry order could not be saved."
+    gift_list_untitled: "Gift ideas"
+    gift_list_item_status: "%{text}"
     create:
       created: "Entry added."
     update:

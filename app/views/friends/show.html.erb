@@ -2,8 +2,7 @@
 
 <%= link_to t(".back"), root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
 
-<% ordered_entries = @friend.entries.order(created_at: :desc, id: :desc).to_a %>
-<% entries = ordered_entries.group_by(&:type) %>
+<% ordered_entries = @friend.entries.ordered.to_a %>
 
 <div data-controller="toggle" class="mt-4">
   <div class="flex flex-wrap items-center justify-between gap-4">
@@ -70,24 +69,17 @@
     </div>
   </div>
 
-  <% if entries.any? %>
-    <div class="mt-6 space-y-6">
-      <% entries.each do |type, group| %>
-        <section>
-          <h2 class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t("entries.kinds.#{type.demodulize.downcase}") %></h2>
-          <div class="mt-2 space-y-2">
-            <% group.each do |entry| %>
-              <%= render "entries/card", entry: entry, friend: @friend %>
-            <% end %>
-          </div>
-        </section>
-      <% end %>
-    </div>
-  <% else %>
-    <div data-action="click->toggle#toggle" data-toggle-target="content"
-         class="mt-12 cursor-pointer rounded-lg border-2 border-dashed border-stone-300 p-8 text-center transition hover:border-stone-400 dark:border-stone-600 dark:hover:border-stone-500">
-      <p class="text-sm font-medium text-stone-600 dark:text-stone-300"><%= t("entries.empty_title") %></p>
-      <p class="mt-1 text-sm text-stone-400 dark:text-stone-500"><%= t("entries.empty_hint") %></p>
+  <% if ordered_entries.any? %>
+    <div id="entries-feed"
+         data-controller="entry-sortable"
+         data-entry-sortable-reorder-url-value="<%= reorder_friend_entries_path(@friend) %>"
+         data-entry-sortable-error-message-value="<%= t("entries.reorder.invalid_order") %>">
+      <div class="mt-6 space-y-2">
+        <% ordered_entries.each do |entry| %>
+          <%= render EntryCardComponent.new(entry: entry, friend: @friend) %>
+        <% end %>
+      </div>
+      <p data-entry-sortable-target="status" class="sr-only" aria-live="polite"></p>
     </div>
   <% end %>
 </div>
