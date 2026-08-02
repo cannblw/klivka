@@ -8,12 +8,25 @@ en:
         password: "Password"
       entry/email:
         email: "Email"
+      entry/date:
+        label: "Label"
+      entry/first_met:
+        friend_id: "First met"
     errors:
       models:
         entry/birthday:
           attributes:
             friend_id:
               one_birthday_per_friend: "already has a birthday"
+        entry/first_met:
+          attributes:
+            friend_id:
+              one_first_met_per_friend: "already has a first-meet date"
+        entry/gift_list:
+          attributes:
+            items:
+              blank: "must include at least one idea"
+              invalid: "item %{index} must have text"
 
   auth:
     rate_limited: "Try again later."

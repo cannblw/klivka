@@ -12,8 +12,10 @@
 #
 # Indexes
 #
-#  index_entries_on_entry_date  (entry_date)
-#  index_entries_on_friend_id   (friend_id)
+#  index_entries_on_entry_date               (entry_date)
+#  index_entries_on_friend_id                (friend_id)
+#  index_entries_on_friend_id_for_birthday   (friend_id) UNIQUE WHERE type = 'Entry::Birthday'
+#  index_entries_on_friend_id_for_first_met  (friend_id) UNIQUE WHERE type = 'Entry::FirstMet'
 #
 # Foreign Keys
 #
@@ -28,10 +30,17 @@ class Entry < ApplicationRecord
   belongs_to :friend, touch: true
 
   validates :type, presence: true
+  validates :entry_date, absence: true, unless: :date_entry?
 
   def self.creatable_type(type)
     return unless CREATABLE_TYPES.include?(type)
 
     type.constantize
+  end
+
+  private
+
+  def date_entry?
+    is_a?(Entry::Date)
   end
 end

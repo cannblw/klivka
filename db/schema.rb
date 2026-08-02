@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_172319) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_02_090100) do
   create_table "entries", force: :cascade do |t|
     t.json "content"
     t.datetime "created_at", null: false
@@ -20,6 +20,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_172319) do
     t.datetime "updated_at", null: false
     t.index ["entry_date"], name: "index_entries_on_entry_date"
     t.index ["friend_id"], name: "index_entries_on_friend_id"
+    t.index ["friend_id"], name: "index_entries_on_friend_id_for_birthday", unique: true, where: "type = 'Entry::Birthday'"
+    t.index ["friend_id"], name: "index_entries_on_friend_id_for_first_met", unique: true, where: "type = 'Entry::FirstMet'"
+    t.check_constraint "(type IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NOT NULL) OR (type NOT IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NULL)", name: "entries_date_types_require_entry_date"
   end
 
   create_table "friends", force: :cascade do |t|

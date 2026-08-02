@@ -14,8 +14,10 @@ require "test_helper"
 #
 # Indexes
 #
-#  index_entries_on_entry_date  (entry_date)
-#  index_entries_on_friend_id   (friend_id)
+#  index_entries_on_entry_date               (entry_date)
+#  index_entries_on_friend_id                (friend_id)
+#  index_entries_on_friend_id_for_birthday   (friend_id) UNIQUE WHERE type = 'Entry::Birthday'
+#  index_entries_on_friend_id_for_first_met  (friend_id) UNIQUE WHERE type = 'Entry::FirstMet'
 #
 # Foreign Keys
 #
@@ -58,6 +60,11 @@ class EntryTest < ActiveSupport::TestCase
     assert_instance_of Entry::Email, entries(:email)
   end
 
+  test "birthday is a date entry" do
+    assert_operator Entry::Birthday, :<, Entry::Date
+    assert_kind_of Entry::Date, entries(:ada_birthday)
+  end
+
   test "birthday validates entry_date presence" do
     birthday = Entry::Birthday.new(friend: friends(:ada), entry_date: nil)
 
@@ -78,6 +85,134 @@ class EntryTest < ActiveSupport::TestCase
 
     assert_not date_entry.valid?
     assert date_entry.errors.of_kind?(:entry_date, :blank)
+  end
+
+  test "generic dates are creatable and normalize their optional label" do
+    date_entry = Entry::Date.new(
+      friend: friends(:ada),
+      entry_date: Date.new(2020, 1, 2),
+      content: { label: "  Dad's first iguana  " }
+    )
+
+    assert_equal Entry::Date, Entry.creatable_type("Entry::Date")
+    assert date_entry.valid?
+    assert_equal "Dad's first iguana", date_entry.label
+  end
+
+  test "date-bearing entry types require a date in the database" do
+    timestamp = Time.current
+
+    assert_raises ActiveRecord::StatementInvalid do
+      Entry.transaction(requires_new: true) do
+        Entry.insert_all!([ {
+          friend_id: friends(:ada).id,
+          type: "Entry::Date",
+          entry_date: nil,
+          content: {},
+          created_at: timestamp,
+          updated_at: timestamp
+        } ])
+      end
+    end
+  end
+
+  test "non-date entry types reject a date in the model" do
+    note = Entry::Note.new(
+      friend: friends(:ada),
+      entry_date: Date.current,
+      content: { text: "A note" }
+    )
+
+    assert_not note.valid?
+    assert note.errors.of_kind?(:entry_date, :present)
+  end
+
+  test "non-date entry types reject a date in the database" do
+    timestamp = Time.current
+
+    assert_raises ActiveRecord::StatementInvalid do
+      Entry.transaction(requires_new: true) do
+        Entry.insert_all!([ {
+          friend_id: friends(:ada).id,
+          type: "Entry::Note",
+          entry_date: Date.current,
+          content: { text: "A note" },
+          created_at: timestamp,
+          updated_at: timestamp
+        } ])
+      end
+    end
+  end
+
+  test "first met requires a date and allows an optional normalized note" do
+    first_met = Entry::FirstMet.new(
+      friend: friends(:ada),
+      entry_date: Date.new(2020, 1, 2),
+      content: { note: "  At the market  " }
+    )
+
+    assert first_met.valid?
+    assert_equal "At the market", first_met.note
+  end
+
+  test "first met enforces one per friend" do
+    Entry::FirstMet.create!(friend: friends(:ada), entry_date: Date.current)
+    duplicate = Entry::FirstMet.new(friend: friends(:ada), entry_date: Date.current)
+
+    assert_not duplicate.valid?
+    assert duplicate.errors.of_kind?(:friend_id, :taken)
+  end
+
+  test "gift list normalizes items and generates missing ids" do
+    gift_list = Entry::GiftList.new(
+      friend: friends(:ada),
+      content: {
+        title: "  Birthday ideas ",
+        items: [ { text: "  A book ", checked: "1" } ]
+      }
+    )
+
+    assert gift_list.valid?
+    assert_equal "Birthday ideas", gift_list.title
+    assert_equal "A book", gift_list.items.first["text"]
+    assert_equal true, gift_list.items.first["checked"]
+    assert gift_list.items.first["id"].present?
+  end
+
+  test "gift list preserves unique ids and replaces duplicate ids" do
+    gift_list = Entry::GiftList.new(
+      friend: friends(:ada),
+      content: {
+        items: [
+          { id: "idea-1", text: "A book" },
+          { id: "idea-1", text: "A plant" }
+        ]
+      }
+    )
+
+    assert gift_list.valid?
+    assert_equal "idea-1", gift_list.items.first["id"]
+    assert_not_equal gift_list.items.first["id"], gift_list.items.second["id"]
+    assert_equal false, gift_list.items.first["checked"]
+    assert_equal false, gift_list.items.second["checked"]
+
+    normalized_ids = gift_list.items.pluck("id")
+    assert gift_list.valid?
+    assert_equal normalized_ids, gift_list.items.pluck("id")
+  end
+
+  test "gift list requires nonblank items" do
+    gift_list = Entry::GiftList.new(friend: friends(:ada), content: { items: [ { text: " " } ] })
+
+    assert_not gift_list.valid?
+    assert gift_list.errors.of_kind?(:items, :invalid)
+  end
+
+  test "gift list requires at least one item" do
+    gift_list = Entry::GiftList.new(friend: friends(:ada), content: { items: [] })
+
+    assert_not gift_list.valid?
+    assert gift_list.errors.of_kind?(:items, :blank)
   end
 
   test "age returns years after birthday has passed this year" do

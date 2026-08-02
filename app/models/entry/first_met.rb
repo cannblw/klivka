@@ -21,24 +21,16 @@
 #
 #  friend_id  (friend_id => friends.id)
 #
-class Entry::Birthday < Entry::Date
-  validates :friend_id, uniqueness: { message: :one_birthday_per_friend }
+class Entry::FirstMet < Entry::Date
+  store_accessor :content, :note
 
-  scope :for_month, ->(date = ::Date.current) {
-    month = date.month
-    where(adapter_sql(
-      sqlite: "CAST(strftime('%m', entry_date) AS INTEGER) = ?",
-      postgres: "EXTRACT(MONTH FROM entry_date) = ?"
-    ), month)
-  }
+  before_validation :normalize_note
 
-  def age(on: ::Date.current)
-    return nil unless entry_date
+  validates :friend_id, uniqueness: { message: :one_first_met_per_friend }
 
-    years = on.year - entry_date.year
-    past = (on.month > entry_date.month) ||
-           (on.month == entry_date.month && on.day >= entry_date.day)
-    years -= 1 unless past
-    years
+  private
+
+  def normalize_note
+    self.note = note.to_s.strip.presence if note
   end
 end

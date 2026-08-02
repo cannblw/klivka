@@ -20,5 +20,15 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::Date < Entry
+  store_accessor :content, :label
+
+  before_validation :normalize_label
+
   validates :entry_date, presence: true
+
+  private
+
+  def normalize_label
+    self.label = label.to_s.strip.presence if label
+  end
 end

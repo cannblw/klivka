@@ -8,12 +8,25 @@ es:
         password: "Contraseña"
       entry/email:
         email: "Correo electrónico"
+      entry/date:
+        label: "Etiqueta"
+      entry/first_met:
+        friend_id: "Primera vez que os conocisteis"
     errors:
       models:
         entry/birthday:
           attributes:
             friend_id:
               one_birthday_per_friend: "ya tiene un cumpleaños"
+        entry/first_met:
+          attributes:
+            friend_id:
+              one_first_met_per_friend: "ya tiene una fecha de primer encuentro"
+        entry/gift_list:
+          attributes:
+            items:
+              blank: "debe incluir al menos una idea"
+              invalid: "el elemento %{index} debe tener texto"
 
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."
