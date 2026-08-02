@@ -7,7 +7,7 @@ class FriendCardComponentTest < ViewComponent::TestCase
 
     assert_text "Ada Lovelace"
     assert_text "AL"
-    assert_selector "a[href='#{Rails.application.routes.url_helpers.friend_path(friend)}']"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.friend_path(friend)}'][data-turbo-frame='_top']"
   end
 
   test "single-word names get a single initial" do
