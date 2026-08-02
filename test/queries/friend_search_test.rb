@@ -46,6 +46,49 @@ class FriendSearchTest < ActiveSupport::TestCase
     assert_equal [ "John", "Johnny Appleseed" ], FriendSearch.call(@user, "john").map(&:name)
   end
 
+  test "ranks matches by relevance before name" do
+    Friend.create!(user: @user, name: "Adelina Walker I")
+    Friend.create!(user: @user, name: "Adolph Rempel")
+    Friend.create!(user: @user, name: "Amb. Robby Funk")
+    Friend.create!(user: @user, name: "Benjamin Nienow VM")
+    Friend.create!(user: @user, name: "Archie Huels")
+    Friend.create!(user: @user, name: "Carrol Cole")
+    Friend.create!(user: @user, name: "Carter Kirlin")
+
+    assert_equal "Adolph Rempel", FriendSearch.call(@user, "adolp").first.name
+    assert_equal "Benjamin Nienow VM", FriendSearch.call(@user, "jam").first.name
+    assert_equal [ "Carrol Cole", "Carter Kirlin" ], FriendSearch.call(@user, "car").first(2).map(&:name)
+  end
+
+  test "uses the selected sort only to break relevance ties" do
+    exact = Friend.create!(user: @user, name: "Contact")
+    prefix = Friend.create!(user: @user, name: "Contact Person")
+    now = Time.current
+
+    exact.update_columns(created_at: now, updated_at: now)
+    prefix.update_columns(created_at: now + 2.minutes, updated_at: now + 2.minutes)
+
+    %w[recently_added recently_updated].each do |sort|
+      assert_equal [ "Contact", "Contact Person" ], FriendSearch.call(@user, "contact", sort: sort).map(&:name), sort
+    end
+  end
+
+  test "orders each match band ahead of weaker matches" do
+    names = [
+      "John",
+      "Johnny Appleseed",
+      "A Johnathan",
+      "Longjohn Silver",
+      "Jack Oscar Henry Nelson",
+      "Joan"
+    ]
+    names.each { |name| Friend.create!(user: @user, name: name) }
+
+    results = FriendSearch.call(@user, "john").map(&:name)
+
+    names.each_cons(2) { |stronger, weaker| assert_operator results.index(stronger), :<, results.index(weaker) }
+  end
+
   test "matches prefixes on every name token" do
     Friend.create!(user: @user, name: "John Smith")
 
@@ -102,5 +145,16 @@ class FriendSearchTest < ActiveSupport::TestCase
     (maximum_results + 1).times { |index| Friend.create!(user: @user, name: "Alex #{index}") }
 
     assert_equal maximum_results, FriendSearch.call(@user, "alex").size
+  end
+
+  test "applies the result limit after relevance ranking" do
+    maximum_results = Rails.application.config.x.friend_search_max_results
+    maximum_results.times { |index| Friend.create!(user: @user, name: "A John #{index}") }
+    Friend.create!(user: @user, name: "John")
+
+    results = FriendSearch.call(@user, "john")
+
+    assert_equal maximum_results, results.size
+    assert_equal "John", results.first.name
   end
 end

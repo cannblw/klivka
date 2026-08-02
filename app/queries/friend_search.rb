@@ -18,7 +18,7 @@ class FriendSearch
   MINIMUM_FUZZY_QUERY_LENGTH = 2
   # Short queries need stricter thresholds because a few shared characters otherwise produce noisy matches.
   TWO_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.85
-  THREE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.72
+  THREE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.78
   FOUR_OR_MORE_CHARACTER_FUZZY_SIMILARITY_THRESHOLD = 0.65
 
   def self.call(user, query, sort: DEFAULT_SORT)
@@ -35,19 +35,21 @@ class FriendSearch
   def call
     return friends.order(SORTS.fetch(sort)).to_a if query.blank?
 
-    ranked_friend_ids = friends.pluck(:id, :name)
-      .filter_map do |id, name|
+    ranked_friend_ids = friends.order(SORTS.fetch(sort)).pluck(:id, :name)
+      .each_with_index
+      .filter_map do |(id, name), sort_position|
         normalized_name = normalize(name)
         candidate_score = score(normalized_name, normalized_name.split)
-        [ id, normalized_name, candidate_score ] if candidate_score
+        [ id, candidate_score, sort_position ] if candidate_score
       end
+      .sort_by { |id, candidate_score, sort_position| [ -candidate_score, sort_position ] }
+      .first(Rails.application.config.x.friend_search_max_results)
       .map(&:first)
 
     return [] if ranked_friend_ids.empty?
 
-    friends.where(id: ranked_friend_ids)
-      .order(SORTS.fetch(sort))
-      .first(Rails.application.config.x.friend_search_max_results)
+    friends_by_id = friends.where(id: ranked_friend_ids).index_by(&:id)
+    ranked_friend_ids.filter_map { |id| friends_by_id[id] }
   end
 
   private
