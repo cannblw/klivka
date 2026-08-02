@@ -119,6 +119,9 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", /Ada Lovelace/
+    assert_select "#contact-actions-heading", text: "Contact actions"
+    assert_select "[aria-labelledby='contact-actions-heading'] a[href='tel:555-1234'] .break-all", text: "555-1234"
+    assert_select "[aria-labelledby='contact-actions-heading'] a[href='mailto:ada@example.com']"
   end
 
   test "update renames the friend" do

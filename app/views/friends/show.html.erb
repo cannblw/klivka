@@ -2,7 +2,8 @@
 
 <%= link_to t(".back"), root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
 
-<% entries = @friend.entries.order(created_at: :desc).group_by(&:type) %>
+<% ordered_entries = @friend.entries.order(created_at: :desc, id: :desc).to_a %>
+<% entries = ordered_entries.group_by(&:type) %>
 
 <div data-controller="toggle" class="mt-4">
   <div class="flex flex-wrap items-center justify-between gap-4">
@@ -60,6 +61,8 @@
       </div>
     </div>
   </div>
+
+  <%= render FriendContactActionsComponent.new(entries: ordered_entries) %>
 
   <div data-toggle-target="content" class="hidden mt-4">
     <div class="rounded-lg border border-stone-200 bg-stone-50 p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800">

@@ -26,6 +26,11 @@ phone:
   type: Entry::Phone
   content: {"number": "555-1234"}
 
+email:
+  friend: ada
+  type: Entry::Email
+  content: {"email": "ada@example.com", "label": "Work"}
+
 note:
   friend: grace
   type: Entry::Note

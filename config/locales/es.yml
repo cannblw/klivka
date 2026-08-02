@@ -6,6 +6,8 @@ es:
       user:
         email_address: "Correo electrónico"
         password: "Contraseña"
+      entry/email:
+        email: "Correo electrónico"
     errors:
       models:
         entry/birthday:
@@ -43,9 +45,15 @@ es:
       phone: "Teléfono"
       note: "Nota"
       birthday: "Cumpleaños"
+      email: "Correo electrónico"
     phone_number_placeholder: "Número de teléfono"
     phone_label_placeholder: "Etiqueta (opcional)"
+    email_address_placeholder: "Correo electrónico"
+    email_label_placeholder: "Etiqueta (opcional)"
+    email_field_label: "Correo electrónico"
+    email_label_field_label: "Etiqueta del correo electrónico (opcional)"
     copy: "Copiar"
+    copy_email: "Copiar correo electrónico"
     note_placeholder: "Escribe una nota..."
     age: "años"
     added_on: "Añadido el %{date}"
@@ -57,6 +65,16 @@ es:
       updated: "Entrada actualizada."
     destroy:
       deleted: "Entrada eliminada."
+
+  contact_actions:
+    title: "Métodos de contacto"
+    heading: "Acciones de contacto"
+    view_all: "Ver todos los métodos de contacto (%{count})"
+    close: "Cerrar"
+    phone: "Llamar a %{value}"
+    email: "Enviar un correo a %{value}"
+    copy_phone: "Copiar número de teléfono %{value}"
+    copy_email: "Copiar correo electrónico %{value}"
 
   birthdays:
     index:

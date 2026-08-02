@@ -5,9 +5,17 @@ class EntriesController < ApplicationController
 
   def create
     @friend = Current.user.friends.find(params[:friend_id])
-    klass = entry_params[:type]&.constantize || Entry
+    klass = Entry.creatable_type(entry_params[:type])
+
+    unless klass
+      @entry = Entry.new(friend: @friend)
+      @entry.errors.add(:type, entry_params[:type].present? ? :inclusion : :blank)
+      @new_entry = @entry
+      return render "friends/show", status: :unprocessable_entity
+    end
+
     @entry = klass.new(friend: @friend)
-    @entry.assign_attributes(entry_params) if entry_params[:type].present?
+    @entry.assign_attributes(entry_params)
 
     if @entry.save
       redirect_to @friend, notice: t(".created")
@@ -22,7 +30,15 @@ class EntriesController < ApplicationController
 
   def update
     if @entry.update(entry_params_for_update)
-      render partial: "entries/card", locals: { entry: @entry, friend: @friend }
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace(dom_id(@entry), partial: "entries/card", locals: { entry: @entry, friend: @friend }),
+            contact_actions_stream
+          ]
+        end
+        format.html { render partial: "entries/card", locals: { entry: @entry, friend: @friend } }
+      end
     else
       render :edit, status: :unprocessable_entity
     end
@@ -32,7 +48,12 @@ class EntriesController < ApplicationController
     @entry.destroy
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.remove(dom_id(@entry)) }
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.remove(dom_id(@entry)),
+          contact_actions_stream
+        ]
+      end
       format.html { redirect_to @entry.friend, notice: t(".deleted") }
     end
   end
@@ -45,6 +66,13 @@ class EntriesController < ApplicationController
 
   def set_entry
     @entry = @friend.entries.find(params[:id])
+  end
+
+  def contact_actions_stream
+    turbo_stream.replace(
+      FriendContactActionsComponent::DOM_ID,
+      render_to_string(FriendContactActionsComponent.new(entries: @friend.entries.order(created_at: :desc, id: :desc)))
+    )
   end
 
   # Create allows setting the STI type; update locks it

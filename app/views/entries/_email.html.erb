@@ -1,0 +1,19 @@
+<% email = entry.content&.dig("email") %>
+<% label = entry.content&.dig("label") %>
+
+<% if email.present? %>
+  <span class="inline-flex items-center gap-1">
+    <%= mail_to email, email, class: "text-sm font-medium text-amber-700 dark:text-amber-400" %>
+    <button type="button"
+            data-controller="clipboard"
+            data-clipboard-text-value="<%= email %>"
+            data-action="click->clipboard#copy"
+            class="cursor-pointer text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
+            aria-label="<%= t("entries.copy_email") %>">
+      <span class="material-icons" style="font-size:14px">content_copy</span>
+    </button>
+  </span>
+  <% if label.present? %>
+    <span class="ml-2 rounded-full bg-stone-200 px-2 py-0.5 text-xs text-stone-600 dark:bg-stone-700 dark:text-stone-300"><%= label %></span>
+  <% end %>
+<% end %>

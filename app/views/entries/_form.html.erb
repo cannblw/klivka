@@ -12,8 +12,8 @@
   <% else %>
     <fieldset>
       <legend class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t("entries.kind_label") %></legend>
-      <div class="mt-2 flex gap-2">
-        <% [ :phone, :note, :birthday ].each do |kind| %>
+      <div class="mt-2 flex flex-wrap gap-2">
+        <% [ :phone, :note, :birthday, :email ].each do |kind| %>
           <% klass = "Entry::#{kind.to_s.camelize}" %>
           <label class="cursor-pointer select-none rounded-lg border px-4 py-2 text-sm font-medium transition
                         <%= entry.type == klass ? "border-amber-600 bg-amber-50 text-amber-700 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400" : "border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-stone-500" %>">
@@ -25,29 +25,50 @@
           </label>
         <% end %>
       </div>
+      <% entry.errors.full_messages_for(:type).each do |message| %>
+        <p class="mt-1 text-sm text-red-600"><%= message %></p>
+      <% end %>
     </fieldset>
   <% end %>
 
-  <div id="phone-fields" class="space-y-3 <%= "hidden" unless entry.type == "Entry::Phone" %>" data-entry-kind-target="phoneFields">
+  <fieldset id="phone-fields" class="space-y-3 border-0 p-0 <%= "hidden" unless entry.type == "Entry::Phone" %>" data-entry-kind-target="phoneFields" <%= "disabled" unless entry.type == "Entry::Phone" %>>
     <%= text_field_tag "entry[content][number]", entry.content&.dig("number"),
           placeholder: t("entries.phone_number_placeholder"),
           class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
     <%= text_field_tag "entry[content][label]", entry.content&.dig("label"),
           placeholder: t("entries.phone_label_placeholder"),
           class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-  </div>
+  </fieldset>
 
-  <div id="note-fields" class="space-y-3 <%= "hidden" unless entry.type == "Entry::Note" %>" data-entry-kind-target="noteFields">
+  <fieldset id="note-fields" class="space-y-3 border-0 p-0 <%= "hidden" unless entry.type == "Entry::Note" %>" data-entry-kind-target="noteFields" <%= "disabled" unless entry.type == "Entry::Note" %>>
     <%= text_area_tag "entry[content][text]", entry.content&.dig("text"), rows: 3,
           placeholder: t("entries.note_placeholder"),
           class: "w-full resize-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-  </div>
+  </fieldset>
 
-  <div id="birthday-fields" class="space-y-3 <%= "hidden" unless entry.type == "Entry::Birthday" %>" data-entry-kind-target="birthdayFields">
+  <fieldset id="birthday-fields" class="space-y-3 border-0 p-0 <%= "hidden" unless entry.type == "Entry::Birthday" %>" data-entry-kind-target="birthdayFields" <%= "disabled" unless entry.type == "Entry::Birthday" %>>
     <%= form.date_field :entry_date,
           value: entry.entry_date,
           class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-  </div>
+  </fieldset>
+
+  <fieldset id="email-fields" class="space-y-3 border-0 p-0 <%= "hidden" unless entry.type == "Entry::Email" %>" data-entry-kind-target="emailFields" <%= "disabled" unless entry.type == "Entry::Email" %>>
+    <div>
+      <%= label_tag "entry_content_email", t("entries.email_field_label"), class: "sr-only" %>
+      <%= email_field_tag "entry[content][email]", entry.content&.dig("email"),
+            placeholder: t("entries.email_address_placeholder"),
+            autocomplete: "email",
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <% entry.errors.full_messages_for(:email).each do |message| %>
+        <p class="mt-1 text-sm text-red-600"><%= message %></p>
+      <% end %>
+    </div>
+    <%= label_tag "email_entry_label", t("entries.email_label_field_label"), class: "sr-only" %>
+    <%= text_field_tag "entry[content][label]", entry.content&.dig("label"),
+          id: "email_entry_label",
+          placeholder: t("entries.email_label_placeholder"),
+          class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+  </fieldset>
 
   <div class="flex items-center justify-between">
     <div class="flex gap-2">

@@ -26,7 +26,7 @@ In DEVELOPMENT, a default user is seeded so you can sign in right away:
 - Email: `admin@example.com`
 - Password: `admin`
 
-The account includes 100 deterministic sample friends with a realistic mix of empty profiles, phone numbers, notes, birthdays, and combinations of those entries. Rebuild the sample data at any time with:
+The account includes 100 deterministic sample friends with a realistic mix of empty profiles, phone numbers, emails, notes, birthdays, and combinations of those entries. Rebuild the sample data at any time with:
 
 ```bash
 bin/rails db:seed
