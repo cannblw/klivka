@@ -107,21 +107,35 @@
       <% end %>
     </div>
   <% when "Entry::GiftList" %>
-    <div id="gift-list-fields" class="space-y-3">
+    <div id="gift-list-fields"
+         data-controller="gift-list"
+         data-gift-list-drag-label-value="<%= t("entries.gift_list_drag_item", number: "__POSITION__") %>"
+         data-gift-list-toggle-label-value="<%= t("entries.gift_list_toggle_item", number: "__POSITION__") %>"
+         data-gift-list-input-label-value="<%= t("entries.gift_list_item_label", number: "__POSITION__") %>"
+         data-gift-list-remove-label-value="<%= t("entries.gift_list_remove_item", number: "__POSITION__") %>"
+         data-gift-list-moved-message-value="<%= t("entries.gift_list_item_moved", position: "__POSITION__") %>"
+         class="space-y-3">
       <%= label_tag "entry_content_title", t("entries.gift_list_title_placeholder"), class: "sr-only" %>
       <%= text_field_tag "entry[content][title]", entry.title,
             placeholder: t("entries.gift_list_title_placeholder"),
             class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-      <% (entry.items.presence || [ {} ]).each_with_index do |item, index| %>
-        <div>
-          <%= hidden_field_tag "entry[content][items][#{index}][id]", item["id"] if item["id"].present? %>
-          <%= hidden_field_tag "entry[content][items][#{index}][checked]", item["checked"] ? "1" : "0" %>
-          <%= text_field_tag "entry[content][items][#{index}][text]", item["text"],
-                placeholder: t("entries.gift_list_item_placeholder"),
-                aria: { label: t("entries.gift_list_item_label", number: index + 1) },
-                class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-        </div>
-      <% end %>
+      <ul data-gift-list-target="list" class="space-y-2">
+        <% (entry.items.presence || [ {} ]).each_with_index do |item, index| %>
+          <%= render GiftListItemFieldComponent.new(item: item, index: index, position: index + 1) %>
+        <% end %>
+      </ul>
+
+      <template data-gift-list-target="template">
+        <%= render GiftListItemFieldComponent.new(item: {}, index: "__INDEX__", position: "__POSITION__") %>
+      </template>
+
+      <button type="button"
+              data-action="gift-list#add"
+              class="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-amber-400 dark:hover:bg-amber-900/20">
+        <span class="material-icons" style="font-size:18px" aria-hidden="true">add</span>
+        <%= t("entries.gift_list_add_item") %>
+      </button>
+      <p data-gift-list-target="status" class="sr-only" aria-live="polite"></p>
       <% entry.errors.full_messages_for(:items).each do |message| %>
         <p class="text-sm text-red-600"><%= message %></p>
       <% end %>

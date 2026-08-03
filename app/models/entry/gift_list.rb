@@ -39,14 +39,17 @@ class Entry::GiftList < Entry
 
     self.title = title.to_s.strip.presence
     raw_items = items.respond_to?(:values) ? items.values : Array(items)
-    self.items = raw_items.map do |item|
+    self.items = raw_items.filter_map do |item|
       item = item.respond_to?(:to_h) ? item.to_h.stringify_keys : {}
+      text = item["text"].to_s.strip
+      next if text.blank?
+
       id = unique_item_id(item["id"], used_ids)
       used_ids << id
 
       {
         "id" => id,
-        "text" => item["text"].to_s.strip,
+        "text" => text,
         "checked" => BOOLEAN_TYPE.cast(item["checked"]) || false
       }
     end
@@ -59,13 +62,6 @@ class Entry::GiftList < Entry
   end
 
   def items_are_valid
-    unless items.is_a?(Array) && items.any?
-      errors.add(:items, :blank)
-      return
-    end
-
-    items.each_with_index do |item, index|
-      errors.add(:items, :invalid, index: index + 1) if item["text"].blank?
-    end
+    errors.add(:items, :blank) unless items.is_a?(Array) && items.any?
   end
 end

@@ -264,11 +264,14 @@ class EntryTest < ActiveSupport::TestCase
     assert_equal normalized_ids, gift_list.items.pluck("id")
   end
 
-  test "gift list requires nonblank items" do
-    gift_list = Entry::GiftList.new(friend: friends(:ada), content: { items: [ { text: " " } ] })
+  test "gift list filters blank items" do
+    gift_list = Entry::GiftList.new(
+      friend: friends(:ada),
+      content: { items: [ { text: "A book" }, { text: " " } ] }
+    )
 
-    assert_not gift_list.valid?
-    assert gift_list.errors.of_kind?(:items, :invalid)
+    assert gift_list.valid?
+    assert_equal [ "A book" ], gift_list.items.pluck("text")
   end
 
   test "gift list requires at least one item" do

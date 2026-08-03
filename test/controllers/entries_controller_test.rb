@@ -144,7 +144,10 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
             type: "Entry::GiftList",
             content: {
               title: "Ideas",
-              items: { "0" => { text: "Iguana hammock", checked: "0" } }
+              items: {
+                "0" => { text: "Iguana hammock", checked: "0" },
+                "1" => { text: " " }
+              }
             }
           }
         }
@@ -152,7 +155,32 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
 
     entry = friends(:ada).entries.where(type: "Entry::GiftList").last
     assert_redirected_to friend_url(friends(:ada))
-    assert_equal "Iguana hammock", entry.items.first["text"]
+    assert_equal [ "Iguana hammock" ], entry.items.pluck("text")
+  end
+
+  test "update preserves gift-list item order and completion" do
+    entry = Entry::GiftList.create!(
+      friend: friends(:ada),
+      items: [ { text: "Book" }, { text: "Scarf" } ]
+    )
+    book, scarf = entry.items
+
+    patch friend_entry_url(friends(:ada), entry),
+      params: {
+        entry: {
+          content: {
+            items: {
+              "1" => { id: scarf["id"], text: scarf["text"], checked: "1" },
+              "0" => { id: book["id"], text: book["text"] }
+            }
+          }
+        }
+      },
+      headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_equal [ "Scarf", "Book" ], entry.reload.items.pluck("text")
+    assert_equal [ true, false ], entry.items.pluck("checked")
   end
 
   test "create with an invalid email re-renders only the email form" do

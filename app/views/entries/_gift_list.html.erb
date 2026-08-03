@@ -4,6 +4,7 @@
   <% entry.items.each do |item| %>
     <li class="flex items-center gap-2 text-sm <%= "text-stone-400 line-through" if item["checked"] %>">
       <input type="checkbox" disabled <%= "checked" if item["checked"] %>
+             class="h-5 w-5 shrink-0 rounded border-stone-400 bg-white text-amber-600 disabled:opacity-100 dark:border-stone-500 dark:bg-stone-700 dark:text-amber-500"
              aria-label="<%= t("entries.gift_list_item_status", text: item["text"]) %>">
       <span><%= item["text"] %></span>
     </li>
