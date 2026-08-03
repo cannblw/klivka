@@ -2,6 +2,12 @@
   <% if entry.entry_date %>
     <% format = { "year" => :year, "month" => :month_year }.fetch(entry.date_precision, :long) %>
     <%= l(entry.entry_date, format: format) %>
+    <% years_ago = entry.years_ago %>
+    <% if years_ago && years_ago >= 0 %>
+      <span class="text-stone-500 dark:text-stone-400">
+        <%= t("entries.first_met_years_ago", count: years_ago) %>
+      </span>
+    <% end %>
   <% end %>
 </span>
 <% if entry.note.present? %>

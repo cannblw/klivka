@@ -78,6 +78,9 @@ en:
     day_label: "Day (optional)"
     date_label_placeholder: "What happened?"
     first_met_note_placeholder: "Where or how did you meet? (optional)"
+    first_met_years_ago:
+      one: "(1 year ago)"
+      other: "(%{count} years ago)"
     gift_list_title_placeholder: "List title (optional)"
     gift_list_item_placeholder: "Gift idea"
     gift_list_item_label: "Gift idea %{number}"

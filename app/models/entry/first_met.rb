@@ -36,6 +36,19 @@ class Entry::FirstMet < Entry::Date
   validates :date_precision, inclusion: { in: DATE_PRECISIONS }
   validate :date_parts_are_valid
 
+  def years_ago(on: ::Date.current)
+    return nil unless entry_date
+
+    years = on.year - entry_date.year
+    return years if date_precision == "year"
+
+    month_has_passed = on.month > entry_date.month
+    month_is_current = on.month == entry_date.month
+    day_has_passed = date_precision == "month" || on.day >= entry_date.day
+    years -= 1 unless month_has_passed || (month_is_current && day_has_passed)
+    years
+  end
+
   def entry_year
     submitted_part(:entry_year, entry_date&.year)
   end

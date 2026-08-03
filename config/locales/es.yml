@@ -78,6 +78,9 @@ es:
     day_label: "Día (opcional)"
     date_label_placeholder: "¿Qué ocurrió?"
     first_met_note_placeholder: "¿Dónde o cómo os conocisteis? (opcional)"
+    first_met_years_ago:
+      one: "(hace 1 año)"
+      other: "(hace %{count} años)"
     gift_list_title_placeholder: "Título de la lista (opcional)"
     gift_list_item_placeholder: "Idea de regalo"
     gift_list_item_label: "Idea de regalo %{number}"

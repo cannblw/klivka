@@ -204,6 +204,18 @@ class EntryTest < ActiveSupport::TestCase
     assert_equal "month", first_met.date_precision
   end
 
+  test "first met reports elapsed years according to its date precision" do
+    assert_equal 7, Entry::FirstMet.new(
+      entry_date: Date.new(2019, 8, 1),
+      content: { "date_precision" => "month" }
+    ).years_ago(on: Date.new(2026, 8, 3))
+
+    assert_equal 6, Entry::FirstMet.new(
+      entry_date: Date.new(2019, 8, 2),
+      content: { "date_precision" => "day" }
+    ).years_ago(on: Date.new(2026, 8, 1))
+  end
+
   test "first met rejects a day without a month" do
     first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019", entry_day: "12")
 
