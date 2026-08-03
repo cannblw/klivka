@@ -63,6 +63,8 @@
 
   <%= render EntryTypePickerComponent.new(friend: @friend, types: EntryTypePickerComponent::COMMON_TYPES) %>
 
+  <%= render FriendSuggestionsComponent.new(friend: @friend, entries: ordered_entries) %>
+
   <% if ordered_entries.any? %>
     <div id="entries-feed"
          data-controller="entry-sortable"

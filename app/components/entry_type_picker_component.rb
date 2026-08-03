@@ -7,7 +7,7 @@ class EntryTypePickerComponent < ViewComponent::Base
     "Entry::Email" => "email",
     "Entry::Date" => "event",
     "Entry::FirstMet" => "handshake",
-    "Entry::GiftList" => "featured_seasonal_and_gifts"
+    "Entry::GiftList" => "card_giftcard"
   }.freeze
 
   def initialize(friend:, types: Entry::CREATABLE_TYPES, searchable: false)

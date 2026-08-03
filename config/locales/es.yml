@@ -105,6 +105,12 @@ es:
       search_placeholder: "Buscar tipos de entrada"
       no_results: "No hay tipos de entrada coincidentes"
       already_added: "Ya existe"
+    suggestions:
+      heading: "Ideas, si te sirven"
+      description: "Añádelas cuando te vengan a la mente."
+      first_met: "Cómo os conocisteis"
+      date: "Una fecha para recordar"
+      gift_list: "Ideas de regalos"
     create:
       created: "Entrada añadida."
     update:

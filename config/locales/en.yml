@@ -105,6 +105,12 @@ en:
       search_placeholder: "Search entry types"
       no_results: "No matching entry types"
       already_added: "Added"
+    suggestions:
+      heading: "Ideas, if useful"
+      description: "Add these whenever they come to mind."
+      first_met: "How you met"
+      date: "A date to remember"
+      gift_list: "Gift ideas"
     create:
       created: "Entry added."
     update:
