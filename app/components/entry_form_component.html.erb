@@ -119,7 +119,7 @@
       <%= text_field_tag "entry[content][title]", entry.title,
             placeholder: t("entries.gift_list_title_placeholder"),
             class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-      <ul data-gift-list-target="list" class="space-y-2">
+      <ul data-gift-list-target="list" class="space-y-3">
         <% (entry.items.presence || [ {} ]).each_with_index do |item, index| %>
           <%= render GiftListItemFieldComponent.new(item: item, index: index, position: index + 1) %>
         <% end %>

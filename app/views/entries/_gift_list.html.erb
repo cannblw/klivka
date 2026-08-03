@@ -1,6 +1,6 @@
 <% title = entry.title.presence || t("entries.gift_list_untitled") %>
 <p class="text-sm font-medium"><%= title %></p>
-<ul class="mt-2 space-y-1">
+<ul class="mt-2 space-y-2">
   <% entry.items.each do |item| %>
     <li class="flex items-center gap-2 text-sm <%= "text-stone-400 line-through" if item["checked"] %>">
       <input type="checkbox" disabled <%= "checked" if item["checked"] %>
