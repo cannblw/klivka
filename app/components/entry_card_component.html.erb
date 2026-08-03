@@ -1,5 +1,5 @@
 <%= helpers.turbo_frame_tag helpers.dom_id(entry), data: { entry_sortable_target: "item", entry_id: entry.id } do %>
-  <div class="group flex items-center justify-between rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800">
+  <div data-entry-sortable-target="dropTarget" class="group relative flex items-center justify-between rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800">
     <button type="button"
             data-entry-sortable-target="handle"
             data-action="keydown->entry-sortable#moveWithKeyboard"
