@@ -27,7 +27,16 @@
 # anniversaries, reminders) are portable-queryable across SQLite and PostgreSQL without
 # adapter-specific JSON extraction.
 class Entry < ApplicationRecord
-  CREATABLE_TYPES = %w[Entry::Phone Entry::Note Entry::Birthday Entry::Date Entry::Email].freeze
+  CREATABLE_TYPES = %w[
+    Entry::Phone
+    Entry::Note
+    Entry::Birthday
+    Entry::Email
+    Entry::Date
+    Entry::FirstMet
+    Entry::GiftList
+  ].freeze
+  SINGLETON_TYPES = %w[Entry::Birthday Entry::FirstMet].freeze
 
   belongs_to :friend, touch: true
 

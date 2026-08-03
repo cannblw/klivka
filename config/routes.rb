@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resource :settings, only: %i[ show update ]
   resources :friends, only: [ :index, :show, :create, :update, :destroy ] do
-    resources :entries, only: %i[ create edit update destroy ] do
+    resources :entries, only: %i[ new create edit update destroy ] do
       patch :reorder, on: :collection
     end
   end

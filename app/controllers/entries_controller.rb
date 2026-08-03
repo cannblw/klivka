@@ -1,7 +1,12 @@
 class EntriesController < ApplicationController
   include ActionView::RecordIdentifier
 
-  before_action :set_friend, :set_entry, only: %i[ edit update destroy ]
+  before_action :set_friend, only: %i[ new edit update destroy ]
+  before_action :set_entry, only: %i[ edit update destroy ]
+
+  def new
+    @entry = Entry.creatable_type(params[:type])&.new(friend: @friend)
+  end
 
   def create
     @friend = Current.user.friends.find(params[:friend_id])
@@ -10,8 +15,7 @@ class EntriesController < ApplicationController
     unless klass
       @entry = Entry.new(friend: @friend)
       @entry.errors.add(:type, entry_params[:type].present? ? :inclusion : :blank)
-      @new_entry = @entry
-      return render "friends/show", status: :unprocessable_entity
+      return render :new, status: :unprocessable_entity
     end
 
     @entry = klass.new(friend: @friend)
@@ -20,8 +24,7 @@ class EntriesController < ApplicationController
     if @entry.save
       redirect_to @friend, notice: t(".created")
     else
-      @new_entry = @entry
-      render "friends/show", status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -100,10 +103,10 @@ class EntriesController < ApplicationController
 
   # Create allows setting the STI type; update locks it
   def entry_params
-    params.require(:entry).permit(:type, :entry_date, content: {})
+    params.require(:entry).permit(:type, :entry_date, :entry_year, :entry_month, :entry_day, content: {})
   end
 
   def entry_params_for_update
-    params.require(:entry).permit(:entry_date, content: {})
+    params.require(:entry).permit(:entry_date, :entry_year, :entry_month, :entry_day, content: {})
   end
 end

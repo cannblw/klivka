@@ -1,4 +1,9 @@
 en:
+  date:
+    formats:
+      month_year: "%B %Y"
+      year: "%Y"
+
   activerecord:
     attributes:
       friend:
@@ -53,7 +58,6 @@ en:
     delete: "Delete"
     delete_confirm_title: "Delete this entry?"
     delete_confirm_body: "This cannot be undone."
-    kind_label: "Type"
     kinds:
       phone: "Phone"
       note: "Note"
@@ -68,19 +72,39 @@ en:
     email_label_placeholder: "Label (optional)"
     email_field_label: "Email"
     email_label_field_label: "Email label (optional)"
+    date_field_label: "Date"
+    year_label: "Year"
+    month_label: "Month (optional)"
+    day_label: "Day (optional)"
+    date_label_placeholder: "What happened?"
+    first_met_note_placeholder: "Where or how did you meet? (optional)"
+    gift_list_title_placeholder: "List title (optional)"
+    gift_list_item_placeholder: "Gift idea"
+    gift_list_item_label: "Gift idea %{number}"
     copy: "Copy"
     copy_email: "Copy email address"
     note_placeholder: "Write a note..."
     age: "years old"
     added_on: "Added on %{date}"
-    empty_title: "No entries yet"
-    empty_hint: "Add your first entry to get started."
     drag_handle: "Drag entry to reorder. Use the up and down arrow keys to move it."
     reorder:
       invalid_order: "The entry order could not be saved."
       moved: "Entry moved to position %{position}."
     gift_list_untitled: "Gift ideas"
     gift_list_item_status: "%{text}"
+    new:
+      title: "Add to %{name}"
+      heading: "Add %{type} to %{name}"
+      back: "← %{name}"
+    type_picker:
+      heading: "What would you like to remember about %{name}?"
+      common_heading: "Add something"
+      all_heading: "All entry types"
+      view_all: "View all"
+      search_label: "Search entry types"
+      search_placeholder: "Search entry types"
+      no_results: "No matching entry types"
+      already_added: "Added"
     create:
       created: "Entry added."
     update:

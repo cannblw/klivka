@@ -26,6 +26,10 @@ require "test_helper"
 #  friend_id  (friend_id => friends.id)
 #
 class EntryTest < ActiveSupport::TestCase
+  test "every allowed entry type resolves to its STI class" do
+    assert_equal Entry::CREATABLE_TYPES, Entry::CREATABLE_TYPES.filter_map { |type| Entry.creatable_type(type)&.name }
+  end
+
   test "position cannot be negative" do
     entry = Entry::Note.new(friend: friends(:ada), position: -1, content: { text: "A note" })
 
@@ -172,7 +176,7 @@ class EntryTest < ActiveSupport::TestCase
     end
   end
 
-  test "first met requires a date and allows an optional normalized note" do
+  test "first met accepts a full date and an optional normalized note" do
     first_met = Entry::FirstMet.new(
       friend: friends(:ada),
       entry_date: Date.new(2020, 1, 2),
@@ -181,6 +185,37 @@ class EntryTest < ActiveSupport::TestCase
 
     assert first_met.valid?
     assert_equal "At the market", first_met.note
+    assert_equal "day", first_met.date_precision
+  end
+
+  test "first met accepts a year without inventing a month or day" do
+    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019")
+
+    assert first_met.valid?
+    assert_equal Date.new(2019, 1, 1), first_met.entry_date
+    assert_equal "year", first_met.date_precision
+  end
+
+  test "first met accepts a month and year without inventing a day" do
+    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019", entry_month: "5")
+
+    assert first_met.valid?
+    assert_equal Date.new(2019, 5, 1), first_met.entry_date
+    assert_equal "month", first_met.date_precision
+  end
+
+  test "first met rejects a day without a month" do
+    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019", entry_day: "12")
+
+    assert_not first_met.valid?
+    assert first_met.errors.of_kind?(:entry_date, :invalid)
+  end
+
+  test "first met rejects malformed numeric date parts instead of truncating them" do
+    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019.5")
+
+    assert_not first_met.valid?
+    assert first_met.errors.of_kind?(:entry_date, :invalid)
   end
 
   test "first met enforces one per friend" do

@@ -38,10 +38,8 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <button type="button" data-action="toggle#toggle"
-              class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500 cursor-pointer">
-        <%= t("entries.add") %>
-      </button>
+      <%= link_to t("entries.add"), new_friend_entry_path(friend_id: @friend.id),
+            class: "rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
 
       <div data-controller="dropdown" class="relative">
         <button type="button" data-action="dropdown#toggle"
@@ -63,11 +61,7 @@
 
   <%= render FriendContactActionsComponent.new(entries: ordered_entries) %>
 
-  <div data-toggle-target="content" class="hidden mt-4">
-    <div class="rounded-lg border border-stone-200 bg-stone-50 p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800">
-      <%= render "entries/form", entry: @new_entry, friend: @friend %>
-    </div>
-  </div>
+  <%= render EntryTypePickerComponent.new(friend: @friend, types: EntryTypePickerComponent::COMMON_TYPES) %>
 
   <% if ordered_entries.any? %>
     <div id="entries-feed"

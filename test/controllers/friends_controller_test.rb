@@ -35,9 +35,11 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "main", /No friends yet/
   end
 
-  test "create adds a friend and redirects to their page" do
+  test "create adds a name-only friend without creating entries" do
     assert_difference "Friend.count", 1 do
-      post friends_url, params: { friend: { name: "Marie Curie" } }
+      assert_no_difference "Entry.count" do
+        post friends_url, params: { friend: { name: "Marie Curie" } }
+      end
     end
 
     assert_redirected_to friend_url(Friend.find_by!(name: "Marie Curie"))
@@ -126,6 +128,15 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#entries-feed", /Phone/
     assert_select "#entries-feed", /Email/
     assert_select "#entries-feed", /Birthday/
+    all_types_path = Rails.application.routes.url_helpers.new_friend_entry_path(friends(:ada))
+    phone_entry_path = Rails.application.routes.url_helpers.new_friend_entry_path(
+      friends(:ada),
+      { type: "Entry::Phone" }
+    )
+    phone_link = css_select("a").find { |link| link["href"] == phone_entry_path }
+    assert_not_nil phone_link
+    assert_match(/Phone/, phone_link.text)
+    assert_select "a[href='#{all_types_path}']", text: "View all"
   end
 
   test "show omits the empty entries feed for a friend with only a name" do

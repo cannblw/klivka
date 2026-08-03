@@ -1,4 +1,9 @@
 es:
+  date:
+    formats:
+      month_year: "%B de %Y"
+      year: "%Y"
+
   activerecord:
     attributes:
       friend:
@@ -53,7 +58,6 @@ es:
     delete: "Eliminar"
     delete_confirm_title: "¿Eliminar esta entrada?"
     delete_confirm_body: "No se puede deshacer."
-    kind_label: "Tipo"
     kinds:
       phone: "Teléfono"
       note: "Nota"
@@ -68,19 +72,39 @@ es:
     email_label_placeholder: "Etiqueta (opcional)"
     email_field_label: "Correo electrónico"
     email_label_field_label: "Etiqueta del correo electrónico (opcional)"
+    date_field_label: "Fecha"
+    year_label: "Año"
+    month_label: "Mes (opcional)"
+    day_label: "Día (opcional)"
+    date_label_placeholder: "¿Qué ocurrió?"
+    first_met_note_placeholder: "¿Dónde o cómo os conocisteis? (opcional)"
+    gift_list_title_placeholder: "Título de la lista (opcional)"
+    gift_list_item_placeholder: "Idea de regalo"
+    gift_list_item_label: "Idea de regalo %{number}"
     copy: "Copiar"
     copy_email: "Copiar correo electrónico"
     note_placeholder: "Escribe una nota..."
     age: "años"
     added_on: "Añadido el %{date}"
-    empty_title: "Aún no hay entradas"
-    empty_hint: "Añade tu primera entrada para empezar."
     drag_handle: "Arrastra la entrada para reordenarla. Usa las flechas arriba y abajo para moverla."
     reorder:
       invalid_order: "No se ha podido guardar el orden de las entradas."
       moved: "Entrada movida a la posición %{position}."
     gift_list_untitled: "Ideas de regalos"
     gift_list_item_status: "%{text}"
+    new:
+      title: "Añadir a %{name}"
+      heading: "Añadir %{type} a %{name}"
+      back: "← %{name}"
+    type_picker:
+      heading: "¿Qué quieres recordar sobre %{name}?"
+      common_heading: "Añadir algo"
+      all_heading: "Todos los tipos de entrada"
+      view_all: "Ver todos"
+      search_label: "Buscar tipos de entrada"
+      search_placeholder: "Buscar tipos de entrada"
+      no_results: "No hay tipos de entrada coincidentes"
+      already_added: "Ya existe"
     create:
       created: "Entrada añadida."
     update:

@@ -38,7 +38,8 @@ class Entry::GiftList < Entry
     used_ids = []
 
     self.title = title.to_s.strip.presence
-    self.items = Array(items).map do |item|
+    raw_items = items.respond_to?(:values) ? items.values : Array(items)
+    self.items = raw_items.map do |item|
       item = item.respond_to?(:to_h) ? item.to_h.stringify_keys : {}
       id = unique_item_id(item["id"], used_ids)
       used_ids << id

@@ -7,7 +7,6 @@ class FriendsController < ApplicationController
 
   def show
     @friend = Current.user.friends.find(params[:id])
-    @new_entry = Entry.new
   end
 
   def update
@@ -16,7 +15,6 @@ class FriendsController < ApplicationController
     if @friend.update(friend_params)
       redirect_to @friend
     else
-      @new_entry = Entry.new
       render :show, status: :unprocessable_entity
     end
   end
