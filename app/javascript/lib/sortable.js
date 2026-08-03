@@ -10,8 +10,30 @@ import {
   setCustomNativeDragPreview
 } from "@atlaskit/pragmatic-drag-and-drop"
 
+const pageDropTarget = {
+  cleanup: undefined,
+  users: 0
+}
+
 export function createSortable(options) {
   return new Sortable(options)
+}
+
+function acquirePageDropTarget() {
+  pageDropTarget.users += 1
+  pageDropTarget.cleanup ||= dropTargetForElements({
+    element: document.body,
+    canDrop: ({ source }) => Boolean(source.data.sortableList),
+    getData: ({ source }) => ({ sortableList: source.data.sortableList })
+  })
+
+  return () => {
+    pageDropTarget.users -= 1
+    if (pageDropTarget.users > 0) return
+
+    pageDropTarget.cleanup?.()
+    pageDropTarget.cleanup = undefined
+  }
 }
 
 class Sortable {
@@ -36,6 +58,7 @@ class Sortable {
 
     this.cleanup = combine(
       ...itemBindings,
+      acquirePageDropTarget(),
       monitorForElements({
         canMonitor: ({ source }) => this.belongsToList(source),
         onDropTargetChange: ({ location, source }) => this.updateDropIndicator(location, source),
@@ -115,7 +138,7 @@ class Sortable {
   }
 
   updateDropIndicator(location, source) {
-    const target = this.currentDropTarget(location)
+    const target = this.currentDropTarget(location, source)
     const edge = target && extractClosestEdge(target.data)
 
     if (!target || !edge || target.data.sortableItem === source.element) {
@@ -137,7 +160,7 @@ class Sortable {
 
   dropItem(location, source) {
     const previousOrder = this.items
-    const target = this.currentDropTarget(location)
+    const target = this.currentDropTarget(location, source)
     const edge = target && extractClosestEdge(target.data)
     this.clearDropIndicator()
 
@@ -170,8 +193,40 @@ class Sortable {
     return result
   }
 
-  currentDropTarget(location) {
-    return location.current.dropTargets.find((target) => target.data.sortableList === this.listIdentity)
+  currentDropTarget(location, source) {
+    const target = location.current.dropTargets.find((dropTarget) =>
+      dropTarget.data.sortableList === this.listIdentity && dropTarget.data.sortableItem
+    )
+    if (target) return target
+
+    const boundary = location.current.dropTargets.find((dropTarget) =>
+      dropTarget.data.sortableList === this.listIdentity
+    )
+    if (!boundary) return
+
+    return this.boundaryDropTarget(location, source)
+  }
+
+  boundaryDropTarget(location, source) {
+    const items = this.items.filter((item) => item !== source.element)
+    if (!items.length) return
+
+    const pointerY = location.current.input.clientY
+    const targetItem = items.find((item) => {
+      const bounds = this.getDropTarget(item).getBoundingClientRect()
+      return pointerY < bounds.top + (bounds.height / 2)
+    }) || items.at(-1)
+    const targetBounds = this.getDropTarget(targetItem).getBoundingClientRect()
+    const edge = pointerY < targetBounds.top + (targetBounds.height / 2) ? "top" : "bottom"
+    const targetElement = this.getDropTarget(targetItem)
+
+    return {
+      element: targetElement,
+      data: attachClosestEdge(
+        { sortableList: this.listIdentity, sortableItem: targetItem },
+        { input: location.current.input, element: targetElement, allowedEdges: [edge] }
+      )
+    }
   }
 
   belongsToList(source) {
