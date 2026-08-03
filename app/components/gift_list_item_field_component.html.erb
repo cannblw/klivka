@@ -1,0 +1,30 @@
+<li data-gift-list-target="item" class="group relative flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-2 py-1.5 transition-[opacity,box-shadow] duration-150 dark:border-stone-700 dark:bg-stone-800">
+  <button type="button"
+          data-gift-list-target="handle"
+          data-action="keydown->gift-list#moveWithKeyboard"
+          class="-my-1.5 -ml-2 flex w-10 shrink-0 items-center justify-center rounded-l-lg cursor-grab touch-none text-stone-300 hover:bg-stone-100 hover:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-amber-600 active:cursor-grabbing dark:text-stone-600 dark:hover:bg-stone-700 dark:hover:text-stone-400"
+          aria-label="<%= t("entries.gift_list_drag_item", number: position) %>">
+    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <circle cx="7" cy="5" r="1.25"/><circle cx="13" cy="5" r="1.25"/>
+      <circle cx="7" cy="10" r="1.25"/><circle cx="13" cy="10" r="1.25"/>
+      <circle cx="7" cy="15" r="1.25"/><circle cx="13" cy="15" r="1.25"/>
+    </svg>
+  </button>
+
+  <%= hidden_field_tag field_name("id"), item["id"] if item["id"].present? %>
+  <%= check_box_tag field_name("checked"), "1", item["checked"],
+        aria: { label: t("entries.gift_list_toggle_item", number: position) },
+        class: "peer h-5 w-5 shrink-0 rounded border-stone-400 bg-white text-amber-600 focus:ring-amber-500 dark:border-stone-500 dark:bg-stone-700 dark:text-amber-500 dark:focus:ring-amber-400" %>
+  <%= text_field_tag field_name("text"), item["text"],
+        placeholder: t("entries.gift_list_item_placeholder"),
+        aria: { label: t("entries.gift_list_item_label", number: position) },
+        data: { gift_list_target: "input", action: "keydown.enter->gift-list#addAfter" },
+        class: "min-w-0 flex-1 border-0 bg-transparent px-1 py-1.5 text-sm focus:outline-none focus:ring-0 peer-checked:text-stone-400 peer-checked:line-through dark:text-stone-100" %>
+
+  <button type="button"
+          data-action="gift-list#remove"
+          class="shrink-0 rounded p-1 text-stone-300 opacity-100 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 dark:text-stone-600 dark:hover:text-red-400"
+          aria-label="<%= t("entries.gift_list_remove_item", number: position) %>">
+    <span class="material-icons" style="font-size:18px" aria-hidden="true">close</span>
+  </button>
+</li>

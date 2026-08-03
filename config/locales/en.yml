@@ -1,4 +1,9 @@
 en:
+  date:
+    formats:
+      month_year: "%B %Y"
+      year: "%Y"
+
   activerecord:
     attributes:
       friend:
@@ -8,12 +13,25 @@ en:
         password: "Password"
       entry/email:
         email: "Email"
+      entry/date:
+        label: "Label"
+      entry/first_met:
+        friend_id: "First met"
     errors:
       models:
         entry/birthday:
           attributes:
             friend_id:
               one_birthday_per_friend: "already has a birthday"
+        entry/first_met:
+          attributes:
+            friend_id:
+              one_first_met_per_friend: "already has a first-meet date"
+        entry/gift_list:
+          attributes:
+            items:
+              blank: "must include at least one idea"
+              invalid: "item %{index} must have text"
 
   auth:
     rate_limited: "Try again later."
@@ -40,25 +58,67 @@ en:
     delete: "Delete"
     delete_confirm_title: "Delete this entry?"
     delete_confirm_body: "This cannot be undone."
-    kind_label: "Type"
     kinds:
       phone: "Phone"
       note: "Note"
       birthday: "Birthday"
+      date: "Date"
       email: "Email"
+      first_met: "First met"
+      gift_list: "Gift ideas"
     phone_number_placeholder: "Phone number"
     phone_label_placeholder: "Label (optional)"
     email_address_placeholder: "Email address"
     email_label_placeholder: "Label (optional)"
     email_field_label: "Email"
     email_label_field_label: "Email label (optional)"
+    date_field_label: "Date"
+    year_label: "Year"
+    month_label: "Month (optional)"
+    day_label: "Day (optional)"
+    date_label_placeholder: "What happened?"
+    first_met_note_placeholder: "Where or how did you meet? (optional)"
+    first_met_years_ago:
+      one: "(1 year ago)"
+      other: "(%{count} years ago)"
+    gift_list_title_placeholder: "List title (optional)"
+    gift_list_item_placeholder: "Gift idea"
+    gift_list_item_label: "Gift idea %{number}"
+    gift_list_add_item: "Add idea"
+    gift_list_remove_item: "Remove gift idea %{number}"
+    gift_list_drag_item: "Drag gift idea %{number} to reorder. Use the up and down arrow keys to move it."
+    gift_list_toggle_item: "Toggle gift idea %{number}"
+    gift_list_item_moved: "Gift idea moved to position %{position}."
     copy: "Copy"
     copy_email: "Copy email address"
     note_placeholder: "Write a note..."
     age: "years old"
     added_on: "Added on %{date}"
-    empty_title: "No entries yet"
-    empty_hint: "Add your first entry to get started."
+    drag_handle: "Drag entry to reorder. Use the up and down arrow keys to move it."
+    reorder:
+      invalid_order: "The entry order could not be saved."
+      moved: "Entry moved to position %{position}."
+    gift_list_untitled: "Gift ideas"
+    gift_list_item_status: "%{text}"
+    new:
+      title: "Add to %{name}"
+      heading: "Add %{type} to %{name}"
+      back: "← %{name}"
+    type_picker:
+      heading: "What would you like to remember about %{name}?"
+      common_heading: "Add something"
+      all_heading: "All entry types"
+      view_all: "View all"
+      search_label: "Search entry types"
+      search_placeholder: "Search entry types"
+      no_results: "No matching entry types"
+      already_added: "Added"
+    suggestions:
+      heading: "Ideas, if useful"
+      description: "Add these whenever they come to mind."
+      first_met: "How you met"
+      date: "A date to remember"
+      gift_list: "Gift ideas"
     create:
       created: "Entry added."
     update:

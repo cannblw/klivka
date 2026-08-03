@@ -10,6 +10,14 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_url
   end
 
+  test "new redirects to sign in when unauthenticated" do
+    sign_out
+
+    get new_friend_entry_url(friends(:ada))
+
+    assert_redirected_to new_session_url
+  end
+
   test "create adds an entry to the friend" do
     assert_difference -> { friends(:ada).entries.count }, 1 do
       post friend_entries_url(friends(:ada)),
@@ -20,6 +28,76 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     entry = friends(:ada).entries.last
     assert_equal "Entry::Phone", entry.type
     assert_equal "555-9876", entry.content["number"]
+    assert_equal entry, friends(:ada).entries.ordered.first
+  end
+
+  test "reorder saves the requested entry order" do
+    ordered_ids = [ entries(:ada_birthday).id, entries(:email).id, entries(:phone).id ]
+
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: ordered_ids },
+      as: :json
+
+    assert_response :no_content
+    assert_equal ordered_ids, friends(:ada).entries.ordered.pluck(:id)
+  end
+
+  test "reorder rejects an incomplete order without changing anything" do
+    original_ids = friends(:ada).entries.ordered.pluck(:id)
+
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: [ entries(:phone).id, entries(:email).id ] },
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal original_ids, friends(:ada).entries.ordered.pluck(:id)
+  end
+
+  test "reorder rejects a missing order" do
+    patch reorder_friend_entries_url(friends(:ada)), params: {}, as: :json
+
+    assert_response :unprocessable_entity
+  end
+
+  test "reorder rejects a duplicate order without changing anything" do
+    original_ids = friends(:ada).entries.ordered.pluck(:id)
+
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: [ entries(:phone).id, entries(:phone).id, entries(:ada_birthday).id ] },
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal original_ids, friends(:ada).entries.ordered.pluck(:id)
+  end
+
+  test "reorder rejects an entry belonging to another friend" do
+    patch reorder_friend_entries_url(friends(:ada)),
+      params: { entry_ids: [ entries(:phone).id, entries(:email).id, entries(:note).id ] },
+      as: :json
+
+    assert_response :unprocessable_entity
+  end
+
+  test "reorder returns 404 for another user's friend" do
+    patch reorder_friend_entries_url(friends(:bob)), params: { entry_ids: [] }, as: :json
+
+    assert_response :not_found
+  end
+
+  test "generic date entries render in the profile feed" do
+    post friend_entries_url(friends(:ada)),
+      params: {
+        entry: {
+          type: "Entry::Date",
+          entry_date: "2020-01-02",
+          content: { label: "Dad's first iguana" }
+        }
+      }
+
+    assert_redirected_to friend_url(friends(:ada))
+    follow_redirect!
+    assert_select "#entries-feed", /Date/
+    assert_select "#entries-feed", /Dad's first iguana/
   end
 
   test "create adds a normalized email entry" do
@@ -35,15 +113,85 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Work", entry.content["label"]
   end
 
-  test "create with an invalid email re-renders the friend page" do
+  test "explicitly creating First Met with a month and year preserves its precision" do
+    assert_difference -> { friends(:ada).entries.where(type: "Entry::FirstMet").count }, 1 do
+      post friend_entries_url(friends(:ada)),
+        params: {
+          entry: {
+            type: "Entry::FirstMet",
+            entry_year: "2020",
+            entry_month: "1",
+            content: { note: "At the market" }
+          }
+        }
+    end
+
+    first_met = friends(:ada).entries.find_by!(type: "Entry::FirstMet")
+    assert_redirected_to friend_url(friends(:ada))
+    assert_equal Date.new(2020, 1, 1), first_met.entry_date
+    assert_equal "month", first_met.date_precision
+    assert_equal "month", first_met.content["date_precision"]
+
+    follow_redirect!
+    assert_select "#entries-feed", /January 2020/
+  end
+
+  test "create adds a gift-list entry from indexed form items" do
+    assert_difference -> { friends(:ada).entries.where(type: "Entry::GiftList").count }, 1 do
+      post friend_entries_url(friends(:ada)),
+        params: {
+          entry: {
+            type: "Entry::GiftList",
+            content: {
+              title: "Ideas",
+              items: {
+                "0" => { text: "Iguana hammock", checked: "0" },
+                "1" => { text: " " }
+              }
+            }
+          }
+        }
+    end
+
+    entry = friends(:ada).entries.where(type: "Entry::GiftList").last
+    assert_redirected_to friend_url(friends(:ada))
+    assert_equal [ "Iguana hammock" ], entry.items.pluck("text")
+  end
+
+  test "update preserves gift-list item order and completion" do
+    entry = Entry::GiftList.create!(
+      friend: friends(:ada),
+      items: [ { text: "Book" }, { text: "Scarf" } ]
+    )
+    book, scarf = entry.items
+
+    patch friend_entry_url(friends(:ada), entry),
+      params: {
+        entry: {
+          content: {
+            items: {
+              "1" => { id: scarf["id"], text: scarf["text"], checked: "1" },
+              "0" => { id: book["id"], text: book["text"] }
+            }
+          }
+        }
+      },
+      headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_equal [ "Scarf", "Book" ], entry.reload.items.pluck("text")
+    assert_equal [ true, false ], entry.items.pluck("checked")
+  end
+
+  test "create with an invalid email re-renders only the email form" do
     assert_no_difference -> { friends(:ada).entries.count } do
       post friend_entries_url(friends(:ada)),
         params: { entry: { type: "Entry::Email", content: { email: "not-an-email" } } }
     end
 
     assert_response :unprocessable_entity
-    assert_select "#email-fields:not([disabled]) input[type='email'][value='not-an-email']"
-    assert_select "#phone-fields[disabled] input"
+    assert_select "#email-fields input[type='email'][value='not-an-email']"
+    assert_select "#phone-fields", count: 0
     assert_select "main", /Email/
   end
 
@@ -65,12 +213,13 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test "create with validation error re-renders friend page" do
+  test "create with validation error re-renders the selected form" do
     post friend_entries_url(friends(:ada)),
       params: { entry: { type: "Entry::Birthday", entry_date: "" } }
 
     assert_response :unprocessable_entity
-    assert_select "h1", "Ada Lovelace"
+    assert_select "h1", "Add Birthday to Ada Lovelace"
+    assert_select "#birthday-fields"
   end
 
   test "edit renders the form" do
@@ -79,6 +228,33 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "turbo-frame"
     assert_select "form"
+  end
+
+  test "new without a type shows every searchable entry type" do
+    get new_friend_entry_url(friends(:ada))
+
+    assert_response :success
+    assert_select "input[type='search'][data-action='input->entry-type-picker#filter']"
+    Entry::CREATABLE_TYPES.each do |type|
+      label = I18n.t("entries.kinds.#{type.demodulize.underscore}")
+      assert_select "li[data-search-value='#{label}']"
+    end
+    assert_select "[data-entry-type-unavailable]", /Birthday.*Added/
+  end
+
+  test "new returns 404 for another user's friend" do
+    get new_friend_entry_url(friends(:bob))
+
+    assert_response :not_found
+  end
+
+  test "new with a type shows only that type's form" do
+    get new_friend_entry_url(friends(:ada), type: "Entry::Date")
+
+    assert_response :success
+    assert_select "input[name='entry[type]'][value='Entry::Date']"
+    assert_select "#date-fields"
+    assert_select "#phone-fields", count: 0
   end
 
   test "update saves changes and renders the card" do
@@ -111,7 +287,7 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
       params: { entry: { content: { email: "invalid", label: "Work" } } }
 
     assert_response :unprocessable_entity
-    assert_select "#email-fields:not([disabled]) input[type='email'][value='invalid']"
+    assert_select "#email-fields input[type='email'][value='invalid']"
     assert_select "main", /Email/
   end
 

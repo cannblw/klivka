@@ -1,0 +1,158 @@
+<%= form_with model: [ friend, entry ],
+      scope: :entry,
+      url: entry.persisted? ? friend_entry_path(friend_id: friend.id, id: entry.id) : friend_entries_path(friend),
+      html: { data: { controller: "unsaved-changes" } },
+      class: "space-y-4" do |form| %>
+
+  <%= form.hidden_field :type unless entry.persisted? %>
+
+  <p class="text-sm font-medium text-stone-700 dark:text-stone-300">
+    <%= t("entries.kinds.#{entry.type.demodulize.underscore}") %>
+  </p>
+
+  <% case entry.type %>
+  <% when "Entry::Phone" %>
+    <div id="phone-fields" class="space-y-3">
+      <%= label_tag "entry_content_number", t("entries.phone_number_placeholder"), class: "sr-only" %>
+      <%= text_field_tag "entry[content][number]", entry.content&.dig("number"),
+            placeholder: t("entries.phone_number_placeholder"),
+            autocomplete: "tel",
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <%= label_tag "entry_content_label", t("entries.phone_label_placeholder"), class: "sr-only" %>
+      <%= text_field_tag "entry[content][label]", entry.content&.dig("label"),
+            placeholder: t("entries.phone_label_placeholder"),
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+    </div>
+  <% when "Entry::Note" %>
+    <%= label_tag "entry_content_text", t("entries.kinds.note"), class: "sr-only" %>
+    <%= text_area_tag "entry[content][text]", entry.content&.dig("text"), rows: 3,
+          placeholder: t("entries.note_placeholder"),
+          class: "w-full resize-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+  <% when "Entry::Birthday" %>
+    <div id="birthday-fields">
+      <%= form.label :entry_date, t("entries.date_field_label"), class: "sr-only" %>
+      <%= form.date_field :entry_date,
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <% entry.errors.full_messages_for(:entry_date).each do |message| %>
+        <p class="mt-1 text-sm text-red-600"><%= message %></p>
+      <% end %>
+      <% entry.errors.full_messages_for(:friend_id).each do |message| %>
+        <p class="mt-1 text-sm text-red-600"><%= message %></p>
+      <% end %>
+    </div>
+  <% when "Entry::Email" %>
+    <div id="email-fields" class="space-y-3">
+      <div>
+        <%= label_tag "entry_content_email", t("entries.email_field_label"), class: "sr-only" %>
+        <%= email_field_tag "entry[content][email]", entry.email,
+              placeholder: t("entries.email_address_placeholder"),
+              autocomplete: "email",
+              class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+        <% entry.errors.full_messages_for(:email).each do |message| %>
+          <p class="mt-1 text-sm text-red-600"><%= message %></p>
+        <% end %>
+      </div>
+      <%= label_tag "email_entry_label", t("entries.email_label_field_label"), class: "sr-only" %>
+      <%= text_field_tag "entry[content][label]", entry.label,
+            id: "email_entry_label",
+            placeholder: t("entries.email_label_placeholder"),
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+    </div>
+  <% when "Entry::Date" %>
+    <div id="date-fields" class="space-y-3">
+      <%= form.label :entry_date, t("entries.date_field_label"), class: "sr-only" %>
+      <%= form.date_field :entry_date,
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <%= label_tag "entry_content_label", t("entries.date_label_placeholder"), class: "sr-only" %>
+      <%= text_field_tag "entry[content][label]", entry.label,
+            placeholder: t("entries.date_label_placeholder"),
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <% entry.errors.full_messages_for(:entry_date).each do |message| %>
+        <p class="text-sm text-red-600"><%= message %></p>
+      <% end %>
+    </div>
+  <% when "Entry::FirstMet" %>
+    <div id="first-met-fields" class="space-y-3">
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div>
+          <%= label_tag "entry_entry_year", t("entries.year_label"), class: "sr-only" %>
+          <%= number_field_tag "entry[entry_year]", entry.entry_year,
+                placeholder: t("entries.year_label"),
+                required: true,
+                class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+        </div>
+        <div>
+          <%= label_tag "entry_entry_month", t("entries.month_label"), class: "sr-only" %>
+          <%= select_tag "entry[entry_month]",
+                options_for_select((1..12).map { |month| [ t("date.month_names")[month], month ] }, entry.entry_month),
+                include_blank: t("entries.month_label"),
+                class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+        </div>
+        <div>
+          <%= label_tag "entry_entry_day", t("entries.day_label"), class: "sr-only" %>
+          <%= number_field_tag "entry[entry_day]", entry.entry_day,
+                placeholder: t("entries.day_label"),
+                class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+        </div>
+      </div>
+      <%= label_tag "entry_content_note", t("entries.first_met_note_placeholder"), class: "sr-only" %>
+      <%= text_area_tag "entry[content][note]", entry.note, rows: 3,
+            placeholder: t("entries.first_met_note_placeholder"),
+            class: "w-full resize-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <% entry.errors.full_messages_for(:entry_date).each do |message| %>
+        <p class="text-sm text-red-600"><%= message %></p>
+      <% end %>
+      <% entry.errors.full_messages_for(:friend_id).each do |message| %>
+        <p class="text-sm text-red-600"><%= message %></p>
+      <% end %>
+    </div>
+  <% when "Entry::GiftList" %>
+    <div id="gift-list-fields"
+         data-controller="gift-list"
+         data-gift-list-drag-label-value="<%= t("entries.gift_list_drag_item", number: "__POSITION__") %>"
+         data-gift-list-toggle-label-value="<%= t("entries.gift_list_toggle_item", number: "__POSITION__") %>"
+         data-gift-list-input-label-value="<%= t("entries.gift_list_item_label", number: "__POSITION__") %>"
+         data-gift-list-remove-label-value="<%= t("entries.gift_list_remove_item", number: "__POSITION__") %>"
+         data-gift-list-moved-message-value="<%= t("entries.gift_list_item_moved", position: "__POSITION__") %>"
+         class="space-y-3">
+      <%= label_tag "entry_content_title", t("entries.gift_list_title_placeholder"), class: "sr-only" %>
+      <%= text_field_tag "entry[content][title]", entry.title,
+            placeholder: t("entries.gift_list_title_placeholder"),
+            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <ul data-gift-list-target="list" class="space-y-3">
+        <% (entry.items.presence || [ {} ]).each_with_index do |item, index| %>
+          <%= render GiftListItemFieldComponent.new(item: item, index: index, position: index + 1) %>
+        <% end %>
+      </ul>
+
+      <template data-gift-list-target="template">
+        <%= render GiftListItemFieldComponent.new(item: {}, index: "__INDEX__", position: "__POSITION__") %>
+      </template>
+
+      <button type="button"
+              data-action="gift-list#add"
+              class="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-amber-400 dark:hover:bg-amber-900/20">
+        <span class="material-icons" style="font-size:18px" aria-hidden="true">add</span>
+        <%= t("entries.gift_list_add_item") %>
+      </button>
+      <p data-gift-list-target="status" class="sr-only" aria-live="polite"></p>
+      <% entry.errors.full_messages_for(:items).each do |message| %>
+        <p class="text-sm text-red-600"><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="flex items-center justify-between">
+    <div class="flex gap-2">
+      <%= render ButtonComponent.new(type: :submit, class: "w-full") do %>
+        <%= entry.persisted? ? t("entries.save") : t("entries.add") %>
+      <% end %>
+      <%= link_to t("entries.cancel"), friend, data: { turbo_frame: "_top" }, class: "rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700" %>
+    </div>
+    <% if entry.persisted? %>
+      <%= link_to t("entries.delete"), "#delete-entry-dialog",
+            data: { controller: "delete-entry", delete_entry_url: friend_entry_path(friend_id: friend.id, id: entry.id), action: "click->delete-entry#click" },
+            class: "rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20" %>
+    <% end %>
+  </div>
+<% end %>

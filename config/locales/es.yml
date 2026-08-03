@@ -1,4 +1,9 @@
 es:
+  date:
+    formats:
+      month_year: "%B de %Y"
+      year: "%Y"
+
   activerecord:
     attributes:
       friend:
@@ -8,12 +13,25 @@ es:
         password: "Contraseña"
       entry/email:
         email: "Correo electrónico"
+      entry/date:
+        label: "Etiqueta"
+      entry/first_met:
+        friend_id: "Primera vez que os conocisteis"
     errors:
       models:
         entry/birthday:
           attributes:
             friend_id:
               one_birthday_per_friend: "ya tiene un cumpleaños"
+        entry/first_met:
+          attributes:
+            friend_id:
+              one_first_met_per_friend: "ya tiene una fecha de primer encuentro"
+        entry/gift_list:
+          attributes:
+            items:
+              blank: "debe incluir al menos una idea"
+              invalid: "el elemento %{index} debe tener texto"
 
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."
@@ -40,25 +58,67 @@ es:
     delete: "Eliminar"
     delete_confirm_title: "¿Eliminar esta entrada?"
     delete_confirm_body: "No se puede deshacer."
-    kind_label: "Tipo"
     kinds:
       phone: "Teléfono"
       note: "Nota"
       birthday: "Cumpleaños"
+      date: "Fecha"
       email: "Correo electrónico"
+      first_met: "Primer encuentro"
+      gift_list: "Ideas de regalos"
     phone_number_placeholder: "Número de teléfono"
     phone_label_placeholder: "Etiqueta (opcional)"
     email_address_placeholder: "Correo electrónico"
     email_label_placeholder: "Etiqueta (opcional)"
     email_field_label: "Correo electrónico"
     email_label_field_label: "Etiqueta del correo electrónico (opcional)"
+    date_field_label: "Fecha"
+    year_label: "Año"
+    month_label: "Mes (opcional)"
+    day_label: "Día (opcional)"
+    date_label_placeholder: "¿Qué ocurrió?"
+    first_met_note_placeholder: "¿Dónde o cómo os conocisteis? (opcional)"
+    first_met_years_ago:
+      one: "(hace 1 año)"
+      other: "(hace %{count} años)"
+    gift_list_title_placeholder: "Título de la lista (opcional)"
+    gift_list_item_placeholder: "Idea de regalo"
+    gift_list_item_label: "Idea de regalo %{number}"
+    gift_list_add_item: "Añadir idea"
+    gift_list_remove_item: "Eliminar idea de regalo %{number}"
+    gift_list_drag_item: "Arrastra la idea de regalo %{number} para reordenarla. Usa las flechas arriba y abajo para moverla."
+    gift_list_toggle_item: "Cambiar el estado de la idea de regalo %{number}"
+    gift_list_item_moved: "Idea de regalo movida a la posición %{position}."
     copy: "Copiar"
     copy_email: "Copiar correo electrónico"
     note_placeholder: "Escribe una nota..."
     age: "años"
     added_on: "Añadido el %{date}"
-    empty_title: "Aún no hay entradas"
-    empty_hint: "Añade tu primera entrada para empezar."
+    drag_handle: "Arrastra la entrada para reordenarla. Usa las flechas arriba y abajo para moverla."
+    reorder:
+      invalid_order: "No se ha podido guardar el orden de las entradas."
+      moved: "Entrada movida a la posición %{position}."
+    gift_list_untitled: "Ideas de regalos"
+    gift_list_item_status: "%{text}"
+    new:
+      title: "Añadir a %{name}"
+      heading: "Añadir %{type} a %{name}"
+      back: "← %{name}"
+    type_picker:
+      heading: "¿Qué quieres recordar sobre %{name}?"
+      common_heading: "Añadir algo"
+      all_heading: "Todos los tipos de entrada"
+      view_all: "Ver todos"
+      search_label: "Buscar tipos de entrada"
+      search_placeholder: "Buscar tipos de entrada"
+      no_results: "No hay tipos de entrada coincidentes"
+      already_added: "Ya existe"
+    suggestions:
+      heading: "Ideas, si te sirven"
+      description: "Añádelas cuando te vengan a la mente."
+      first_met: "Cómo os conocisteis"
+      date: "Una fecha para recordar"
+      gift_list: "Ideas de regalos"
     create:
       created: "Entrada añadida."
     update:
