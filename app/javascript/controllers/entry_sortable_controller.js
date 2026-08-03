@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["item", "handle", "status"]
-  static values = { reorderUrl: String, errorMessage: String }
+  static values = { reorderUrl: String, errorMessage: String, movedMessage: String }
 
   connect() {
     this.boundStart = this.start.bind(this)
@@ -53,6 +53,30 @@ export default class extends Controller {
     }
 
     this.moved = true
+  }
+
+  moveWithKeyboard(event) {
+    if (!["ArrowUp", "ArrowDown"].includes(event.key) || this.saving) return
+
+    const item = event.currentTarget.closest('[data-entry-sortable-target="item"]')
+    const items = this.itemTargets
+    const currentIndex = items.indexOf(item)
+    const nextIndex = event.key === "ArrowUp" ? currentIndex - 1 : currentIndex + 1
+    if (nextIndex < 0 || nextIndex >= items.length) return
+
+    event.preventDefault()
+    const originalOrder = items.slice()
+    const adjacentItem = items[nextIndex]
+
+    if (event.key === "ArrowUp") {
+      item.parentElement.insertBefore(item, adjacentItem)
+    } else {
+      item.parentElement.insertBefore(adjacentItem, item)
+    }
+
+    event.currentTarget.focus()
+    this.statusTarget.textContent = this.movedMessageValue.replace("__POSITION__", nextIndex + 1)
+    this.saveOrder(originalOrder)
   }
 
   finish(event) {

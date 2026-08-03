@@ -75,9 +75,10 @@ en:
     added_on: "Added on %{date}"
     empty_title: "No entries yet"
     empty_hint: "Add your first entry to get started."
-    drag_handle: "Drag entry to reorder"
+    drag_handle: "Drag entry to reorder. Use the up and down arrow keys to move it."
     reorder:
       invalid_order: "The entry order could not be saved."
+      moved: "Entry moved to position %{position}."
     gift_list_untitled: "Gift ideas"
     gift_list_item_status: "%{text}"
     create:

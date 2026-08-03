@@ -32,7 +32,7 @@ class Entry < ApplicationRecord
   belongs_to :friend, touch: true
 
   validates :type, presence: true
-  validates :position, presence: true, numericality: { only_integer: true }
+  validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :entry_date, absence: true, unless: :date_entry?
 
   scope :ordered, -> { order(position: :asc, created_at: :desc, id: :desc) }

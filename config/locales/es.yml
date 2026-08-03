@@ -75,9 +75,10 @@ es:
     added_on: "Añadido el %{date}"
     empty_title: "Aún no hay entradas"
     empty_hint: "Añade tu primera entrada para empezar."
-    drag_handle: "Arrastra la entrada para reordenarla"
+    drag_handle: "Arrastra la entrada para reordenarla. Usa las flechas arriba y abajo para moverla."
     reorder:
       invalid_order: "No se ha podido guardar el orden de las entradas."
+      moved: "Entrada movida a la posición %{position}."
     gift_list_untitled: "Ideas de regalos"
     gift_list_item_status: "%{text}"
     create:

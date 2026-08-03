@@ -26,6 +26,30 @@ require "test_helper"
 #  friend_id  (friend_id => friends.id)
 #
 class EntryTest < ActiveSupport::TestCase
+  test "position cannot be negative" do
+    entry = Entry::Note.new(friend: friends(:ada), position: -1, content: { text: "A note" })
+
+    assert_not entry.valid?
+    assert_includes entry.errors[:position], "must be greater than or equal to 0"
+  end
+
+  test "database rejects a negative position" do
+    timestamp = Time.current
+
+    assert_raises ActiveRecord::StatementInvalid do
+      Entry.transaction(requires_new: true) do
+        Entry.insert_all!([ {
+          friend_id: friends(:ada).id,
+          type: "Entry::Note",
+          position: -1,
+          content: { text: "A note" },
+          created_at: timestamp,
+          updated_at: timestamp
+        } ])
+      end
+    end
+  end
+
   test "instantiates STI subclasses by type" do
     phone = Entry::Phone.new(friend: friends(:ada))
     assert_instance_of Entry::Phone, phone

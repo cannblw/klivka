@@ -25,6 +25,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_02_100000) do
     t.index ["friend_id"], name: "index_entries_on_friend_id_for_birthday", unique: true, where: "type = 'Entry::Birthday'"
     t.index ["friend_id"], name: "index_entries_on_friend_id_for_first_met", unique: true, where: "type = 'Entry::FirstMet'"
     t.check_constraint "(type IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NOT NULL) OR (type NOT IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NULL)", name: "entries_date_types_require_entry_date"
+    t.check_constraint "position >= 0", name: "entries_position_non_negative"
   end
 
   create_table "friends", force: :cascade do |t|
