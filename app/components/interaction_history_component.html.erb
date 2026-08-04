@@ -35,8 +35,34 @@
           <% if interaction.note.present? %>
             <p class="mt-1 whitespace-pre-wrap text-sm text-stone-600 dark:text-stone-300"><%= interaction.note %></p>
           <% end %>
+          <div class="mt-2 flex gap-3 text-xs">
+            <%= link_to t("interactions.history.edit"), edit_friend_interaction_path(friend, interaction),
+                  class: "font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+            <%= link_to t("interactions.history.delete"), "#delete-interaction-dialog",
+                  data: { controller: "delete-interaction", delete_interaction_url: friend_interaction_path(friend, interaction), action: "click->delete-interaction#click" },
+                  class: "font-medium text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300" %>
+          </div>
         </li>
       <% end %>
     </ol>
   <% end %>
 </section>
+
+<dialog id="delete-interaction-dialog"
+        data-controller="dialog"
+        data-dialog-target="dialog"
+        class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
+  <div class="p-6">
+    <h2 class="text-lg font-semibold dark:text-stone-100"><%= t("interactions.delete_confirm.title") %></h2>
+    <p class="mt-2 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.delete_confirm.body") %></p>
+    <div class="mt-4 flex justify-end gap-2">
+      <button type="button" data-action="dialog#close"
+              class="rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700">
+        <%= t("interactions.delete_confirm.cancel") %>
+      </button>
+      <%= link_to t("interactions.history.delete"), "#", id: "delete-interaction-confirm-link",
+            data: { action: "click->dialog#close" },
+            class: "rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500" %>
+    </div>
+  </div>
+</dialog>

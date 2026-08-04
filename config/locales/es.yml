@@ -169,6 +169,12 @@ es:
       empty: "Aún no hay interacciones registradas."
       add: "Añadir interacción"
       view_all: "Ver todas (%{count})"
+      edit: "Editar"
+      delete: "Eliminar"
+    delete_confirm:
+      title: "¿Eliminar esta interacción?"
+      body: "Esta interacción se eliminará permanentemente."
+      cancel: "Cancelar"
     index:
       title: "Interacciones con %{name}"
       heading: "Interacciones con %{name}"

@@ -169,6 +169,12 @@ en:
       empty: "No interactions recorded yet."
       add: "Add interaction"
       view_all: "View all (%{count})"
+      edit: "Edit"
+      delete: "Delete"
+    delete_confirm:
+      title: "Delete this interaction?"
+      body: "This interaction will be permanently removed."
+      cancel: "Cancel"
     index:
       title: "Interactions with %{name}"
       heading: "Interactions with %{name}"
