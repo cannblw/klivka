@@ -67,6 +67,13 @@
 
   <%= render FriendContactActionsComponent.new(entries: ordered_entries) %>
 
+  <%= render InteractionHistoryComponent.new(
+        friend: @friend,
+        interactions: @recent_interactions,
+        total_count: @interaction_count,
+        heading_key: "interactions.history.last_heading"
+      ) %>
+
   <%= render EntryTypePickerComponent.new(friend: @friend, types: EntryTypePickerComponent::COMMON_TYPES) %>
 
   <%= render FriendSuggestionsComponent.new(friend: @friend, entries: ordered_entries) %>

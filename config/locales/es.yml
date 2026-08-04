@@ -163,6 +163,28 @@ es:
       note_placeholder: "¿Dónde os visteis o qué quieres recordar?"
       cancel: "Cancelar"
       save: "Guardar interacción"
+    history:
+      heading: "Interacciones"
+      last_heading: "Últimas interacciones"
+      empty: "Aún no hay interacciones registradas."
+      add: "Añadir interacción"
+      view_all: "Ver todas (%{count})"
+    index:
+      title: "Interacciones con %{name}"
+      heading: "Interacciones con %{name}"
+      description: "Un registro de las veces que os pusisteis en contacto."
+      back: "← %{name}"
+    form:
+      new_title: "Añadir interacción con %{name}"
+      new_heading: "Añadir interacción con %{name}"
+      edit_title: "Editar interacción con %{name}"
+      edit_heading: "Editar interacción con %{name}"
+      save: "Guardar interacción"
+    pagination:
+      label: "Páginas del historial de interacciones"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{number}"
     create:
       created: "Interacción registrada."
     update:

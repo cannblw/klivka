@@ -145,4 +145,46 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     delete friend_interaction_url(friends(:bob), interaction)
     assert_response :not_found
   end
+
+  test "index shows 25 newest interactions and next-page navigation" do
+    27.times do |index|
+      friends(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date, note: "Interaction #{index + 1}")
+    end
+
+    get friend_interactions_url(friends(:ada))
+
+    assert_response :success
+    assert_select "#interactions-history li", count: 25
+    assert_select "#interactions-history li", text: /Interaction 1/
+    assert_select "#interactions-history li", text: /Interaction 25/
+    assert_select "#interactions-history li", text: /Interaction 26/, count: 0
+    assert_select "a", text: "Next"
+    assert_select "nav", text: /Page 1/
+  end
+
+  test "index shows the previous page and remaining interactions" do
+    27.times do |index|
+      friends(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date, note: "Interaction #{index + 1}")
+    end
+
+    get friend_interactions_url(friends(:ada), page: 2)
+
+    assert_response :success
+    assert_select "#interactions-history li", count: 2
+    assert_select "#interactions-history li", text: /Interaction 26/
+    assert_select "#interactions-history li", text: /Interaction 27/
+    assert_select "a", text: "Previous"
+    assert_select "a", text: "Next", count: 0
+  end
+
+  test "index treats invalid pages as the first page" do
+    26.times do |index|
+      friends(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date)
+    end
+
+    get friend_interactions_url(friends(:ada), page: "not-a-number")
+
+    assert_response :success
+    assert_select "nav", text: /Page 1/
+  end
 end

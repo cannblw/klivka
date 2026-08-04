@@ -1,9 +1,16 @@
 class InteractionsController < ApplicationController
+  PAGE_SIZE = 25
+
   before_action :set_friend
   before_action :set_interaction, only: %i[ edit update destroy ]
 
   def index
-    @interactions = @friend.interactions.recent
+    @page = page_number
+    page_results = @friend.interactions.recent.offset((@page - 1) * PAGE_SIZE).limit(PAGE_SIZE + 1).to_a
+    @has_next_page = page_results.size > PAGE_SIZE
+    @has_previous_page = @page > 1
+    @interactions = page_results.first(PAGE_SIZE)
+    @total_count = @friend.interactions.count
   end
 
   def new
@@ -21,6 +28,8 @@ class InteractionsController < ApplicationController
     elsif params[:context] == "quick_log"
       @interaction_to_enrich = @interaction
       @open_interaction_modal = true
+      @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
+      @interaction_count = @friend.interactions.count
       render "friends/show", status: :unprocessable_entity
     else
       render :new, status: :unprocessable_entity
@@ -31,6 +40,8 @@ class InteractionsController < ApplicationController
   end
 
   def update
+    @interaction.validation_date = browser_date || Date.current
+
     if @interaction.update(interaction_params)
       redirect_to @friend, notice: t("interactions.update.updated")
     else
@@ -68,5 +79,10 @@ class InteractionsController < ApplicationController
     @browser_date = Date.iso8601(params[:browser_date]) if params[:date_source] == "browser"
   rescue Date::Error, TypeError
     @browser_date = nil
+  end
+
+  def page_number
+    value = Integer(params[:page], exception: false)
+    value&.positive? ? value : 1
   end
 end

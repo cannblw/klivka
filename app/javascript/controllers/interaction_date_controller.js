@@ -14,6 +14,15 @@ export default class extends Controller {
     this.sourceTarget.value = "browser"
   }
 
+  openPicker() {
+    if (this.dateTarget.showPicker) {
+      this.dateTarget.showPicker()
+    } else {
+      this.dateTarget.focus()
+      this.dateTarget.click()
+    }
+  }
+
   setCurrentDate() {
     this.formTarget.reset()
     const today = this.localDateFor(new Date())

@@ -163,6 +163,28 @@ en:
       note_placeholder: "Where did you meet, or what do you want to remember?"
       cancel: "Cancel"
       save: "Save interaction"
+    history:
+      heading: "Interactions"
+      last_heading: "Last interactions"
+      empty: "No interactions recorded yet."
+      add: "Add interaction"
+      view_all: "View all (%{count})"
+    index:
+      title: "Interactions with %{name}"
+      heading: "Interactions with %{name}"
+      description: "A record of the times you connected."
+      back: "← %{name}"
+    form:
+      new_title: "Add interaction with %{name}"
+      new_heading: "Add interaction with %{name}"
+      edit_title: "Edit interaction with %{name}"
+      edit_heading: "Edit interaction with %{name}"
+      save: "Save interaction"
+    pagination:
+      label: "Interaction history pages"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{number}"
     create:
       created: "Interaction recorded."
     update:
