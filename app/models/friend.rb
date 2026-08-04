@@ -19,6 +19,7 @@
 class Friend < ApplicationRecord
   belongs_to :user
   has_many :entries, dependent: :destroy
+  has_many :interactions, dependent: :destroy
 
   validates :name, presence: true
 
