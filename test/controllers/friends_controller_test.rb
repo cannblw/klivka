@@ -117,7 +117,9 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show displays the friend" do
-    get friend_url(friends(:ada))
+    assert_no_difference -> { friends(:ada).interactions.count } do
+      get friend_url(friends(:ada))
+    end
 
     assert_response :success
     assert_select "h1", /Ada Lovelace/
@@ -138,6 +140,9 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil phone_link
     assert_match(/Phone/, phone_link.text)
     assert_select "a[href='#{all_types_path}']", text: "View all"
+    assert_select "button[aria-controls='#{QuickInteractionComponent::DOM_ID}']", text: "Contacted today"
+    assert_select "[data-controller~='dialog'][data-dialog-open-value='false'] dialog##{QuickInteractionComponent::DOM_ID}"
+    assert_select "form[action='#{friend_interactions_path(friends(:ada))}']"
   end
 
   test "show omits the empty entries feed for a friend with only a name" do

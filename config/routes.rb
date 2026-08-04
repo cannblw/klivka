@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resources :entries, only: %i[ new create edit update destroy ] do
       patch :reorder, on: :collection
     end
+    resources :interactions, only: %i[ index new create edit update destroy ]
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
