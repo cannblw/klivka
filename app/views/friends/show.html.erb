@@ -38,8 +38,14 @@
     </div>
 
     <div class="flex items-center gap-2">
+      <%= render QuickInteractionComponent.new(
+            friend: @friend,
+            interaction: @interaction_to_enrich,
+            open: @open_interaction_modal
+          ) %>
+
       <%= link_to t("entries.add"), new_friend_entry_path(friend_id: @friend.id),
-            class: "rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
+            class: "rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-200 dark:border-stone-600 dark:text-stone-200 dark:hover:bg-stone-700" %>
 
       <div data-controller="dropdown" class="relative">
         <button type="button" data-action="dropdown#toggle"

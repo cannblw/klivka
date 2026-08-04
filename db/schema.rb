@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_100000) do
   create_table "entries", force: :cascade do |t|
     t.json "content"
     t.datetime "created_at", null: false
@@ -41,9 +41,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_090000) do
     t.datetime "created_at", null: false
     t.integer "friend_id", null: false
     t.text "note"
-    t.datetime "occurred_at", null: false
+    t.date "occurred_on", null: false
     t.datetime "updated_at", null: false
-    t.index ["friend_id", "occurred_at"], name: "index_interactions_on_friend_id_and_occurred_at"
+    t.index ["friend_id", "occurred_on"], name: "index_interactions_on_friend_id_and_occurred_on"
     t.index ["friend_id"], name: "index_interactions_on_friend_id"
     t.check_constraint "contact_method IS NULL OR contact_method IN ('call', 'message', 'video', 'in_person', 'other')", name: "interactions_contact_method_is_supported"
   end

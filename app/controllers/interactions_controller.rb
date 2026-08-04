@@ -7,14 +7,21 @@ class InteractionsController < ApplicationController
   end
 
   def new
-    @interaction = @friend.interactions.new(occurred_at: Time.current)
+    @interaction = @friend.interactions.new(occurred_on: Date.current)
   end
 
   def create
     @interaction = @friend.interactions.new(interaction_params)
+    @interaction.validation_date = browser_date || Date.current
+    @interaction.occurred_on = Date.current if server_date_fallback?
 
     if @interaction.save
-      redirect_to @friend, notice: t("interactions.create.created")
+      notice = server_date_fallback? ? t("interactions.contacted_today.server_date_fallback") : t("interactions.create.created")
+      redirect_to @friend, notice: notice
+    elsif params[:context] == "quick_log"
+      @interaction_to_enrich = @interaction
+      @open_interaction_modal = true
+      render "friends/show", status: :unprocessable_entity
     else
       render :new, status: :unprocessable_entity
     end
@@ -37,14 +44,6 @@ class InteractionsController < ApplicationController
     redirect_to @friend, notice: t("interactions.destroy.deleted")
   end
 
-  def contacted_today
-    occurred_at, used_server_time = occurred_at_from_browser
-    @friend.interactions.create!(occurred_at: occurred_at)
-
-    notice = used_server_time ? t("interactions.contacted_today.server_time_fallback") : t("interactions.create.created")
-    redirect_to @friend, notice: notice
-  end
-
   private
 
   def set_friend
@@ -56,19 +55,18 @@ class InteractionsController < ApplicationController
   end
 
   def interaction_params
-    params.expect(interaction: [ :occurred_at, :contact_method, :note ])
+    params.expect(interaction: [ :occurred_on, :contact_method, :note ])
   end
 
-  def occurred_at_from_browser
-    server_time = Time.current
-    browser_value = params[:occurred_at].presence
-    return [ server_time, true ] unless browser_value
+  def server_date_fallback?
+    params[:context] == "quick_log" && browser_date.nil?
+  end
 
-    browser_time = Time.iso8601(browser_value)
-    return [ server_time, true ] if browser_time > server_time
+  def browser_date
+    return @browser_date if defined?(@browser_date)
 
-    [ browser_time, false ]
-  rescue ArgumentError
-    [ server_time, true ]
+    @browser_date = Date.iso8601(params[:browser_date]) if params[:date_source] == "browser"
+  rescue Date::Error, TypeError
+    @browser_date = nil
   end
 end

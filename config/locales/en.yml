@@ -17,6 +17,9 @@ en:
         label: "Label"
       entry/first_met:
         friend_id: "First met"
+      interaction:
+        occurred_on: "Date"
+        contact_method: "How you connected"
     errors:
       models:
         entry/birthday:
@@ -34,7 +37,7 @@ en:
               invalid: "item %{index} must have text"
         interaction:
           attributes:
-            occurred_at:
+            occurred_on:
               future: "must not be in the future"
 
   auth:
@@ -141,14 +144,31 @@ en:
     copy_email: "Copy email %{value}"
 
   interactions:
+    methods:
+      call: "Call"
+      message: "Message"
+      video: "Video"
+      in_person: "In person"
+      other: "Other"
+    contacted_today:
+      button: "Contacted today"
+      server_date_fallback: "Interaction recorded using the server date. Check that JavaScript is enabled if the date looks wrong."
+    follow_up:
+      heading: "Record contact with %{name}"
+      hint: "Add as much or as little context as you like."
+      occurred_on: "Date"
+      contact_method: "How you connected"
+      method_blank: "Not specified"
+      note: "Notes"
+      note_placeholder: "Where did you meet, or what do you want to remember?"
+      cancel: "Cancel"
+      save: "Save interaction"
     create:
       created: "Interaction recorded."
     update:
       updated: "Interaction updated."
     destroy:
       deleted: "Interaction removed."
-    contacted_today:
-      server_time_fallback: "Interaction recorded using server time. Check that JavaScript is enabled if the time looks wrong."
 
   birthdays:
     index:

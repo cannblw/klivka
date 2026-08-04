@@ -7,6 +7,7 @@ class FriendsController < ApplicationController
 
   def show
     @friend = Current.user.friends.find(params[:id])
+    prepare_quick_interaction
   end
 
   def update
@@ -15,6 +16,7 @@ class FriendsController < ApplicationController
     if @friend.update(friend_params)
       redirect_to @friend
     else
+      prepare_quick_interaction
       render :show, status: :unprocessable_entity
     end
   end
@@ -38,6 +40,11 @@ class FriendsController < ApplicationController
   end
 
   private
+
+  def prepare_quick_interaction
+    @interaction_to_enrich = @friend.interactions.new(occurred_on: Date.current)
+    @open_interaction_modal = false
+  end
 
   def friend_params
     params.expect(friend: [ :name ])
