@@ -1,8 +1,23 @@
-# Klivka
+<h1 align="center">
+  <br>
+  <a href="./"><img src="./public/icon.svg" height="180" width="180" alt="Klivka icon"></a>
+  <br>
+  Klivka
+  <br>
+</h1>
 
-A low-friction personal CRM to keep track of your friends.
+<h4 align="center">An open-source personal CRM you can self-host with Docker.</h4>
 
-The core principle: **adding a friend requires a name. Nothing else.** Met someone today and know nothing about them yet? Add their name, done. Everything else is an optional entry you attach to their profile whenever you learn it.
+<p align="center">
+  <a href="#getting-started">Getting started</a> •
+  <a href="#development">Development</a> •
+  <a href="#configuration">Configuration</a> •
+  <a href="#database-support">Database support</a>
+</p>
+
+The core principle: **adding a friend requires a name. Nothing else.** Klivka helps you keep a small, intentional record of friends, family, and meaningful relationships. Add useful context as optional entries, then record interactions when you reach out.
+
+Klivka is designed for private, personal use. Its progressive interface keeps the essentials close while giving each relationship room to grow over time.
 
 ## Stack
 
@@ -65,4 +80,4 @@ DB_NAME=klivka
 
 ## License
 
-[AGPL-3.0](LICENSE)
+[AGPL-3.0](LICENSE) for the source code. See the [trademark and brand policy](TRADEMARKS.md) for the Klivka name, logo, and visual identity.
