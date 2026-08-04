@@ -32,6 +32,10 @@ en:
             items:
               blank: "must include at least one idea"
               invalid: "item %{index} must have text"
+        interaction:
+          attributes:
+            occurred_at:
+              future: "must not be in the future"
 
   auth:
     rate_limited: "Try again later."
@@ -135,6 +139,16 @@ en:
     email: "Email %{value}"
     copy_phone: "Copy phone number %{value}"
     copy_email: "Copy email %{value}"
+
+  interactions:
+    create:
+      created: "Interaction recorded."
+    update:
+      updated: "Interaction updated."
+    destroy:
+      deleted: "Interaction removed."
+    contacted_today:
+      server_time_fallback: "Interaction recorded using server time. Check that JavaScript is enabled if the time looks wrong."
 
   birthdays:
     index:

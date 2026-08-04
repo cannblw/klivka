@@ -32,6 +32,10 @@ es:
             items:
               blank: "debe incluir al menos una idea"
               invalid: "el elemento %{index} debe tener texto"
+        interaction:
+          attributes:
+            occurred_at:
+              future: "no puede estar en el futuro"
 
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."
@@ -135,6 +139,16 @@ es:
     email: "Enviar un correo a %{value}"
     copy_phone: "Copiar número de teléfono %{value}"
     copy_email: "Copiar correo electrónico %{value}"
+
+  interactions:
+    create:
+      created: "Interacción registrada."
+    update:
+      updated: "Interacción actualizada."
+    destroy:
+      deleted: "Interacción eliminada."
+    contacted_today:
+      server_time_fallback: "Interacción registrada con la hora del servidor. Asegúrate de que JavaScript esté activado si la hora no es correcta."
 
   birthdays:
     index:
