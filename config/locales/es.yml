@@ -1,4 +1,8 @@
 es:
+  brand:
+    home_label: "Inicio de Klivka"
+    logo_alt: "Klivka"
+
   date:
     formats:
       month_year: "%B de %Y"

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Klivka</title>
+  <desc id="desc">The Klivka logo on a warm cream social sharing card.</desc>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="45%" r="65%">
+      <stop stop-color="#FFFDF8"/><stop offset="1" stop-color="#FBE7CF"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g transform="translate(238 247) scale(1.4)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-88 68C-54 22-16 22 0 68C16 22 54 22 88 68C54 114 16 114 0 68C-16 114-54 114-88 68Z" stroke="#EF6A2E" stroke-width="16"/>
+    <path d="M-49 68H49" stroke="#FFB354" stroke-width="9"/>
+  </g>
+  <text x="410" y="386" fill="#29201D" font-family="Avenir Next, Avenir, Nunito Sans, sans-serif" font-size="180" font-weight="650">Klivka</text>
+</svg>

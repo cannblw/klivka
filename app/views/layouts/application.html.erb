@@ -6,6 +6,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Klivka">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#EF6A2E">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Klivka">
+    <meta property="og:title" content="<%= content_for(:title) || "Klivka" %>">
+    <meta property="og:image" content="<%= image_url("/og-image.png") %>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= content_for(:title) || "Klivka" %>">
+    <meta name="twitter:image" content="<%= image_url("/og-image.png") %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -14,9 +24,12 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
@@ -29,7 +42,9 @@
     <header class="border-b border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800">
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <div class="flex items-center gap-4">
-           <%= link_to "Klivka", "/", class: "text-lg font-semibold tracking-tight dark:text-stone-100" %>
+          <%= link_to "/", aria: { label: t("brand.home_label") }, class: "shrink-0" do %>
+            <%= image_tag "/brand/klivka-logo.svg", alt: t("brand.logo_alt"), class: "h-9 w-auto dark:rounded-md dark:bg-stone-100 dark:px-1.5" %>
+          <% end %>
           <% if authenticated? %>
             <%= link_to t("nav.birthdays"), birthdays_path, class: "text-sm font-medium text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100" %>
           <% end %>

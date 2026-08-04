@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="150" viewBox="0 25 640 150" role="img" aria-labelledby="title desc">
+  <title id="title">Klivka</title>
+  <desc id="desc">The Klivka wordmark beside a balanced orange line symbol.</desc>
+  <g transform="translate(104 32)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-88 68C-54 22-16 22 0 68C16 22 54 22 88 68C54 114 16 114 0 68C-16 114-54 114-88 68Z" stroke="#EF6A2E" stroke-width="16"/>
+    <path d="M-49 68H49" stroke="#FFB354" stroke-width="9"/>
+  </g>
+  <text x="215" y="146" fill="#29201D" font-family="Avenir Next, Avenir, Nunito Sans, sans-serif" font-size="128" font-weight="650">Klivka</text>
+</svg>

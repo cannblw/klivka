@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">Klivka icon</title>
-  <desc id="desc">A balanced cream and amber line symbol on a warm orange square.</desc>
-  <rect width="512" height="512" rx="112" fill="#EF6A2E"/>
-  <g transform="translate(256 120) scale(2.15)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <title id="title">Klivka maskable icon</title>
+  <desc id="desc">A balanced cream and amber line symbol centered in a safe area on orange.</desc>
+  <rect width="512" height="512" fill="#EF6A2E"/>
+  <g transform="translate(256 140) scale(1.7)" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path d="M-88 68C-54 22-16 22 0 68C16 22 54 22 88 68C54 114 16 114 0 68C-16 114-54 114-88 68Z" stroke="#FFF8EF" stroke-width="16"/>
     <path d="M-49 68H49" stroke="#FFC879" stroke-width="9"/>
   </g>

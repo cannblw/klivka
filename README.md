@@ -1,6 +1,19 @@
-# Klivka
+<h1 align="center">
+  <br>
+  <a href="./"><img src="./public/icon.svg" height="180" width="180" alt="Klivka icon"></a>
+  <br>
+  Klivka
+  <br>
+</h1>
 
-A low-friction personal CRM to keep track of your friends.
+<h4 align="center">A low-friction personal CRM to keep track of your friends.</h4>
+
+<p align="center">
+  <a href="#getting-started">Getting started</a> •
+  <a href="#development">Development</a> •
+  <a href="#configuration">Configuration</a> •
+  <a href="#database-support">Database support</a>
+</p>
 
 The core principle: **adding a friend requires a name. Nothing else.** Met someone today and know nothing about them yet? Add their name, done. Everything else is an optional entry you attach to their profile whenever you learn it.
 
