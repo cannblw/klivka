@@ -1,5 +1,6 @@
 es:
   brand:
+    description: "Un cuaderno privado y tranquilo para recordar a las personas que importan."
     home_label: "Inicio de Klivka"
     logo_alt: "Klivka"
 

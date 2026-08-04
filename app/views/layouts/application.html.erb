@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Klivka">
+    <meta name="description" content="<%= t("brand.description") %>">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#EF6A2E">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Klivka">
     <meta property="og:title" content="<%= content_for(:title) || "Klivka" %>">
+    <meta property="og:description" content="<%= t("brand.description") %>">
     <meta property="og:image" content="<%= image_url("/og-image.png") %>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<%= content_for(:title) || "Klivka" %>">
+    <meta name="twitter:description" content="<%= t("brand.description") %>">
     <meta name="twitter:image" content="<%= image_url("/og-image.png") %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

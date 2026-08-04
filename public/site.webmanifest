@@ -1,6 +1,7 @@
 {
   "name": "Klivka",
   "short_name": "Klivka",
+  "description": "A calm, private relationship notebook for the people who matter.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
