@@ -1,3 +1,15 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+.interaction-date-input {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] .interaction-date-input {
+  color-scheme: dark;
+}
+
+.interaction-date-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}

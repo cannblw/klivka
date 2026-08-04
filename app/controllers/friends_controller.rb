@@ -7,6 +7,9 @@ class FriendsController < ApplicationController
 
   def show
     @friend = Current.user.friends.find(params[:id])
+    @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
+    @interaction_count = @friend.interactions.count
+    prepare_quick_interaction
   end
 
   def update
@@ -15,6 +18,7 @@ class FriendsController < ApplicationController
     if @friend.update(friend_params)
       redirect_to @friend
     else
+      prepare_quick_interaction
       render :show, status: :unprocessable_entity
     end
   end
@@ -38,6 +42,13 @@ class FriendsController < ApplicationController
   end
 
   private
+
+  def prepare_quick_interaction
+    @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
+    @interaction_count = @friend.interactions.count
+    @interaction_to_enrich = @friend.interactions.new(occurred_on: Date.current)
+    @open_interaction_modal = false
+  end
 
   def friend_params
     params.expect(friend: [ :name ])
