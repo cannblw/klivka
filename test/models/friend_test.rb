@@ -52,4 +52,16 @@ class FriendTest < ActiveSupport::TestCase
     assert_equal "maria-lopez", users(:one).friends.last.slug
     assert_equal "maria-lopez", users(:two).friends.last.slug
   end
+
+  test "last_interaction returns the most recent interaction by occurrence date" do
+    friend = friends(:ada)
+    friend.interactions.create!(occurred_on: 5.days.ago.to_date)
+    newer = friend.interactions.create!(occurred_on: 2.days.ago.to_date)
+
+    assert_equal newer, friend.last_interaction
+  end
+
+  test "last_interaction returns nil when no interactions exist" do
+    assert_nil friends(:ada).last_interaction
+  end
 end
