@@ -80,6 +80,8 @@ gem "jaro_winkler", "~> 1.7"
 
 gem "friendly_id", "~> 5.7"
 
+gem "dotiw", "~> 5.5"
+
 gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
 
 gem "annotaterb", "~> 4.24", group: :development
