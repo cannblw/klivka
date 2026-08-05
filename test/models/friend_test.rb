@@ -52,5 +52,4 @@ class FriendTest < ActiveSupport::TestCase
     assert_equal "maria-lopez", users(:one).friends.last.slug
     assert_equal "maria-lopez", users(:two).friends.last.slug
   end
-
 end
