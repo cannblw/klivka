@@ -143,6 +143,28 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "button[aria-controls='#{QuickInteractionComponent::DOM_ID}']", text: "Contacted today"
     assert_select "[data-controller~='dialog'][data-dialog-open-value='false'] dialog##{QuickInteractionComponent::DOM_ID}"
     assert_select "form[action='#{friend_interactions_path(friends(:ada))}']"
+    assert_select "p", text: /No contact yet/
+  end
+
+  test "show displays last contacted label when interactions exist" do
+    friends(:ada).interactions.create!(occurred_on: 2.days.ago.to_date)
+
+    get friend_url(friends(:ada))
+
+    assert_response :success
+    assert_select "p", text: /Last contact/
+    assert_select "p", text: /2 days ago/
+  end
+
+  test "show displays the most recent interaction date when multiple exist" do
+    friends(:ada).interactions.create!(occurred_on: 5.days.ago.to_date)
+    friends(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
+
+    get friend_url(friends(:ada))
+
+    assert_response :success
+    assert_select "p", text: /Last contact/
+    assert_select "p", text: /1 day ago/
   end
 
   test "show omits the empty entries feed for a friend with only a name" do

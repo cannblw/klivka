@@ -46,6 +46,7 @@ class FriendsController < ApplicationController
   def prepare_quick_interaction
     @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
     @interaction_count = @friend.interactions.count
+    @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @friend.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = false
   end

@@ -65,6 +65,20 @@
     </div>
   </div>
 
+  <% if @last_interaction %>
+    <% days = (Date.current - @last_interaction.occurred_on).to_i %>
+    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+      <%= t("interactions.last_contacted.label") %>:
+      <% if days == 0 %>
+        <%= t("interactions.last_contacted.today") %>
+      <% else %>
+        <%= t("interactions.last_contacted.ago", duration: time_ago_in_words(@last_interaction.occurred_on.to_time, except: [:hours, :minutes, :seconds, :weeks])) %>
+      <% end %>
+    </p>
+  <% else %>
+    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.last_contacted.never") %></p>
+  <% end %>
+
   <%= render FriendContactActionsComponent.new(entries: ordered_entries) %>
 
   <%= render InteractionHistoryComponent.new(

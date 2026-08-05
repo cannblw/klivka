@@ -1,4 +1,15 @@
 es:
+  datetime:
+    dotiw:
+      years:
+        one: "1 año"
+      months:
+        one: "1 mes"
+      days:
+        one: "1 día"
+      weeks:
+        one: "1 semana"
+
   brand:
     description: "Un cuaderno privado y tranquilo para recordar a las personas que importan."
     home_label: "Inicio de Klivka"
@@ -202,6 +213,11 @@ es:
       updated: "Interacción actualizada."
     destroy:
       deleted: "Interacción eliminada."
+    last_contacted:
+      label: "Último contacto"
+      never: "Aún sin contacto"
+      today: "hoy"
+      ago: "hace %{duration}"
 
   birthdays:
     index:

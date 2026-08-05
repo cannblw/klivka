@@ -35,8 +35,4 @@ class Friend < ApplicationRecord
   def initials
     name.split.take(2).map { |part| part[0] }.join.upcase
   end
-
-  def last_interaction
-    interactions.recent.first
-  end
 end
