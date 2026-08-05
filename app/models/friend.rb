@@ -20,7 +20,7 @@
 #
 class Friend < ApplicationRecord
   extend FriendlyId
-  friendly_id :name, use: [ :slugged, :scoped ], scope: :user
+  friendly_id :name, use: [ :slugged, :scoped, FriendlyId::UnicodeSlug ], scope: :user
 
   belongs_to :user
   has_many :entries, dependent: :destroy

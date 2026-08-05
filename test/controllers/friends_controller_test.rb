@@ -177,6 +177,29 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
+  test "same slug resolves to each user's own friend" do
+    friend_one = users(:one).friends.create!(name: "María López")
+    friend_two = users(:two).friends.create!(name: "María López")
+    assert_equal friend_one.slug, friend_two.slug
+
+    # User one sees their own María López
+    get friend_url(friend_one)
+    assert_response :success
+    assert_select "h1", /María López/
+
+    # User two sees their own María López at the same URL
+    sign_in_as users(:two)
+    get friend_url(friend_two)
+    assert_response :success
+    assert_select "h1", /María López/
+
+    # A slug that exists only for user two returns 404 for user one
+    friend_three = users(:two).friends.create!(name: "Único Amigo")
+    sign_in_as users(:one)
+    get friend_url(friend_three)
+    assert_response :not_found
+  end
+
   test "cross-user returns 404 for update" do
     patch friend_url(friends(:bob)), params: { friend: { name: "Nope" } }
 
