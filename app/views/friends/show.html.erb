@@ -44,7 +44,7 @@
             open: @open_interaction_modal
           ) %>
 
-      <%= link_to t("entries.add"), new_friend_entry_path(friend_id: @friend.id),
+      <%= link_to t("entries.add"), new_friend_entry_path(@friend),
             class: "rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-200 dark:border-stone-600 dark:text-stone-200 dark:hover:bg-stone-700" %>
 
       <div data-controller="dropdown" class="relative">

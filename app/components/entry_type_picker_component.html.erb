@@ -4,7 +4,7 @@
       <%= t(searchable? ? "entries.type_picker.all_heading" : "entries.type_picker.common_heading") %>
     </h2>
     <% unless searchable? %>
-      <%= link_to t("entries.type_picker.view_all"), new_friend_entry_path(friend_id: friend.id),
+      <%= link_to t("entries.type_picker.view_all"), new_friend_entry_path(friend),
             class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
     <% end %>
   </div>
@@ -32,7 +32,7 @@
             <span class="ml-auto text-xs font-normal"><%= t("entries.type_picker.already_added") %></span>
           </div>
         <% else %>
-          <%= link_to new_friend_entry_path(friend_id: friend.id, type: type),
+          <%= link_to new_friend_entry_path(friend, type: type),
                 class: "flex h-full items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-3 text-sm font-medium text-stone-700 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-amber-700 dark:hover:bg-amber-900/20 dark:hover:text-amber-300" do %>
             <span class="material-icons text-stone-400" style="font-size:18px" aria-hidden="true"><%= icon_for(type) %></span>
             <span><%= label_for(type) %></span>

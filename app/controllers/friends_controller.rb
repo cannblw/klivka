@@ -6,14 +6,14 @@ class FriendsController < ApplicationController
   end
 
   def show
-    @friend = Current.user.friends.find(params[:id])
+    @friend = Current.user.friends.friendly.find(params[:id])
     @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
     @interaction_count = @friend.interactions.count
     prepare_quick_interaction
   end
 
   def update
-    @friend = Current.user.friends.find(params[:id])
+    @friend = Current.user.friends.friendly.find(params[:id])
 
     if @friend.update(friend_params)
       redirect_to @friend
@@ -24,7 +24,7 @@ class FriendsController < ApplicationController
   end
 
   def destroy
-    friend = Current.user.friends.find(params[:id])
+    friend = Current.user.friends.friendly.find(params[:id])
     friend.destroy
 
     redirect_to root_path, notice: t(".deleted", name: friend.name)
