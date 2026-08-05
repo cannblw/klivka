@@ -158,8 +158,8 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
   test "update renames the friend" do
     patch friend_url(friends(:ada)), params: { friend: { name: "Ada King" } }
 
-    assert_redirected_to friend_url(friends(:ada))
     assert_equal "Ada King", friends(:ada).reload.name
+    assert_redirected_to friend_url(friends(:ada))
   end
 
   test "update with blank name re-renders with error" do

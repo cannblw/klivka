@@ -1,6 +1,6 @@
 <%= form_with model: [ friend, entry ],
       scope: :entry,
-      url: entry.persisted? ? friend_entry_path(friend_id: friend.id, id: entry.id) : friend_entries_path(friend),
+      url: entry.persisted? ? friend_entry_path(friend, entry) : friend_entries_path(friend),
       html: { data: { controller: "unsaved-changes" } },
       class: "space-y-4" do |form| %>
 
@@ -151,7 +151,7 @@
     </div>
     <% if entry.persisted? %>
       <%= link_to t("entries.delete"), "#delete-entry-dialog",
-            data: { controller: "delete-entry", delete_entry_url: friend_entry_path(friend_id: friend.id, id: entry.id), action: "click->delete-entry#click" },
+            data: { controller: "delete-entry", delete_entry_url: friend_entry_path(friend, entry), action: "click->delete-entry#click" },
             class: "rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20" %>
     <% end %>
   </div>

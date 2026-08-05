@@ -9,7 +9,7 @@ class EntriesController < ApplicationController
   end
 
   def create
-    @friend = Current.user.friends.find(params[:friend_id])
+    @friend = Current.user.friends.friendly.find(params[:friend_id])
     klass = Entry.creatable_type(entry_params[:type])
 
     unless klass
@@ -62,7 +62,7 @@ class EntriesController < ApplicationController
   end
 
   def reorder
-    @friend = Current.user.friends.find(params[:friend_id])
+    @friend = Current.user.friends.friendly.find(params[:friend_id])
     requested_ids = params.expect(entry_ids: []).map(&:to_i)
     entries = @friend.entries.index_by(&:id)
 
@@ -87,7 +87,7 @@ class EntriesController < ApplicationController
   private
 
   def set_friend
-    @friend = Current.user.friends.find(params[:friend_id])
+    @friend = Current.user.friends.friendly.find(params[:friend_id])
   end
 
   def set_entry

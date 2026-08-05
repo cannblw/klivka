@@ -22,12 +22,15 @@
 #
 ada:
   name: Ada Lovelace
+  slug: ada-lovelace
   user: one
 
 grace:
   name: Grace Hopper
+  slug: grace-hopper
   user: one
 
 bob:
   name: Bob Ross
+  slug: bob-ross
   user: two

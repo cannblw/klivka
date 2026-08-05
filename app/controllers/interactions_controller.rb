@@ -58,7 +58,7 @@ class InteractionsController < ApplicationController
   private
 
   def set_friend
-    @friend = Current.user.friends.find(params[:friend_id])
+    @friend = Current.user.friends.friendly.find(params[:friend_id])
   end
 
   def set_interaction
