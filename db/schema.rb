@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_05_072553) do
   create_table "entries", force: :cascade do |t|
     t.json "content"
     t.datetime "created_at", null: false
@@ -31,8 +31,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_100000) do
   create_table "friends", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
+    t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["user_id", "slug"], name: "index_friends_on_user_id_and_slug", unique: true
     t.index ["user_id"], name: "index_friends_on_user_id"
   end
 

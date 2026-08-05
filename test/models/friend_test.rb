@@ -6,13 +6,15 @@ require "test_helper"
 #
 #  id         :integer          not null, primary key
 #  name       :string           not null
+#  slug       :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  user_id    :integer          not null
 #
 # Indexes
 #
-#  index_friends_on_user_id  (user_id)
+#  index_friends_on_user_id           (user_id)
+#  index_friends_on_user_id_and_slug  (user_id,slug) UNIQUE
 #
 # Foreign Keys
 #
