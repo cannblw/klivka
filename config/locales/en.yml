@@ -25,6 +25,8 @@ en:
       interaction:
         occurred_on: "Date"
         contact_method: "How you connected"
+      keep_in_touch_setting:
+        cadence: "Frequency"
     errors:
       models:
         entry/birthday:
@@ -44,6 +46,12 @@ en:
           attributes:
             occurred_on:
               future: "must not be in the future"
+        keep_in_touch_setting:
+          attributes:
+            base:
+              snooze_requires_enabled_cadence: "Enable the contact reminder before snoozing it."
+            cadence:
+              inclusion: "is not available"
 
   auth:
     rate_limited: "Try again later."
@@ -207,6 +215,28 @@ en:
       never: "No contact yet"
       today: "today"
       ago: "%{duration} ago"
+
+  keep_in_touch_settings:
+    create:
+      enabled: "Contact reminder enabled."
+      invalid: "This contact reminder wasn't saved: %{reason}"
+      stale: "This contact reminder changed. Please review the latest details."
+    update:
+      updated: "Contact reminder updated."
+      invalid: "This contact reminder wasn't saved: %{reason}"
+      stale: "This contact reminder changed. Please review the latest details."
+    enable:
+      updated: "Contact reminder updated."
+      invalid: "This contact reminder wasn't saved: %{reason}"
+      stale: "This contact reminder changed. Please review the latest details."
+    disable:
+      updated: "Contact reminder updated."
+      invalid: "This contact reminder wasn't saved: %{reason}"
+      stale: "This contact reminder changed. Please review the latest details."
+    snooze:
+      updated: "Contact reminder updated."
+      invalid: "This contact reminder wasn't saved: %{reason}"
+      stale: "This contact reminder changed. Please review the latest details."
 
   birthdays:
     index:

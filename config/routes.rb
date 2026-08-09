@@ -10,6 +10,11 @@ Rails.application.routes.draw do
       patch :reorder, on: :collection
     end
     resources :interactions, only: %i[ index new create edit update destroy ]
+    resource :keep_in_touch_setting, only: %i[ create update ] do
+      patch :enable
+      patch :disable
+      patch :snooze
+    end
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

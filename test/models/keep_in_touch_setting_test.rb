@@ -46,7 +46,7 @@ class KeepInTouchSettingTest < ActiveSupport::TestCase
     setting = KeepInTouchSetting.new(friend: friends(:ada), cadence: "weekly", snoozed_until: Date.current + 7.days)
 
     assert_not_predicate setting, :valid?
-    assert_predicate setting.errors[:snoozed_until], :present?
+    assert_predicate setting.errors[:base], :present?
   end
 
   test "calculates the first suggestion from the enabled date" do
