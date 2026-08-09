@@ -21,6 +21,7 @@
 #
 class KeepInTouchSetting < ApplicationRecord
   CADENCES = %w[daily weekly biweekly monthly quarterly yearly].freeze
+  DEFAULT_CADENCE = "weekly"
   SNOOZE_DAYS = 7
 
   belongs_to :friend
@@ -40,6 +41,10 @@ class KeepInTouchSetting < ApplicationRecord
 
   def due?(on:)
     next_suggestion_on&.<= on
+  end
+
+  def snoozed?
+    enabled? && snoozed_until.present? && snoozed_until > cadence_date
   end
 
   def enable!(on:, cadence: self.cadence)

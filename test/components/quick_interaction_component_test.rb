@@ -9,7 +9,7 @@ class QuickInteractionComponentTest < ViewComponent::TestCase
 
     path = Rails.application.routes.url_helpers.friend_interactions_path(friend)
     assert_selector "button[type='button'][aria-controls='#{QuickInteractionComponent::DOM_ID}']", text: "Contacted today"
-    assert_selector "[data-controller~='dialog'][data-dialog-open-value='false'] dialog##{QuickInteractionComponent::DOM_ID}"
+    assert_selector "[data-controller~='dialog'][data-dialog-open-value='false'][data-action*='quick-interaction:open@window->dialog#open'][data-action*='quick-interaction:open@window->interaction-date#setCurrentDate'] dialog##{QuickInteractionComponent::DOM_ID}"
     assert_selector "form[action='#{path}']"
     assert_selector "input[name='context'][value='quick_log']", visible: :all
     assert_selector "input#interaction_occurred_on[type='date'][required]"

@@ -30,6 +30,7 @@ class InteractionsController < ApplicationController
       @open_interaction_modal = true
       @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
       @interaction_count = @friend.interactions.count
+      @keep_in_touch_setting = @friend.keep_in_touch_setting
       render "friends/show", status: :unprocessable_entity
     else
       render :new, status: :unprocessable_entity

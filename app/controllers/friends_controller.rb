@@ -49,6 +49,7 @@ class FriendsController < ApplicationController
     @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @friend.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = false
+    @keep_in_touch_setting = @friend.keep_in_touch_setting
   end
 
   def friend_params

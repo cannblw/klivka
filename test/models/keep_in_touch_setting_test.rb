@@ -96,6 +96,18 @@ class KeepInTouchSettingTest < ActiveSupport::TestCase
     )
 
     assert_equal Date.new(2026, 8, 12), setting.next_suggestion_on
+    assert_predicate setting, :snoozed?
+  end
+
+  test "is not snoozed when its cadence date is later" do
+    setting = KeepInTouchSetting.new(
+      friend: friends(:ada),
+      cadence: "weekly",
+      enabled_on: Date.new(2026, 8, 1),
+      snoozed_until: Date.new(2026, 8, 7)
+    )
+
+    assert_not_predicate setting, :snoozed?
   end
 
   test "is due on or after its next suggestion date" do

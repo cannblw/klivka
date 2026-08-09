@@ -238,6 +238,29 @@ en:
       invalid: "This contact reminder wasn't saved: %{reason}"
       stale: "This contact reminder changed. Please review the latest details."
 
+  contact_reminder:
+    heading: "Keep in touch"
+    description: "Choose how often you would like a gentle reminder to get in touch."
+    "off": "The contact reminder is off."
+    frequency: "Frequency"
+    current_frequency: "Frequency: %{frequency}"
+    turn_on: "Turn on reminder"
+    turn_off: "Turn off reminder"
+    next_suggestion: "Next suggestion: %{date}"
+    snoozed_until: "Snoozed until %{date}"
+    due: "Would you like to get in touch with %{name}?"
+    contacted_today: "Contacted today"
+    snooze: "Remind me in one week"
+    change_frequency: "Change frequency"
+    save_frequency: "Save frequency"
+    cadences:
+      daily: "Daily"
+      weekly: "Weekly"
+      biweekly: "Every two weeks"
+      monthly: "Monthly"
+      quarterly: "Every three months"
+      yearly: "Yearly"
+
   birthdays:
     index:
       title: "Birthdays"
