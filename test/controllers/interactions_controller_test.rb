@@ -45,6 +45,107 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Caught up", interaction.note
   end
 
+  test "logging contact clears an active reminder snooze" do
+    setting = friends(:ada).create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: 1.week.ago.to_date,
+      snoozed_until: 1.week.from_now.to_date
+    )
+    previous_lock_version = setting.lock_version
+
+    post friend_interactions_url(friends(:ada)), params: {
+      interaction: { occurred_on: Date.current.iso8601 }
+    }
+
+    assert_redirected_to friend_url(friends(:ada))
+    assert_nil setting.reload.snoozed_until
+    assert_operator setting.lock_version, :>, previous_lock_version
+  end
+
+  test "logging an interaction from before the contact reminder was enabled keeps its snooze" do
+    enabled_on = Date.current
+    setting = friends(:ada).create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: enabled_on,
+      snoozed_until: 1.week.from_now.to_date
+    )
+
+    post friend_interactions_url(friends(:ada)), params: {
+      interaction: { occurred_on: enabled_on.yesterday.iso8601 }
+    }
+
+    assert_redirected_to friend_url(friends(:ada))
+    assert_equal 1.week.from_now.to_date, setting.reload.snoozed_until
+  end
+
+  test "an invalid interaction leaves an active reminder snooze unchanged" do
+    snoozed_until = 1.week.from_now.to_date
+    setting = friends(:ada).create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: 1.week.ago.to_date,
+      snoozed_until: snoozed_until
+    )
+
+    post friend_interactions_url(friends(:ada)), params: {
+      interaction: { occurred_on: Date.tomorrow.iso8601 }
+    }
+
+    assert_response :unprocessable_entity
+    assert_equal snoozed_until, setting.reload.snoozed_until
+  end
+
+  test "editing interaction details keeps an active reminder snooze" do
+    interaction = friends(:ada).interactions.create!(occurred_on: Date.current)
+    setting = friends(:ada).create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: 1.week.ago.to_date,
+      snoozed_until: 1.week.from_now.to_date
+    )
+
+    patch friend_interaction_url(friends(:ada), interaction), params: {
+      interaction: { note: "Caught up" }
+    }
+
+    assert_redirected_to friend_url(friends(:ada))
+    assert_equal 1.week.from_now.to_date, setting.reload.snoozed_until
+  end
+
+  test "changing an interaction date to today clears an active reminder snooze" do
+    interaction = friends(:ada).interactions.create!(occurred_on: 2.weeks.ago.to_date)
+    setting = friends(:ada).create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: 1.week.ago.to_date,
+      snoozed_until: 1.week.from_now.to_date
+    )
+
+    patch friend_interaction_url(friends(:ada), interaction), params: {
+      interaction: { occurred_on: Date.current.iso8601 }
+    }
+
+    assert_redirected_to friend_url(friends(:ada))
+    assert_nil setting.reload.snoozed_until
+  end
+
+  test "a contact makes a previously opened snooze request stale" do
+    setting = friends(:ada).create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: 1.week.ago.to_date,
+      snoozed_until: 1.week.from_now.to_date
+    )
+    stale_lock_version = setting.lock_version
+
+    post friend_interactions_url(friends(:ada)), params: {
+      interaction: { occurred_on: Date.current.iso8601 }
+    }
+
+    patch snooze_friend_keep_in_touch_setting_url(friends(:ada)), params: {
+      keep_in_touch_setting: { lock_version: stale_lock_version }
+    }
+
+    assert_nil setting.reload.snoozed_until
+    assert_equal "This contact reminder changed. Please review the latest details.", flash[:alert]
+  end
+
   test "destroys an interaction" do
     interaction = friends(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
 

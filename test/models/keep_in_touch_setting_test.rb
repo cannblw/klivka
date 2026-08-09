@@ -118,6 +118,46 @@ class KeepInTouchSettingTest < ActiveSupport::TestCase
     assert setting.due?(on: Date.new(2026, 8, 9))
   end
 
+  test "clears a snooze when the latest interaction is on or after the contact reminder was enabled" do
+    friend = friends(:ada)
+    setting = friend.create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: Date.new(2026, 8, 1),
+      snoozed_until: Date.new(2026, 8, 12)
+    )
+    interaction = friend.interactions.create!(occurred_on: Date.new(2026, 8, 8))
+
+    setting.clear_snooze_for_latest_interaction!(interaction)
+
+    assert_nil setting.reload.snoozed_until
+  end
+
+  test "keeps a snooze when an interaction from before the contact reminder was enabled is added" do
+    friend = friends(:ada)
+    setting = friend.create_keep_in_touch_setting!(
+      cadence: "weekly",
+      enabled_on: Date.new(2026, 8, 1),
+      snoozed_until: Date.new(2026, 8, 12)
+    )
+    interaction = friend.interactions.create!(occurred_on: Date.new(2026, 7, 31))
+
+    setting.clear_snooze_for_latest_interaction!(interaction)
+
+    assert_equal Date.new(2026, 8, 12), setting.reload.snoozed_until
+  end
+
+  test "recalculates from the enabled date after the latest interaction is deleted" do
+    friend = friends(:ada)
+    setting = friend.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    interaction = friend.interactions.create!(occurred_on: Date.new(2026, 8, 8))
+
+    assert_equal Date.new(2026, 8, 15), setting.next_suggestion_on
+
+    interaction.destroy!
+
+    assert_equal Date.new(2026, 8, 8), setting.next_suggestion_on
+  end
+
   test "destroying a friend destroys its keep-in-touch setting" do
     friend = friends(:ada)
     setting = friend.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current)

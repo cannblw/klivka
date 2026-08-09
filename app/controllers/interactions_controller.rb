@@ -22,7 +22,7 @@ class InteractionsController < ApplicationController
     @interaction.validation_date = browser_date || Date.current
     @interaction.occurred_on = Date.current if server_date_fallback?
 
-    if @interaction.save
+    if save_interaction_and_update_reminder(clear_snooze: true)
       notice = server_date_fallback? ? t("interactions.contacted_today.server_date_fallback") : t("interactions.create.created")
       redirect_to @friend, notice: notice
     elsif params[:context] == "quick_log"
@@ -42,8 +42,9 @@ class InteractionsController < ApplicationController
 
   def update
     @interaction.validation_date = browser_date || Date.current
+    @interaction.assign_attributes(interaction_params)
 
-    if @interaction.update(interaction_params)
+    if save_interaction_and_update_reminder(clear_snooze: @interaction.will_save_change_to_occurred_on?)
       redirect_to @friend, notice: t("interactions.update.updated")
     else
       render :edit, status: :unprocessable_entity
@@ -80,6 +81,18 @@ class InteractionsController < ApplicationController
     @browser_date = Date.iso8601(params[:browser_date]) if params[:date_source] == "browser"
   rescue Date::Error, TypeError
     @browser_date = nil
+  end
+
+  def save_interaction_and_update_reminder(clear_snooze:)
+    @friend.transaction do
+      setting = KeepInTouchSetting.find_by(friend: @friend)
+      setting&.lock!
+
+      next false unless @interaction.save
+
+      setting&.clear_snooze_for_latest_interaction!(@interaction) if clear_snooze
+      true
+    end
   end
 
   def page_number

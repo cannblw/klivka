@@ -71,6 +71,14 @@ class KeepInTouchSetting < ApplicationRecord
     save!
   end
 
+  def clear_snooze_for_latest_interaction!(interaction)
+    return unless enabled? && snoozed_until.present?
+    return if interaction.occurred_on < enabled_on
+    return unless interaction.occurred_on == friend.interactions.maximum(:occurred_on)
+
+    update!(snoozed_until: nil)
+  end
+
   private
 
   def cadence_date
