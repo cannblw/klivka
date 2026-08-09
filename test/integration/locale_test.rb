@@ -1,4 +1,5 @@
 require "test_helper"
+require "yaml"
 
 class LocaleTest < ActionDispatch::IntegrationTest
   setup { sign_in_as users(:one) }
@@ -68,5 +69,24 @@ class LocaleTest < ActionDispatch::IntegrationTest
 
     assert_select "dialog#discard-changes-dialog"
     assert_select "#discard-changes-confirm-link"
+  end
+
+  test "supported locales include every application translation" do
+    english_translations = YAML.safe_load_file(Rails.root.join("config/locales/en.yml")).fetch("en")
+    required_keys = translation_keys(english_translations)
+
+    I18n.available_locales.each do |locale|
+      missing_keys = required_keys.reject { |key| I18n.exists?(key, locale) }
+      assert_empty missing_keys, "Missing #{locale} translations: #{missing_keys.join(", ")}"
+    end
+  end
+
+  private
+
+  def translation_keys(translations, prefix = nil)
+    translations.flat_map do |key, value|
+      path = [ prefix, key ].compact.join(".")
+      value.is_a?(Hash) ? translation_keys(value, path) : path
+    end
   end
 end
