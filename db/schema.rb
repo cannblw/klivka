@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_05_072553) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_09_120000) do
   create_table "entries", force: :cascade do |t|
     t.json "content"
     t.datetime "created_at", null: false
@@ -50,6 +50,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_072553) do
     t.check_constraint "contact_method IS NULL OR contact_method IN ('call', 'message', 'video', 'in_person', 'other')", name: "interactions_contact_method_is_supported"
   end
 
+  create_table "keep_in_touch_settings", force: :cascade do |t|
+    t.string "cadence", null: false
+    t.datetime "created_at", null: false
+    t.date "enabled_on"
+    t.integer "friend_id", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.date "snoozed_until"
+    t.datetime "updated_at", null: false
+    t.index ["friend_id"], name: "index_keep_in_touch_settings_on_friend_id", unique: true
+    t.check_constraint "cadence IN ('daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly')", name: "keep_in_touch_settings_cadence_is_supported"
+    t.check_constraint "enabled_on IS NOT NULL OR snoozed_until IS NULL", name: "keep_in_touch_settings_disabled_cannot_be_snoozed"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -73,5 +86,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_072553) do
   add_foreign_key "entries", "friends"
   add_foreign_key "friends", "users"
   add_foreign_key "interactions", "friends"
+  add_foreign_key "keep_in_touch_settings", "friends"
   add_foreign_key "sessions", "users"
 end

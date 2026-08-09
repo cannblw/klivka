@@ -25,6 +25,7 @@ class Friend < ApplicationRecord
   belongs_to :user
   has_many :entries, dependent: :destroy
   has_many :interactions, dependent: :destroy
+  has_one :keep_in_touch_setting, dependent: :destroy
 
   validates :name, presence: true
 
