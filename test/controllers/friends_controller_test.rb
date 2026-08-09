@@ -144,6 +144,8 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller~='dialog'][data-dialog-open-value='false'] dialog##{QuickInteractionComponent::DOM_ID}"
     assert_select "form[action='#{friend_interactions_path(friends(:ada))}']"
     assert_select "p", text: /No contact yet/
+    assert_select "#contact-reminder-heading", text: "Keep in touch"
+    assert_select "form[action='#{friend_keep_in_touch_setting_path(friends(:ada))}']"
   end
 
   test "show displays last contacted label when interactions exist" do

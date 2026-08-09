@@ -36,6 +36,8 @@ es:
       interaction:
         occurred_on: "Fecha"
         contact_method: "Cómo os pusisteis en contacto"
+      keep_in_touch_setting:
+        cadence: "Frecuencia"
     errors:
       models:
         entry/birthday:
@@ -55,6 +57,12 @@ es:
           attributes:
             occurred_on:
               future: "no puede estar en el futuro"
+        keep_in_touch_setting:
+          attributes:
+            base:
+              snooze_requires_enabled_cadence: "Activa el recordatorio de contacto antes de posponerlo."
+            cadence:
+              inclusion: "no está disponible"
 
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."
@@ -218,6 +226,51 @@ es:
       never: "Aún sin contacto"
       today: "hoy"
       ago: "hace %{duration}"
+
+  keep_in_touch_settings:
+    create:
+      enabled: "Recordatorio de contacto activado."
+      invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
+      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+    update:
+      updated: "Recordatorio de contacto actualizado."
+      invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
+      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+    enable:
+      updated: "Recordatorio de contacto actualizado."
+      invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
+      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+    disable:
+      updated: "Recordatorio de contacto actualizado."
+      invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
+      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+    snooze:
+      updated: "Recordatorio de contacto actualizado."
+      invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
+      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+
+  contact_reminder:
+    heading: "Mantener el contacto"
+    description: "Elige con qué frecuencia quieres recibir un recordatorio amable para ponerte en contacto."
+    "off": "El recordatorio de contacto está desactivado."
+    frequency: "Frecuencia"
+    current_frequency: "Frecuencia: %{frequency}"
+    turn_on: "Activar recordatorio"
+    turn_off: "Desactivar recordatorio"
+    next_suggestion: "Próxima sugerencia: %{date}"
+    snoozed_until: "Pospuesto hasta %{date}"
+    due: "¿Te gustaría ponerte en contacto con %{name}?"
+    contacted_today: "He contactado hoy"
+    snooze: "Recordármelo en una semana"
+    change_frequency: "Cambiar frecuencia"
+    save_frequency: "Guardar frecuencia"
+    cadences:
+      daily: "Diaria"
+      weekly: "Semanal"
+      biweekly: "Cada dos semanas"
+      monthly: "Mensual"
+      quarterly: "Cada tres meses"
+      yearly: "Anual"
 
   birthdays:
     index:

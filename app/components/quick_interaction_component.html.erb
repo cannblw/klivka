@@ -1,4 +1,6 @@
-<div data-controller="dialog interaction-date" data-dialog-open-value="<%= open? %>">
+<div data-controller="dialog interaction-date"
+     data-dialog-open-value="<%= open? %>"
+     data-action="quick-interaction:open@window->dialog#open quick-interaction:open@window->interaction-date#setCurrentDate">
   <%= render ButtonComponent.new(
         data: { action: "dialog#open interaction-date#setCurrentDate" },
         aria: { controls: DOM_ID, haspopup: "dialog" }

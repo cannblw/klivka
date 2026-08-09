@@ -17,7 +17,7 @@ export default class extends Controller {
   }
 
   open(event) {
-    this.opener = event.currentTarget
+    this.opener = event.detail?.opener || event.currentTarget
     this.dialogTarget.showModal()
   }
 
