@@ -10,12 +10,13 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "create signs the user up and in" do
     assert_difference "User.count", 1 do
-      post signup_path, params: { user: { email_address: "new@example.com", password: "a-safe-password" } }
+      post signup_path, params: { user: { email_address: "new@example.com", password: "a-safe-password", time_zone: "Asia/Kolkata" } }
     end
 
     assert_redirected_to root_url
     assert cookies[:session_id]
     assert User.find_by!(email_address: "new@example.com").confirmed?
+    assert_equal "Asia/Kolkata", User.find_by!(email_address: "new@example.com").time_zone
     follow_redirect!
     assert_select "h1", "Friends"
   end
@@ -23,7 +24,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "create with confirmation required sends an email instead of signing in" do
     with_email_confirmation_required do
       assert_difference "User.count", 1 do
-        post signup_path, params: { user: { email_address: "new@example.com", password: "a-safe-password" } }
+        post signup_path, params: { user: { email_address: "new@example.com", password: "a-safe-password", time_zone: "Asia/Kolkata" } }
       end
 
       user = User.find_by!(email_address: "new@example.com")
@@ -64,5 +65,11 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     get new_session_path
 
     assert_select "a[href='#{signup_path}']"
+  end
+
+  test "signup form provides a browser timezone target" do
+    get signup_path
+
+    assert_select "form[data-controller~='time-zone-detection'] input[name='user[time_zone]'][data-time-zone-detection-target='input']", visible: :all
   end
 end

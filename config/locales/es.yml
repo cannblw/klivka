@@ -76,6 +76,17 @@ es:
   flash:
     dismiss: "Descartar"
 
+  time_zones:
+    update:
+      updated: "Zona horaria actualizada."
+      invalid: "No se ha podido actualizar la zona horaria: %{reason}"
+
+  time_zone_suggestion:
+    heading: "¿Ha cambiado tu zona horaria?"
+    body: "Tu dispositivo usa una zona horaria diferente. ¿Quieres que Klivka la use?"
+    update: "Actualizar zona horaria"
+    keep: "Mantener la zona horaria actual"
+
   discard_changes:
     title: "¿Descartar cambios?"
     body: "Tienes cambios sin guardar. Si sales, se perderán."

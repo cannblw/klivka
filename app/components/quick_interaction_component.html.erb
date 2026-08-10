@@ -1,4 +1,5 @@
 <div data-controller="dialog interaction-date"
+     data-interaction-date-time-zone-value="<%= time_zone %>"
      data-dialog-open-value="<%= open? %>"
      data-action="quick-interaction:open@window->dialog#open quick-interaction:open@window->interaction-date#setCurrentDate">
   <%= render ButtonComponent.new(

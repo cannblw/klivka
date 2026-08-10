@@ -27,6 +27,7 @@
 - Views: hybrid. UI that is reusable, parameterized, or logic-bearing is a ViewComponent (Ruby class + template + test) with an explicit initializer interface. Plain ERB for layouts, page templates, and one-off page chrome. No shared partials — anything rendered from 2+ places becomes a component.
 - Prefer componentizing any HTML that is expected to be reused, even within a single feature. Buttons, form controls, avatars, and similar primitives should be components by default; don't wait for a second usage to extract them.
 - Before adding a JavaScript utility, search for existing code that solves the same browser concern and extract one shared implementation when appropriate.
+- Never silence a caught error completely. Best-effort behavior may recover or continue when failure is safe, but it must report enough non-sensitive context through the appropriate logger or `console.error` so the problem remains diagnosable. Never include user content or personal data in diagnostic output.
 - Tailwind is used as intended: utilities inline in markup; deduplicate by extracting components, never with `@apply`.
 - Validations live in the model AND as DB constraints (`null: false`, FKs) — both, not either.
 - Responsive design is mandatory: mobile-first (base styles target small screens, `sm:`/`md:`/`lg:` scale up), but layouts must feel natural on desktop too — no mobile-only or desktop-only UI.

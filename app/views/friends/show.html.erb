@@ -41,6 +41,7 @@
       <%= render QuickInteractionComponent.new(
             friend: @friend,
             interaction: @interaction_to_enrich,
+            time_zone: Current.user.time_zone,
             open: @open_interaction_modal
           ) %>
 

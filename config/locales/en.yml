@@ -65,6 +65,17 @@ en:
   flash:
     dismiss: "Dismiss"
 
+  time_zones:
+    update:
+      updated: "Time zone updated."
+      invalid: "Time zone could not be updated: %{reason}"
+
+  time_zone_suggestion:
+    heading: "Time zone changed?"
+    body: "Your device uses a different time zone. Update Klivka to use it?"
+    update: "Update time zone"
+    keep: "Keep current time zone"
+
   discard_changes:
     title: "Discard changes?"
     body: "You have unsaved changes. If you leave, they will be lost."

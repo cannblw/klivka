@@ -64,6 +64,7 @@
         <% end %>
       </div>
     </header>
+    <%= render TimeZoneSuggestionComponent.new(user: Current.user) if authenticated? %>
     <% if notice.present? || alert.present? %>
       <div id="flash" class="pointer-events-none fixed inset-x-4 top-4 z-50 flex flex-col items-center gap-2 sm:inset-x-auto sm:right-4 sm:items-end">
         <%= render FlashComponent.new(kind: :notice, message: notice) if notice.present? %>

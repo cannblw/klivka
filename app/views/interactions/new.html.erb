@@ -1,5 +1,5 @@
 <% content_for :title, t("interactions.form.new_title", name: @friend.name) %>
-<div data-controller="interaction-date" class="mx-auto max-w-2xl">
+<div data-controller="interaction-date" data-interaction-date-time-zone-value="<%= Current.user.time_zone %>" class="mx-auto max-w-2xl">
   <h1 class="text-2xl font-bold"><%= t("interactions.form.new_heading", name: @friend.name) %></h1>
   <div class="mt-6"><%= render InteractionFormComponent.new(friend: @friend, interaction: @interaction) %></div>
 </div>
