@@ -48,7 +48,8 @@ export default class extends Controller {
       })
 
       if (!response.ok) throw new Error("reorder failed")
-    } catch (_error) {
+    } catch (error) {
+      console.error("Could not save the entry order", error)
       restore()
       this.statusTarget.textContent = this.errorMessageValue
     } finally {
