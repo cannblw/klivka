@@ -21,8 +21,6 @@
             data: { interaction_date_target: "form", action: "submit->interaction-date#submit" },
             class: "mt-4 space-y-4" do |form| %>
         <%= hidden_field_tag :context, "quick_log" %>
-        <%= hidden_field_tag :date_source, "server", data: { interaction_date_target: "source" } %>
-        <%= hidden_field_tag :browser_date, nil, data: { interaction_date_target: "today" } %>
         <div>
           <%= form.label :occurred_on, t("interactions.follow_up.occurred_on"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
           <div class="relative mt-1">

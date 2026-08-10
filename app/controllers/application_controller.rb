@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   around_action :switch_locale
+  around_action :switch_time_zone
 
   private
 
@@ -14,11 +15,19 @@ class ApplicationController < ActionController::Base
     I18n.with_locale(preferred_locale, &action)
   end
 
+  def switch_time_zone(&action)
+    Time.use_zone(preferred_time_zone, &action)
+  end
+
   # Header order approximates preference; full q-value parsing isn't worth a dependency
   def preferred_locale
     Current.user&.locale&.presence ||
       requested_locale_from_header ||
       I18n.default_locale
+  end
+
+  def preferred_time_zone
+    Current.user&.time_zone || Rails.application.config.x.default_time_zone
   end
 
   def requested_locale_from_header

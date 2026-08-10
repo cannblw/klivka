@@ -177,7 +177,6 @@ es:
       other: "Otro"
     contacted_today:
       button: "He contactado hoy"
-      server_date_fallback: "Interacción registrada con la fecha del servidor. Asegúrate de que JavaScript esté activado si la fecha no es correcta."
     follow_up:
       heading: "Registra el contacto con %{name}"
       hint: "Añade tanto o tan poco contexto como quieras."

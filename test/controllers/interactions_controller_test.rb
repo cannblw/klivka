@@ -162,8 +162,6 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_difference -> { friends(:ada).interactions.count }, 1 do
       post friend_interactions_url(friends(:ada)), params: {
         context: "quick_log",
-        date_source: "browser",
-        browser_date: Date.current.iso8601,
         interaction: { occurred_on: occurred_on.iso8601 }
       }
     end
@@ -173,57 +171,28 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Interaction recorded.", flash[:notice]
   end
 
-  test "quick log accepts the browser's local date when it is ahead of the server" do
-    browser_date = Date.tomorrow
+  test "quick log rejects an interaction after the user's current date" do
+    user = users(:one)
+    user.update!(time_zone: "America/Los_Angeles")
+    sign_out
+    sign_in_as user
 
-    assert_difference -> { friends(:ada).interactions.count }, 1 do
-      post friend_interactions_url(friends(:ada)), params: {
-        context: "quick_log",
-        date_source: "browser",
-        browser_date: browser_date.iso8601,
-        interaction: { occurred_on: browser_date.iso8601 }
-      }
+    travel_to Time.utc(2026, 8, 10, 0, 30) do
+      assert_no_difference -> { friends(:ada).interactions.count } do
+        post friend_interactions_url(friends(:ada)), params: {
+          context: "quick_log",
+          interaction: { occurred_on: Date.new(2026, 8, 10).iso8601 }
+        }
+      end
     end
 
-    assert_equal browser_date, friends(:ada).interactions.recent.first.occurred_on
-  end
-
-  test "quick log warns when it saves the server date fallback" do
-    server_date = Date.current
-
-    assert_difference -> { friends(:ada).interactions.count }, 1 do
-      post friend_interactions_url(friends(:ada)), params: {
-        context: "quick_log",
-        date_source: "server",
-        interaction: { occurred_on: 1.day.ago.to_date.iso8601 }
-      }
-    end
-
-    assert_redirected_to friend_url(friends(:ada))
-    assert_equal server_date, friends(:ada).interactions.recent.first.occurred_on
-    assert_equal "Interaction recorded using the server date. Check that JavaScript is enabled if the date looks wrong.", flash[:notice]
-  end
-
-  test "quick log falls back when the browser date is malformed" do
-    assert_difference -> { friends(:ada).interactions.count }, 1 do
-      post friend_interactions_url(friends(:ada)), params: {
-        context: "quick_log",
-        date_source: "browser",
-        browser_date: "not-a-date",
-        interaction: { occurred_on: 1.day.ago.to_date.iso8601 }
-      }
-    end
-
-    assert_equal Date.current, friends(:ada).interactions.recent.first.occurred_on
-    assert_equal "Interaction recorded using the server date. Check that JavaScript is enabled if the date looks wrong.", flash[:notice]
+    assert_response :unprocessable_entity
   end
 
   test "invalid quick log reopens the unsaved modal with errors and submitted details" do
     assert_no_difference -> { friends(:ada).interactions.count } do
       post friend_interactions_url(friends(:ada)), params: {
         context: "quick_log",
-        date_source: "browser",
-        browser_date: Date.current.iso8601,
         interaction: { occurred_on: Date.tomorrow.iso8601, contact_method: "call", note: "Keep this note" }
       }
     end

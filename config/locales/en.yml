@@ -166,7 +166,6 @@ en:
       other: "Other"
     contacted_today:
       button: "Contacted today"
-      server_date_fallback: "Interaction recorded using the server date. Check that JavaScript is enabled if the date looks wrong."
     follow_up:
       heading: "Record contact with %{name}"
       hint: "Add as much or as little context as you like."

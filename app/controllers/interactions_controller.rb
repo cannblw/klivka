@@ -19,12 +19,10 @@ class InteractionsController < ApplicationController
 
   def create
     @interaction = @friend.interactions.new(interaction_params)
-    @interaction.validation_date = browser_date || Date.current
-    @interaction.occurred_on = Date.current if server_date_fallback?
+    @interaction.validation_date = Current.user.local_date
 
     if save_interaction_and_update_reminder(clear_snooze: true)
-      notice = server_date_fallback? ? t("interactions.contacted_today.server_date_fallback") : t("interactions.create.created")
-      redirect_to @friend, notice: notice
+      redirect_to @friend, notice: t("interactions.create.created")
     elsif params[:context] == "quick_log"
       @interaction_to_enrich = @interaction
       @open_interaction_modal = true
@@ -41,7 +39,7 @@ class InteractionsController < ApplicationController
   end
 
   def update
-    @interaction.validation_date = browser_date || Date.current
+    @interaction.validation_date = Current.user.local_date
     @interaction.assign_attributes(interaction_params)
 
     if save_interaction_and_update_reminder(clear_snooze: @interaction.will_save_change_to_occurred_on?)
@@ -69,18 +67,6 @@ class InteractionsController < ApplicationController
 
   def interaction_params
     params.expect(interaction: [ :occurred_on, :contact_method, :note ])
-  end
-
-  def server_date_fallback?
-    params[:context] == "quick_log" && browser_date.nil?
-  end
-
-  def browser_date
-    return @browser_date if defined?(@browser_date)
-
-    @browser_date = Date.iso8601(params[:browser_date]) if params[:date_source] == "browser"
-  rescue Date::Error, TypeError
-    @browser_date = nil
   end
 
   def save_interaction_and_update_reminder(clear_snooze:)
