@@ -13,6 +13,13 @@
 - No adapter-conditional migrations. `schema.rb` must load identically on both adapters.
 - Avoid raw SQL; use ActiveRecord/Arel. If raw SQL is unavoidable and must differ by adapter, use `ApplicationRecord.adapter_sql(sqlite:, postgres:)` to branch cleanly.
 
+## Temporal data
+
+- Use `date` for civil calendar facts that must not change when a user changes time zone. `Entry::Date` and its descendants are date-only; do not add an optional time or reinterpret `entry_date` when a profile time zone changes.
+- Use `datetime` only for exact instants. Store and compare those values in UTC; never store a local wall-clock time in a datetime without converting it.
+- The profile's IANA `time_zone` is authoritative for user-facing “today.” Requests run in that zone; background work must explicitly use `User#local_date` or `Time.use_zone(user.time_zone)`.
+- Browser values may help detect a time zone or keep a date control current, but the server derives authoritative user-local dates from the saved profile time zone.
+
 ## Product principles
 
 - Adding a friend requires a name. Nothing else, ever. All other data is optional `Entry` records (typed blocks: phone, note, etc.).

@@ -149,24 +149,24 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show displays last contacted label when interactions exist" do
-    friends(:ada).interactions.create!(occurred_on: 2.days.ago.to_date)
+    friends(:ada).interactions.create!(occurred_on: users(:one).local_date - 2.days)
 
     get friend_url(friends(:ada))
 
     assert_response :success
-    assert_select "p", text: /Last contact/
-    assert_select "p", text: /2 days ago/
+    assert_select "#last-contacted", text: /Last contact/
+    assert_select "#last-contacted", text: /2 days ago/
   end
 
   test "show displays the most recent interaction date when multiple exist" do
-    friends(:ada).interactions.create!(occurred_on: 5.days.ago.to_date)
-    friends(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
+    friends(:ada).interactions.create!(occurred_on: users(:one).local_date - 5.days)
+    friends(:ada).interactions.create!(occurred_on: users(:one).local_date - 1.day)
 
     get friend_url(friends(:ada))
 
     assert_response :success
-    assert_select "p", text: /Last contact/
-    assert_select "p", text: /1 day ago/
+    assert_select "#last-contacted", text: /Last contact/
+    assert_select "#last-contacted", text: /1 day ago/
   end
 
   test "show omits the empty entries feed for a friend with only a name" do

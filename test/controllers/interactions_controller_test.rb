@@ -7,7 +7,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     sign_out
 
     post friend_interactions_url(friends(:ada)), params: {
-      interaction: { occurred_on: Date.current.iso8601 }
+      interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
     assert_redirected_to new_session_url
@@ -54,7 +54,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     previous_lock_version = setting.lock_version
 
     post friend_interactions_url(friends(:ada)), params: {
-      interaction: { occurred_on: Date.current.iso8601 }
+      interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
     assert_redirected_to friend_url(friends(:ada))
@@ -63,7 +63,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "logging an interaction from before the contact reminder was enabled keeps its snooze" do
-    enabled_on = Date.current
+    enabled_on = users(:one).local_date
     setting = friends(:ada).create_keep_in_touch_setting!(
       cadence: "weekly",
       enabled_on: enabled_on,
@@ -87,7 +87,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     )
 
     post friend_interactions_url(friends(:ada)), params: {
-      interaction: { occurred_on: Date.tomorrow.iso8601 }
+      interaction: { occurred_on: users(:one).local_date.tomorrow.iso8601 }
     }
 
     assert_response :unprocessable_entity
@@ -119,7 +119,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     )
 
     patch friend_interaction_url(friends(:ada), interaction), params: {
-      interaction: { occurred_on: Date.current.iso8601 }
+      interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
     assert_redirected_to friend_url(friends(:ada))
@@ -135,7 +135,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     stale_lock_version = setting.lock_version
 
     post friend_interactions_url(friends(:ada)), params: {
-      interaction: { occurred_on: Date.current.iso8601 }
+      interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
     patch snooze_friend_keep_in_touch_setting_url(friends(:ada)), params: {
@@ -193,7 +193,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference -> { friends(:ada).interactions.count } do
       post friend_interactions_url(friends(:ada)), params: {
         context: "quick_log",
-        interaction: { occurred_on: Date.tomorrow.iso8601, contact_method: "call", note: "Keep this note" }
+        interaction: { occurred_on: users(:one).local_date.tomorrow.iso8601, contact_method: "call", note: "Keep this note" }
       }
     end
 

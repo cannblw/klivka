@@ -68,7 +68,7 @@
 
   <% if @last_interaction %>
     <% days = (Date.current - @last_interaction.occurred_on).to_i %>
-    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+    <p id="last-contacted" class="mt-1 text-sm text-stone-500 dark:text-stone-400">
       <%= t("interactions.last_contacted.label") %>:
       <% if days == 0 %>
         <%= t("interactions.last_contacted.today") %>
@@ -77,7 +77,7 @@
       <% end %>
     </p>
   <% else %>
-    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.last_contacted.never") %></p>
+    <p id="last-contacted" class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.last_contacted.never") %></p>
   <% end %>
 
   <%= render ContactReminderComponent.new(friend: @friend, setting: @keep_in_touch_setting) %>
