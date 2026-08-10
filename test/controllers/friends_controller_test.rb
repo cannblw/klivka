@@ -169,6 +169,17 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#last-contacted", text: /1 day ago/
   end
 
+  test "show describes older interactions with multiple calendar units" do
+    travel_to Time.utc(2026, 4, 15, 12) do
+      friends(:ada).interactions.create!(occurred_on: Date.new(2026, 3, 1))
+
+      get friend_url(friends(:ada))
+
+      assert_response :success
+      assert_select "#last-contacted", text: /1 month and 2 weeks ago/
+    end
+  end
+
   test "show omits the empty entries feed for a friend with only a name" do
     friend = Current.user.friends.create!(name: "Name Only")
 

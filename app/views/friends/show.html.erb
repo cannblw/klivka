@@ -73,7 +73,11 @@
       <% if days == 0 %>
         <%= t("interactions.last_contacted.today") %>
       <% else %>
-        <%= t("interactions.last_contacted.ago", duration: time_ago_in_words(@last_interaction.occurred_on.to_time, except: [:hours, :minutes, :seconds, :weeks])) %>
+        <%= t("interactions.last_contacted.ago", duration: distance_of_time_in_words(
+          @last_interaction.occurred_on.in_time_zone,
+          Date.current.in_time_zone,
+          except: [:hours, :minutes, :seconds]
+        )) %>
       <% end %>
     </p>
   <% else %>
