@@ -27,6 +27,7 @@ es:
       user:
         email_address: "Correo electrónico"
         password: "Contraseña"
+        time_zone: "Zona horaria"
       entry/email:
         email: "Correo electrónico"
       entry/date:
@@ -74,6 +75,17 @@ es:
 
   flash:
     dismiss: "Descartar"
+
+  time_zones:
+    update:
+      updated: "Zona horaria actualizada."
+      invalid: "No se ha podido actualizar la zona horaria: %{reason}"
+
+  time_zone_suggestion:
+    heading: "¿Ha cambiado tu zona horaria?"
+    body: "Tu dispositivo usa una zona horaria diferente. ¿Quieres que Klivka la use?"
+    update: "Actualizar zona horaria"
+    keep: "Mantener la zona horaria actual"
 
   discard_changes:
     title: "¿Descartar cambios?"
@@ -176,7 +188,6 @@ es:
       other: "Otro"
     contacted_today:
       button: "He contactado hoy"
-      server_date_fallback: "Interacción registrada con la fecha del servidor. Asegúrate de que JavaScript esté activado si la fecha no es correcta."
     follow_up:
       heading: "Registra el contacto con %{name}"
       hint: "Añade tanto o tan poco contexto como quieras."

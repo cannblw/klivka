@@ -11,20 +11,23 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_url
   end
 
-  test "creates an enabled setting using the browser local date" do
-    browser_date = Date.new(2026, 8, 10)
+  test "creates an enabled contact reminder on the user's current date" do
+    user = users(:one)
+    user.update!(time_zone: "America/Los_Angeles")
+    sign_out
+    sign_in_as user
 
-    assert_difference "KeepInTouchSetting.count", 1 do
-      post friend_keep_in_touch_setting_url(friends(:ada)), params: {
-        date_source: "browser",
-        browser_date: browser_date.iso8601,
-        keep_in_touch_setting: { cadence: "monthly" }
-      }
+    travel_to Time.utc(2026, 8, 10, 0, 30) do
+      assert_difference "KeepInTouchSetting.count", 1 do
+        post friend_keep_in_touch_setting_url(friends(:ada)), params: {
+          keep_in_touch_setting: { cadence: "monthly" }
+        }
+      end
     end
 
     setting = friends(:ada).reload.keep_in_touch_setting
     assert_equal "monthly", setting.cadence
-    assert_equal browser_date, setting.enabled_on
+    assert_equal Date.new(2026, 8, 9), setting.enabled_on
     assert_nil setting.snoozed_until
     assert_redirected_to friend_url(friends(:ada))
   end
@@ -69,19 +72,16 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
     assert_nil setting.snoozed_until
   end
 
-  test "re-enables a disabled setting using the selected cadence" do
+  test "re-enables a contact reminder on the user's current date" do
     setting = friends(:ada).create_keep_in_touch_setting!(cadence: "weekly")
-    browser_date = Date.new(2026, 8, 10)
 
     patch enable_friend_keep_in_touch_setting_url(friends(:ada)), params: {
-      date_source: "browser",
-      browser_date: browser_date.iso8601,
       keep_in_touch_setting: { cadence: "quarterly", lock_version: setting.lock_version }
     }
 
     setting.reload
     assert_equal "quarterly", setting.cadence
-    assert_equal browser_date, setting.enabled_on
+    assert_equal users(:one).local_date, setting.enabled_on
   end
 
   test "disables a setting while preserving its cadence" do
@@ -101,17 +101,14 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
     assert_nil setting.snoozed_until
   end
 
-  test "snoozes for one week from the browser local date" do
+  test "snoozes a contact reminder for one week from the user's current date" do
     setting = friends(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current)
-    browser_date = Date.new(2026, 8, 10)
 
     patch snooze_friend_keep_in_touch_setting_url(friends(:ada)), params: {
-      date_source: "browser",
-      browser_date: browser_date.iso8601,
       keep_in_touch_setting: { lock_version: setting.lock_version }
     }
 
-    assert_equal browser_date + KeepInTouchSetting::SNOOZE_DAYS.days, setting.reload.snoozed_until
+    assert_equal users(:one).local_date + KeepInTouchSetting::SNOOZE_DAYS.days, setting.reload.snoozed_until
   end
 
   test "rejects a stale update" do

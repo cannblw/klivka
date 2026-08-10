@@ -16,6 +16,7 @@ en:
       user:
         email_address: "Email address"
         password: "Password"
+        time_zone: "Time zone"
       entry/email:
         email: "Email"
       entry/date:
@@ -63,6 +64,17 @@ en:
 
   flash:
     dismiss: "Dismiss"
+
+  time_zones:
+    update:
+      updated: "Time zone updated."
+      invalid: "Time zone could not be updated: %{reason}"
+
+  time_zone_suggestion:
+    heading: "Time zone changed?"
+    body: "Your device uses a different time zone. Update Klivka to use it?"
+    update: "Update time zone"
+    keep: "Keep current time zone"
 
   discard_changes:
     title: "Discard changes?"
@@ -165,7 +177,6 @@ en:
       other: "Other"
     contacted_today:
       button: "Contacted today"
-      server_date_fallback: "Interaction recorded using the server date. Check that JavaScript is enabled if the date looks wrong."
     follow_up:
       heading: "Record contact with %{name}"
       hint: "Add as much or as little context as you like."

@@ -3,7 +3,8 @@
 <%= render CardComponent.new do %>
   <h1 class="text-xl font-bold"><%= t(".heading") %></h1>
 
-  <%= form_with model: @user, url: signup_path, class: "mt-4" do |form| %>
+  <%= form_with model: @user, url: signup_path, data: { controller: "time-zone-detection" }, class: "mt-4" do |form| %>
+    <%= form.hidden_field :time_zone, data: { time_zone_detection_target: "input" } %>
     <div class="space-y-3">
       <%= render InputFieldComponent.new(form, :email_address, type: :email,
             required: true, autofocus: true, autocomplete: "username",

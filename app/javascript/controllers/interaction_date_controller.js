@@ -2,17 +2,15 @@ import { Controller } from "@hotwired/stimulus"
 import { localDateFor } from "lib/local_date"
 
 export default class extends Controller {
-  static targets = [ "date", "form", "source", "today" ]
+  static targets = [ "date", "form" ]
+  static values = { timeZone: String }
 
   connect() {
-    this.dateTarget.max = localDateFor(new Date())
+    this.dateTarget.max = this.today
   }
 
   submit() {
-    const today = localDateFor(new Date())
-    this.dateTarget.max = today
-    this.todayTarget.value = today
-    this.sourceTarget.value = "browser"
+    this.dateTarget.max = this.today
   }
 
   openPicker() {
@@ -26,10 +24,11 @@ export default class extends Controller {
 
   setCurrentDate() {
     this.formTarget.reset()
-    const today = localDateFor(new Date())
-    this.dateTarget.max = today
-    this.dateTarget.value = today
-    this.todayTarget.value = today
-    this.sourceTarget.value = "browser"
+    this.dateTarget.max = this.today
+    this.dateTarget.value = this.today
+  }
+
+  get today() {
+    return localDateFor(new Date(), this.timeZoneValue)
   }
 }

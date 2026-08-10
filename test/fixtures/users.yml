@@ -10,6 +10,7 @@
 #  locale          :string
 #  password_digest :string           not null
 #  theme           :string
+#  time_zone       :string           not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
@@ -20,7 +21,9 @@
 one:
   email_address: one@example.com
   password_digest: <%= password_digest %>
+  time_zone: Europe/Madrid
 
 two:
   email_address: two@example.com
   password_digest: <%= password_digest %>
+  time_zone: America/Los_Angeles

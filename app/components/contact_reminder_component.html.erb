@@ -1,4 +1,4 @@
-<section id="contact-reminder" class="mt-6 rounded-lg border border-stone-200 bg-stone-50 p-4 dark:border-stone-700 dark:bg-stone-800" aria-labelledby="contact-reminder-heading" data-controller="browser-date" data-action="submit->browser-date#prepare">
+<section id="contact-reminder" class="mt-6 rounded-lg border border-stone-200 bg-stone-50 p-4 dark:border-stone-700 dark:bg-stone-800" aria-labelledby="contact-reminder-heading">
   <h2 id="contact-reminder-heading" class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("contact_reminder.heading") %></h2>
 
   <% if enabled? %>
@@ -17,8 +17,6 @@
 
         <%= form_with url: snooze_friend_keep_in_touch_setting_path(friend), method: :patch, scope: :keep_in_touch_setting do |form| %>
           <%= form.hidden_field :lock_version, value: setting.lock_version %>
-          <%= hidden_field_tag :date_source, "server", data: { browser_date_target: "source" } %>
-          <%= hidden_field_tag :browser_date, nil, data: { browser_date_target: "date" } %>
           <%= render ButtonComponent.new(variant: :ghost, type: :submit) do %>
             <%= t("contact_reminder.snooze") %>
           <% end %>
@@ -61,8 +59,6 @@
       <% if setting %>
         <%= form.hidden_field :lock_version, value: setting.lock_version %>
       <% end %>
-      <%= hidden_field_tag :date_source, "server", data: { browser_date_target: "source" } %>
-      <%= hidden_field_tag :browser_date, nil, data: { browser_date_target: "date" } %>
       <%= render ButtonComponent.new(type: :submit) do %>
         <%= t("contact_reminder.turn_on") %>
       <% end %>

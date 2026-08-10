@@ -71,6 +71,12 @@ class LocaleTest < ActionDispatch::IntegrationTest
     assert_select "#discard-changes-confirm-link"
   end
 
+  test "layout renders the hidden timezone suggestion" do
+    get root_url
+
+    assert_select "#time-zone-suggestion[hidden][data-controller='time-zone-suggestion']"
+  end
+
   test "supported locales include every application translation" do
     english_translations = YAML.safe_load_file(Rails.root.join("config/locales/en.yml")).fetch("en")
     required_keys = translation_keys(english_translations)

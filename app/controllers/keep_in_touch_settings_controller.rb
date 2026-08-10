@@ -47,11 +47,7 @@ class KeepInTouchSettingsController < ApplicationController
   end
 
   def local_date
-    return Date.current unless params[:date_source] == "browser"
-
-    Date.iso8601(params[:browser_date])
-  rescue Date::Error, TypeError
-    Date.current
+    Current.user.local_date
   end
 
   def update_setting

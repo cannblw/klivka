@@ -29,6 +29,20 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the birthday list uses the user's current month" do
+    user = users(:one)
+    user.update!(time_zone: "America/Los_Angeles")
+    sign_out
+    sign_in_as user
+
+    travel_to Time.utc(2026, 8, 1, 0, 30) do
+      get birthdays_url
+
+      assert_response :success
+      assert_select "main", /Grace Hopper/
+    end
+  end
+
   test "only shows birthdays for the current user" do
     sign_in_as users(:two)
     get birthdays_url

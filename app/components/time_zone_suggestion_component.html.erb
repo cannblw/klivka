@@ -1,0 +1,26 @@
+<section id="time-zone-suggestion"
+         hidden
+         data-controller="time-zone-suggestion"
+         data-time-zone-suggestion-user-id-value="<%= user.id %>"
+         data-time-zone-suggestion-profile-time-zone-value="<%= user.time_zone %>"
+         class="border-b border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30">
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+    <div>
+      <h2 class="text-sm font-semibold text-amber-900 dark:text-amber-100"><%= t("time_zone_suggestion.heading") %></h2>
+      <p class="mt-1 text-sm text-amber-800 dark:text-amber-200"><%= t("time_zone_suggestion.body") %></p>
+    </div>
+    <div class="flex shrink-0 items-center gap-2">
+      <%= form_with url: time_zone_path, method: :patch do %>
+        <%= hidden_field_tag :time_zone, nil, data: { time_zone_suggestion_target: "timeZone" } %>
+        <%= render ButtonComponent.new(type: :submit, size: :sm) do %>
+          <%= t("time_zone_suggestion.update") %>
+        <% end %>
+      <% end %>
+      <button type="button"
+              data-action="time-zone-suggestion#dismiss"
+              class="rounded-lg px-3 py-1.5 text-sm font-medium text-amber-900 hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700 dark:text-amber-100 dark:hover:bg-amber-900/40">
+        <%= t("time_zone_suggestion.keep") %>
+      </button>
+    </div>
+  </div>
+</section>

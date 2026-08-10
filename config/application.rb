@@ -32,6 +32,9 @@ module FriendCrm
     # Optional email confirmation for registrations; see .env.example
     config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
 
+    config.x.default_time_zone = ENV.fetch("DEFAULT_TIME_ZONE", "UTC")
+    TZInfo::Timezone.get(config.x.default_time_zone)
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
