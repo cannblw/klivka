@@ -16,6 +16,7 @@ en:
       user:
         email_address: "Email address"
         password: "Password"
+        time_zone: "Time zone"
       entry/email:
         email: "Email"
       entry/date:

@@ -27,6 +27,7 @@ es:
       user:
         email_address: "Correo electrónico"
         password: "Contraseña"
+        time_zone: "Zona horaria"
       entry/email:
         email: "Correo electrónico"
       entry/date:
