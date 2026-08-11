@@ -13,7 +13,17 @@
     </button>
     <div class="min-w-0 flex-1">
       <p class="mb-1 text-xs font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500"><%= t("entries.kinds.#{kind_key}") %></p>
-      <%= render "entries/#{kind_key}", entry: entry %>
+      <% if reminder %>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="min-w-0"><%= render "entries/#{kind_key}", entry: entry %></div>
+          <p class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-xs font-medium leading-none text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+            <span class="material-icons leading-none" style="font-size: 16px" aria-hidden="true">notifications_none</span>
+            <span><%= reminder_summary %></span>
+          </p>
+        </div>
+      <% else %>
+        <%= render "entries/#{kind_key}", entry: entry %>
+      <% end %>
       <p class="mt-1 text-xs text-stone-400 dark:text-stone-500"><%= t("entries.added_on", date: l(entry.created_at.to_date, format: :long)) %></p>
     </div>
     <%= link_to edit_friend_entry_path(friend, entry),

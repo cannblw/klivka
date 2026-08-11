@@ -21,6 +21,48 @@ class EntryFormComponentTest < ViewComponent::TestCase
     assert_selector "a", text: "Delete"
   end
 
+  test "renders reminder controls for a date entry using the account defaults" do
+    entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+
+    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+
+    assert_selector "fieldset", text: "Reminder"
+    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='checkbox'][value='0']:not([checked])"
+    assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][type='number'][value='1'][min='0'][max='#{FriendCrm::MAX_INT32}']"
+    assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option[selected][value='months']"
+    assert_nil entry.entry_reminder
+  end
+
+  test "renders an existing date reminder as enabled" do
+    entry = entries(:ada_birthday)
+
+    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+
+    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='checkbox'][value='0'][checked]"
+    assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][value='1']"
+    assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option[selected][value='months']"
+  end
+
+  test "does not render reminder controls for a First Met entry" do
+    entry = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019")
+
+    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+
+    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]']", count: 0
+  end
+
+  test "localizes date reminder controls" do
+    entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+
+    I18n.with_locale(:es) do
+      render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+
+      assert_text "Recordatorio"
+      assert_text "Recuérdame esta fecha"
+      assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option", text: "Meses"
+    end
+  end
+
   test "renders separate year, optional month, and optional day fields for First Met" do
     entry = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019", entry_month: "5")
 

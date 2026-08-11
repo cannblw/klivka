@@ -100,6 +100,62 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "#entries-feed", /Dad's first iguana/
   end
 
+  test "create saves an enabled reminder with its own lead time" do
+    assert_difference -> { EntryReminder.count }, 1 do
+      post friend_entries_url(friends(:ada)),
+        params: {
+          entry: {
+            type: "Entry::Date",
+            entry_date: "2020-01-02",
+            content: { label: "Wedding anniversary" },
+            entry_reminder_attributes: { lead_value: "1", lead_unit: "days", _destroy: "0" }
+          }
+        }
+    end
+
+    reminder = friends(:ada).entries.where(type: "Entry::Date").order(:id).last.entry_reminder
+    assert_redirected_to friend_url(friends(:ada))
+    assert_equal 1, reminder.lead_value
+    assert_equal "days", reminder.lead_unit
+  end
+
+  test "create leaves a date reminder off when the reminder checkbox is cleared" do
+    assert_no_difference -> { EntryReminder.count } do
+      post friend_entries_url(friends(:ada)),
+        params: {
+          entry: {
+            type: "Entry::Date",
+            entry_date: "2020-01-02",
+            content: { label: "Wedding anniversary" },
+            entry_reminder_attributes: { lead_value: "1", lead_unit: "months", _destroy: "1" }
+          }
+        }
+    end
+
+    entry = friends(:ada).entries.where(type: "Entry::Date").order(:id).last
+    assert_redirected_to friend_url(friends(:ada))
+    assert_nil entry.entry_reminder
+  end
+
+  test "an invalid enabled reminder stays enabled when the date form is rendered again" do
+    assert_no_difference -> { EntryReminder.count } do
+      post friend_entries_url(friends(:ada)),
+        params: {
+          entry: {
+            type: "Entry::Date",
+            entry_date: "2020-01-02",
+            content: { label: "Wedding anniversary" },
+            entry_reminder_attributes: { lead_value: "-1", lead_unit: "days", _destroy: "0" }
+          }
+        }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "input[name='entry[entry_reminder_attributes][_destroy]'][type='checkbox'][value='0'][checked]"
+    assert_select "input[name='entry[entry_reminder_attributes][lead_value]'][value='-1']"
+    assert_select "main", /Reminder amount must be greater than or equal to 0/
+  end
+
   test "create adds a normalized email entry" do
     assert_difference -> { friends(:ada).entries.count }, 1 do
       post friend_entries_url(friends(:ada)),
@@ -267,6 +323,38 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "updated", entry.reload.content["text"]
     assert_select "turbo-frame"
+  end
+
+  test "update turns off an existing date reminder" do
+    entry = entries(:ada_birthday)
+
+    patch friend_entry_url(friends(:ada), entry),
+      params: { entry: { entry_reminder_attributes: { id: entry.entry_reminder.id, _destroy: "1" } } },
+      headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_nil entry.reload.entry_reminder
+  end
+
+  test "update changes an existing date reminder's lead time" do
+    entry = entries(:ada_birthday)
+
+    patch friend_entry_url(friends(:ada), entry),
+      params: {
+        entry: {
+          entry_reminder_attributes: {
+            id: entry.entry_reminder.id,
+            lead_value: "2",
+            lead_unit: "days",
+            _destroy: "0"
+          }
+        }
+      },
+      headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_equal 2, entry.reload.entry_reminder.lead_value
+    assert_equal "days", entry.entry_reminder.lead_unit
   end
 
   test "update normalizes an email and renders its mail link" do

@@ -7,4 +7,8 @@ class EntryFormComponent < ViewComponent::Base
   private
 
   attr_reader :entry, :friend
+
+  def entry_supports_reminders?
+    EntryReminder.eligible_entry?(entry)
+  end
 end

@@ -2,7 +2,7 @@
 
 <%= link_to t(".back"), root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
 
-<% ordered_entries = @friend.entries.ordered.to_a %>
+<% ordered_entries = @friend.entries.includes(:entry_reminder).ordered.to_a %>
 
 <div data-controller="toggle" class="mt-4">
   <div class="flex flex-wrap items-center justify-between gap-4">

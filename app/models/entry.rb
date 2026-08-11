@@ -40,6 +40,7 @@ class Entry < ApplicationRecord
 
   belongs_to :friend, touch: true
   has_one :entry_reminder, dependent: :destroy
+  accepts_nested_attributes_for :entry_reminder, allow_destroy: true
 
   validates :type, presence: true
   validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

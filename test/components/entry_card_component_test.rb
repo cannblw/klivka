@@ -31,4 +31,36 @@ class EntryCardComponentTest < ViewComponent::TestCase
       assert_text "(7 years ago)"
     end
   end
+
+  test "shows reminder timing as accessible text when a date reminder is enabled" do
+    entry = entries(:ada_birthday)
+
+    render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
+
+    assert_selector "div.flex.items-center.gap-2" do
+      assert_text I18n.l(entry.entry_date, format: :long)
+      assert_text "Reminder: 1 month before"
+      assert_selector ".material-icons[aria-hidden='true']", text: "notifications_none"
+    end
+  end
+
+  test "does not show reminder metadata when an entry has no reminder" do
+    entry = entries(:phone)
+
+    render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
+
+    assert_no_text "Reminder:"
+    assert_selector ".material-icons", text: "notifications_none", count: 0
+  end
+
+  test "describes a same-day reminder naturally in Spanish" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2026, 8, 11), label: "Aniversario")
+    entry.create_entry_reminder!(lead_value: 0, lead_unit: "days")
+
+    I18n.with_locale(:es) do
+      render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
+
+      assert_text "Recordatorio: el mismo día"
+    end
+  end
 end

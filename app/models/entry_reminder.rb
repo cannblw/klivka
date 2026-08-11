@@ -38,6 +38,16 @@ class EntryReminder < ApplicationRecord
     entry.is_a?(Entry::Date) && EXCLUDED_DATE_ENTRY_CLASSES.none? { entry.is_a?(_1) }
   end
 
+  def self.default_lead_attributes_for(entry)
+    account = entry&.friend&.user
+    return {} unless account
+
+    {
+      lead_value: account.default_reminder_lead_value,
+      lead_unit: account.default_reminder_lead_unit
+    }
+  end
+
   def lead_days
     lead_value * LEAD_UNITS.fetch(lead_unit)
   end
@@ -45,11 +55,10 @@ class EntryReminder < ApplicationRecord
   private
 
   def apply_default_lead
-    account = entry&.friend&.user
-    return unless account
+    defaults = self.class.default_lead_attributes_for(entry)
 
-    self.lead_value = account.default_reminder_lead_value if lead_value.nil?
-    self.lead_unit = account.default_reminder_lead_unit if lead_unit.nil?
+    self.lead_value = defaults[:lead_value] if lead_value.nil?
+    self.lead_unit = defaults[:lead_unit] if lead_unit.nil?
   end
 
   def validate_entry_eligibility

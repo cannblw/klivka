@@ -128,6 +128,29 @@ en:
     gift_list_item_placeholder: "Gift idea"
     gift_list_item_label: "Gift idea %{number}"
     gift_list_add_item: "Add idea"
+    reminder:
+      heading: "Reminder"
+      description: "Choose whether and when Klivka reminds you."
+      enabled: "Remind me about this date"
+      lead: "How far in advance"
+      lead_value: "Amount"
+      lead_unit: "Unit"
+      lead_units:
+        days: "Days"
+        months: "Months"
+        years: "Years"
+      summary: "Reminder: %{timing}"
+      timing:
+        same_day: "on the date"
+        days:
+          one: "1 day before"
+          other: "%{count} days before"
+        months:
+          one: "1 month before"
+          other: "%{count} months before"
+        years:
+          one: "1 year before"
+          other: "%{count} years before"
     gift_list_remove_item: "Remove gift idea %{number}"
     gift_list_drag_item: "Drag gift idea %{number} to reorder. Use the up and down arrow keys to move it."
     gift_list_toggle_item: "Toggle gift idea %{number}"

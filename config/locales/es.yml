@@ -139,6 +139,29 @@ es:
     gift_list_item_placeholder: "Idea de regalo"
     gift_list_item_label: "Idea de regalo %{number}"
     gift_list_add_item: "Añadir idea"
+    reminder:
+      heading: "Recordatorio"
+      description: "Elige si quieres que Klivka te recuerde esta fecha y con cuánta antelación."
+      enabled: "Recuérdame esta fecha"
+      lead: "Con cuánta antelación"
+      lead_value: "Cantidad"
+      lead_unit: "Unidad"
+      lead_units:
+        days: "Días"
+        months: "Meses"
+        years: "Años"
+      summary: "Recordatorio: %{timing}"
+      timing:
+        same_day: "el mismo día"
+        days:
+          one: "1 día antes"
+          other: "%{count} días antes"
+        months:
+          one: "1 mes antes"
+          other: "%{count} meses antes"
+        years:
+          one: "1 año antes"
+          other: "%{count} años antes"
     gift_list_remove_item: "Eliminar idea de regalo %{number}"
     gift_list_drag_item: "Arrastra la idea de regalo %{number} para reordenarla. Usa las flechas arriba y abajo para moverla."
     gift_list_toggle_item: "Cambiar el estado de la idea de regalo %{number}"
