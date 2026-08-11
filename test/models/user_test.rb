@@ -146,8 +146,14 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "database rejects reminder lead days outside the portable integer range" do
+    # Bypass adapter-specific integer casting so both SQLite and PostgreSQL exercise the database boundary itself.
+    overflowing_value = FriendCrm::MAX_INT32 + 1
+    quoted_id = User.connection.quote(users(:one).id)
+
     assert_raises ActiveRecord::StatementInvalid do
-      users(:one).update_columns(default_reminder_lead_value: 2_147_483_648, default_reminder_lead_unit: "days")
+      User.connection.execute(
+        "UPDATE users SET default_reminder_lead_value = #{overflowing_value} WHERE id = #{quoted_id}"
+      )
     end
   end
 end
