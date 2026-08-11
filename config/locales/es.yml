@@ -425,6 +425,11 @@ es:
       invalid_credentials: "Prueba con otro correo electrónico u otra contraseña."
       unconfirmed: "Confirma tu correo electrónico antes de iniciar sesión."
 
+  demo:
+    banner: "Estás explorando una demo compartida. Los cambios son visibles para todos y se restablecen con frecuencia."
+    account_management_unavailable: "Los cambios de cuenta y contraseña no están disponibles en la demo compartida."
+    rate_limited: "Esta demo compartida limita cuántos cambios puedes hacer en poco tiempo. Espera unos minutos y vuelve a intentarlo."
+
   registrations:
     new:
       title: "Crea tu cuenta"

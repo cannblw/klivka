@@ -6,6 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Klivka">
     <meta name="description" content="<%= t("brand.description") %>">
+    <%= tag.meta name: "robots", content: "noindex, nofollow" if demo_mode? %>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#EF6A2E">
     <meta property="og:type" content="website">
@@ -42,6 +43,7 @@
   </head>
 
   <body class="min-h-screen bg-stone-100 text-stone-900 dark:bg-stone-900 dark:text-stone-100">
+    <%= render DemoBannerComponent.new if demo_mode? %>
     <header class="border-b border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800">
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <div class="flex items-center gap-4">
@@ -55,9 +57,11 @@
         <% if authenticated? %>
           <div class="flex items-center gap-3">
             <%= link_to t("nav.settings"), settings_path, class: "text-sm font-medium text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100" %>
-            <%= form_with url: session_path, method: :delete do %>
-              <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
-                <%= t("nav.sign_out") %>
+            <% unless demo_mode? %>
+              <%= form_with url: session_path, method: :delete do %>
+                <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
+                  <%= t("nav.sign_out") %>
+                <% end %>
               <% end %>
             <% end %>
           </div>

@@ -1,5 +1,6 @@
 class RegistrationsController < ApplicationController
   allow_unauthenticated_access
+  unavailable_in_demo_mode
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to signup_path, alert: t("auth.rate_limited") }
 
   def new

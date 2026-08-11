@@ -1,5 +1,14 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include DemoMode
+
+  rate_limit to: Rails.application.config.x.demo_mutation_rate_limit,
+    within: Rails.application.config.x.demo_mutation_rate_window,
+    by: -> { request.remote_ip },
+    with: :respond_to_demo_rate_limit,
+    scope: :demo_mutations,
+    if: :demo_mutation_request?
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 

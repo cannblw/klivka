@@ -420,6 +420,11 @@ en:
       invalid_credentials: "Try another email address or password."
       unconfirmed: "Please confirm your email address before signing in."
 
+  demo:
+    banner: "You're exploring a shared demo. Changes are visible to everyone and reset regularly."
+    account_management_unavailable: "Account and password changes aren't available in the shared demo."
+    rate_limited: "This shared demo limits how many changes you can make in a short time. Please wait a few minutes and try again."
+
   registrations:
     new:
       title: "Create your account"
