@@ -5,6 +5,7 @@ module DemoMode
 
   included do
     prepend_before_action :start_demo_session, if: :demo_mode?
+    before_action :record_demo_activity, if: :demo_mode?
     after_action :disallow_demo_indexing, if: :demo_mode?
     helper_method :demo_mode?
   end
@@ -35,6 +36,10 @@ module DemoMode
 
   def disallow_demo_indexing
     response.headers["X-Robots-Tag"] = "noindex, nofollow"
+  end
+
+  def record_demo_activity
+    DemoState.current.record_activity!
   end
 
   def redirect_from_demo_account_flow

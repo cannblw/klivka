@@ -12,6 +12,16 @@ class DemoModeTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "records visitor activity before serving the demo" do
+    with_demo_mode do
+      state = DemoState.current(at: 1.hour.ago)
+
+      get root_path
+
+      assert_in_delta Time.current, state.reload.last_activity_at, 1.second
+    end
+  end
+
   test "reuses one authentication record across demo visitors" do
     with_demo_mode do |demo_user|
       get root_path

@@ -1,5 +1,4 @@
 require "test_helper"
-require_relative "../../db/seeds/sample_data"
 
 class SampleSeedDataTest < ActiveSupport::TestCase
   setup do

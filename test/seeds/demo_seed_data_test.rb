@@ -1,6 +1,4 @@
 require "test_helper"
-require_relative "../../db/seeds/sample_data"
-require_relative "../../db/seeds/demo"
 
 class DemoSeedDataTest < ActiveSupport::TestCase
   test "creates the shared demo account with sample data" do
@@ -10,6 +8,7 @@ class DemoSeedDataTest < ActiveSupport::TestCase
     assert_equal "demo-seed@example.com", user.email_address
     assert user.password_digest.present?
     assert_equal SampleSeedData::FRIEND_COUNT, user.friends.count
+    assert_equal DemoState::SHARED_KEY, DemoState.current.key
   end
 
   test "does not replace existing demo data during a subsequent seed" do
