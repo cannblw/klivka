@@ -39,6 +39,7 @@ class Entry < ApplicationRecord
   SINGLETON_TYPES = %w[Entry::Birthday Entry::FirstMet].freeze
 
   belongs_to :friend, touch: true
+  has_one :entry_reminder, dependent: :destroy
 
   validates :type, presence: true
   validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

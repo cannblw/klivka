@@ -28,12 +28,19 @@ es:
         email_address: "Correo electrónico"
         password: "Contraseña"
         time_zone: "Zona horaria"
+        reminder_in_app_enabled: "Recordatorios en la aplicación"
+        reminder_email_enabled: "Recordatorios por correo electrónico"
+        default_reminder_lead_value: "Antelación predeterminada del recordatorio"
+        default_reminder_lead_unit: "Unidad de antelación predeterminada del recordatorio"
       entry/email:
         email: "Correo electrónico"
       entry/date:
         label: "Etiqueta"
       entry/first_met:
         friend_id: "Primera vez que os conocisteis"
+      entry_reminder:
+        lead_value: "Antelación del recordatorio"
+        lead_unit: "Unidad de antelación del recordatorio"
       interaction:
         occurred_on: "Fecha"
         contact_method: "Cómo os pusisteis en contacto"
@@ -54,6 +61,10 @@ es:
             items:
               blank: "debe incluir al menos una idea"
               invalid: "el elemento %{index} debe tener texto"
+        entry_reminder:
+          attributes:
+            entry:
+              ineligible_for_reminders: "no admite recordatorios"
         interaction:
           attributes:
             occurred_on:

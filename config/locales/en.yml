@@ -17,12 +17,19 @@ en:
         email_address: "Email address"
         password: "Password"
         time_zone: "Time zone"
+        reminder_in_app_enabled: "In-app reminders"
+        reminder_email_enabled: "Email reminders"
+        default_reminder_lead_value: "Default reminder notice"
+        default_reminder_lead_unit: "Default reminder notice unit"
       entry/email:
         email: "Email"
       entry/date:
         label: "Label"
       entry/first_met:
         friend_id: "First met"
+      entry_reminder:
+        lead_value: "Reminder notice"
+        lead_unit: "Reminder notice unit"
       interaction:
         occurred_on: "Date"
         contact_method: "How you connected"
@@ -43,6 +50,10 @@ en:
             items:
               blank: "must include at least one idea"
               invalid: "item %{index} must have text"
+        entry_reminder:
+          attributes:
+            entry:
+              ineligible_for_reminders: "does not support reminders"
         interaction:
           attributes:
             occurred_on:
