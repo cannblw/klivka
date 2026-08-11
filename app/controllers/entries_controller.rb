@@ -103,10 +103,18 @@ class EntriesController < ApplicationController
 
   # Create allows setting the STI type; update locks it
   def entry_params
-    params.require(:entry).permit(:type, :entry_date, :entry_year, :entry_month, :entry_day, content: {})
+    params.require(:entry).permit(
+      :type, :entry_date, :entry_year, :entry_month, :entry_day,
+      content: {},
+      entry_reminder_attributes: %i[ id lead_value lead_unit recurrence _destroy ]
+    )
   end
 
   def entry_params_for_update
-    params.require(:entry).permit(:entry_date, :entry_year, :entry_month, :entry_day, content: {})
+    params.require(:entry).permit(
+      :entry_date, :entry_year, :entry_month, :entry_day,
+      content: {},
+      entry_reminder_attributes: %i[ id lead_value lead_unit recurrence _destroy ]
+    )
   end
 end

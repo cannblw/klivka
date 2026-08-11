@@ -2,6 +2,14 @@
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+input[type="number"] {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] input[type="number"] {
+  color-scheme: dark;
+}
+
 .interaction-date-input {
   color-scheme: light;
 }

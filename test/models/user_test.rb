@@ -4,15 +4,19 @@ require "test_helper"
 #
 # Table name: users
 #
-#  id              :integer          not null, primary key
-#  confirmed_at    :datetime
-#  email_address   :string           not null
-#  locale          :string
-#  password_digest :string           not null
-#  theme           :string
-#  time_zone       :string           not null
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
+#  id                          :integer          not null, primary key
+#  confirmed_at                :datetime
+#  default_reminder_lead_unit  :string           default("months"), not null
+#  default_reminder_lead_value :integer          default(1), not null
+#  email_address               :string           not null
+#  locale                      :string
+#  password_digest             :string           not null
+#  reminder_email_enabled      :boolean          default(TRUE), not null
+#  reminder_in_app_enabled     :boolean          default(TRUE), not null
+#  theme                       :string
+#  time_zone                   :string           not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
 #
 # Indexes
 #
@@ -65,5 +69,91 @@ class UserTest < ActiveSupport::TestCase
     user = User.new(email_address: "timezone@example.com", password: "a-safe-password", time_zone: "America/Los_Angeles")
 
     assert_equal Date.new(2026, 8, 9), user.local_date(at: Time.utc(2026, 8, 10, 0, 30))
+  end
+
+  test "applies the configured reminder defaults to a new user" do
+    user = User.new(email_address: "reminders@example.com", password: "a-safe-password")
+
+    assert_predicate user, :reminder_in_app_enabled?
+    assert_predicate user, :reminder_email_enabled?
+    assert_equal 1, user.default_reminder_lead_value
+    assert_equal "months", user.default_reminder_lead_unit
+  end
+
+  test "preserves explicit reminder preferences when application defaults differ" do
+    configuration = Rails.application.config.x
+    original_defaults = [
+      configuration.reminder_default_in_app_enabled,
+      configuration.reminder_default_email_enabled,
+      configuration.reminder_default_lead_value,
+      configuration.reminder_default_lead_unit
+    ]
+    configuration.reminder_default_in_app_enabled = false
+    configuration.reminder_default_email_enabled = false
+    configuration.reminder_default_lead_value = 2
+    configuration.reminder_default_lead_unit = "years"
+
+    user = User.new(
+      email_address: "custom-reminders@example.com",
+      password: "a-safe-password",
+      reminder_in_app_enabled: true,
+      reminder_email_enabled: true,
+      default_reminder_lead_value: 1,
+      default_reminder_lead_unit: "months"
+    )
+
+    assert_predicate user, :reminder_in_app_enabled?
+    assert_predicate user, :reminder_email_enabled?
+    assert_equal 1, user.default_reminder_lead_value
+    assert_equal "months", user.default_reminder_lead_unit
+  ensure
+    configuration.reminder_default_in_app_enabled,
+      configuration.reminder_default_email_enabled,
+      configuration.reminder_default_lead_value,
+      configuration.reminder_default_lead_unit = original_defaults
+  end
+
+  test "rejects a reminder lead value below zero" do
+    user = User.new(email_address: "negative-lead@example.com", password: "a-safe-password", default_reminder_lead_value: -1)
+
+    assert_not_predicate user, :valid?
+    assert user.errors.of_kind?(:default_reminder_lead_value, :greater_than_or_equal_to)
+  end
+
+  test "rejects a reminder lead value outside the portable integer range" do
+    user = User.new(
+      email_address: "overflowing-lead@example.com",
+      password: "a-safe-password",
+      default_reminder_lead_value: 2_147_483_648,
+      default_reminder_lead_unit: "days"
+    )
+
+    assert_not_predicate user, :valid?
+    assert user.errors.of_kind?(:default_reminder_lead_value, :less_than_or_equal_to)
+  end
+
+  test "rejects an unsupported reminder lead unit" do
+    user = User.new(email_address: "unsupported-lead-unit@example.com", password: "a-safe-password", default_reminder_lead_unit: "weeks")
+
+    assert_not_predicate user, :valid?
+    assert user.errors.of_kind?(:default_reminder_lead_unit, :inclusion)
+  end
+
+  test "database rejects a negative reminder lead value" do
+    assert_raises ActiveRecord::StatementInvalid do
+      users(:one).update_column(:default_reminder_lead_value, -1)
+    end
+  end
+
+  test "database rejects reminder lead days outside the portable integer range" do
+    # Bypass adapter-specific integer casting so both SQLite and PostgreSQL exercise the database boundary itself.
+    overflowing_value = FriendCrm::MAX_INT32 + 1
+    quoted_id = User.connection.quote(users(:one).id)
+
+    assert_raises ActiveRecord::StatementInvalid do
+      User.connection.execute(
+        "UPDATE users SET default_reminder_lead_value = #{overflowing_value} WHERE id = #{quoted_id}"
+      )
+    end
   end
 end

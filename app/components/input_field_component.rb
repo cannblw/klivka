@@ -3,7 +3,8 @@ class InputFieldComponent < ViewComponent::Base
     text: :text_field,
     email: :email_field,
     password: :password_field,
-    search: :search_field
+    search: :search_field,
+    number: :number_field
   }.freeze
 
   def initialize(form, field, type:, **options)

@@ -7,6 +7,9 @@ require "rails/all"
 Bundler.require(*Rails.groups)
 
 module FriendCrm
+  # PostgreSQL integer columns are signed 32-bit values; use this limit for persisted integers so SQLite stays compatible.
+  MAX_INT32 = 2_147_483_647
+
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
@@ -18,6 +21,8 @@ module FriendCrm
 
     config.i18n.available_locales = [ :en, :es ]
     config.i18n.default_locale = :en
+
+    boolean_values = { "true" => true, "false" => false }.freeze
 
     # Maximum number of matching friends the user sees in search results.
     # FriendSearch applies the cap so broad searches do not load and render an unbounded number of friends.
@@ -34,6 +39,26 @@ module FriendCrm
 
     config.x.default_time_zone = ENV.fetch("DEFAULT_TIME_ZONE", "UTC")
     TZInfo::Timezone.get(config.x.default_time_zone)
+
+    # Fixed day counts make lead times predictable across varying month lengths and leap years.
+    config.x.reminder_lead_units = { "days" => 1, "months" => 30, "years" => 365 }.freeze
+
+    config.x.reminder_default_in_app_enabled = boolean_values[ENV.fetch("REMINDER_DEFAULT_IN_APP_ENABLED", "true")]
+    raise ArgumentError, "REMINDER_DEFAULT_IN_APP_ENABLED must be true or false" if config.x.reminder_default_in_app_enabled.nil?
+
+    config.x.reminder_default_email_enabled = boolean_values[ENV.fetch("REMINDER_DEFAULT_EMAIL_ENABLED", "true")]
+    raise ArgumentError, "REMINDER_DEFAULT_EMAIL_ENABLED must be true or false" if config.x.reminder_default_email_enabled.nil?
+
+    config.x.reminder_default_lead_value = Integer(ENV.fetch("REMINDER_DEFAULT_LEAD_VALUE", "1"), 10)
+    if config.x.reminder_default_lead_value.negative? ||
+        config.x.reminder_default_lead_value > MAX_INT32
+      raise ArgumentError, "REMINDER_DEFAULT_LEAD_VALUE is outside the supported integer range"
+    end
+
+    config.x.reminder_default_lead_unit = ENV.fetch("REMINDER_DEFAULT_LEAD_UNIT", "months")
+    unless config.x.reminder_lead_units.key?(config.x.reminder_default_lead_unit)
+      raise ArgumentError, "REMINDER_DEFAULT_LEAD_UNIT must be one of: #{config.x.reminder_lead_units.keys.join(", ")}"
+    end
 
     # Configuration for the application, engines, and railties goes here.
     #

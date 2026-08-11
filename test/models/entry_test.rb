@@ -117,6 +117,20 @@ class EntryTest < ActiveSupport::TestCase
     assert date_entry.errors.of_kind?(:entry_date, :blank)
   end
 
+  test "a date has one annual occurrence in every year" do
+    date_entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 8, 10))
+
+    assert_equal Date.new(2026, 8, 10), date_entry.occurrence_on(year: 2026)
+    assert_equal Date.new(2027, 8, 10), date_entry.next_occurrence_on(on: Date.new(2026, 8, 11))
+  end
+
+  test "a leap-day date occurs on February 28 in a non-leap year" do
+    date_entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 2, 29))
+
+    assert_equal Date.new(2024, 2, 29), date_entry.occurrence_on(year: 2024)
+    assert_equal Date.new(2025, 2, 28), date_entry.occurrence_on(year: 2025)
+  end
+
   test "generic dates are creatable and normalize their optional label" do
     date_entry = Entry::Date.new(
       friend: friends(:ada),

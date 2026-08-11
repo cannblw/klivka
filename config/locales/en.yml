@@ -17,12 +17,20 @@ en:
         email_address: "Email address"
         password: "Password"
         time_zone: "Time zone"
+        reminder_in_app_enabled: "In-app reminders"
+        reminder_email_enabled: "Email reminders"
+        default_reminder_lead_value: "Default reminder amount"
+        default_reminder_lead_unit: "Default reminder unit"
       entry/email:
         email: "Email"
       entry/date:
         label: "Label"
       entry/first_met:
         friend_id: "First met"
+      entry_reminder:
+        lead_value: "Reminder amount"
+        lead_unit: "Reminder unit"
+        recurrence: "Reminder frequency"
       interaction:
         occurred_on: "Date"
         contact_method: "How you connected"
@@ -43,6 +51,12 @@ en:
             items:
               blank: "must include at least one idea"
               invalid: "item %{index} must have text"
+        entry_reminder:
+          attributes:
+            entry:
+              ineligible_for_reminders: "does not support reminders"
+            recurrence:
+              birthday_must_repeat_yearly: "must repeat yearly for birthdays"
         interaction:
           attributes:
             occurred_on:
@@ -117,6 +131,40 @@ en:
     gift_list_item_placeholder: "Gift idea"
     gift_list_item_label: "Gift idea %{number}"
     gift_list_add_item: "Add idea"
+    reminder:
+      heading: "Reminder"
+      description: "Choose whether and when Klivka reminds you."
+      enabled: "Remind me about this date"
+      lead: "How far in advance"
+      lead_value: "Amount"
+      lead_unit: "Unit"
+      lead_units:
+        days: "Days"
+        months: "Months"
+        years: "Years"
+      recurrence:
+        heading: "How often"
+        one_time:
+          label: "One time"
+          hint: "Remind me for this date only."
+        yearly:
+          label: "Every year"
+          hint: "Repeat the reminder on this date each year."
+      summary:
+        one_time: "One-time reminder: %{timing}"
+        yearly: "Yearly reminder: %{timing}"
+      leap_day_notice: "In non-leap years, Klivka will remind you on February 28."
+      timing:
+        same_day: "on the date"
+        days:
+          one: "1 day before"
+          other: "%{count} days before"
+        months:
+          one: "1 month before"
+          other: "%{count} months before"
+        years:
+          one: "1 year before"
+          other: "%{count} years before"
     gift_list_remove_item: "Remove gift idea %{number}"
     gift_list_drag_item: "Drag gift idea %{number} to reorder. Use the up and down arrow keys to move it."
     gift_list_toggle_item: "Toggle gift idea %{number}"
@@ -296,6 +344,23 @@ en:
         dark: "Dark"
     update:
       updated: "Settings saved."
+    reminders:
+      heading: "Reminders"
+      description: "Choose how you want Klivka to notify you."
+      delivery_channels: "Reminder delivery channels"
+      in_app: "In-app reminders"
+      in_app_hint: "Allow reminders to appear while you use Klivka."
+      email: "Email reminders"
+      email_hint: "Allow reminder emails to be sent to your account address."
+      default_lead: "How far in advance"
+      default_lead_hint: "Used as the default when you add a date reminder. You can change it for each reminder later."
+      lead_value: "Amount"
+      lead_unit: "Unit"
+      lead_units:
+        days: "Days"
+        months: "Months"
+        years: "Years"
+      save: "Save reminder settings"
 
   friends:
     index:

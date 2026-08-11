@@ -12,6 +12,7 @@
 - Only portable column types: `string`, `text`, `integer`, `decimal`, `boolean`, `datetime`, `json`, `date`. Never `jsonb`, PG arrays, or `uuid` columns.
 - No adapter-conditional migrations. `schema.rb` must load identically on both adapters.
 - Avoid raw SQL; use ActiveRecord/Arel. If raw SQL is unavoidable and must differ by adapter, use `ApplicationRecord.adapter_sql(sqlite:, postgres:)` to branch cleanly.
+- Explain non-obvious database portability choices with a concise comment describing why the adapters need that representation, constraint, constant, or query. Keep comments focused on the adapter difference rather than restating the code.
 
 ## Temporal data
 
@@ -36,9 +37,11 @@
 - Prefer componentizing any HTML that is expected to be reused, even within a single feature. Buttons, form controls, avatars, and similar primitives should be components by default; don't wait for a second usage to extract them.
 - Before adding a JavaScript utility, search for existing code that solves the same browser concern and extract one shared implementation when appropriate.
 - Never silence a caught error completely. Best-effort behavior may recover or continue when failure is safe, but it must report enough non-sensitive context through the appropriate logger or `console.error` so the problem remains diagnosable. Never include user content or personal data in diagnostic output.
+- Before adding a platform or adapter-specific implementation, search for an existing reusable abstraction and extend it when appropriate.
 - Tailwind is used as intended: utilities inline in markup; deduplicate by extracting components, never with `@apply`.
 - Validations live in the model AND as DB constraints (`null: false`, FKs) — both, not either.
 - Responsive design is mandatory: mobile-first (base styles target small screens, `sm:`/`md:`/`lg:` scale up), but layouts must feel natural on desktop too — no mobile-only or desktop-only UI.
 - All UI strings go through i18n (`t(...)`, lazy lookup keys). Supported locales: English (`en`, default) and Spanish (`es`); every key must exist in both. No hardcoded UI strings in views, components, or code-triggered UI (flash messages, validation-facing attribute names, etc.).
+- UI copy uses direct, conversational language at the user's level. Prefer concrete questions, verbs, and familiar phrases over technical terms or abstract nouns. Write each locale naturally; do not translate literally when idiomatic wording differs.
 - Em dashes (—) are forbidden in UI copy in any locale; use a period, comma, or colon instead.
 - Never commit without being asked. `db/schema.rb` is committed alongside migrations.

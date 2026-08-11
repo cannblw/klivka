@@ -28,6 +28,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_10_130000) do
     t.check_constraint "position >= 0", name: "entries_position_non_negative"
   end
 
+  create_table "entry_reminders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "entry_id", null: false
+    t.string "lead_unit", null: false
+    t.integer "lead_value", null: false
+    t.string "recurrence", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id"], name: "index_entry_reminders_on_entry_id", unique: true
+    t.check_constraint "lead_value BETWEEN 0 AND 2147483647 AND lead_unit IN ('days', 'months', 'years')", name: "entry_reminders_lead_is_supported"
+    t.check_constraint "recurrence IN ('one_time', 'yearly')", name: "entry_reminders_recurrence_is_supported"
+  end
+
   create_table "friends", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -75,16 +87,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_10_130000) do
   create_table "users", force: :cascade do |t|
     t.datetime "confirmed_at"
     t.datetime "created_at", null: false
+    t.string "default_reminder_lead_unit", default: "months", null: false
+    t.integer "default_reminder_lead_value", default: 1, null: false
     t.string "email_address", null: false
     t.string "locale"
     t.string "password_digest", null: false
+    t.boolean "reminder_email_enabled", default: true, null: false
+    t.boolean "reminder_in_app_enabled", default: true, null: false
     t.string "theme"
     t.string "time_zone", null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.check_constraint "default_reminder_lead_value BETWEEN 0 AND 2147483647 AND default_reminder_lead_unit IN ('days', 'months', 'years')", name: "users_default_reminder_lead_is_supported"
+    t.check_constraint "reminder_email_enabled IN (TRUE, FALSE)", name: "users_reminder_email_enabled_is_boolean"
+    t.check_constraint "reminder_in_app_enabled IN (TRUE, FALSE)", name: "users_reminder_in_app_enabled_is_boolean"
   end
 
   add_foreign_key "entries", "friends"
+  add_foreign_key "entry_reminders", "entries", on_delete: :cascade
   add_foreign_key "friends", "users"
   add_foreign_key "interactions", "friends"
   add_foreign_key "keep_in_touch_settings", "friends"

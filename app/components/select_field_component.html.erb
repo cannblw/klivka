@@ -1,1 +1,6 @@
-<%= form.select field, choices, { selected: selected }, options.merge(class: select_classes) %>
+<div class="<%= wrapper_classes %>">
+  <%= form.select field, choices, selected_options, options.merge(class: select_classes) %>
+  <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-stone-500 dark:text-stone-300" aria-hidden="true">
+    <span class="material-icons leading-none" style="font-size: 20px">expand_more</span>
+  </span>
+</div>

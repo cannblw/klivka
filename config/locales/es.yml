@@ -28,12 +28,20 @@ es:
         email_address: "Correo electrónico"
         password: "Contraseña"
         time_zone: "Zona horaria"
+        reminder_in_app_enabled: "Recordatorios en la aplicación"
+        reminder_email_enabled: "Recordatorios por correo electrónico"
+        default_reminder_lead_value: "Antelación predeterminada del recordatorio"
+        default_reminder_lead_unit: "Unidad de antelación predeterminada del recordatorio"
       entry/email:
         email: "Correo electrónico"
       entry/date:
         label: "Etiqueta"
       entry/first_met:
         friend_id: "Primera vez que os conocisteis"
+      entry_reminder:
+        lead_value: "Antelación del recordatorio"
+        lead_unit: "Unidad de antelación del recordatorio"
+        recurrence: "Frecuencia del recordatorio"
       interaction:
         occurred_on: "Fecha"
         contact_method: "Cómo os pusisteis en contacto"
@@ -54,6 +62,12 @@ es:
             items:
               blank: "debe incluir al menos una idea"
               invalid: "el elemento %{index} debe tener texto"
+        entry_reminder:
+          attributes:
+            entry:
+              ineligible_for_reminders: "no admite recordatorios"
+            recurrence:
+              birthday_must_repeat_yearly: "debe repetirse cada año para los cumpleaños"
         interaction:
           attributes:
             occurred_on:
@@ -128,6 +142,40 @@ es:
     gift_list_item_placeholder: "Idea de regalo"
     gift_list_item_label: "Idea de regalo %{number}"
     gift_list_add_item: "Añadir idea"
+    reminder:
+      heading: "Recordatorio"
+      description: "Elige si quieres que Klivka te recuerde esta fecha y con cuánta antelación."
+      enabled: "Recuérdame esta fecha"
+      lead: "Con cuánta antelación"
+      lead_value: "Cantidad"
+      lead_unit: "Unidad"
+      lead_units:
+        days: "Días"
+        months: "Meses"
+        years: "Años"
+      recurrence:
+        heading: "Con qué frecuencia"
+        one_time:
+          label: "Una vez"
+          hint: "Recuérdame solo esta fecha."
+        yearly:
+          label: "Cada año"
+          hint: "Repite el recordatorio en esta fecha cada año."
+      summary:
+        one_time: "Recordatorio único: %{timing}"
+        yearly: "Recordatorio anual: %{timing}"
+      leap_day_notice: "En los años no bisiestos, Klivka te lo recordará el 28 de febrero."
+      timing:
+        same_day: "el mismo día"
+        days:
+          one: "1 día antes"
+          other: "%{count} días antes"
+        months:
+          one: "1 mes antes"
+          other: "%{count} meses antes"
+        years:
+          one: "1 año antes"
+          other: "%{count} años antes"
     gift_list_remove_item: "Eliminar idea de regalo %{number}"
     gift_list_drag_item: "Arrastra la idea de regalo %{number} para reordenarla. Usa las flechas arriba y abajo para moverla."
     gift_list_toggle_item: "Cambiar el estado de la idea de regalo %{number}"
@@ -307,6 +355,23 @@ es:
         dark: "Oscuro"
     update:
       updated: "Ajustes guardados."
+    reminders:
+      heading: "Recordatorios"
+      description: "Elige cómo quieres que te avise Klivka."
+      delivery_channels: "Canales de entrega de recordatorios"
+      in_app: "Recordatorios en la aplicación"
+      in_app_hint: "Permite que aparezcan recordatorios mientras usas Klivka."
+      email: "Recordatorios por correo electrónico"
+      email_hint: "Permite que se envíen recordatorios al correo electrónico de tu cuenta."
+      default_lead: "Con cuánta antelación"
+      default_lead_hint: "Esta antelación se usará al añadir un recordatorio de fecha. Podrás cambiarla para cada recordatorio."
+      lead_value: "Cantidad"
+      lead_unit: "Unidad"
+      lead_units:
+        days: "Días"
+        months: "Meses"
+        years: "Años"
+      save: "Guardar ajustes de recordatorios"
 
   friends:
     index:

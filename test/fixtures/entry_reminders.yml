@@ -1,0 +1,25 @@
+# == Schema Information
+#
+# Table name: entry_reminders
+#
+#  id         :integer          not null, primary key
+#  lead_unit  :string           not null
+#  lead_value :integer          not null
+#  recurrence :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  entry_id   :integer          not null
+#
+# Indexes
+#
+#  index_entry_reminders_on_entry_id  (entry_id) UNIQUE
+#
+# Foreign Keys
+#
+#  entry_id  (entry_id => entries.id) ON DELETE => cascade
+#
+ada_birthday:
+  entry: ada_birthday
+  lead_value: 1
+  lead_unit: months
+  recurrence: yearly

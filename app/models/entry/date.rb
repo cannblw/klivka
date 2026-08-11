@@ -30,6 +30,22 @@ class Entry::Date < Entry
 
   validates :entry_date, presence: true
 
+  def occurrence_on(year:)
+    return unless entry_date
+
+    # A February 29 date is observed on February 28 in non-leap years so every annual date has one predictable occurrence.
+    ::Date.new(year, entry_date.month, [ entry_date.day, ::Date.new(year, entry_date.month, -1).day ].min)
+  end
+
+  def leap_day?
+    entry_date&.month == 2 && entry_date.day == 29
+  end
+
+  def next_occurrence_on(on:)
+    occurrence = occurrence_on(year: on.year)
+    occurrence >= on ? occurrence : occurrence_on(year: on.year + 1)
+  end
+
   private
 
   def normalize_label
