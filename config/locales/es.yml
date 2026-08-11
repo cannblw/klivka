@@ -41,6 +41,7 @@ es:
       entry_reminder:
         lead_value: "Antelación del recordatorio"
         lead_unit: "Unidad de antelación del recordatorio"
+        recurrence: "Frecuencia del recordatorio"
       interaction:
         occurred_on: "Fecha"
         contact_method: "Cómo os pusisteis en contacto"
@@ -65,6 +66,8 @@ es:
           attributes:
             entry:
               ineligible_for_reminders: "no admite recordatorios"
+            recurrence:
+              birthday_must_repeat_yearly: "debe repetirse cada año para los cumpleaños"
         interaction:
           attributes:
             occurred_on:
@@ -150,7 +153,18 @@ es:
         days: "Días"
         months: "Meses"
         years: "Años"
-      summary: "Recordatorio: %{timing}"
+      recurrence:
+        heading: "Con qué frecuencia"
+        one_time:
+          label: "Una vez"
+          hint: "Recuérdame solo esta fecha."
+        yearly:
+          label: "Cada año"
+          hint: "Repite el recordatorio en esta fecha cada año."
+      summary:
+        one_time: "Recordatorio único: %{timing}"
+        yearly: "Recordatorio anual: %{timing}"
+      leap_day_notice: "En los años no bisiestos, Klivka te lo recordará el 28 de febrero."
       timing:
         same_day: "el mismo día"
         days:

@@ -39,7 +39,7 @@ class EntryCardComponentTest < ViewComponent::TestCase
 
     assert_selector "div.flex.items-center.gap-2" do
       assert_text I18n.l(entry.entry_date, format: :long)
-      assert_text "Reminder: 1 month before"
+      assert_text "Yearly reminder: 1 month before"
       assert_selector ".material-icons[aria-hidden='true']", text: "notifications_none"
     end
   end
@@ -49,7 +49,7 @@ class EntryCardComponentTest < ViewComponent::TestCase
 
     render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
 
-    assert_no_text "Reminder:"
+    assert_no_text "reminder:"
     assert_selector ".material-icons", text: "notifications_none", count: 0
   end
 
@@ -60,7 +60,26 @@ class EntryCardComponentTest < ViewComponent::TestCase
     I18n.with_locale(:es) do
       render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
 
-      assert_text "Recordatorio: el mismo día"
+      assert_text "Recordatorio único: el mismo día"
     end
+  end
+
+  test "explains the leap-day reminder rule on a saved entry" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 2, 29))
+    entry.create_entry_reminder!(lead_value: 1, lead_unit: "months", recurrence: EntryReminder::YEARLY_RECURRENCE)
+
+    render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
+
+    assert_text "In non-leap years, Klivka will remind you on February 28."
+  end
+
+  test "does not show the leap-day rule for a one-time reminder" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2028, 2, 29))
+    entry.create_entry_reminder!(lead_value: 1, lead_unit: "months", recurrence: EntryReminder::ONE_TIME_RECURRENCE)
+
+    render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
+
+    assert_text "One-time reminder: 1 month before"
+    assert_no_text "In non-leap years"
   end
 end

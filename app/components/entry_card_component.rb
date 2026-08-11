@@ -17,7 +17,7 @@ class EntryCardComponent < ViewComponent::Base
   end
 
   def reminder_summary
-    t("entries.reminder.summary", timing: reminder_timing)
+    t("entries.reminder.summary.#{reminder.recurrence}", timing: reminder_timing)
   end
 
   def reminder_timing

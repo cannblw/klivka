@@ -30,6 +30,7 @@ en:
       entry_reminder:
         lead_value: "Reminder amount"
         lead_unit: "Reminder unit"
+        recurrence: "Reminder frequency"
       interaction:
         occurred_on: "Date"
         contact_method: "How you connected"
@@ -54,6 +55,8 @@ en:
           attributes:
             entry:
               ineligible_for_reminders: "does not support reminders"
+            recurrence:
+              birthday_must_repeat_yearly: "must repeat yearly for birthdays"
         interaction:
           attributes:
             occurred_on:
@@ -139,7 +142,18 @@ en:
         days: "Days"
         months: "Months"
         years: "Years"
-      summary: "Reminder: %{timing}"
+      recurrence:
+        heading: "How often"
+        one_time:
+          label: "One time"
+          hint: "Remind me for this date only."
+        yearly:
+          label: "Every year"
+          hint: "Repeat the reminder on this date each year."
+      summary:
+        one_time: "One-time reminder: %{timing}"
+        yearly: "Yearly reminder: %{timing}"
+      leap_day_notice: "In non-leap years, Klivka will remind you on February 28."
       timing:
         same_day: "on the date"
         days:

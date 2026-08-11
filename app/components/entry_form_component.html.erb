@@ -1,7 +1,7 @@
 <%= form_with model: [ friend, entry ],
       scope: :entry,
       url: entry.persisted? ? friend_entry_path(friend, entry) : friend_entries_path(friend),
-      html: { data: { controller: "unsaved-changes" } },
+      html: { data: reminder_date_values.merge(controller: form_controllers) },
       class: "space-y-4" do |form| %>
 
   <%= form.hidden_field :type unless entry.persisted? %>
@@ -32,6 +32,7 @@
     <div id="birthday-fields">
       <%= form.label :entry_date, t("entries.date_field_label"), class: "sr-only" %>
       <%= form.date_field :entry_date,
+            data: { reminder_date_target: "date", action: "change->reminder-date#update" },
             class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
       <% entry.errors.full_messages_for(:entry_date).each do |message| %>
         <p class="mt-1 text-sm text-red-600"><%= message %></p>
@@ -62,6 +63,7 @@
     <div id="date-fields" class="space-y-3">
       <%= form.label :entry_date, t("entries.date_field_label"), class: "sr-only" %>
       <%= form.date_field :entry_date,
+            data: { reminder_date_target: "date", action: "change->reminder-date#update" },
             class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
       <%= label_tag "entry_content_label", t("entries.date_label_placeholder"), class: "sr-only" %>
       <%= text_field_tag "entry[content][label]", entry.label,

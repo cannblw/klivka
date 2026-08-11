@@ -106,7 +106,7 @@ class EntriesController < ApplicationController
     params.require(:entry).permit(
       :type, :entry_date, :entry_year, :entry_month, :entry_day,
       content: {},
-      entry_reminder_attributes: %i[ id lead_value lead_unit _destroy ]
+      entry_reminder_attributes: %i[ id lead_value lead_unit recurrence _destroy ]
     )
   end
 
@@ -114,7 +114,7 @@ class EntriesController < ApplicationController
     params.require(:entry).permit(
       :entry_date, :entry_year, :entry_month, :entry_day,
       content: {},
-      entry_reminder_attributes: %i[ id lead_value lead_unit _destroy ]
+      entry_reminder_attributes: %i[ id lead_value lead_unit recurrence _destroy ]
     )
   end
 end

@@ -40,6 +40,7 @@ module FriendCrm
     config.x.default_time_zone = ENV.fetch("DEFAULT_TIME_ZONE", "UTC")
     TZInfo::Timezone.get(config.x.default_time_zone)
 
+    # Fixed day counts make lead times predictable across varying month lengths and leap years.
     config.x.reminder_lead_units = { "days" => 1, "months" => 30, "years" => 365 }.freeze
 
     config.x.reminder_default_in_app_enabled = boolean_values[ENV.fetch("REMINDER_DEFAULT_IN_APP_ENABLED", "true")]

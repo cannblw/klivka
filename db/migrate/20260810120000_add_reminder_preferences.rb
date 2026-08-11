@@ -12,6 +12,7 @@ class AddReminderPreferences < ActiveRecord::Migration[8.1]
       t.references :entry, null: false, foreign_key: { on_delete: :cascade }, index: { unique: true }
       t.integer :lead_value, null: false
       t.string :lead_unit, null: false
+      t.string :recurrence, null: false
       t.timestamps
     end
 
@@ -37,5 +38,9 @@ class AddReminderPreferences < ActiveRecord::Migration[8.1]
         lead_unit IN ('days', 'months', 'years')
       SQL
       name: "entry_reminders_lead_is_supported"
+
+    add_check_constraint :entry_reminders,
+      "recurrence IN ('one_time', 'yearly')",
+      name: "entry_reminders_recurrence_is_supported"
   end
 end

@@ -7,6 +7,7 @@ require "test_helper"
 #  id         :integer          not null, primary key
 #  lead_unit  :string           not null
 #  lead_value :integer          not null
+#  recurrence :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  entry_id   :integer          not null
@@ -49,6 +50,13 @@ class EntryReminderTest < ActiveSupport::TestCase
 
     assert_equal 1, reminder.lead_value
     assert_equal "days", reminder.lead_unit
+    assert_equal EntryReminder::ONE_TIME_RECURRENCE, reminder.recurrence
+  end
+
+  test "birthday reminders repeat yearly" do
+    reminder = entry_reminders(:ada_birthday)
+
+    assert_predicate reminder, :yearly?
   end
 
   test "different entries can use different reminder lead times" do
@@ -57,7 +65,7 @@ class EntryReminderTest < ActiveSupport::TestCase
     anniversary = Entry::Date.create!(friend:, entry_date: Date.new(2018, 9, 2), content: { label: "Wedding anniversary" })
 
     birthday.create_entry_reminder!(lead_value: 1, lead_unit: "months")
-    anniversary.create_entry_reminder!(lead_value: 1, lead_unit: "days")
+    anniversary.create_entry_reminder!(lead_value: 1, lead_unit: "days", recurrence: EntryReminder::YEARLY_RECURRENCE)
 
     assert_equal 30, birthday.entry_reminder.lead_days
     assert_equal 1, anniversary.entry_reminder.lead_days
@@ -78,6 +86,58 @@ class EntryReminderTest < ActiveSupport::TestCase
 
     assert_predicate reminder, :valid?
     assert_equal 2_147_483_705, reminder.lead_days
+  end
+
+  test "a reminder uses fixed day counts for month and year lead units" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 3, 1))
+    reminder = entry.create_entry_reminder!(lead_value: 1, lead_unit: "years", recurrence: EntryReminder::YEARLY_RECURRENCE)
+
+    assert_equal 365, reminder.lead_days
+    assert_equal Date.new(2027, 3, 2), reminder.reminder_on(year: 2028)
+
+    reminder.update!(lead_value: 1, lead_unit: "months")
+    assert_equal 30, reminder.lead_days
+    assert_equal Date.new(2028, 1, 31), reminder.reminder_on(year: 2028)
+  end
+
+  test "a reminder returns the next reminder date on or after an account local date" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 8, 10))
+    reminder = entry.create_entry_reminder!(lead_value: 30, lead_unit: "days", recurrence: EntryReminder::YEARLY_RECURRENCE)
+
+    assert_equal Date.new(2026, 7, 11), reminder.next_reminder_on(on: Date.new(2026, 7, 11))
+    assert_equal Date.new(2027, 7, 11), reminder.next_reminder_on(on: Date.new(2026, 7, 12))
+  end
+
+  test "calculating a yearly reminder for one occurrence requires its year" do
+    reminder = entry_reminders(:ada_birthday)
+
+    error = assert_raises(ArgumentError) { reminder.reminder_on }
+    assert_equal "year is required for a yearly reminder", error.message
+  end
+
+  test "a leap-day reminder follows the date's February 28 occurrence rule" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 2, 29))
+    reminder = entry.create_entry_reminder!(lead_value: 0, lead_unit: "days", recurrence: EntryReminder::YEARLY_RECURRENCE)
+
+    assert_equal Date.new(2025, 2, 28), reminder.reminder_on(year: 2025)
+    assert_equal Date.new(2026, 2, 28), reminder.next_reminder_on(on: Date.new(2025, 3, 1))
+  end
+
+  test "a one-time reminder does not repeat after its reminder date" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2026, 8, 10))
+    reminder = entry.create_entry_reminder!(lead_value: 30, lead_unit: "days", recurrence: EntryReminder::ONE_TIME_RECURRENCE)
+
+    assert_equal Date.new(2026, 7, 11), reminder.reminder_on
+    assert_equal Date.new(2026, 7, 11), reminder.next_reminder_on(on: Date.new(2026, 7, 11))
+    assert_nil reminder.next_reminder_on(on: Date.new(2026, 7, 12))
+  end
+
+  test "a birthday reminder cannot be one-time" do
+    reminder = entry_reminders(:ada_birthday)
+    reminder.recurrence = EntryReminder::ONE_TIME_RECURRENCE
+
+    assert_not_predicate reminder, :valid?
+    assert reminder.errors.added?(:recurrence, :birthday_must_repeat_yearly)
   end
 
   test "an entry supports at most one reminder" do
@@ -104,16 +164,24 @@ class EntryReminderTest < ActiveSupport::TestCase
 
   test "a reminder validates its lead time" do
     entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 8, 10))
-    reminder = EntryReminder.new(entry:, lead_value: -1, lead_unit: "weeks")
+    reminder = EntryReminder.new(entry:, lead_value: -1, lead_unit: "weeks", recurrence: "weekly")
 
     assert_not_predicate reminder, :valid?
     assert reminder.errors.of_kind?(:lead_value, :greater_than_or_equal_to)
     assert reminder.errors.of_kind?(:lead_unit, :inclusion)
+    assert reminder.errors.of_kind?(:recurrence, :inclusion)
   end
 
   test "the database rejects unsupported reminder lead times" do
     assert_raises ActiveRecord::StatementInvalid do
       entry_reminders(:ada_birthday).update_columns(lead_value: -1, lead_unit: "weeks")
+    end
+  end
+
+
+  test "the database rejects an unsupported reminder recurrence" do
+    assert_raises ActiveRecord::StatementInvalid do
+      entry_reminders(:ada_birthday).update_column(:recurrence, "weekly")
     end
   end
 end

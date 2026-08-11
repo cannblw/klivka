@@ -108,7 +108,7 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
             type: "Entry::Date",
             entry_date: "2020-01-02",
             content: { label: "Wedding anniversary" },
-            entry_reminder_attributes: { lead_value: "1", lead_unit: "days", _destroy: "0" }
+            entry_reminder_attributes: { lead_value: "1", lead_unit: "days", recurrence: EntryReminder::YEARLY_RECURRENCE, _destroy: "0" }
           }
         }
     end
@@ -117,6 +117,7 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to friend_url(friends(:ada))
     assert_equal 1, reminder.lead_value
     assert_equal "days", reminder.lead_unit
+    assert_equal EntryReminder::YEARLY_RECURRENCE, reminder.recurrence
   end
 
   test "create leaves a date reminder off when the reminder checkbox is cleared" do

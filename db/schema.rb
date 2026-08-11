@@ -33,9 +33,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_10_130000) do
     t.integer "entry_id", null: false
     t.string "lead_unit", null: false
     t.integer "lead_value", null: false
+    t.string "recurrence", null: false
     t.datetime "updated_at", null: false
     t.index ["entry_id"], name: "index_entry_reminders_on_entry_id", unique: true
     t.check_constraint "lead_value BETWEEN 0 AND 2147483647 AND lead_unit IN ('days', 'months', 'years')", name: "entry_reminders_lead_is_supported"
+    t.check_constraint "recurrence IN ('one_time', 'yearly')", name: "entry_reminders_recurrence_is_supported"
   end
 
   create_table "friends", force: :cascade do |t|

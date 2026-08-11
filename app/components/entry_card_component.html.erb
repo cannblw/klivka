@@ -24,6 +24,9 @@
       <% else %>
         <%= render "entries/#{kind_key}", entry: entry %>
       <% end %>
+      <% if reminder&.yearly? && entry.leap_day? %>
+        <p class="mt-1 text-xs text-stone-500 dark:text-stone-400"><%= t("entries.reminder.leap_day_notice") %></p>
+      <% end %>
       <p class="mt-1 text-xs text-stone-400 dark:text-stone-500"><%= t("entries.added_on", date: l(entry.created_at.to_date, format: :long)) %></p>
     </div>
     <%= link_to edit_friend_entry_path(friend, entry),

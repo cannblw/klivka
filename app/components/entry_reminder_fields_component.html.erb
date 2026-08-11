@@ -6,10 +6,43 @@
     <label class="mt-4 flex cursor-pointer items-start gap-3">
       <%# Nested attributes remove the optional record through _destroy, so clearing this enable checkbox submits 1. %>
       <%= reminder_form.check_box :_destroy,
-            { checked: reminder_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" },
+            {
+              checked: reminder_enabled,
+              class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600",
+              data: { reminder_date_target: "enabled", action: "change->reminder-date#update" }
+            },
             "0", "1" %>
       <span class="text-sm font-medium"><%= t("entries.reminder.enabled") %></span>
     </label>
+    <p data-reminder-date-target="notice"
+       aria-live="polite"
+       class="mt-2 text-sm text-stone-600 dark:text-stone-300 <%= "hidden" unless leap_day_notice_visible? %>">
+      <%= t("entries.reminder.leap_day_notice") %>
+    </p>
+
+    <% if recurrence_editable? %>
+      <fieldset class="mt-4">
+        <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("entries.reminder.recurrence.heading") %></legend>
+        <div class="mt-2 grid gap-2 sm:grid-cols-2">
+          <% EntryReminder::RECURRENCES.each do |recurrence| %>
+            <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
+              <%= reminder_form.radio_button :recurrence, recurrence,
+                    data: { reminder_date_target: "recurrence", action: "change->reminder-date#update" },
+                    class: "mt-0.5 size-4 border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
+              <span>
+                <span class="block text-sm font-medium"><%= t("entries.reminder.recurrence.#{recurrence}.label") %></span>
+                <span class="mt-0.5 block text-sm text-stone-600 dark:text-stone-300"><%= t("entries.reminder.recurrence.#{recurrence}.hint") %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+        <% reminder.errors.full_messages_for(:recurrence).each do |message| %>
+          <p class="mt-1 text-sm text-red-600"><%= message %></p>
+        <% end %>
+      </fieldset>
+    <% else %>
+      <%= reminder_form.hidden_field :recurrence, value: EntryReminder::YEARLY_RECURRENCE, data: { reminder_date_target: "recurrence" } %>
+    <% end %>
 
     <fieldset class="mt-4">
       <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("entries.reminder.lead") %></legend>
