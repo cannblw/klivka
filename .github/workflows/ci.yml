@@ -171,7 +171,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:development
-            ${{ env.IMAGE_NAME }}:development-${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:development-${{ github.run_number }}-${{ github.sha }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
