@@ -39,10 +39,12 @@ module Authentication
     end
 
     def start_new_session_for(user)
-      user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
-        Current.session = session
-        cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
-      end
+      use_session user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip)
+    end
+
+    def use_session(session)
+      Current.session = session
+      cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
     end
 
     def terminate_session

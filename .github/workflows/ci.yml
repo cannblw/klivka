@@ -136,3 +136,74 @@ jobs:
           DB_HOST: localhost
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
+
+  publish-development-image:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [ scan_ruby, scan_js, lint, test-sqlite, test-postgresql ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    concurrency:
+      group: development-image
+      cancel-in-progress: true
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish development image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:development
+            ${{ env.IMAGE_NAME }}:development-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=development
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Keep the ten newest development images
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          OWNER_TYPE: ${{ github.event.repository.owner.type }}
+          PACKAGE_NAME: ${{ github.event.repository.name }}
+        run: |
+          if [[ "$OWNER_TYPE" == "Organization" ]]; then
+            package_endpoint="/orgs/$OWNER/packages/container/$PACKAGE_NAME"
+          else
+            package_endpoint="/users/$OWNER/packages/container/$PACKAGE_NAME"
+          fi
+
+          mapfile -t old_version_ids < <(
+            gh api --paginate \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "$package_endpoint/versions?per_page=100" \
+              --jq '.[] | select(any(.metadata.container.tags[]?; startswith("development-"))) | select(all(.metadata.container.tags[]?; startswith("development"))) | [.created_at, .id] | @tsv' |
+              sort --reverse |
+              tail --lines=+11 |
+              cut --fields=2
+          )
+
+          for version_id in "${old_version_ids[@]}"; do
+            gh api --method DELETE \
+              -H "X-GitHub-Api-Version: 2026-03-10" \
+              "$package_endpoint/versions/$version_id"
+          done

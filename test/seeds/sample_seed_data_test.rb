@@ -1,13 +1,12 @@
 require "test_helper"
-require_relative "../../db/seeds/development"
 
-class DevelopmentSeedDataTest < ActiveSupport::TestCase
+class SampleSeedDataTest < ActiveSupport::TestCase
   setup do
     @user = User.create!(email_address: "seed-data@example.com", password: "password")
   end
 
   test "creates a varied set of one hundred friends" do
-    DevelopmentSeedData.call(user: @user)
+    SampleSeedData.call(user: @user)
 
     assert_equal 100, @user.friends.count
     assert_equal 12, @user.friends.left_joins(:entries).where(entries: { id: nil }).count
@@ -19,7 +18,7 @@ class DevelopmentSeedDataTest < ActiveSupport::TestCase
   end
 
   test "creates friends for contact action scenarios" do
-    DevelopmentSeedData.call(user: @user)
+    SampleSeedData.call(user: @user)
 
     contact_actions, phone_overflow, email_overflow, email_entry = @user.friends.order(:id).first(4)
 
@@ -36,13 +35,13 @@ class DevelopmentSeedDataTest < ActiveSupport::TestCase
     other_user = User.create!(email_address: "other-seed-data@example.com", password: "password")
     other_friend = other_user.friends.create!(name: "Other Friend")
 
-    DevelopmentSeedData.call(user: @user)
+    SampleSeedData.call(user: @user)
     replaced_friend = @user.friends.first
     seeded_email = @user.friends.order(:id).fourth.entries.find_by!(type: "Entry::Email").email
     replaced_friend.update!(name: "Changed Seed Friend")
     @user.friends.create!(name: "Temporary Friend")
 
-    DevelopmentSeedData.call(user: @user)
+    SampleSeedData.call(user: @user)
 
     assert_equal 100, @user.friends.count
     assert_equal 152, Entry.joins(:friend).where(friends: { user_id: @user.id }).count

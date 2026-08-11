@@ -1,5 +1,6 @@
 class ConfirmationsController < ApplicationController
   allow_unauthenticated_access
+  unavailable_in_demo_mode
 
   def show
     if user = User.find_by_token_for(:email_confirmation, params[:token])

@@ -18,5 +18,21 @@ module ActiveSupport
     ensure
       Rails.application.config.x.require_email_confirmation = original
     end
+
+    def with_demo_mode(user: nil)
+      configuration = Rails.application.config.x
+      original_mode = configuration.demo_mode
+      original_email_address = configuration.demo_user_email_address
+      user ||= User.create!(email_address: "demo-mode@example.com", password: "a-safe-password")
+      configuration.demo_mode = true
+      configuration.demo_user_email_address = user.email_address
+      Rails.cache.clear
+
+      yield user
+    ensure
+      Rails.cache.clear
+      configuration.demo_mode = original_mode
+      configuration.demo_user_email_address = original_email_address
+    end
   end
 end

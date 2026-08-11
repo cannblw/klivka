@@ -8,6 +8,9 @@ if Rails.env.development?
     user.password = "admin"
   end
 
-  load Rails.root.join("db/seeds/development.rb")
-  DevelopmentSeedData.call(user: admin)
+  SampleSeedData.call(user: admin)
+end
+
+if Rails.application.config.x.demo_mode
+  DemoSeedData.call
 end

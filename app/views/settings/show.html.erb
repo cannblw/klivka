@@ -8,10 +8,12 @@
   <div>
     <p class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t(".email") %></p>
     <p class="mt-1 text-sm"><%= @user.email_address %></p>
-    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-      <%= t(".password_note") %>
-      <%= link_to t(".password_link"), new_password_path, class: "font-medium text-amber-600 hover:text-amber-500" %>.
-    </p>
+    <% unless demo_mode? %>
+      <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+        <%= t(".password_note") %>
+        <%= link_to t(".password_link"), new_password_path, class: "font-medium text-amber-600 hover:text-amber-500" %>.
+      </p>
+    <% end %>
   </div>
 
   <fieldset>

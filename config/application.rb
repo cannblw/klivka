@@ -60,6 +60,37 @@ module FriendCrm
       raise ArgumentError, "REMINDER_DEFAULT_LEAD_UNIT must be one of: #{config.x.reminder_lead_units.keys.join(", ")}"
     end
 
+    config.x.demo_mode = boolean_values[ENV.fetch("DEMO_MODE", "false")]
+    raise ArgumentError, "DEMO_MODE must be true or false" if config.x.demo_mode.nil?
+
+    config.x.demo_user_email_address = ENV.fetch("DEMO_USER_EMAIL_ADDRESS", "demo@klivka.com").strip.downcase
+    unless config.x.demo_user_email_address.match?(URI::MailTo::EMAIL_REGEXP)
+      raise ArgumentError, "DEMO_USER_EMAIL_ADDRESS must be a valid email address"
+    end
+
+    config.x.demo_reset_minimum_age = Integer(ENV.fetch("DEMO_RESET_MINIMUM_AGE_HOURS", "24"), 10).hours
+    raise ArgumentError, "DEMO_RESET_MINIMUM_AGE_HOURS must be positive" unless config.x.demo_reset_minimum_age.positive?
+
+    config.x.demo_reset_idle_period = Integer(ENV.fetch("DEMO_RESET_IDLE_MINUTES", "30"), 10).minutes
+    raise ArgumentError, "DEMO_RESET_IDLE_MINUTES must be positive" unless config.x.demo_reset_idle_period.positive?
+
+    config.x.demo_reset_maximum_age = Integer(ENV.fetch("DEMO_RESET_MAXIMUM_AGE_HOURS", "72"), 10).hours
+    raise ArgumentError, "DEMO_RESET_MAXIMUM_AGE_HOURS must be positive" unless config.x.demo_reset_maximum_age.positive?
+    unless config.x.demo_reset_maximum_age > config.x.demo_reset_minimum_age
+      raise ArgumentError, "DEMO_RESET_MAXIMUM_AGE_HOURS must exceed DEMO_RESET_MINIMUM_AGE_HOURS"
+    end
+
+    config.x.demo_reset_check_interval = Integer(ENV.fetch("DEMO_RESET_CHECK_INTERVAL_MINUTES", "15"), 10).minutes
+    unless config.x.demo_reset_check_interval.positive?
+      raise ArgumentError, "DEMO_RESET_CHECK_INTERVAL_MINUTES must be positive"
+    end
+
+    config.x.demo_mutation_rate_limit = Integer(ENV.fetch("DEMO_MUTATION_RATE_LIMIT", "120"), 10)
+    raise ArgumentError, "DEMO_MUTATION_RATE_LIMIT must be positive" unless config.x.demo_mutation_rate_limit.positive?
+
+    config.x.demo_mutation_rate_window = Integer(ENV.fetch("DEMO_MUTATION_RATE_WINDOW_MINUTES", "10"), 10).minutes
+    raise ArgumentError, "DEMO_MUTATION_RATE_WINDOW_MINUTES must be positive" unless config.x.demo_mutation_rate_window.positive?
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

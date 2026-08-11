@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_10_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_220000) do
+  create_table "demo_states", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "last_activity_at", null: false
+    t.datetime "started_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_demo_states_on_key", unique: true
+    t.check_constraint "key = 'shared'", name: "demo_states_key_is_shared"
+    t.check_constraint "last_activity_at >= started_at", name: "demo_states_activity_is_within_current_cycle"
+  end
+
   create_table "entries", force: :cascade do |t|
     t.json "content"
     t.datetime "created_at", null: false

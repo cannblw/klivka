@@ -1,7 +1,7 @@
 require "faker"
 require "set"
 
-class DevelopmentSeedData
+class SampleSeedData
   FRIEND_COUNT = 100
   RANDOM_SEED = 20_260_802
   ENTRY_PATTERNS = [
