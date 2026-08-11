@@ -43,14 +43,11 @@
         </div>
         <div>
           <%= form.label :contact_method, t("interactions.follow_up.contact_method"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-          <div class="relative mt-1">
-            <%= form.select :contact_method, contact_method_options,
-                  { include_blank: t("interactions.follow_up.method_blank") },
-                  class: "w-full appearance-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 pr-10 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-stone-500 dark:text-stone-300" aria-hidden="true">
-              <span class="material-icons" style="font-size: 20px">expand_more</span>
-            </span>
-          </div>
+          <%= render SelectFieldComponent.new(form, :contact_method,
+                choices: contact_method_options,
+                selected: interaction.contact_method,
+                select_options: { include_blank: t("interactions.follow_up.method_blank") },
+                wrapper_class: "mt-1") %>
           <% interaction.errors.full_messages_for(:contact_method).each do |message| %>
             <p class="mt-1 text-sm text-red-600"><%= message %></p>
           <% end %>

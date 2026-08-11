@@ -1,0 +1,48 @@
+<section class="mt-8 max-w-xl rounded-lg border border-stone-200 p-5 dark:border-stone-700" aria-labelledby="reminder-settings-heading">
+  <h2 id="reminder-settings-heading" class="text-lg font-semibold"><%= t("settings.reminders.heading") %></h2>
+  <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.description") %></p>
+
+  <%= form_with model: user, url: helpers.settings_path, method: :patch, class: "mt-5 space-y-5" do |form| %>
+    <fieldset class="space-y-3">
+      <legend class="sr-only"><%= t("settings.reminders.delivery_channels") %></legend>
+
+      <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
+        <%= form.check_box :reminder_in_app_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
+        <span>
+          <span class="block text-sm font-medium"><%= t("settings.reminders.in_app") %></span>
+          <span class="mt-0.5 block text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.in_app_hint") %></span>
+        </span>
+      </label>
+
+      <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
+        <%= form.check_box :reminder_email_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
+        <span>
+          <span class="block text-sm font-medium"><%= t("settings.reminders.email") %></span>
+          <span class="mt-0.5 block text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.email_hint") %></span>
+        </span>
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.default_lead") %></legend>
+      <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.default_lead_hint") %></p>
+      <div class="mt-3 grid gap-3 sm:grid-cols-2">
+        <div>
+          <%= form.label :default_reminder_lead_value, t("settings.reminders.lead_value"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+          <%= render InputFieldComponent.new(form, :default_reminder_lead_value, type: :number, min: 0, max: FriendCrm::MAX_INT32, step: 1, class: "mt-1") %>
+        </div>
+        <div>
+          <%= form.label :default_reminder_lead_unit, t("settings.reminders.lead_unit"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+          <%= render SelectFieldComponent.new(form, :default_reminder_lead_unit, choices: lead_unit_options, selected: user.default_reminder_lead_unit, wrapper_class: "mt-1") %>
+          <% user.errors.full_messages_for(:default_reminder_lead_unit).each do |message| %>
+            <p class="mt-1 text-sm text-red-600"><%= message %></p>
+          <% end %>
+        </div>
+      </div>
+    </fieldset>
+
+    <%= render ButtonComponent.new(type: :submit) do %>
+      <%= t("settings.reminders.save") %>
+    <% end %>
+  <% end %>
+</section>

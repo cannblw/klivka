@@ -16,6 +16,10 @@ class InputFieldComponentTest < ViewComponent::TestCase
       tag(:search, options)
     end
 
+    def number_field(field, **options)
+      tag(:number, options)
+    end
+
     def text_field(field, **options)
       tag(:text, options)
     end
@@ -53,6 +57,13 @@ class InputFieldComponentTest < ViewComponent::TestCase
       placeholder: "Search")
 
     assert_selector "input[type='search'][placeholder='Search']"
+  end
+
+  test "renders a number field" do
+    render_inline InputFieldComponent.new(FakeForm.new, :lead_value, type: :number,
+      min: 0, step: 1)
+
+    assert_selector "input[type='number'][min='0'][step='1']"
   end
 
   test "appends extra classes" do

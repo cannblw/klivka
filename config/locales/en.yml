@@ -19,8 +19,8 @@ en:
         time_zone: "Time zone"
         reminder_in_app_enabled: "In-app reminders"
         reminder_email_enabled: "Email reminders"
-        default_reminder_lead_value: "Default reminder notice"
-        default_reminder_lead_unit: "Default reminder notice unit"
+        default_reminder_lead_value: "Default reminder amount"
+        default_reminder_lead_unit: "Default reminder unit"
       entry/email:
         email: "Email"
       entry/date:
@@ -28,8 +28,8 @@ en:
       entry/first_met:
         friend_id: "First met"
       entry_reminder:
-        lead_value: "Reminder notice"
-        lead_unit: "Reminder notice unit"
+        lead_value: "Reminder amount"
+        lead_unit: "Reminder unit"
       interaction:
         occurred_on: "Date"
         contact_method: "How you connected"
@@ -307,6 +307,23 @@ en:
         dark: "Dark"
     update:
       updated: "Settings saved."
+    reminders:
+      heading: "Reminders"
+      description: "Choose how you want Klivka to notify you."
+      delivery_channels: "Reminder delivery channels"
+      in_app: "In-app reminders"
+      in_app_hint: "Allow reminders to appear while you use Klivka."
+      email: "Email reminders"
+      email_hint: "Allow reminder emails to be sent to your account address."
+      default_lead: "How far in advance"
+      default_lead_hint: "Used as the default when you add a date reminder. You can change it for each reminder later."
+      lead_value: "Amount"
+      lead_unit: "Unit"
+      lead_units:
+        days: "Days"
+        months: "Months"
+        years: "Years"
+      save: "Save reminder settings"
 
   friends:
     index:

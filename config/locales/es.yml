@@ -318,6 +318,23 @@ es:
         dark: "Oscuro"
     update:
       updated: "Ajustes guardados."
+    reminders:
+      heading: "Recordatorios"
+      description: "Elige cómo quieres que te avise Klivka."
+      delivery_channels: "Canales de entrega de recordatorios"
+      in_app: "Recordatorios en la aplicación"
+      in_app_hint: "Permite que aparezcan recordatorios mientras usas Klivka."
+      email: "Recordatorios por correo electrónico"
+      email_hint: "Permite que se envíen recordatorios al correo electrónico de tu cuenta."
+      default_lead: "Con cuánta antelación"
+      default_lead_hint: "Esta antelación se usará al añadir un recordatorio de fecha. Podrás cambiarla para cada recordatorio."
+      lead_value: "Cantidad"
+      lead_unit: "Unidad"
+      lead_units:
+        days: "Días"
+        months: "Meses"
+        years: "Años"
+      save: "Guardar ajustes de recordatorios"
 
   friends:
     index:
