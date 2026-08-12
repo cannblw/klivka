@@ -30,6 +30,8 @@ class ApplicationController < ActionController::Base
 
   # Header order approximates preference; full q-value parsing isn't worth a dependency
   def preferred_locale
+    return I18n.default_locale if demo_mode?
+
     Current.user&.locale&.presence ||
       requested_locale_from_header ||
       I18n.default_locale
