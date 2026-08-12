@@ -2,23 +2,25 @@
 #
 # Table name: users
 #
-#  id                          :integer          not null, primary key
-#  confirmed_at                :datetime
-#  default_reminder_lead_unit  :string           default("months"), not null
-#  default_reminder_lead_value :integer          default(1), not null
-#  email_address               :string           not null
-#  locale                      :string
-#  password_digest             :string           not null
-#  reminder_email_enabled      :boolean          default(TRUE), not null
-#  reminder_in_app_enabled     :boolean          default(TRUE), not null
-#  theme                       :string
-#  time_zone                   :string           not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
+#  id                           :integer          not null, primary key
+#  confirmed_at                 :datetime
+#  default_reminder_lead_unit   :string           default("months"), not null
+#  default_reminder_lead_value  :integer          default(1), not null
+#  email_address                :string           not null
+#  locale                       :string
+#  password_digest              :string           not null
+#  reminder_email_enabled       :boolean          default(TRUE), not null
+#  reminder_in_app_enabled      :boolean          default(TRUE), not null
+#  reminders_scanned_through_on :date
+#  theme                        :string
+#  time_zone                    :string           not null
+#  created_at                   :datetime         not null
+#  updated_at                   :datetime         not null
 #
 # Indexes
 #
-#  index_users_on_email_address  (email_address) UNIQUE
+#  index_users_on_email_address                 (email_address) UNIQUE
+#  index_users_on_reminders_scanned_through_on  (reminders_scanned_through_on)
 #
 class User < ApplicationRecord
   REMINDER_LEAD_UNITS = Rails.application.config.x.reminder_lead_units
@@ -26,6 +28,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :friends, dependent: :destroy
+  has_many :reminder_deliveries, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :time_zone, with: ->(value) { value.to_s.strip.presence }
@@ -64,6 +67,18 @@ class User < ApplicationRecord
 
   def local_date(at: Time.current)
     at.in_time_zone(time_zone).to_date
+  end
+
+  def reminder_channel_enabled?(channel)
+    case channel.to_s
+    when "in_app" then reminder_in_app_enabled?
+    when "email" then reminder_email_enabled? && !shared_demo_account?
+    else false
+    end
+  end
+
+  def shared_demo_account?
+    Rails.application.config.x.demo_mode && email_address == Rails.application.config.x.demo_user_email_address
   end
 
   private

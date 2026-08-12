@@ -10,6 +10,10 @@
 #     schedule: at 5am every day
 
 production:
+  dispatch_reminder_scans:
+    class: ReminderScanDispatcherJob
+    queue: background
+    schedule: every <%= Rails.application.config.x.reminder_dispatch_interval.in_minutes.to_i %> minutes
 <% if Rails.application.config.x.demo_mode %>
   reset_shared_demo:
     class: DemoResetJob

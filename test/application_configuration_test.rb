@@ -12,5 +12,11 @@ class ApplicationConfigurationTest < ActiveSupport::TestCase
     assert_equal 15.minutes, configuration.demo_reset_check_interval
     assert_equal 120, configuration.demo_mutation_rate_limit
     assert_equal 10.minutes, configuration.demo_mutation_rate_window
+    assert_equal 100, configuration.reminder_scan_batch_size
+    assert_equal 500, configuration.reminder_account_batch_size
+    assert_equal 5, configuration.reminder_job_threads
+    assert_equal 60.minutes, configuration.reminder_dispatch_interval
+    assert_equal 1, configuration.job_processes
+    assert_equal 7, configuration.queue_database_pool
   end
 end

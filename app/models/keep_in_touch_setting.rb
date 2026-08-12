@@ -23,8 +23,10 @@ class KeepInTouchSetting < ApplicationRecord
   CADENCES = %w[daily weekly biweekly monthly quarterly yearly].freeze
   DEFAULT_CADENCE = "weekly"
   SNOOZE_DAYS = 7
+  LATEST_INTERACTION_UNSPECIFIED = Object.new.freeze
 
   belongs_to :friend
+  has_many :reminder_deliveries, as: :source
 
   validates :cadence, inclusion: { in: CADENCES }
   validate :snooze_requires_enabled_setting
@@ -33,14 +35,17 @@ class KeepInTouchSetting < ApplicationRecord
     enabled_on.present?
   end
 
-  def next_suggestion_on
+  def next_suggestion_on(latest_interaction_on: LATEST_INTERACTION_UNSPECIFIED)
     return unless enabled?
 
-    [ cadence_date, snoozed_until ].compact.max
+    if latest_interaction_on.equal?(LATEST_INTERACTION_UNSPECIFIED)
+      latest_interaction_on = friend.interactions.maximum(:occurred_on)
+    end
+    [ cadence_date(latest_interaction_on:), snoozed_until ].compact.max
   end
 
-  def due?(on:)
-    next_suggestion_on&.<= on
+  def due?(on:, latest_interaction_on: LATEST_INTERACTION_UNSPECIFIED)
+    next_suggestion_on(latest_interaction_on:)&.<= on
   end
 
   def snoozed?
@@ -81,19 +86,19 @@ class KeepInTouchSetting < ApplicationRecord
 
   private
 
-  def cadence_date
+  def cadence_date(latest_interaction_on: friend.interactions.maximum(:occurred_on))
     case cadence
-    when "daily" then base_date + 1.day
-    when "weekly" then base_date + 7.days
-    when "biweekly" then base_date + 14.days
-    when "monthly" then base_date.advance(months: 1)
-    when "quarterly" then base_date.advance(months: 3)
-    when "yearly" then base_date.advance(years: 1)
+    when "daily" then base_date(latest_interaction_on:) + 1.day
+    when "weekly" then base_date(latest_interaction_on:) + 7.days
+    when "biweekly" then base_date(latest_interaction_on:) + 14.days
+    when "monthly" then base_date(latest_interaction_on:).advance(months: 1)
+    when "quarterly" then base_date(latest_interaction_on:).advance(months: 3)
+    when "yearly" then base_date(latest_interaction_on:).advance(years: 1)
     end
   end
 
-  def base_date
-    [ enabled_on, friend.interactions.maximum(:occurred_on) ].compact.max
+  def base_date(latest_interaction_on: friend.interactions.maximum(:occurred_on))
+    [ enabled_on, latest_interaction_on ].compact.max
   end
 
   def snooze_requires_enabled_setting

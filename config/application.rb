@@ -60,6 +60,24 @@ module FriendCrm
       raise ArgumentError, "REMINDER_DEFAULT_LEAD_UNIT must be one of: #{config.x.reminder_lead_units.keys.join(", ")}"
     end
 
+    config.x.reminder_scan_batch_size = Integer(ENV.fetch("REMINDER_SCAN_BATCH_SIZE", "100"), 10)
+    raise ArgumentError, "REMINDER_SCAN_BATCH_SIZE must be positive" unless config.x.reminder_scan_batch_size.positive?
+
+    config.x.reminder_account_batch_size = Integer(ENV.fetch("REMINDER_ACCOUNT_BATCH_SIZE", "500"), 10)
+    raise ArgumentError, "REMINDER_ACCOUNT_BATCH_SIZE must be positive" unless config.x.reminder_account_batch_size.positive?
+
+    config.x.reminder_job_threads = Integer(ENV.fetch("REMINDER_JOB_THREADS", "5"), 10)
+    raise ArgumentError, "REMINDER_JOB_THREADS must be positive" unless config.x.reminder_job_threads.positive?
+
+    config.x.reminder_dispatch_interval = Integer(ENV.fetch("REMINDER_DISPATCH_INTERVAL_MINUTES", "60"), 10).minutes
+    raise ArgumentError, "REMINDER_DISPATCH_INTERVAL_MINUTES must be positive" unless config.x.reminder_dispatch_interval.positive?
+
+    config.x.job_processes = Integer(ENV.fetch("JOB_CONCURRENCY", "1"), 10)
+    raise ArgumentError, "JOB_CONCURRENCY must be positive" unless config.x.job_processes.positive?
+
+    # Solid Queue needs one connection per worker thread plus separate polling and heartbeat connections.
+    config.x.queue_database_pool = [ 3, config.x.reminder_job_threads ].max + 2
+
     config.x.demo_mode = boolean_values[ENV.fetch("DEMO_MODE", "false")]
     raise ArgumentError, "DEMO_MODE must be true or false" if config.x.demo_mode.nil?
 
