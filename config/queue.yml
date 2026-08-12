@@ -3,9 +3,13 @@ default: &default
     - polling_interval: 1
       batch_size: 500
   workers:
-    - queues: "*"
+    - queues: [ default, background ]
       threads: 3
-      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      processes: <%= Rails.application.config.x.job_processes %>
+      polling_interval: 0.1
+    - queues: [ reminders ]
+      threads: <%= Rails.application.config.x.reminder_job_threads %>
+      processes: <%= Rails.application.config.x.job_processes %>
       polling_interval: 0.1
 
 development:

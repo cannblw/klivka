@@ -13,7 +13,7 @@ class ReminderDeliveryScheduler
     scan_dates = dates_to_scan(through: local_date)
     created_count = schedule_keep_in_touch_reminders(through: local_date)
     created_count += schedule_entry_reminders(during: scan_dates)
-    user.update!(reminders_scanned_through_on: local_date)
+    user.update!(reminders_scanned_through_on: [ user.reminders_scanned_through_on, local_date ].compact.max)
     created_count
   end
 
@@ -28,11 +28,18 @@ class ReminderDeliveryScheduler
   end
 
   def schedule_keep_in_touch_reminders(through:)
-    process_in_batches(keep_in_touch_settings, preload: :friend) do |setting|
-      next [] unless setting.due?(on: through)
+    keep_in_touch_settings.in_batches(of: batch_size).sum do |batch|
+      settings = batch.to_a
+      latest_interactions = latest_interactions_for(settings)
+      deliveries = settings.flat_map do |setting|
+        latest_interaction_on = latest_interactions[setting.friend_id]
+        next [] unless setting.due?(on: through, latest_interaction_on:)
 
-      reminder_on = setting.next_suggestion_on
-      [ [ reminder_on, reminder_on ] ]
+        reminder_on = setting.next_suggestion_on(latest_interaction_on:)
+        delivery_attributes_for(setting, [ [ reminder_on, reminder_on ] ])
+      end
+
+      record_deliveries(deliveries)
     end
   end
 
@@ -45,11 +52,7 @@ class ReminderDeliveryScheduler
   def process_in_batches(relation, preload:)
     relation.in_batches(of: batch_size).sum do |batch|
       deliveries = batch.preload(preload).flat_map do |source|
-        yield(source).flat_map do |reminder_on, occurrence_on|
-          enabled_channels.map do |channel|
-            delivery_attributes(source:, channel:, reminder_on:, occurrence_on:)
-          end
-        end
+        delivery_attributes_for(source, yield(source))
       end
 
       record_deliveries(deliveries)
@@ -62,6 +65,10 @@ class ReminderDeliveryScheduler
 
   def entry_reminders
     EntryReminder.joins(entry: :friend).where(friends: { user_id: user.id })
+  end
+
+  def latest_interactions_for(settings)
+    Interaction.where(friend_id: settings.map(&:friend_id)).group(:friend_id).maximum(:occurred_on)
   end
 
   def reminder_dates_during(reminder, during:)
@@ -79,10 +86,7 @@ class ReminderDeliveryScheduler
   end
 
   def enabled_channels
-    [].tap do |channels|
-      channels << "in_app" if user.reminder_in_app_enabled?
-      channels << "email" if user.reminder_email_enabled?
-    end
+    ReminderDelivery::CHANNELS.select { user.reminder_channel_enabled?(_1) }
   end
 
   def delivery_attributes(source:, channel:, reminder_on:, occurrence_on:)
@@ -96,15 +100,55 @@ class ReminderDeliveryScheduler
     }
   end
 
+  def delivery_attributes_for(source, dates)
+    dates.flat_map do |reminder_on, occurrence_on|
+      enabled_channels.map do |channel|
+        delivery_attributes(source:, channel:, reminder_on:, occurrence_on:)
+      end
+    end
+  end
+
   def record_deliveries(attributes)
     return 0 if attributes.empty?
 
     # The unique ledger index makes retries and overlapping scheduler runs safe without per-source locks.
-    ReminderDelivery.insert_all(
-      attributes,
-      unique_by: :index_reminder_deliveries_on_source_date_and_channel,
-      record_timestamps: true
-    ).length
+    ReminderDelivery.transaction do
+      inserted_count = ReminderDelivery.insert_all(
+        attributes,
+        unique_by: :index_reminder_deliveries_on_source_date_and_channel,
+        record_timestamps: true
+      ).length
+
+      inserted_count + reactivate_cancelled_deliveries(attributes)
+    end
+  end
+
+  def reactivate_cancelled_deliveries(attributes)
+    attributes_by_key = attributes.index_by { delivery_key(_1) }
+    candidates = ReminderDelivery.where(
+      status: "cancelled",
+      source_type: attributes.pluck(:source_type).uniq,
+      source_id: attributes.pluck(:source_id).uniq,
+      reminder_on: attributes.pluck(:reminder_on).uniq,
+      channel: attributes.pluck(:channel).uniq
+    )
+
+    candidates.count do |delivery|
+      current_attributes = attributes_by_key[delivery_key(delivery.attributes.symbolize_keys)]
+      next false unless current_attributes
+
+      delivery.update_columns(
+        status: "pending",
+        occurrence_on: current_attributes.fetch(:occurrence_on),
+        cancelled_at: nil,
+        updated_at: Time.current
+      )
+      true
+    end
+  end
+
+  def delivery_key(attributes)
+    attributes.values_at(:source_type, :source_id, :reminder_on, :channel)
   end
 
   def batch_size

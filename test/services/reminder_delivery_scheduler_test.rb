@@ -68,6 +68,31 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_equal Date.new(2026, 8, 11), user.reload.reminders_scanned_through_on
   end
 
+  test "uses the correct local date after a daylight-saving transition" do
+    user = users(:one)
+    user.update!(time_zone: "Europe/Madrid", reminders_scanned_through_on: Date.new(2026, 3, 28))
+    reminder = create_date_reminder(
+      friend: friends(:ada), entry_date: Date.new(2026, 3, 30), lead_value: 0, recurrence: "one_time"
+    )
+
+    schedule(user, at: Time.utc(2026, 3, 29, 22, 30))
+
+    assert_equal 2, reminder.reminder_deliveries.count
+    assert_equal Date.new(2026, 3, 30), user.reload.reminders_scanned_through_on
+  end
+
+  test "schedules a leap-day yearly reminder on its non-leap-year occurrence" do
+    user = users(:one)
+    user.update!(reminders_scanned_through_on: Date.new(2027, 2, 26))
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2024, 2, 29))
+    reminder = entry.create_entry_reminder!(lead_value: 0, lead_unit: "days", recurrence: "yearly")
+
+    schedule(user, at: Time.utc(2027, 2, 28, 12))
+
+    assert_equal [ Date.new(2027, 2, 28) ], reminder.reminder_deliveries.distinct.pluck(:reminder_on)
+    assert_equal [ Date.new(2027, 2, 28) ], reminder.reminder_deliveries.distinct.pluck(:occurrence_on)
+  end
+
   test "processes only reminders belonging to the requested account" do
     other_setting = create_setting(friends(:bob), enabled_on: Date.new(2026, 8, 1))
     own_setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
@@ -88,6 +113,17 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_equal [ "email" ], setting.reminder_deliveries.pluck(:channel)
   end
 
+  test "records only in-app work for the shared demo account" do
+    user = users(:one)
+    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+
+    with_demo_mode(user:) do
+      assert_equal 1, schedule(user, at: Time.utc(2026, 8, 8, 12))
+    end
+
+    assert_equal [ "in_app" ], setting.reminder_deliveries.pluck(:channel)
+  end
+
   test "same-day rescans reuse existing ledger rows" do
     user = users(:one)
     setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
@@ -97,6 +133,26 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_no_difference "ReminderDelivery.count" do
       assert_equal 0, schedule(user, at:)
     end
+    assert_equal 2, setting.reminder_deliveries.count
+  end
+
+  test "a valid reminder can become pending again after its channel is re-enabled" do
+    user = users(:one)
+    user.update!(reminder_email_enabled: false)
+    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    delivery = ReminderDelivery.create!(
+      user:, source: setting, channel: "email", status: "cancelled",
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 7),
+      cancelled_at: Time.utc(2026, 8, 8, 10)
+    )
+    user.update!(reminder_email_enabled: true)
+
+    assert_equal 2, schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    delivery.reload
+    assert_equal "pending", delivery.status
+    assert_equal Date.new(2026, 8, 8), delivery.occurrence_on
+    assert_nil delivery.cancelled_at
     assert_equal 2, setting.reminder_deliveries.count
   end
 
@@ -119,6 +175,15 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     end
 
     assert_equal Date.new(2026, 8, 10), user.reload.reminders_scanned_through_on
+  end
+
+  test "an older queued scan cannot move the checkpoint backwards" do
+    user = users(:one)
+    user.update!(reminders_scanned_through_on: Date.new(2026, 8, 12))
+
+    schedule(user, at: Time.utc(2026, 8, 11, 12))
+
+    assert_equal Date.new(2026, 8, 12), user.reload.reminders_scanned_through_on
   end
 
   test "processes reminder sources across bounded batches" do

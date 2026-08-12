@@ -82,6 +82,17 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "months", user.default_reminder_lead_unit
   end
 
+  test "the shared demo allows in-app reminders but suppresses email reminders" do
+    user = users(:one)
+
+    with_demo_mode(user:) do
+      assert user.reminder_channel_enabled?("in_app")
+      assert_not user.reminder_channel_enabled?("email")
+    end
+
+    assert user.reminder_channel_enabled?("email")
+  end
+
   test "preserves explicit reminder preferences when application defaults differ" do
     configuration = Rails.application.config.x
     original_defaults = [

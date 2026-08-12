@@ -69,6 +69,18 @@ class User < ApplicationRecord
     at.in_time_zone(time_zone).to_date
   end
 
+  def reminder_channel_enabled?(channel)
+    case channel.to_s
+    when "in_app" then reminder_in_app_enabled?
+    when "email" then reminder_email_enabled? && !shared_demo_account?
+    else false
+    end
+  end
+
+  def shared_demo_account?
+    Rails.application.config.x.demo_mode && email_address == Rails.application.config.x.demo_user_email_address
+  end
+
   private
 
   def set_default_time_zone
