@@ -25,6 +25,7 @@ class KeepInTouchSetting < ApplicationRecord
   SNOOZE_DAYS = 7
 
   belongs_to :friend
+  has_many :reminder_deliveries, as: :source
 
   validates :cadence, inclusion: { in: CADENCES }
   validate :snooze_requires_enabled_setting

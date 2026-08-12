@@ -26,6 +26,7 @@ class EntryReminder < ApplicationRecord
   RECURRENCES = [ ONE_TIME_RECURRENCE, YEARLY_RECURRENCE ].freeze
 
   belongs_to :entry
+  has_many :reminder_deliveries, as: :source
 
   # Association-built records need defaults for forms immediately; validation also covers entries assigned after initialization.
   after_initialize :apply_defaults, if: :new_record?

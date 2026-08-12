@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_12_122652) do
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -86,6 +86,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_220000) do
     t.check_constraint "enabled_on IS NOT NULL OR snoozed_until IS NULL", name: "keep_in_touch_settings_disabled_cannot_be_snoozed"
   end
 
+  create_table "reminder_deliveries", force: :cascade do |t|
+    t.datetime "cancelled_at"
+    t.string "channel", null: false
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.datetime "failed_at"
+    t.date "occurrence_on", null: false
+    t.date "reminder_on", null: false
+    t.integer "source_id", null: false
+    t.string "source_type", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["source_type", "source_id", "reminder_on", "channel"], name: "index_reminder_deliveries_on_source_date_and_channel", unique: true
+    t.index ["status", "channel", "reminder_on"], name: "idx_on_status_channel_reminder_on_f9dde1d6e2"
+    t.index ["user_id"], name: "index_reminder_deliveries_on_user_id"
+    t.check_constraint "channel IN ('in_app', 'email')", name: "reminder_deliveries_channel_is_supported"
+    t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder')", name: "reminder_deliveries_source_type_is_supported"
+    t.check_constraint "status IN ('pending', 'delivered', 'failed', 'cancelled')", name: "reminder_deliveries_status_is_supported"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -119,5 +140,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_220000) do
   add_foreign_key "friends", "users"
   add_foreign_key "interactions", "friends"
   add_foreign_key "keep_in_touch_settings", "friends"
+  add_foreign_key "reminder_deliveries", "users", on_delete: :cascade
   add_foreign_key "sessions", "users"
 end
