@@ -6,8 +6,8 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
     assert_equal 2, schedule(users(:one), at: Time.utc(2026, 8, 8, 12))
 
-    deliveries = setting.reminder_deliveries.order(:channel)
-    assert_equal %w[email in_app], deliveries.pluck(:channel)
+    deliveries = setting.reminder_deliveries
+    assert_equal %w[email in_app], deliveries.order(:channel).pluck(:channel)
     assert_equal [ Date.new(2026, 8, 8) ], deliveries.distinct.pluck(:reminder_on)
   end
 
