@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_12_122652) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_12_150000) do
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -126,10 +126,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_122652) do
     t.string "password_digest", null: false
     t.boolean "reminder_email_enabled", default: true, null: false
     t.boolean "reminder_in_app_enabled", default: true, null: false
+    t.date "reminders_scanned_through_on"
     t.string "theme"
     t.string "time_zone", null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["reminders_scanned_through_on"], name: "index_users_on_reminders_scanned_through_on"
     t.check_constraint "default_reminder_lead_value BETWEEN 0 AND 2147483647 AND default_reminder_lead_unit IN ('days', 'months', 'years')", name: "users_default_reminder_lead_is_supported"
     t.check_constraint "reminder_email_enabled IN (TRUE, FALSE)", name: "users_reminder_email_enabled_is_boolean"
     t.check_constraint "reminder_in_app_enabled IN (TRUE, FALSE)", name: "users_reminder_in_app_enabled_is_boolean"

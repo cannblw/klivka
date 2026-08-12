@@ -60,6 +60,9 @@ module FriendCrm
       raise ArgumentError, "REMINDER_DEFAULT_LEAD_UNIT must be one of: #{config.x.reminder_lead_units.keys.join(", ")}"
     end
 
+    config.x.reminder_scan_batch_size = Integer(ENV.fetch("REMINDER_SCAN_BATCH_SIZE", "100"), 10)
+    raise ArgumentError, "REMINDER_SCAN_BATCH_SIZE must be positive" unless config.x.reminder_scan_batch_size.positive?
+
     config.x.demo_mode = boolean_values[ENV.fetch("DEMO_MODE", "false")]
     raise ArgumentError, "DEMO_MODE must be true or false" if config.x.demo_mode.nil?
 

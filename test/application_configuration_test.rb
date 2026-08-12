@@ -12,5 +12,6 @@ class ApplicationConfigurationTest < ActiveSupport::TestCase
     assert_equal 15.minutes, configuration.demo_reset_check_interval
     assert_equal 120, configuration.demo_mutation_rate_limit
     assert_equal 10.minutes, configuration.demo_mutation_rate_window
+    assert_equal 100, configuration.reminder_scan_batch_size
   end
 end

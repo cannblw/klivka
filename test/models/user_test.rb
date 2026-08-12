@@ -4,23 +4,25 @@ require "test_helper"
 #
 # Table name: users
 #
-#  id                          :integer          not null, primary key
-#  confirmed_at                :datetime
-#  default_reminder_lead_unit  :string           default("months"), not null
-#  default_reminder_lead_value :integer          default(1), not null
-#  email_address               :string           not null
-#  locale                      :string
-#  password_digest             :string           not null
-#  reminder_email_enabled      :boolean          default(TRUE), not null
-#  reminder_in_app_enabled     :boolean          default(TRUE), not null
-#  theme                       :string
-#  time_zone                   :string           not null
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
+#  id                           :integer          not null, primary key
+#  confirmed_at                 :datetime
+#  default_reminder_lead_unit   :string           default("months"), not null
+#  default_reminder_lead_value  :integer          default(1), not null
+#  email_address                :string           not null
+#  locale                       :string
+#  password_digest              :string           not null
+#  reminder_email_enabled       :boolean          default(TRUE), not null
+#  reminder_in_app_enabled      :boolean          default(TRUE), not null
+#  reminders_scanned_through_on :date
+#  theme                        :string
+#  time_zone                    :string           not null
+#  created_at                   :datetime         not null
+#  updated_at                   :datetime         not null
 #
 # Indexes
 #
-#  index_users_on_email_address  (email_address) UNIQUE
+#  index_users_on_email_address                 (email_address) UNIQUE
+#  index_users_on_reminders_scanned_through_on  (reminders_scanned_through_on)
 #
 class UserTest < ActiveSupport::TestCase
   test "downcases and strips email_address" do
