@@ -70,6 +70,31 @@ class DemoModeTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "keeps the shared demo in English" do
+    with_demo_mode do |demo_user|
+      demo_user.update!(locale: "es")
+
+      get settings_path, headers: { "Accept-Language" => "es-ES,es;q=0.9" }
+
+      assert_response :success
+      assert_select "html[lang=en]"
+      assert_select "input[name='user[locale]'][value='en'][disabled]", count: 1
+      assert_select "input[name='user[locale]'][value='es'][disabled]", count: 1
+      assert_select "#language-switch-disabled", text: I18n.t("settings.show.language_switch_disabled"), count: 1
+    end
+  end
+
+  test "ignores locale changes submitted to shared demo settings" do
+    with_demo_mode do |demo_user|
+      patch settings_path, params: { user: { locale: "es" } }
+
+      assert_redirected_to settings_url
+      assert_nil demo_user.reload.locale
+      follow_redirect!
+      assert_select "html[lang=en]"
+    end
+  end
+
   test "redirects account and credential pages to the demo" do
     with_demo_mode do
       [ new_session_path, signup_path, new_password_path, edit_password_path("unused"), confirmation_path("unused") ].each do |path|

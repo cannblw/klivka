@@ -346,6 +346,7 @@ es:
       password_note: "Para cambiar tu contraseña, haz clic"
       password_link: "aquí"
       language: "Idioma"
+      language_switch_disabled: "El cambio de idioma está desactivado en la demo."
       theme: "Tema"
       locales:
         en: "English"

@@ -6,7 +6,7 @@ class SettingsController < ApplicationController
 
   def update
     if @user.update(settings_params)
-      redirect_to settings_path, notice: I18n.t("settings.update.updated", locale: @user.locale)
+      redirect_to settings_path, notice: I18n.t("settings.update.updated", locale: demo_mode? ? I18n.default_locale : @user.locale)
     else
       render :show, status: :unprocessable_entity
     end
@@ -19,13 +19,15 @@ class SettingsController < ApplicationController
   end
 
   def settings_params
-    params.expect(user: [
+    permitted_attributes = [
       :locale,
       :theme,
       :reminder_in_app_enabled,
       :reminder_email_enabled,
       :default_reminder_lead_value,
       :default_reminder_lead_unit
-    ])
+    ]
+    permitted = params.expect(user: permitted_attributes)
+    demo_mode? ? permitted.except(:locale) : permitted
   end
 end

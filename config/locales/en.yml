@@ -335,6 +335,7 @@ en:
       password_note: "To change your password, click"
       password_link: "here"
       language: "Language"
+      language_switch_disabled: "Language switching is disabled in demo mode."
       theme: "Theme"
       locales:
         en: "English"
