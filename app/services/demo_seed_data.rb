@@ -22,7 +22,7 @@ class DemoSeedData
         user.save!
       end
 
-      SampleSeedData.call(user:) if user.friends.none?
+      DemoPersonaSeedData.call(user:) if user.friends.none?
       DemoState.current
       user
     end
@@ -32,7 +32,7 @@ class DemoSeedData
     User.transaction do
       user = User.find_by!(email_address:)
       reset_profile(user)
-      SampleSeedData.call(user:)
+      DemoPersonaSeedData.call(user:)
       user
     end
   end

@@ -7,7 +7,7 @@ class DemoSeedDataTest < ActiveSupport::TestCase
     assert_predicate user, :persisted?
     assert_equal "demo-seed@example.com", user.email_address
     assert user.password_digest.present?
-    assert_equal SampleSeedData::FRIEND_COUNT, user.friends.count
+    assert_equal DemoPersonaSeedData::FRIEND_COUNT, user.friends.count
     assert_equal DemoState::SHARED_KEY, DemoState.current.key
   end
 
@@ -18,7 +18,7 @@ class DemoSeedDataTest < ActiveSupport::TestCase
     reseeded_user = DemoSeedData.call(email_address: user.email_address)
 
     assert_equal user, reseeded_user
-    assert_equal SampleSeedData::FRIEND_COUNT + 1, reseeded_user.friends.count
+    assert_equal DemoPersonaSeedData::FRIEND_COUNT + 1, reseeded_user.friends.count
     assert reseeded_user.friends.exists?(name: "Visitor addition")
   end
 
@@ -28,7 +28,7 @@ class DemoSeedDataTest < ActiveSupport::TestCase
     seeded_user = DemoSeedData.call(email_address: user.email_address)
 
     assert_equal user, seeded_user
-    assert_equal SampleSeedData::FRIEND_COUNT, seeded_user.friends.count
+    assert_equal DemoPersonaSeedData::FRIEND_COUNT, seeded_user.friends.count
   end
 
   test "does not leave a new demo account behind when sample data cannot be created" do
@@ -38,7 +38,7 @@ class DemoSeedDataTest < ActiveSupport::TestCase
       end
     end
 
-    stub_const(Object, :SampleSeedData, failing_seed_data) do
+    stub_const(Object, :DemoPersonaSeedData, failing_seed_data) do
       assert_raises(ActiveRecord::RecordInvalid) do
         DemoSeedData.call(email_address: "failed-demo-seed@example.com")
       end
