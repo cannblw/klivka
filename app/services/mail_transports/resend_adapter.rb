@@ -15,6 +15,10 @@ module MailTransports
       raise DeliveryError, "Resend rejected the mail delivery" if response[:error].present?
 
       { identifier: response[:id] }
+    rescue DeliveryError
+      raise
+    rescue StandardError => error
+      raise DeliveryError, "Resend mail delivery failed: #{error.class}"
     end
 
     private

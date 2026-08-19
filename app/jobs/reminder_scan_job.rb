@@ -7,5 +7,6 @@ class ReminderScanJob < ApplicationJob
 
     ReminderDeliveryScheduler.call(user:, at:)
     ReminderDeliveryReconciler.call(user:, at:)
+    ReminderDeliveryDispatchJob.perform_later(user.id, at:)
   end
 end

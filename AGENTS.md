@@ -11,6 +11,7 @@
 
 - Only portable column types: `string`, `text`, `integer`, `decimal`, `boolean`, `datetime`, `json`, `date`. Never `jsonb`, PG arrays, or `uuid` columns.
 - No adapter-conditional migrations. `schema.rb` must load identically on both adapters.
+- Treat migrations absent from `main` as unreleased. Consolidate related unreleased migrations when one coherent migration best represents the final schema, such as folding new columns into a branch-only create-table migration. Keep migrations separate when they cover meaningfully independent tables or concerns, and never rewrite a migration already present on `main`.
 - Avoid raw SQL; use ActiveRecord/Arel. If raw SQL is unavoidable and must differ by adapter, use `ApplicationRecord.adapter_sql(sqlite:, postgres:)` to branch cleanly.
 - Explain non-obvious database portability choices with a concise comment describing why the adapters need that representation, constraint, constant, or query. Keep comments focused on the adapter difference rather than restating the code.
 
@@ -43,5 +44,6 @@
 - Responsive design is mandatory: mobile-first (base styles target small screens, `sm:`/`md:`/`lg:` scale up), but layouts must feel natural on desktop too — no mobile-only or desktop-only UI.
 - All UI strings go through i18n (`t(...)`, lazy lookup keys). Supported locales: English (`en`, default) and Spanish (`es`); every key must exist in both. No hardcoded UI strings in views, components, or code-triggered UI (flash messages, validation-facing attribute names, etc.).
 - UI copy uses direct, conversational language at the user's level. Prefer concrete questions, verbs, and familiar phrases over technical terms or abstract nouns. Write each locale naturally; do not translate literally when idiomatic wording differs.
+- Use American English for code identifiers, comments, documentation, and English UI copy unless an established external term requires different spelling. Write other locales naturally rather than applying English spelling conventions to them.
 - Em dashes (—) are forbidden in UI copy in any locale; use a period, comma, or colon instead.
 - Never commit without being asked. `db/schema.rb` is committed alongside migrations.

@@ -1,4 +1,8 @@
 class ReminderDeliveryReconciler
+  def self.current?(delivery, at: Time.current)
+    new(user: delivery.user, at:).current_delivery?(delivery)
+  end
+
   def self.call(user:, at: Time.current)
     new(user:, at:).call
   end
@@ -22,7 +26,11 @@ class ReminderDeliveryReconciler
       next if cancelled_ids.empty?
 
       cancelled_count += pending_deliveries.where(id: cancelled_ids).update_all(
-        status: "cancelled", cancelled_at: at, updated_at: at
+        status: ReminderDelivery::CANCELLED_STATUS,
+        cancelled_at: at,
+        claimed_at: nil,
+        claim_token: nil,
+        updated_at: at
       )
     end
 
@@ -30,12 +38,20 @@ class ReminderDeliveryReconciler
     cancelled_count
   end
 
+  def current_delivery?(delivery)
+    source = delivery.source
+    return false unless source
+
+    preload_entries([ source ])
+    current?(delivery, latest_interactions: latest_interactions_for([ source ]))
+  end
+
   private
 
   attr_reader :user, :at
 
   def pending_deliveries
-    user.reminder_deliveries.where(status: "pending")
+    user.reminder_deliveries.where(status: ReminderDelivery::PENDING_STATUS)
   end
 
   def current?(delivery, latest_interactions:)

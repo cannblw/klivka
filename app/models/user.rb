@@ -71,8 +71,8 @@ class User < ApplicationRecord
 
   def reminder_channel_enabled?(channel)
     case channel.to_s
-    when "in_app" then reminder_in_app_enabled?
-    when "email" then reminder_email_enabled? && !shared_demo_account?
+    when ReminderDelivery::IN_APP_CHANNEL then reminder_in_app_enabled?
+    when ReminderDelivery::EMAIL_CHANNEL then reminder_email_enabled? && !shared_demo_account?
     else false
     end
   end

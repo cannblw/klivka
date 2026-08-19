@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_12_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_160000) do
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -87,8 +87,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_150000) do
   end
 
   create_table "reminder_deliveries", force: :cascade do |t|
+    t.integer "attempts", default: 0, null: false
     t.datetime "cancelled_at"
     t.string "channel", null: false
+    t.string "claim_token"
+    t.datetime "claimed_at"
     t.datetime "created_at", null: false
     t.datetime "delivered_at"
     t.datetime "failed_at"
@@ -102,6 +105,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_150000) do
     t.index ["source_type", "source_id", "reminder_on", "channel"], name: "index_reminder_deliveries_on_source_date_and_channel", unique: true
     t.index ["status", "channel", "reminder_on"], name: "idx_on_status_channel_reminder_on_f9dde1d6e2"
     t.index ["user_id"], name: "index_reminder_deliveries_on_user_id"
+    t.check_constraint "(claimed_at IS NULL AND claim_token IS NULL) OR (claimed_at IS NOT NULL AND claim_token IS NOT NULL)", name: "reminder_deliveries_claim_is_complete"
+    t.check_constraint "attempts >= 0", name: "reminder_deliveries_attempts_are_nonnegative"
     t.check_constraint "channel IN ('in_app', 'email')", name: "reminder_deliveries_channel_is_supported"
     t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder')", name: "reminder_deliveries_source_type_is_supported"
     t.check_constraint "status IN ('pending', 'delivered', 'failed', 'cancelled')", name: "reminder_deliveries_status_is_supported"
