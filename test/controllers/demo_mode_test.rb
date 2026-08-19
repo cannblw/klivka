@@ -13,12 +13,14 @@ class DemoModeTest < ActionDispatch::IntegrationTest
   end
 
   test "records visitor activity before serving the demo" do
-    with_demo_mode do
-      state = DemoState.current(at: 1.hour.ago)
+    travel_to Time.utc(2026, 8, 19, 12) do
+      with_demo_mode do
+        state = DemoState.current(at: 1.hour.ago)
 
-      get root_path
+        get root_path
 
-      assert_in_delta Time.current, state.reload.last_activity_at, 1.second
+        assert_equal Time.current, state.reload.last_activity_at
+      end
     end
   end
 
