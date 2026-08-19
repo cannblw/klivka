@@ -37,10 +37,12 @@ bin/dev
 
 Then open http://localhost:3000.
 
-In DEVELOPMENT, a default user with mock data is available after running `bin/rails db:seed` (optional):
+In development, a default user with mock data is available after running `bin/rails db:seed` (optional):
 
 - Email: `admin@example.com`
 - Password: `admin`
+
+Set `DEVELOPMENT_SEED_EMAIL_ADDRESS` and `DEVELOPMENT_SEED_PASSWORD` to use different credentials.
 
 ## Development
 
@@ -54,6 +56,15 @@ In DEVELOPMENT, a default user with mock data is available after running `bin/ra
 Optional settings are read from environment variables; see [.env.example](.env.example). Copy it to `.env` for local overrides.
 
 - `REQUIRE_EMAIL_CONFIRMATION` (default `false`): when `true`, new users must confirm their email address before signing in. Requires working SMTP settings in production.
+- `DEVELOPMENT_SEED_EMAIL_ADDRESS` and `DEVELOPMENT_SEED_PASSWORD`: override the local mock-data account credentials.
+- `APPLICATION_URL` (default `http://localhost:3000`): base URL used for links in reminder emails.
+- `MAIL_FROM` (default `Klivka <from@example.com>`): sender used by application mailers.
+- `REMINDER_MAIL_TRANSPORT` (default `rails`): reminder transport. `rails` uses the configured Action Mailer delivery method; `resend` uses the Resend API.
+- `REMINDER_DELIVERY_RETRY_ATTEMPTS` (default `5`): maximum transport attempts for one reminder delivery job.
+- `REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES` (default `30`): how long an abandoned delivery claim remains active before it can be retried.
+- `RESEND_API_KEY`: required when `REMINDER_MAIL_TRANSPORT=resend`. Provide it as a deployment secret, or store the key as `resend.api_key` in Rails credentials.
+
+Mail transports are registered in [`config/initializers/mail_transports.rb`](config/initializers/mail_transports.rb). Each adapter has its own file under [`app/services/mail_transports`](app/services/mail_transports) and implements `deliver(message:, delivery_id:)`. New mail features can use the same registry without coupling their delivery policy or templates to a provider.
 
 ## Database support
 

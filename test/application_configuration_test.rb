@@ -19,4 +19,15 @@ class ApplicationConfigurationTest < ActiveSupport::TestCase
     assert_equal 1, configuration.job_processes
     assert_equal 7, configuration.queue_database_pool
   end
+
+  test "application defines safe reminder email delivery defaults" do
+    configuration = Rails.application.config.x
+
+    assert_equal "http://localhost:3000", configuration.application_url
+    assert_equal "Klivka <from@example.com>", configuration.mail_from
+    assert_equal "rails", configuration.reminder_mail_transport
+    assert_equal 5, configuration.reminder_delivery_retry_attempts
+    assert_equal 30.minutes, configuration.reminder_delivery_claim_timeout
+    assert_nil configuration.resend_api_key
+  end
 end

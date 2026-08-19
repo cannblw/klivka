@@ -141,9 +141,9 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     user.update!(reminder_email_enabled: false)
     setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
     delivery = ReminderDelivery.create!(
-      user:, source: setting, channel: "email", status: "cancelled",
+      user:, source: setting, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 7),
-      cancelled_at: Time.utc(2026, 8, 8, 10)
+      canceled_at: Time.utc(2026, 8, 8, 10)
     )
     user.update!(reminder_email_enabled: true)
 
@@ -152,7 +152,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     delivery.reload
     assert_equal "pending", delivery.status
     assert_equal Date.new(2026, 8, 8), delivery.occurrence_on
-    assert_nil delivery.cancelled_at
+    assert_nil delivery.canceled_at
     assert_equal 2, setting.reminder_deliveries.count
   end
 

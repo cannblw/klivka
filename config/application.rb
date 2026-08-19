@@ -40,6 +40,14 @@ module FriendCrm
     config.x.default_time_zone = ENV.fetch("DEFAULT_TIME_ZONE", "UTC")
     TZInfo::Timezone.get(config.x.default_time_zone)
 
+    config.x.development_seed_email_address = ENV.fetch("DEVELOPMENT_SEED_EMAIL_ADDRESS", "admin@example.com").strip.downcase
+    unless config.x.development_seed_email_address.match?(URI::MailTo::EMAIL_REGEXP)
+      raise ArgumentError, "DEVELOPMENT_SEED_EMAIL_ADDRESS must be a valid email address"
+    end
+
+    config.x.development_seed_password = ENV.fetch("DEVELOPMENT_SEED_PASSWORD", "admin")
+    raise ArgumentError, "DEVELOPMENT_SEED_PASSWORD cannot be blank" if config.x.development_seed_password.blank?
+
     # Fixed day counts make lead times predictable across varying month lengths and leap years.
     config.x.reminder_lead_units = { "days" => 1, "months" => 30, "years" => 365 }.freeze
 
@@ -71,6 +79,32 @@ module FriendCrm
 
     config.x.reminder_dispatch_interval = Integer(ENV.fetch("REMINDER_DISPATCH_INTERVAL_MINUTES", "60"), 10).minutes
     raise ArgumentError, "REMINDER_DISPATCH_INTERVAL_MINUTES must be positive" unless config.x.reminder_dispatch_interval.positive?
+
+    config.x.application_url = ENV.fetch("APPLICATION_URL", "http://localhost:3000").strip.chomp("/")
+    application_uri = URI.parse(config.x.application_url)
+    unless application_uri.is_a?(URI::HTTP) && application_uri.host.present? && application_uri.userinfo.nil? &&
+        application_uri.query.nil? && application_uri.fragment.nil?
+      raise ArgumentError, "APPLICATION_URL must be an HTTP(S) URL without credentials, query, or fragment"
+    end
+
+    config.x.mail_from = ENV.fetch("MAIL_FROM", "Klivka <from@example.com>").strip
+    mail_from_address = Mail::Address.new(config.x.mail_from).address
+    unless mail_from_address.match?(URI::MailTo::EMAIL_REGEXP)
+      raise ArgumentError, "MAIL_FROM must contain a valid email address"
+    end
+
+    config.x.reminder_mail_transport = ENV.fetch("REMINDER_MAIL_TRANSPORT", "rails").strip.downcase
+
+    config.x.reminder_delivery_retry_attempts = Integer(ENV.fetch("REMINDER_DELIVERY_RETRY_ATTEMPTS", "5"), 10)
+    raise ArgumentError, "REMINDER_DELIVERY_RETRY_ATTEMPTS must be positive" unless config.x.reminder_delivery_retry_attempts.positive?
+
+    config.x.reminder_delivery_claim_timeout = Integer(ENV.fetch("REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES", "30"), 10).minutes
+    raise ArgumentError, "REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES must be positive" unless config.x.reminder_delivery_claim_timeout.positive?
+
+    config.x.resend_api_key = ENV["RESEND_API_KEY"].presence || Rails.application.credentials.dig(:resend, :api_key)
+    if config.x.reminder_mail_transport == "resend" && config.x.resend_api_key.blank?
+      raise ArgumentError, "RESEND_API_KEY or credentials.resend.api_key is required for the Resend reminder transport"
+    end
 
     config.x.job_processes = Integer(ENV.fetch("JOB_CONCURRENCY", "1"), 10)
     raise ArgumentError, "JOB_CONCURRENCY must be positive" unless config.x.job_processes.positive?

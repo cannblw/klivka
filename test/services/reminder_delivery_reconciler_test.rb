@@ -8,7 +8,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     assert_equal 0, reconcile
 
     assert_equal "pending", delivery.reload.status
-    assert_nil delivery.cancelled_at
+    assert_nil delivery.canceled_at
   end
 
   test "cancels pending work after contact moves the keep-in-touch suggestion" do
@@ -18,8 +18,8 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
     assert_equal 1, reconcile
 
-    assert_equal "cancelled", delivery.reload.status
-    assert_equal Time.utc(2026, 8, 8, 12), delivery.cancelled_at
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+    assert_equal Time.utc(2026, 8, 8, 12), delivery.canceled_at
   end
 
   test "cancels pending work after a cadence is snoozed or disabled" do
@@ -28,14 +28,14 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     setting.snooze!(on: Date.new(2026, 8, 8))
 
     assert_equal 1, reconcile
-    assert_equal "cancelled", snoozed_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, snoozed_delivery.reload.status
 
     setting.update!(snoozed_until: nil)
     disabled_delivery = create_delivery(setting, channel: "in_app")
     setting.disable!
 
     assert_equal 1, reconcile
-    assert_equal "cancelled", disabled_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, disabled_delivery.reload.status
   end
 
   test "cancels pending work after a cadence changes or its source is deleted" do
@@ -44,13 +44,13 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     setting.change_cadence!(cadence: "monthly")
 
     assert_equal 1, reconcile
-    assert_equal "cancelled", changed_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, changed_delivery.reload.status
 
     deleted_delivery = create_delivery(setting, channel: "in_app", reminder_on: Date.new(2026, 9, 1))
     setting.destroy!
 
     assert_equal 1, reconcile
-    assert_equal "cancelled", deleted_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, deleted_delivery.reload.status
   end
 
   test "cancels pending work when its channel is disabled" do
@@ -59,7 +59,20 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     users(:one).update!(reminder_email_enabled: false)
 
     assert_equal 1, reconcile
-    assert_equal "cancelled", delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+  end
+
+  test "does not revoke a pending delivery while an email worker owns its claim" do
+    setting = create_setting
+    delivery = create_delivery(setting, channel: ReminderDelivery::EMAIL_CHANNEL)
+    delivery.update!(claimed_at: Time.utc(2026, 8, 8, 11, 59), claim_token: "email-worker-claim")
+    users(:one).update!(reminder_email_enabled: false)
+
+    assert_equal 0, reconcile
+
+    delivery.reload
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.status
+    assert_equal "email-worker-claim", delivery.claim_token
   end
 
   test "cancels demo email work while keeping demo in-app work pending" do
@@ -71,7 +84,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
       assert_equal 1, reconcile
     end
 
-    assert_equal "cancelled", email_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, email_delivery.reload.status
     assert_equal "pending", in_app_delivery.reload.status
   end
 
@@ -82,13 +95,13 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     reminder.update!(lead_value: 29)
 
     assert_equal 1, reconcile
-    assert_equal "cancelled", changed_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, changed_delivery.reload.status
 
     deleted_delivery = create_delivery(reminder, channel: "email", reminder_on: Date.new(2026, 8, 9), occurrence_on: Date.new(2026, 9, 7))
     reminder.destroy!
 
     assert_equal 1, reconcile
-    assert_equal "cancelled", deleted_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, deleted_delivery.reload.status
   end
 
   test "does not alter completed delivery history" do

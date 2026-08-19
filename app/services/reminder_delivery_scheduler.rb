@@ -119,14 +119,14 @@ class ReminderDeliveryScheduler
         record_timestamps: true
       ).length
 
-      inserted_count + reactivate_cancelled_deliveries(attributes)
+      inserted_count + reactivate_canceled_deliveries(attributes)
     end
   end
 
-  def reactivate_cancelled_deliveries(attributes)
+  def reactivate_canceled_deliveries(attributes)
     attributes_by_key = attributes.index_by { delivery_key(_1) }
     candidates = ReminderDelivery.where(
-      status: "cancelled",
+      status: ReminderDelivery::CANCELED_STATUS,
       source_type: attributes.pluck(:source_type).uniq,
       source_id: attributes.pluck(:source_id).uniq,
       reminder_on: attributes.pluck(:reminder_on).uniq,
@@ -138,9 +138,11 @@ class ReminderDeliveryScheduler
       next false unless current_attributes
 
       delivery.update_columns(
-        status: "pending",
+        status: ReminderDelivery::PENDING_STATUS,
         occurrence_on: current_attributes.fetch(:occurrence_on),
-        cancelled_at: nil,
+        canceled_at: nil,
+        claimed_at: nil,
+        claim_token: nil,
         updated_at: Time.current
       )
       true

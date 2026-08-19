@@ -1,4 +1,8 @@
 class ReminderDeliveryReconciler
+  def self.current?(delivery, at: Time.current)
+    new(user: delivery.user, at:).current_delivery?(delivery)
+  end
+
   def self.call(user:, at: Time.current)
     new(user:, at:).call
   end
@@ -9,33 +13,45 @@ class ReminderDeliveryReconciler
   end
 
   def call
-    cancelled_count = 0
+    canceled_count = 0
 
-    pending_deliveries.in_batches(of: batch_size) do |batch|
+    unclaimed_pending_deliveries.in_batches(of: batch_size) do |batch|
       deliveries = batch.preload(:source).to_a
       sources = deliveries.filter_map(&:source)
       preload_entries(sources)
       latest_interactions = latest_interactions_for(sources)
-      cancelled_ids = deliveries.filter_map do |delivery|
+      canceled_ids = deliveries.filter_map do |delivery|
         delivery.id unless current?(delivery, latest_interactions:)
       end
-      next if cancelled_ids.empty?
+      next if canceled_ids.empty?
 
-      cancelled_count += pending_deliveries.where(id: cancelled_ids).update_all(
-        status: "cancelled", cancelled_at: at, updated_at: at
+      canceled_count += unclaimed_pending_deliveries.where(id: canceled_ids).update_all(
+        status: ReminderDelivery::CANCELED_STATUS,
+        canceled_at: at,
+        claimed_at: nil,
+        claim_token: nil,
+        updated_at: at
       )
     end
 
-    Rails.logger.info("Cancelled stale reminder delivery work count=#{cancelled_count}") if cancelled_count.positive?
-    cancelled_count
+    Rails.logger.info("Canceled stale reminder delivery work count=#{canceled_count}") if canceled_count.positive?
+    canceled_count
+  end
+
+  def current_delivery?(delivery)
+    source = delivery.source
+    return false unless source
+
+    preload_entries([ source ])
+    current?(delivery, latest_interactions: latest_interactions_for([ source ]))
   end
 
   private
 
   attr_reader :user, :at
 
-  def pending_deliveries
-    user.reminder_deliveries.where(status: "pending")
+  def unclaimed_pending_deliveries
+    user.reminder_deliveries.where(status: ReminderDelivery::PENDING_STATUS, claimed_at: nil)
   end
 
   def current?(delivery, latest_interactions:)

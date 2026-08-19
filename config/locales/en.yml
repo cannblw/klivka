@@ -478,3 +478,30 @@ en:
       instructions: "You can reset your password on"
       link_text: "this password reset page"
       expires: "This link will expire in %{time}."
+
+  reminder_mailer:
+    footer: "A gentle reminder from Klivka, your private relationship notebook."
+    keep_in_touch:
+      subject: "A reminder to keep in touch with %{name}"
+      eyebrow: "Keep in touch"
+      heading: "Keep in touch with %{name}"
+      body: "You asked Klivka to remind you to keep in touch with %{name}."
+      open_friend: "Open %{name}"
+      record_contact: "Record contact"
+      settings: "Manage reminder settings"
+    birthday:
+      subject: "%{name}'s birthday is coming up"
+      eyebrow: "Birthday reminder"
+      date_label: "Coming up"
+      heading: "%{name}'s birthday"
+      body: "%{name}'s birthday is on %{date}."
+      open_friend: "Open %{name}"
+      settings: "Manage reminder settings"
+    significant_date:
+      subject: "%{name}: %{label} is coming up"
+      eyebrow: "Date reminder"
+      heading: "A date to remember for %{name}"
+      body: "%{label} for %{name} is on %{date}."
+      default_label: "An important date"
+      open_friend: "Open %{name}"
+      settings: "Manage reminder settings"

@@ -4,9 +4,9 @@
 
 # Development-only default account so the app is usable right after bin/setup
 if Rails.env.development?
-  admin = User.find_or_create_by!(email_address: "admin@example.com") do |user|
-    user.password = "admin"
-  end
+  admin = User.find_or_initialize_by(email_address: Rails.application.config.x.development_seed_email_address)
+  admin.password = Rails.application.config.x.development_seed_password
+  admin.save!
 
   SampleSeedData.call(user: admin)
 end

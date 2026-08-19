@@ -48,7 +48,7 @@ class FriendsController < ApplicationController
     @interaction_count = @friend.interactions.count
     @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @friend.interactions.new(occurred_on: Date.current)
-    @open_interaction_modal = false
+    @open_interaction_modal = params[:quick_interaction] == "today"
     @keep_in_touch_setting = @friend.keep_in_touch_setting
   end
 

@@ -3,8 +3,11 @@
 # Table name: reminder_deliveries
 #
 #  id            :integer          not null, primary key
-#  cancelled_at  :datetime
+#  attempts      :integer          default(0), not null
+#  canceled_at   :datetime
 #  channel       :string           not null
+#  claim_token   :string
+#  claimed_at    :datetime
 #  delivered_at  :datetime
 #  failed_at     :datetime
 #  occurrence_on :date             not null
@@ -27,8 +30,16 @@
 #  user_id  (user_id => users.id) ON DELETE => cascade
 #
 class ReminderDelivery < ApplicationRecord
-  CHANNELS = %w[in_app email].freeze
-  STATUSES = %w[pending delivered failed cancelled].freeze
+  IN_APP_CHANNEL = "in_app".freeze
+  EMAIL_CHANNEL = "email".freeze
+  CHANNELS = [ IN_APP_CHANNEL, EMAIL_CHANNEL ].freeze
+
+  PENDING_STATUS = "pending".freeze
+  DELIVERED_STATUS = "delivered".freeze
+  FAILED_STATUS = "failed".freeze
+  CANCELED_STATUS = "canceled".freeze
+  STATUSES = [ PENDING_STATUS, DELIVERED_STATUS, FAILED_STATUS, CANCELED_STATUS ].freeze
+
   SOURCE_TYPES = %w[KeepInTouchSetting EntryReminder].freeze
 
   belongs_to :user
@@ -38,6 +49,9 @@ class ReminderDelivery < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
   validates :source_type, inclusion: { in: SOURCE_TYPES }
   validates :reminder_on, :occurrence_on, presence: true
+  validates :attempts, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :claim_token, presence: true, if: :claimed_at?
+  validates :claimed_at, presence: true, if: :claim_token?
   validates :channel, uniqueness: { scope: %i[source_type source_id reminder_on] }
   validate :source_belongs_to_user
 

@@ -5,8 +5,11 @@ require "test_helper"
 # Table name: reminder_deliveries
 #
 #  id            :integer          not null, primary key
-#  cancelled_at  :datetime
+#  attempts      :integer          default(0), not null
+#  canceled_at   :datetime
 #  channel       :string           not null
+#  claim_token   :string
+#  claimed_at    :datetime
 #  delivered_at  :datetime
 #  failed_at     :datetime
 #  occurrence_on :date             not null
@@ -93,6 +96,27 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:channel, "push") }
     assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:status, "queued") }
     assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:source_type, "Friend") }
+  end
+
+  test "requires complete claim metadata at the model and database boundaries" do
+    delivery = ReminderDelivery.create!(
+      user: users(:one), source: @setting, channel: "email",
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
+    )
+
+    delivery.claimed_at = Time.utc(2026, 8, 8, 12)
+    assert_not_predicate delivery, :valid?
+    assert delivery.errors.of_kind?(:claim_token, :blank)
+
+    delivery.claimed_at = nil
+    delivery.claim_token = "claim-token"
+    assert_not_predicate delivery, :valid?
+    assert delivery.errors.of_kind?(:claimed_at, :blank)
+
+    assert_raises(ActiveRecord::StatementInvalid) do
+      delivery.update_columns(claimed_at: Time.utc(2026, 8, 8, 12), claim_token: nil)
+    end
+    assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:attempts, -1) }
   end
 
   test "requires the source and ledger record to belong to the same user" do
