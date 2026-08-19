@@ -37,10 +37,12 @@ bin/dev
 
 Then open http://localhost:3000.
 
-In DEVELOPMENT, a default user with mock data is available after running `bin/rails db:seed` (optional):
+In development, a default user with mock data is available after running `bin/rails db:seed` (optional):
 
 - Email: `admin@example.com`
 - Password: `admin`
+
+Set `DEVELOPMENT_SEED_EMAIL_ADDRESS` and `DEVELOPMENT_SEED_PASSWORD` to use different credentials.
 
 ## Development
 
@@ -54,6 +56,7 @@ In DEVELOPMENT, a default user with mock data is available after running `bin/ra
 Optional settings are read from environment variables; see [.env.example](.env.example). Copy it to `.env` for local overrides.
 
 - `REQUIRE_EMAIL_CONFIRMATION` (default `false`): when `true`, new users must confirm their email address before signing in. Requires working SMTP settings in production.
+- `DEVELOPMENT_SEED_EMAIL_ADDRESS` and `DEVELOPMENT_SEED_PASSWORD`: override the local mock-data account credentials.
 - `APPLICATION_URL` (default `http://localhost:3000`): base URL used for links in reminder emails.
 - `MAIL_FROM` (default `Klivka <from@example.com>`): sender used by application mailers.
 - `REMINDER_MAIL_TRANSPORT` (default `rails`): reminder transport. `rails` uses the configured Action Mailer delivery method; `resend` uses the Resend API.

@@ -483,3 +483,30 @@ es:
       instructions: "Puedes restablecer tu contraseña en"
       link_text: "esta página de restablecimiento"
       expires: "Este enlace caducará en %{time}."
+
+  reminder_mailer:
+    footer: "Un recordatorio amable de Klivka, tu cuaderno privado para cuidar tus relaciones."
+    keep_in_touch:
+      subject: "Un recordatorio para mantener el contacto con %{name}"
+      eyebrow: "Mantén el contacto"
+      heading: "Mantén el contacto con %{name}"
+      body: "Pediste a Klivka que te recordara mantener el contacto con %{name}."
+      open_friend: "Ver a %{name}"
+      record_contact: "Registrar contacto"
+      settings: "Gestionar ajustes de recordatorios"
+    birthday:
+      subject: "Se acerca el cumpleaños de %{name}"
+      eyebrow: "Recordatorio de cumpleaños"
+      date_label: "Próximamente"
+      heading: "Cumpleaños de %{name}"
+      body: "El cumpleaños de %{name} es el %{date}."
+      open_friend: "Ver a %{name}"
+      settings: "Gestionar ajustes de recordatorios"
+    significant_date:
+      subject: "%{label} de %{name} se acerca"
+      eyebrow: "Recordatorio de fecha"
+      heading: "Una fecha para recordar"
+      body: "%{label} de %{name} será el %{date}."
+      default_label: "Una fecha importante"
+      open_friend: "Ver a %{name}"
+      settings: "Gestionar ajustes de recordatorios"

@@ -40,6 +40,14 @@ module FriendCrm
     config.x.default_time_zone = ENV.fetch("DEFAULT_TIME_ZONE", "UTC")
     TZInfo::Timezone.get(config.x.default_time_zone)
 
+    config.x.development_seed_email_address = ENV.fetch("DEVELOPMENT_SEED_EMAIL_ADDRESS", "admin@example.com").strip.downcase
+    unless config.x.development_seed_email_address.match?(URI::MailTo::EMAIL_REGEXP)
+      raise ArgumentError, "DEVELOPMENT_SEED_EMAIL_ADDRESS must be a valid email address"
+    end
+
+    config.x.development_seed_password = ENV.fetch("DEVELOPMENT_SEED_PASSWORD", "admin")
+    raise ArgumentError, "DEVELOPMENT_SEED_PASSWORD cannot be blank" if config.x.development_seed_password.blank?
+
     # Fixed day counts make lead times predictable across varying month lengths and leap years.
     config.x.reminder_lead_units = { "days" => 1, "months" => 30, "years" => 365 }.freeze
 

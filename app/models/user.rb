@@ -48,7 +48,7 @@ class User < ApplicationRecord
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: FriendCrm::MAX_INT32 }
   validates :default_reminder_lead_unit, inclusion: { in: REMINDER_LEAD_UNITS.keys }
 
-  # Skipped in development so the seeded admin@example.com/admin account works
+  # The seeded development account deliberately uses a short, local-only password.
   validates :password, length: { minimum: 8 }, allow_nil: true, unless: -> { Rails.env.development? }
 
   generates_token_for :email_confirmation, expires_in: 2.days do

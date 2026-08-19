@@ -148,6 +148,13 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='#{friend_keep_in_touch_setting_path(friends(:ada))}']"
   end
 
+  test "show opens the quick interaction dialog when requested by a reminder link" do
+    get friend_url(friends(:ada)), params: { quick_interaction: "today" }
+
+    assert_response :success
+    assert_select "[data-controller~='dialog'][data-dialog-open-value='true'] dialog##{QuickInteractionComponent::DOM_ID}"
+  end
+
   test "show displays last contacted label when interactions exist" do
     friends(:ada).interactions.create!(occurred_on: users(:one).local_date - 2.days)
 
