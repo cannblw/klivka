@@ -15,7 +15,7 @@ class ReminderDeliveryReconciler
   def call
     canceled_count = 0
 
-    pending_deliveries.in_batches(of: batch_size) do |batch|
+    unclaimed_pending_deliveries.in_batches(of: batch_size) do |batch|
       deliveries = batch.preload(:source).to_a
       sources = deliveries.filter_map(&:source)
       preload_entries(sources)
@@ -25,7 +25,7 @@ class ReminderDeliveryReconciler
       end
       next if canceled_ids.empty?
 
-      canceled_count += pending_deliveries.where(id: canceled_ids).update_all(
+      canceled_count += unclaimed_pending_deliveries.where(id: canceled_ids).update_all(
         status: ReminderDelivery::CANCELED_STATUS,
         canceled_at: at,
         claimed_at: nil,
@@ -50,8 +50,8 @@ class ReminderDeliveryReconciler
 
   attr_reader :user, :at
 
-  def pending_deliveries
-    user.reminder_deliveries.where(status: ReminderDelivery::PENDING_STATUS)
+  def unclaimed_pending_deliveries
+    user.reminder_deliveries.where(status: ReminderDelivery::PENDING_STATUS, claimed_at: nil)
   end
 
   def current?(delivery, latest_interactions:)

@@ -62,6 +62,19 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
   end
 
+  test "does not revoke a pending delivery while an email worker owns its claim" do
+    setting = create_setting
+    delivery = create_delivery(setting, channel: ReminderDelivery::EMAIL_CHANNEL)
+    delivery.update!(claimed_at: Time.utc(2026, 8, 8, 11, 59), claim_token: "email-worker-claim")
+    users(:one).update!(reminder_email_enabled: false)
+
+    assert_equal 0, reconcile
+
+    delivery.reload
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.status
+    assert_equal "email-worker-claim", delivery.claim_token
+  end
+
   test "cancels demo email work while keeping demo in-app work pending" do
     setting = create_setting
     email_delivery = create_delivery(setting, channel: "email")
