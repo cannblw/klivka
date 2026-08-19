@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_170000) do
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -88,7 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_160000) do
 
   create_table "reminder_deliveries", force: :cascade do |t|
     t.integer "attempts", default: 0, null: false
-    t.datetime "cancelled_at"
+    t.datetime "canceled_at"
     t.string "channel", null: false
     t.string "claim_token"
     t.datetime "claimed_at"
@@ -109,7 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_160000) do
     t.check_constraint "attempts >= 0", name: "reminder_deliveries_attempts_are_nonnegative"
     t.check_constraint "channel IN ('in_app', 'email')", name: "reminder_deliveries_channel_is_supported"
     t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder')", name: "reminder_deliveries_source_type_is_supported"
-    t.check_constraint "status IN ('pending', 'delivered', 'failed', 'cancelled')", name: "reminder_deliveries_status_is_supported"
+    t.check_constraint "status IN ('pending', 'delivered', 'failed', 'canceled')", name: "reminder_deliveries_status_is_supported"
   end
 
   create_table "sessions", force: :cascade do |t|

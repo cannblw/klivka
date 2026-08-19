@@ -6,7 +6,7 @@ require "test_helper"
 #
 #  id            :integer          not null, primary key
 #  attempts      :integer          default(0), not null
-#  cancelled_at  :datetime
+#  canceled_at   :datetime
 #  channel       :string           not null
 #  claim_token   :string
 #  claimed_at    :datetime

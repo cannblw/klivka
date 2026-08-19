@@ -3,7 +3,7 @@ class DemoPersonaSeedData
     {
       name: "Anna Roberts",
       birthday: "1998-04-17",
-      first_met: { date: "2020-09-14", note: "We met in Mechanical Engineering lab during our first week at university. Anna had already labelled every cable in the room and still stayed late to help me debug a motor controller." },
+      first_met: { date: "2020-09-14", note: "We met in Mechanical Engineering lab during our first week at university. Anna had already labeled every cable in the room and still stayed late to help me debug a motor controller." },
       notes: [
         "Mechanical engineer at a wind-turbine company in Gothenburg. She moved to Sweden four years ago because she has always preferred cold mornings to Florida's heat.",
         "Married to Elise for two years. Anna is a careful planner, a terrible liar at surprise parties, and the person to call when a household appliance makes a worrying noise.",

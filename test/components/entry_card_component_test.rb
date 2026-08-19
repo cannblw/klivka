@@ -1,7 +1,7 @@
 require "test_helper"
 
 class EntryCardComponentTest < ViewComponent::TestCase
-  test "renders a type-labelled sortable entry card" do
+  test "renders a type-labeled sortable entry card" do
     entry = entries(:phone)
     dom_id = ActionView::RecordIdentifier.dom_id(entry)
 

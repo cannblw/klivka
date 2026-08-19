@@ -4,7 +4,7 @@
 #
 #  id            :integer          not null, primary key
 #  attempts      :integer          default(0), not null
-#  cancelled_at  :datetime
+#  canceled_at   :datetime
 #  channel       :string           not null
 #  claim_token   :string
 #  claimed_at    :datetime
@@ -37,8 +37,8 @@ class ReminderDelivery < ApplicationRecord
   PENDING_STATUS = "pending".freeze
   DELIVERED_STATUS = "delivered".freeze
   FAILED_STATUS = "failed".freeze
-  CANCELLED_STATUS = "cancelled".freeze
-  STATUSES = [ PENDING_STATUS, DELIVERED_STATUS, FAILED_STATUS, CANCELLED_STATUS ].freeze
+  CANCELED_STATUS = "canceled".freeze
+  STATUSES = [ PENDING_STATUS, DELIVERED_STATUS, FAILED_STATUS, CANCELED_STATUS ].freeze
 
   SOURCE_TYPES = %w[KeepInTouchSetting EntryReminder].freeze
 

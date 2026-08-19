@@ -71,7 +71,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
     ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
 
-    assert_equal "cancelled", delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
     assert_empty transport.messages
   end
 

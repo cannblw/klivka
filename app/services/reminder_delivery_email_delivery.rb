@@ -102,8 +102,8 @@ class ReminderDeliveryEmailDelivery
 
   def cancel_delivery(delivery)
     update_claimed_delivery(delivery,
-      status: ReminderDelivery::CANCELLED_STATUS,
-      cancelled_at: at,
+      status: ReminderDelivery::CANCELED_STATUS,
+      canceled_at: at,
       claimed_at: nil,
       claim_token: nil,
       updated_at: at)

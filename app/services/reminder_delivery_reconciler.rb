@@ -13,29 +13,29 @@ class ReminderDeliveryReconciler
   end
 
   def call
-    cancelled_count = 0
+    canceled_count = 0
 
     pending_deliveries.in_batches(of: batch_size) do |batch|
       deliveries = batch.preload(:source).to_a
       sources = deliveries.filter_map(&:source)
       preload_entries(sources)
       latest_interactions = latest_interactions_for(sources)
-      cancelled_ids = deliveries.filter_map do |delivery|
+      canceled_ids = deliveries.filter_map do |delivery|
         delivery.id unless current?(delivery, latest_interactions:)
       end
-      next if cancelled_ids.empty?
+      next if canceled_ids.empty?
 
-      cancelled_count += pending_deliveries.where(id: cancelled_ids).update_all(
-        status: ReminderDelivery::CANCELLED_STATUS,
-        cancelled_at: at,
+      canceled_count += pending_deliveries.where(id: canceled_ids).update_all(
+        status: ReminderDelivery::CANCELED_STATUS,
+        canceled_at: at,
         claimed_at: nil,
         claim_token: nil,
         updated_at: at
       )
     end
 
-    Rails.logger.info("Cancelled stale reminder delivery work count=#{cancelled_count}") if cancelled_count.positive?
-    cancelled_count
+    Rails.logger.info("Canceled stale reminder delivery work count=#{canceled_count}") if canceled_count.positive?
+    canceled_count
   end
 
   def current_delivery?(delivery)
