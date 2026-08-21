@@ -489,6 +489,7 @@ en:
       open_friend: "Open %{name}"
       record_contact: "Record contact"
       settings: "Manage reminder settings"
+
     birthday:
       subject: "%{name}'s birthday is coming up"
       eyebrow: "Birthday reminder"
@@ -505,3 +506,6 @@ en:
       default_label: "An important date"
       open_friend: "Open %{name}"
       settings: "Manage reminder settings"
+
+  vcard_import:
+    anniversary: "Anniversary"

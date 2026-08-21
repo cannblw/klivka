@@ -24,6 +24,8 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::Birthday < Entry::Date
+  self.vcard_import_property = :bday
+
   validates :friend_id, uniqueness: { message: :one_birthday_per_friend }
 
   scope :for_month, ->(date = ::Date.current) {

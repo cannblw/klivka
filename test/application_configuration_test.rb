@@ -18,6 +18,9 @@ class ApplicationConfigurationTest < ActiveSupport::TestCase
     assert_equal 60.minutes, configuration.reminder_dispatch_interval
     assert_equal 1, configuration.job_processes
     assert_equal 7, configuration.queue_database_pool
+    assert_equal 5.megabytes, configuration.vcard_import_max_file_size_bytes
+    assert_equal 5_000, configuration.vcard_import_max_cards
+    assert_equal 1.hour, configuration.vcard_import_preview_lifetime
   end
 
   test "application defines safe reminder email delivery defaults" do

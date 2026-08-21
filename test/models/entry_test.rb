@@ -30,6 +30,23 @@ class EntryTest < ActiveSupport::TestCase
     assert_equal Entry::CREATABLE_TYPES, Entry::CREATABLE_TYPES.filter_map { |type| Entry.creatable_type(type)&.name }
   end
 
+  test "every creatable entry type declares its vCard import policy" do
+    properties = Entry::CREATABLE_TYPES.map { |type| Entry.creatable_type(type).vcard_import_property }
+
+    assert_not_includes properties, Entry::UNCONFIGURED_VCARD_IMPORT_PROPERTY
+    assert_equal Entry.vcard_importable_types.size, Entry.vcard_importable_types.map(&:vcard_import_property).uniq.size
+  end
+
+  test "reports the entry types vCard can import" do
+    assert_equal [ Entry::Phone, Entry::Note, Entry::Birthday, Entry::Email, Entry::Date ], Entry.vcard_importable_types
+  end
+
+  test "finds the importable entry type for a vCard property" do
+    assert_equal Entry::Phone, Entry.vcard_importable_type_for(:tel)
+    assert_equal Entry::Date, Entry.vcard_importable_type_for("anniversary")
+    assert_nil Entry.vcard_importable_type_for(:url)
+  end
+
   test "position cannot be negative" do
     entry = Entry::Note.new(friend: friends(:ada), position: -1, content: { text: "A note" })
 

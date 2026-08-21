@@ -34,6 +34,17 @@ module FriendCrm
     config.x.friend_search_debounce_milliseconds = Integer(ENV.fetch("FRIEND_SEARCH_DEBOUNCE_MILLISECONDS", "100"), 10)
     raise ArgumentError, "FRIEND_SEARCH_DEBOUNCE_MILLISECONDS must be positive" unless config.x.friend_search_debounce_milliseconds.positive?
 
+    config.x.vcard_import_max_file_size_bytes = Integer(ENV.fetch("VCARD_IMPORT_MAX_FILE_SIZE_BYTES", 5.megabytes.to_s), 10)
+    unless config.x.vcard_import_max_file_size_bytes.positive?
+      raise ArgumentError, "VCARD_IMPORT_MAX_FILE_SIZE_BYTES must be positive"
+    end
+
+    config.x.vcard_import_max_cards = Integer(ENV.fetch("VCARD_IMPORT_MAX_CARDS", "5000"), 10)
+    raise ArgumentError, "VCARD_IMPORT_MAX_CARDS must be positive" unless config.x.vcard_import_max_cards.positive?
+
+    config.x.vcard_import_preview_lifetime = Integer(ENV.fetch("VCARD_IMPORT_PREVIEW_LIFETIME_HOURS", "1"), 10).hours
+    raise ArgumentError, "VCARD_IMPORT_PREVIEW_LIFETIME_HOURS must be positive" unless config.x.vcard_import_preview_lifetime.positive?
+
     # Optional email confirmation for registrations; see .env.example
     config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
 

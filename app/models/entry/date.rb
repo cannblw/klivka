@@ -24,6 +24,8 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::Date < Entry
+  self.vcard_import_property = :anniversary
+
   store_accessor :content, :label
 
   before_validation :normalize_label

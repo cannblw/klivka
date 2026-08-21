@@ -24,6 +24,8 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::GiftList < Entry
+  self.vcard_import_property = Entry::UNSUPPORTED_VCARD_IMPORT_PROPERTY
+
   BOOLEAN_TYPE = ActiveModel::Type::Boolean.new
 
   store_accessor :content, :title, :items

@@ -24,6 +24,8 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::FirstMet < Entry::Date
+  self.vcard_import_property = Entry::UNSUPPORTED_VCARD_IMPORT_PROPERTY
+
   DATE_PRECISIONS = %w[day month year].freeze
 
   store_accessor :content, :note, :date_precision

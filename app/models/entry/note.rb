@@ -24,4 +24,5 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::Note < Entry
+  self.vcard_import_property = :note
 end

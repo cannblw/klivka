@@ -494,6 +494,7 @@ es:
       open_friend: "Ver a %{name}"
       record_contact: "Registrar contacto"
       settings: "Gestionar ajustes de recordatorios"
+
     birthday:
       subject: "Se acerca el cumpleaños de %{name}"
       eyebrow: "Recordatorio de cumpleaños"
@@ -510,3 +511,6 @@ es:
       default_label: "Una fecha importante"
       open_friend: "Ver a %{name}"
       settings: "Gestionar ajustes de recordatorios"
+
+  vcard_import:
+    anniversary: "Aniversario"
