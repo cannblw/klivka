@@ -24,13 +24,13 @@ class VcardImportsController < ApplicationController
 
     candidates = VcardImport::DuplicateMarker.call(user: Current.user, candidates: result.candidates)
 
-    vcard_import = VcardImport::PreviewStager.call(
+    VcardImport::PreviewStager.call(
       user: Current.user,
       candidates:,
       rejected_count: result.rejected_count
     )
 
-    redirect_to vcard_import
+    redirect_to vcard_import_path
   rescue VcardImport::Parser::TooManyCardsError
     render_upload_error(:too_many_cards)
   rescue VcardImport::Parser::InvalidEncodingError
@@ -52,7 +52,7 @@ class VcardImportsController < ApplicationController
   private
 
   def set_vcard_import
-    @vcard_import = Current.user.vcard_imports.find(params[:id])
+    @vcard_import = Current.user.vcard_imports.sole
     return unless @vcard_import.expired?
 
     @vcard_import.destroy!

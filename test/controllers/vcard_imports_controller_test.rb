@@ -25,6 +25,8 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     get new_vcard_import_url
 
     assert_response :success
+    assert_equal "/friends/import", new_vcard_import_path
+    assert_equal "/friends/import/preview", vcard_import_path
     assert_select "h1", "Import contacts"
     assert_select "input[type='file'][name='vcard_import[file]']"
   end
@@ -40,7 +42,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     assert_equal users(:one), vcard_import.user
     assert_equal [ "Ada Lovelace", "Grace Hopper" ], vcard_import.candidates.pluck("name")
     assert_equal [ 0, 1 ], vcard_import.selected_candidate_ids
-    assert_redirected_to vcard_import_url(vcard_import)
+    assert_redirected_to vcard_import_url
   end
 
   test "vCard import shows a validation error when no file is uploaded" do
@@ -68,7 +70,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
       candidates: [ { "id" => 0, "name" => "Bob Ross", "entries" => [] } ]
     )
 
-    get vcard_import_url(vcard_import)
+    get vcard_import_url
 
     assert_response :not_found
   end
@@ -76,7 +78,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
   test "vCard import shows a selected, searchable preview with selection controls" do
     vcard_import = create_preview
 
-    get vcard_import_url(vcard_import)
+    get vcard_import_url
 
     assert_response :success
     assert_select "[data-controller~='filter-list'][data-controller~='vcard-import-preview']"
@@ -111,7 +113,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
       selected_candidate_ids: [ 0 ]
     )
 
-    get vcard_import_url(vcard_import)
+    get vcard_import_url
 
     assert_select "div[role='note']", count: 2
     assert_select "#vcard-import-candidate-0-details [role='note']", count: 2
@@ -122,7 +124,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference "Friend.count", 1 do
       assert_no_difference "Entry.count" do
-        patch vcard_import_url(vcard_import), params: { vcard_import: { selected_candidate_ids: [ "1" ] } }
+        patch vcard_import_url, params: { vcard_import: { selected_candidate_ids: [ "1" ] } }
       end
     end
 
@@ -134,7 +136,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
   test "vCard import rejects a candidate from another preview" do
     vcard_import = create_preview
 
-    patch vcard_import_url(vcard_import), params: { vcard_import: { selected_candidate_ids: [ "99" ] } }
+    patch vcard_import_url, params: { vcard_import: { selected_candidate_ids: [ "99" ] } }
 
     assert_response :unprocessable_entity
     assert_equal [ 0, 1 ], vcard_import.reload.selected_candidate_ids
@@ -144,7 +146,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     vcard_import = create_preview
 
     assert_no_difference [ "Friend.count", "Entry.count", "VcardImport.count" ] do
-      patch vcard_import_url(vcard_import), params: { vcard_import: { selected_candidate_ids: [ "" ] } }
+      patch vcard_import_url, params: { vcard_import: { selected_candidate_ids: [ "" ] } }
     end
 
     assert_response :unprocessable_entity
@@ -158,7 +160,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     )
 
     assert_difference "VcardImport.count", -1 do
-      get vcard_import_url(vcard_import)
+      get vcard_import_url
     end
 
     assert_redirected_to new_vcard_import_url

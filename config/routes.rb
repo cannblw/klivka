@@ -6,7 +6,10 @@ Rails.application.routes.draw do
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resource :settings, only: %i[ show update ]
   resource :time_zone, only: :update
-  resources :vcard_imports, only: %i[ new create show update ]
+  get "friends/import", to: "vcard_imports#new", as: :new_vcard_import
+  post "friends/import", to: "vcard_imports#create", as: :vcard_imports
+  get "friends/import/preview", to: "vcard_imports#show", as: :vcard_import
+  patch "friends/import/preview", to: "vcard_imports#update"
   resources :friends, only: [ :index, :show, :create, :update, :destroy ] do
     resources :entries, only: %i[ new create edit update destroy ] do
       patch :reorder, on: :collection

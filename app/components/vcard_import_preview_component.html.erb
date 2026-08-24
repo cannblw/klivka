@@ -1,7 +1,7 @@
 <div data-controller="filter-list vcard-import-preview"
      data-vcard-import-preview-singular-label-value="<%= t("vcard_imports.show.selected.one") %>"
      data-vcard-import-preview-plural-label-value="<%= t("vcard_imports.show.selected.other", count: "__COUNT__") %>">
-  <%= form_with model: vcard_import, class: "mt-6" do %>
+  <%= form_with model: vcard_import, url: vcard_import_path, method: :patch, class: "mt-6" do %>
     <%= hidden_field_tag "vcard_import[selected_candidate_ids][]", "" %>
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
       <div class="min-w-0 flex-1">
