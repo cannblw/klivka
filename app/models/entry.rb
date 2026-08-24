@@ -37,6 +37,10 @@ class Entry < ApplicationRecord
     Entry::GiftList
   ].freeze
   SINGLETON_TYPES = %w[Entry::Birthday Entry::FirstMet].freeze
+  UNCONFIGURED_VCARD_IMPORT_PROPERTY = :unconfigured
+  UNSUPPORTED_VCARD_IMPORT_PROPERTY = :unsupported
+
+  class_attribute :vcard_import_property, instance_accessor: false, default: UNCONFIGURED_VCARD_IMPORT_PROPERTY
 
   belongs_to :friend, touch: true
   has_one :entry_reminder, dependent: :destroy
@@ -53,6 +57,22 @@ class Entry < ApplicationRecord
 
     type.constantize
   end
+
+  def self.vcard_importable_types
+    @vcard_importable_types ||= CREATABLE_TYPES.filter_map do |type|
+      entry_type = creatable_type(type)
+      entry_type unless entry_type.vcard_import_property == UNSUPPORTED_VCARD_IMPORT_PROPERTY
+    end.freeze
+  end
+
+  def self.vcard_importable_type_for(property)
+    vcard_importable_types_by_property[property.to_sym]
+  end
+
+  def self.vcard_importable_types_by_property
+    @vcard_importable_types_by_property ||= vcard_importable_types.index_by(&:vcard_import_property).freeze
+  end
+  private_class_method :vcard_importable_types_by_property
 
   private
 

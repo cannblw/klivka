@@ -20,8 +20,8 @@ class EntryTypePickerComponentTest < ViewComponent::TestCase
     render_inline(EntryTypePickerComponent.new(friend: friend, searchable: true))
 
     assert_selector "label.sr-only[for='entry-type-search']", text: "Search entry types"
-    assert_selector "li[data-entry-type-picker-target='item']", count: Entry::CREATABLE_TYPES.size
+    assert_selector "li[data-filter-list-target='item']", count: Entry::CREATABLE_TYPES.size
     assert_selector "[data-entry-type-unavailable]", text: /Birthday\s+Added/
-    assert_selector "[data-entry-type-picker-target='empty'][hidden]", text: "No matching entry types", visible: :all
+    assert_selector "[data-filter-list-target='empty'][hidden]", text: "No matching entry types", visible: :all
   end
 end

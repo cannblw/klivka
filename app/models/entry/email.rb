@@ -24,6 +24,8 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::Email < Entry
+  self.vcard_import_property = :email
+
   store_accessor :content, :email, :label
 
   before_validation :normalize_contact_fields

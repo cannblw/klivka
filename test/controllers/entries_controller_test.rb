@@ -291,7 +291,7 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     get new_friend_entry_url(friends(:ada))
 
     assert_response :success
-    assert_select "input[type='search'][data-action='input->entry-type-picker#filter']"
+    assert_select "input[type='search'][data-action='input->filter-list#filter']"
     Entry::CREATABLE_TYPES.each do |type|
       label = I18n.t("entries.kinds.#{type.demodulize.underscore}")
       assert_select "li[data-search-value='#{label}']"

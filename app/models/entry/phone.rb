@@ -24,4 +24,5 @@
 #  friend_id  (friend_id => friends.id)
 #
 class Entry::Phone < Entry
+  self.vcard_import_property = :tel
 end

@@ -47,6 +47,9 @@ es:
         contact_method: "Cómo os pusisteis en contacto"
       keep_in_touch_setting:
         cadence: "Frecuencia"
+      vcard_import:
+        file: "Archivo vCard"
+        selected_candidate_ids: "Contactos seleccionados"
     errors:
       models:
         entry/birthday:
@@ -78,6 +81,10 @@ es:
               snooze_requires_enabled_cadence: "Activa el recordatorio de contacto antes de posponerlo."
             cadence:
               inclusion: "no está disponible"
+        vcard_import:
+          attributes:
+            selected_candidate_ids:
+              blank: "Selecciona al menos un contacto."
 
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."
@@ -379,6 +386,7 @@ es:
       title: "Amigos"
       heading: "Amigos"
       add_friend: "Añadir amigo"
+      import_contacts: "Importar contactos"
       search_label: "Buscar amigos"
       search_placeholder: "Buscar amigos..."
       sort_label: "Ordenar amigos"
@@ -494,6 +502,7 @@ es:
       open_friend: "Ver a %{name}"
       record_contact: "Registrar contacto"
       settings: "Gestionar ajustes de recordatorios"
+
     birthday:
       subject: "Se acerca el cumpleaños de %{name}"
       eyebrow: "Recordatorio de cumpleaños"
@@ -510,3 +519,73 @@ es:
       default_label: "Una fecha importante"
       open_friend: "Ver a %{name}"
       settings: "Gestionar ajustes de recordatorios"
+
+  vcard_import:
+    anniversary: "Aniversario"
+
+  vcard_imports:
+    errors:
+      expired: "Esta vista previa ha caducado. Vuelve a subir la vCard para verla otra vez."
+      file_too_large: "Elige un archivo de hasta %{size}."
+      invalid_file: "No se ha podido leer ese archivo como una vCard."
+      missing_file: "Elige un archivo vCard para continuar."
+      no_people_found: "No se han encontrado contactos que se puedan importar en ese archivo."
+      rate_limited: "Vuelve a intentarlo dentro de un rato."
+      too_many_cards: "Ese archivo contiene más de %{count} contactos."
+    new:
+      back: "Volver a tus amistades"
+      cancel: "Cancelar"
+      choose_file: "Elegir una vCard"
+      description: "Elige un archivo vCard y, después, los contactos que quieras añadir."
+      file_hint: "Elige un archivo .vcf de hasta %{size}."
+      file_label: "Archivo vCard"
+      heading: "Importar contactos"
+      no_file_selected: "No has seleccionado ninguna vCard."
+      privacy: "Klivka lee el archivo para preparar esta vista previa, pero no conserva el archivo original."
+      submit: "Ver una vista previa"
+      title: "Importar contactos"
+    show:
+      description: "Aún no se ha añadido ningún contacto. Elige solo los que quieras añadir a Klivka."
+      deselect_all: "Deseleccionar todos"
+      duplicates:
+        one: "Es posible que un contacto ya esté en Klivka. Revísalo antes de importarlo."
+        other: "Es posible que %{count} contactos ya estén en Klivka. Revísalos antes de importarlos."
+      heading: "Elige los contactos que quieres importar"
+      name_only: "Solo el nombre"
+      no_results: "No hay contactos que coincidan con la búsqueda."
+      rejected:
+        one: "No se ha podido leer una tarjeta vCard, por lo que no aparece aquí."
+        other: "No se han podido leer %{count} tarjetas vCard, por lo que no aparecen aquí."
+      possible_duplicate: "Posible duplicado"
+      save_selection: "Importar los contactos seleccionados"
+      select_all: "Seleccionar todos"
+      selection_required_hint: "Selecciona al menos un contacto para importarlo."
+      selection_saved: "Contactos importados."
+      search_label: "Buscar contactos en este archivo"
+      search_placeholder: "Buscar contactos"
+      selected:
+        one: "1 persona seleccionada"
+        other: "%{count} personas seleccionadas"
+      title: "Elige los contactos que quieres importar"
+      unsupported_information: "No se importará esta información: %{properties}."
+      unsupported_information_summary: "Parte de la información de este archivo no se importará. Los contactos afectados indican qué se omitirá."
+      unsupported_property_labels:
+        address: "dirección"
+        categories: "categorías"
+        gender: "género"
+        instant_messaging: "dirección de mensajería"
+        job_title: "puesto de trabajo"
+        language: "idioma"
+        location: "ubicación"
+        logo: "logotipo"
+        organization: "organización"
+        other: "campo vCard %{name}"
+        photo: "foto"
+        public_key: "clave pública"
+        related_person: "persona relacionada"
+        role: "cargo"
+        social_profile: "perfil social"
+        sound: "audio"
+        time_zone: "zona horaria"
+        website: "sitio web"
+      upload_another: "Elegir otro archivo"

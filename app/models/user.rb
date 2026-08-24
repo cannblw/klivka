@@ -29,6 +29,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :friends, dependent: :destroy
   has_many :reminder_deliveries, dependent: :destroy
+  has_many :vcard_imports, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :time_zone, with: ->(value) { value.to_s.strip.presence }

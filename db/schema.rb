@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_19_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_21_120000) do
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -142,6 +142,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_170000) do
     t.check_constraint "reminder_in_app_enabled IN (TRUE, FALSE)", name: "users_reminder_in_app_enabled_is_boolean"
   end
 
+  create_table "vcard_imports", force: :cascade do |t|
+    t.json "candidates", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.integer "rejected_count", default: 0, null: false
+    t.json "selected_candidate_ids", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["expires_at"], name: "index_vcard_imports_on_expires_at"
+    t.index ["user_id"], name: "index_vcard_imports_on_user_id"
+    t.check_constraint "rejected_count >= 0", name: "vcard_imports_rejected_count_is_nonnegative"
+  end
+
   add_foreign_key "entries", "friends"
   add_foreign_key "entry_reminders", "entries", on_delete: :cascade
   add_foreign_key "friends", "users"
@@ -149,4 +162,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_19_170000) do
   add_foreign_key "keep_in_touch_settings", "friends"
   add_foreign_key "reminder_deliveries", "users", on_delete: :cascade
   add_foreign_key "sessions", "users"
+  add_foreign_key "vcard_imports", "users", on_delete: :cascade
 end

@@ -1,0 +1,13 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Ada Lovelace
+N:Lovelace;Ada;;;
+TEL;TYPE=cell:+44 20 1234 5678
+EMAIL;TYPE=work:ada@example.com
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Grace Hopper
+N:Hopper;Grace;;;
+BDAY:1906-12-09
+END:VCARD

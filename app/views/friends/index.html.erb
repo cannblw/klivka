@@ -4,9 +4,15 @@
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
 
-    <%= render ButtonComponent.new(data: { action: "dialog#open" }) do %>
-      <%= t(".add_friend") %>
-    <% end %>
+    <div class="flex flex-wrap items-center gap-3">
+      <% unless demo_mode? %>
+        <%= link_to t(".import_contacts"), new_vcard_import_path,
+              class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+      <% end %>
+      <%= render ButtonComponent.new(data: { action: "dialog#open" }) do %>
+        <%= t(".add_friend") %>
+      <% end %>
+    </div>
   </div>
 
   <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"

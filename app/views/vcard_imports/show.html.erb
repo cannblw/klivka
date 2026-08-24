@@ -1,0 +1,32 @@
+<% content_for :title, t(".title") %>
+
+<div>
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
+      <p class="mt-2 text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
+    </div>
+    <%= link_to t(".upload_another"), new_vcard_import_path,
+          class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+  </div>
+
+  <% if @vcard_import.rejected_count.positive? %>
+    <%= render InlineNoticeComponent.new(class: "mt-4") do %>
+      <%= t(".rejected", count: @vcard_import.rejected_count) %>
+    <% end %>
+  <% end %>
+
+  <% if @vcard_import.duplicate_count.positive? %>
+    <%= render InlineNoticeComponent.new(class: "mt-4") do %>
+      <%= t(".duplicates", count: @vcard_import.duplicate_count) %>
+    <% end %>
+  <% end %>
+
+  <% if @vcard_import.unsupported_properties? %>
+    <%= render InlineNoticeComponent.new(class: "mt-4") do %>
+      <%= t(".unsupported_information_summary") %>
+    <% end %>
+  <% end %>
+
+  <%= render VcardImportPreviewComponent.new(vcard_import: @vcard_import) %>
+</div>

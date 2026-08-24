@@ -36,6 +36,9 @@ en:
         contact_method: "How you connected"
       keep_in_touch_setting:
         cadence: "Frequency"
+      vcard_import:
+        file: "vCard file"
+        selected_candidate_ids: "Selected contacts"
     errors:
       models:
         entry/birthday:
@@ -67,6 +70,10 @@ en:
               snooze_requires_enabled_cadence: "Enable the contact reminder before snoozing it."
             cadence:
               inclusion: "is not available"
+        vcard_import:
+          attributes:
+            selected_candidate_ids:
+              blank: "Select at least one contact."
 
   auth:
     rate_limited: "Try again later."
@@ -368,6 +375,7 @@ en:
       title: "Friends"
       heading: "Friends"
       add_friend: "Add friend"
+      import_contacts: "Import contacts"
       search_label: "Search friends"
       search_placeholder: "Search friends..."
       sort_label: "Sort friends"
@@ -489,6 +497,7 @@ en:
       open_friend: "Open %{name}"
       record_contact: "Record contact"
       settings: "Manage reminder settings"
+
     birthday:
       subject: "%{name}'s birthday is coming up"
       eyebrow: "Birthday reminder"
@@ -505,3 +514,73 @@ en:
       default_label: "An important date"
       open_friend: "Open %{name}"
       settings: "Manage reminder settings"
+
+  vcard_import:
+    anniversary: "Anniversary"
+
+  vcard_imports:
+    errors:
+      expired: "That preview has expired. Upload the vCard again to preview it."
+      file_too_large: "Choose a file up to %{size}."
+      invalid_file: "That file could not be read as a vCard."
+      missing_file: "Choose a vCard file to continue."
+      no_people_found: "No contacts with names were found in that file."
+      rate_limited: "Try uploading again in a little while."
+      too_many_cards: "That file has more than %{count} cards."
+    new:
+      back: "Back to friends"
+      cancel: "Cancel"
+      choose_file: "Choose a vCard"
+      description: "Choose a vCard file, then pick the people you want to add."
+      file_hint: "Choose a .vcf file up to %{size}."
+      file_label: "vCard file"
+      heading: "Import contacts"
+      no_file_selected: "No vCard selected."
+      privacy: "Klivka reads the file to prepare this preview. It does not keep the original file."
+      submit: "Preview contacts"
+      title: "Import contacts"
+    show:
+      description: "Nothing is added yet. Select only the people you want in Klivka."
+      deselect_all: "Deselect all"
+      duplicates:
+        one: "One contact may already be in Klivka. Review it before importing."
+        other: "%{count} contacts may already be in Klivka. Review them before importing."
+      heading: "Choose people to import"
+      name_only: "Name only"
+      no_results: "No matching people"
+      rejected:
+        one: "One card could not be read and is not shown."
+        other: "%{count} cards could not be read and are not shown."
+      possible_duplicate: "Possible duplicate"
+      save_selection: "Import selected contacts"
+      select_all: "Select all"
+      selection_required_hint: "Select at least one contact to import."
+      selection_saved: "Contacts imported."
+      search_label: "Search people in this file"
+      search_placeholder: "Search people"
+      selected:
+        one: "1 person selected"
+        other: "%{count} people selected"
+      title: "Choose people to import"
+      unsupported_information: "Not imported: %{properties}."
+      unsupported_information_summary: "Some information in this file will not be imported. The affected contacts list what will be left out."
+      unsupported_property_labels:
+        address: "address"
+        categories: "categories"
+        gender: "gender"
+        instant_messaging: "messaging address"
+        job_title: "job title"
+        language: "language"
+        location: "location"
+        logo: "logo"
+        organization: "organization"
+        other: "vCard field %{name}"
+        photo: "photo"
+        public_key: "public key"
+        related_person: "related person"
+        role: "role"
+        social_profile: "social profile"
+        sound: "audio"
+        time_zone: "time zone"
+        website: "website"
+      upload_another: "Choose another file"
