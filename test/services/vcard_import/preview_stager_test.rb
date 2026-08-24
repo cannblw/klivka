@@ -20,5 +20,6 @@ class VcardImport::PreviewStagerTest < ActiveSupport::TestCase
     assert_not VcardImport.exists?(previous_preview.id)
     assert_equal candidates, vcard_import.candidates
     assert_equal 2, vcard_import.rejected_count
+    assert_equal [ 0 ], vcard_import.selected_candidate_ids
   end
 end

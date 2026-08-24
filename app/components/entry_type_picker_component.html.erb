@@ -11,13 +11,10 @@
 
   <% if searchable? %>
     <div class="mt-3">
-      <%= label_tag "entry-type-search", t("entries.type_picker.search_label"), class: "sr-only" %>
-      <%= search_field_tag nil, nil,
+      <%= render FilterSearchFieldComponent.new(
             id: "entry-type-search",
-            placeholder: t("entries.type_picker.search_placeholder"),
-            autocomplete: "off",
-            data: { action: "input->filter-list#filter" },
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            label: t("entries.type_picker.search_label"),
+            placeholder: t("entries.type_picker.search_placeholder")) %>
     </div>
   <% end %>
 

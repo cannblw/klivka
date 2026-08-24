@@ -6,6 +6,17 @@ class VcardImport::Parser
   EMPTY_FIELDS = [].freeze
   UTF_8_BOM = "\xEF\xBB\xBF".b
   UTF_16_BOMS = [ "\xFF\xFE".b, "\xFE\xFF".b ].freeze
+  PROPERTY_MULTIPLICITY = {
+    tel: :repeated,
+    email: :repeated,
+    bday: :single,
+    anniversary: :single,
+    note: :repeated
+  }.freeze
+  SUPPORTED_PROPERTIES = PROPERTY_MULTIPLICITY.keys.freeze
+  SUPPORTED_FIELD_NAMES = SUPPORTED_PROPERTIES.map { |property| property.to_s.upcase }.freeze
+  CARD_METADATA_FIELD_NAMES = %w[BEGIN END VERSION FN N PRODID UID REV KIND].freeze
+  IGNORED_FIELD_NAMES = (SUPPORTED_FIELD_NAMES + CARD_METADATA_FIELD_NAMES).freeze
 
   def initialize(source, max_cards: Rails.application.config.x.vcard_import_max_cards)
     @source = normalize_encoding(source)
@@ -68,7 +79,14 @@ class VcardImport::Parser
     name = full_name(fields)
     return if name.blank?
 
-    { "id" => id, "name" => name, "entries" => entries_for(fields) }
+    candidate = {
+      "id" => id,
+      "name" => name,
+      "entries" => entries_for(fields)
+    }
+    unsupported_properties = unsupported_properties(fields)
+    candidate["unsupported_properties"] = unsupported_properties if unsupported_properties.any?
+    candidate
   rescue Vcard::InvalidEncodingError
     nil
   end
@@ -86,21 +104,30 @@ class VcardImport::Parser
   end
 
   def entries_for(fields)
-    repeated_entries(fields, "TEL", Entry::Phone.vcard_import_property) +
-      repeated_entries(fields, "EMAIL", Entry::Email.vcard_import_property) +
-      single_date_entry(fields, "BDAY", Entry::Birthday.vcard_import_property) +
-      single_date_entry(fields, "ANNIVERSARY", Entry::Date.vcard_import_property) +
-      repeated_entries(fields, "NOTE", Entry::Note.vcard_import_property)
+    PROPERTY_MULTIPLICITY.flat_map do |property, multiplicity|
+      case multiplicity
+      when :repeated then repeated_entries(fields, property)
+      when :single then single_date_entry(fields, property)
+      end
+    end
   end
 
-  def repeated_entries(fields, field_name, property)
-    fields.fetch(field_name, EMPTY_FIELDS).filter_map do |field|
+  def unsupported_properties(fields)
+    fields.filter_map do |field_name, fields_for_name|
+      next if IGNORED_FIELD_NAMES.include?(field_name)
+
+      field_name if fields_for_name.any? { |field| field.value_raw.to_s.strip.present? }
+    end
+  end
+
+  def repeated_entries(fields, property)
+    fields.fetch(property.to_s.upcase, EMPTY_FIELDS).filter_map do |field|
       VcardImport::EntryMapping.build(property:, value: decoded_value(field), label: label_for(field))
     end
   end
 
-  def single_date_entry(fields, field_name, property)
-    field = fields.fetch(field_name, EMPTY_FIELDS).first
+  def single_date_entry(fields, property)
+    field = fields.fetch(property.to_s.upcase, EMPTY_FIELDS).first
     return [] unless field
 
     [ VcardImport::EntryMapping.build(property:, value: decoded_value(field)) ].compact

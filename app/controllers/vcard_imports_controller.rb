@@ -22,9 +22,11 @@ class VcardImportsController < ApplicationController
     result = VcardImport::Parser.new(uploaded_file.read).call
     return render_upload_error(:no_people_found) if result.candidates.empty?
 
+    candidates = VcardImport::DuplicateMarker.call(user: Current.user, candidates: result.candidates)
+
     vcard_import = VcardImport::PreviewStager.call(
       user: Current.user,
-      candidates: result.candidates,
+      candidates:,
       rejected_count: result.rejected_count
     )
 

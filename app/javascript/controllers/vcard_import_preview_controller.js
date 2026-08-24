@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "checkbox", "count", "submit", "submitWrapper", "selectionHint" ]
+  static targets = [ "checkbox", "count", "submit", "submitWrapper", "selectionHint", "selectAll", "deselectAll" ]
   static values = { singularLabel: String, pluralLabel: String }
 
   connect() {
@@ -24,5 +24,18 @@ export default class extends Controller {
     this.submitWrapperTarget.tabIndex = selectionRequired ? 0 : -1
     this.submitWrapperTarget.toggleAttribute("aria-describedby", selectionRequired)
     if (selectionRequired) this.submitWrapperTarget.setAttribute("aria-describedby", hintId)
+
+    this.selectAllTarget.disabled = count === this.checkboxTargets.length
+    this.deselectAllTarget.disabled = selectionRequired
+  }
+
+  selectAll() {
+    this.checkboxTargets.forEach((checkbox) => { checkbox.checked = true })
+    this.updateCount()
+  }
+
+  deselectAll() {
+    this.checkboxTargets.forEach((checkbox) => { checkbox.checked = false })
+    this.updateCount()
   }
 }

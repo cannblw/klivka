@@ -66,4 +66,20 @@ class VcardImportTest < ActiveSupport::TestCase
     assert_not import.valid?
     assert import.errors.of_kind?(:candidates, :invalid)
   end
+
+  test "rejects invalid candidate warning annotations" do
+    import = VcardImport.new(
+      user: users(:one),
+      candidates: [ {
+        "id" => 0,
+        "name" => "Ada Lovelace",
+        "entries" => [],
+        "duplicate" => "yes",
+        "unsupported_properties" => [ "ADR", "ADR" ]
+      } ]
+    )
+
+    assert_not import.valid?
+    assert import.errors.of_kind?(:candidates, :invalid)
+  end
 end

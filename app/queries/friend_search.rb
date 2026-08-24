@@ -27,7 +27,7 @@ class FriendSearch
 
   def initialize(user, query, sort: DEFAULT_SORT)
     @friends = user.friends
-    @query = normalize(query)
+    @query = FriendNameNormalizer.call(query)
     @query_tokens = @query.split
     @sort = SORTS.key?(sort.to_s) ? sort.to_s : DEFAULT_SORT
   end
@@ -38,7 +38,7 @@ class FriendSearch
     ranked_friend_ids = friends.order(SORTS.fetch(sort)).pluck(:id, :name)
       .each_with_index
       .filter_map do |(id, name), sort_position|
-        normalized_name = normalize(name)
+        normalized_name = FriendNameNormalizer.call(name)
         candidate_score = score(normalized_name, normalized_name.split)
         [ id, candidate_score, sort_position ] if candidate_score
       end
@@ -101,9 +101,5 @@ class FriendSearch
 
   def compact_query
     @compact_query ||= query_tokens.join
-  end
-
-  def normalize(value)
-    value.to_s.unicode_normalize(:nfkd).gsub(/\p{Mn}/, "").downcase.strip.gsub(/\s+/, " ")
   end
 end

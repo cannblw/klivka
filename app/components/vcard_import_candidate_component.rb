@@ -1,4 +1,24 @@
 class VcardImportCandidateComponent < ViewComponent::Base
+  UNSUPPORTED_PROPERTY_LABEL_KEYS = {
+    "ADR" => :address,
+    "CATEGORIES" => :categories,
+    "GENDER" => :gender,
+    "GEO" => :location,
+    "IMPP" => :instant_messaging,
+    "KEY" => :public_key,
+    "LANG" => :language,
+    "LOGO" => :logo,
+    "ORG" => :organization,
+    "PHOTO" => :photo,
+    "RELATED" => :related_person,
+    "ROLE" => :role,
+    "SOUND" => :sound,
+    "TITLE" => :job_title,
+    "TZ" => :time_zone,
+    "URL" => :website,
+    "X-SOCIALPROFILE" => :social_profile
+  }.freeze
+
   with_collection_parameter :candidate
 
   def initialize(candidate:, selected_candidate_ids: [])
@@ -24,6 +44,25 @@ class VcardImportCandidateComponent < ViewComponent::Base
 
   def name
     candidate.fetch("name")
+  end
+
+  def duplicate?
+    candidate["duplicate"]
+  end
+
+  def unsupported_properties
+    candidate.fetch("unsupported_properties", [])
+  end
+
+  def unsupported_properties_sentence
+    helpers.to_sentence(unsupported_properties.map { |property| unsupported_property_label(property) })
+  end
+
+  def unsupported_property_label(property)
+    label_key = UNSUPPORTED_PROPERTY_LABEL_KEYS[property]
+    return t("vcard_imports.show.unsupported_property_labels.#{label_key}") if label_key
+
+    t("vcard_imports.show.unsupported_property_labels.other", name: property)
   end
 
   def details

@@ -155,4 +155,19 @@ class VcardImport::ParserTest < ActiveSupport::TestCase
 
     assert_empty result.candidates.first.fetch("entries")
   end
+
+  test "counts contact details that Klivka does not import" do
+    result = VcardImport::Parser.new(<<~VCARD).call
+      BEGIN:VCARD
+      VERSION:4.0
+      FN:Ada Lovelace
+      ADR:1 Example Street
+      X-SOCIALPROFILE:https://example.com/ada
+      PHOTO;ENCODING=unknown:opaque-data
+      UID:ada-lovelace
+      END:VCARD
+    VCARD
+
+    assert_equal %w[ADR X-SOCIALPROFILE PHOTO], result.candidates.first.fetch("unsupported_properties")
+  end
 end

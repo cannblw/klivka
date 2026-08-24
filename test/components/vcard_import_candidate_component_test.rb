@@ -20,4 +20,18 @@ class VcardImportCandidateComponentTest < ViewComponent::TestCase
     assert_text "Phone: mobile: +44 20 1234"
     assert_text "Birthday: December 10, 1815"
   end
+
+  test "vCard candidate component identifies duplicate contacts and unsupported information" do
+    candidate = {
+      "id" => 4,
+      "name" => "Ada Lovelace",
+      "entries" => [],
+      "duplicate" => true,
+      "unsupported_properties" => %w[ADR X-SOCIALPROFILE]
+    }
+
+    render_inline VcardImportCandidateComponent.new(candidate:)
+
+    assert_selector "#vcard-import-candidate-4-details [role='note']", count: 2
+  end
 end

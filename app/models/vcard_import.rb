@@ -40,6 +40,14 @@ class VcardImport < ApplicationRecord
     expires_at? && expires_at <= Time.current
   end
 
+  def duplicate_count
+    candidates.count { |candidate| candidate["duplicate"] }
+  end
+
+  def unsupported_properties?
+    candidates.any? { |candidate| candidate.fetch("unsupported_properties", []).any? }
+  end
+
   private
 
   def candidate_payload_is_valid
@@ -47,14 +55,29 @@ class VcardImport < ApplicationRecord
 
     importable_entry_types = Entry.vcard_importable_types.map(&:name)
     candidate_ids = candidates.filter_map do |candidate|
-      candidate["id"] if candidate.is_a?(Hash) && candidate["id"].is_a?(Integer) &&
-        candidate["name"].is_a?(String) && candidate["name"].present? &&
-        candidate["entries"].is_a?(Array) && candidate["entries"].all? do |entry|
-          entry.is_a?(Hash) && importable_entry_types.include?(entry["type"])
-        end
+      candidate["id"] if candidate_is_valid?(candidate, importable_entry_types)
     end
 
     errors.add(:candidates, :invalid) unless candidate_ids.size == candidates.size && candidate_ids.uniq.size == candidate_ids.size
+  end
+
+  def candidate_is_valid?(candidate, importable_entry_types)
+    candidate.is_a?(Hash) && candidate["id"].is_a?(Integer) &&
+      candidate["name"].is_a?(String) && candidate["name"].present? &&
+      candidate["entries"].is_a?(Array) && optional_candidate_annotations_are_valid?(candidate) &&
+      candidate["entries"].all? do |entry|
+        entry.is_a?(Hash) && importable_entry_types.include?(entry["type"])
+      end
+  end
+
+  def optional_candidate_annotations_are_valid?(candidate)
+    [ true, false, nil ].include?(candidate["duplicate"]) &&
+      optional_unsupported_properties_are_valid?(candidate["unsupported_properties"])
+  end
+
+  def optional_unsupported_properties_are_valid?(properties)
+    properties.nil? || properties.is_a?(Array) && properties.all? { |property| property.is_a?(String) && property.present? } &&
+      properties.uniq.size == properties.size
   end
 
   def selection_is_valid

@@ -19,4 +19,10 @@ class ButtonComponentTest < ViewComponent::TestCase
 
     assert_selector "button[type='submit'][data-action='dialog#open'].w-full", text: "Go"
   end
+
+  test "styles disabled buttons consistently" do
+    render_inline(ButtonComponent.new(disabled: true)) { "Save" }
+
+    assert_selector "button[disabled][class~='disabled:cursor-not-allowed'][class~='disabled:opacity-50']"
+  end
 end

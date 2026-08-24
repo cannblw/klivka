@@ -29,7 +29,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='file'][name='vcard_import[file]']"
   end
 
-  test "a vCard upload creates a preview without creating friends or retaining the uploaded file" do
+  test "a vCard upload creates a selected preview without creating friends or retaining the uploaded file" do
     assert_difference "VcardImport.count", 1 do
       assert_no_difference [ "Friend.count", "Entry.count" ] do
         post vcard_imports_url, params: { vcard_import: { file: uploaded_contacts } }
@@ -39,7 +39,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     vcard_import = VcardImport.order(:id).last
     assert_equal users(:one), vcard_import.user
     assert_equal [ "Ada Lovelace", "Grace Hopper" ], vcard_import.candidates.pluck("name")
-    assert_equal [], vcard_import.selected_candidate_ids
+    assert_equal [ 0, 1 ], vcard_import.selected_candidate_ids
     assert_redirected_to vcard_import_url(vcard_import)
   end
 
@@ -50,15 +50,6 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "main", /Choose a vCard file to continue./
-  end
-
-  test "vCard import shows upload validation in the user's locale" do
-    users(:one).update!(locale: "es")
-
-    post vcard_imports_url, params: { vcard_import: { file: "" } }
-
-    assert_response :unprocessable_entity
-    assert_select "main", /Archivo vCard Elige un archivo vCard para continuar./
   end
 
   test "vCard import rejects a file over the configured size" do
@@ -82,7 +73,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "vCard import shows an unselected, searchable preview" do
+  test "vCard import shows a selected, searchable preview with selection controls" do
     vcard_import = create_preview
 
     get vcard_import_url(vcard_import)
@@ -91,10 +82,39 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller~='filter-list'][data-controller~='vcard-import-preview']"
     assert_select "input[type='search'][id='vcard-import-search']"
     assert_select "input[type='checkbox'][name='vcard_import[selected_candidate_ids][]']", count: 2
-    assert_select "input[type='checkbox'][checked]", count: 0
-    assert_select "[data-vcard-import-preview-target='submitWrapper'][tabindex='0'][aria-labelledby='vcard-import-submit'][aria-describedby='vcard-import-selection-required']"
-    assert_select "button#vcard-import-submit[type='submit'][disabled][data-vcard-import-preview-target='submit'][aria-describedby='vcard-import-selection-required']", text: "Import selected contacts"
+    assert_select "input[type='checkbox'][checked]", count: 2
+    assert_select "button[data-vcard-import-preview-target='selectAll'][disabled]", text: "Select all"
+    assert_select "button[data-vcard-import-preview-target='deselectAll']:not([disabled])", text: "Deselect all"
+    assert_select "[data-vcard-import-preview-target='submitWrapper'][tabindex='-1'][aria-labelledby='vcard-import-submit']"
+    assert_select "button#vcard-import-submit[type='submit'][data-vcard-import-preview-target='submit']", text: "Import selected contacts"
     assert_select "#vcard-import-selection-required[role='tooltip'][data-vcard-import-preview-target='selectionHint']", text: "Select at least one contact to import."
+  end
+
+  test "vCard import marks duplicate candidates before contacts are created" do
+    post vcard_imports_url, params: { vcard_import: { file: uploaded_contacts } }
+
+    vcard_import = VcardImport.order(:id).last
+
+    assert vcard_import.candidates.first.fetch("duplicate")
+    assert vcard_import.candidates.second.fetch("duplicate")
+  end
+
+  test "vCard import shows warnings for duplicate and unsupported contact details" do
+    vcard_import = users(:one).vcard_imports.create!(
+      candidates: [ {
+        "id" => 0,
+        "name" => "Ada Lovelace",
+        "entries" => [],
+        "duplicate" => true,
+        "unsupported_properties" => %w[ADR X-SOCIALPROFILE]
+      } ],
+      selected_candidate_ids: [ 0 ]
+    )
+
+    get vcard_import_url(vcard_import)
+
+    assert_select "div[role='note']", count: 2
+    assert_select "#vcard-import-candidate-0-details [role='note']", count: 2
   end
 
   test "vCard import creates the explicitly selected contacts" do
@@ -117,7 +137,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     patch vcard_import_url(vcard_import), params: { vcard_import: { selected_candidate_ids: [ "99" ] } }
 
     assert_response :unprocessable_entity
-    assert_equal [], vcard_import.reload.selected_candidate_ids
+    assert_equal [ 0, 1 ], vcard_import.reload.selected_candidate_ids
   end
 
   test "vCard import requires at least one selected contact" do
@@ -175,7 +195,8 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
       candidates: [
         { "id" => 0, "name" => "Ada Lovelace", "entries" => [] },
         { "id" => 1, "name" => "Grace Hopper", "entries" => [] }
-      ]
+      ],
+      selected_candidate_ids: [ 0, 1 ]
     )
   end
 

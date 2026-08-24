@@ -1,8 +1,6 @@
 <% content_for :title, t(".title") %>
 
-<div data-controller="filter-list vcard-import-preview"
-     data-vcard-import-preview-singular-label-value="<%= t(".selected.one") %>"
-     data-vcard-import-preview-plural-label-value="<%= t(".selected.other", count: "__COUNT__") %>">
+<div>
   <div class="flex flex-wrap items-end justify-between gap-4">
     <div>
       <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
@@ -13,58 +11,22 @@
   </div>
 
   <% if @vcard_import.rejected_count.positive? %>
-    <p class="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+    <%= render InlineNoticeComponent.new(class: "mt-4") do %>
       <%= t(".rejected", count: @vcard_import.rejected_count) %>
-    </p>
-  <% end %>
-
-  <%= form_with model: @vcard_import, class: "mt-6" do %>
-    <%= hidden_field_tag "vcard_import[selected_candidate_ids][]", "" %>
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
-      <div class="min-w-0 flex-1">
-        <label for="vcard-import-search" class="sr-only"><%= t(".search_label") %></label>
-        <%= search_field_tag nil, nil,
-              id: "vcard-import-search",
-              placeholder: t(".search_placeholder"),
-              autocomplete: "off",
-              data: { action: "input->filter-list#filter" },
-              class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-      </div>
-      <p data-vcard-import-preview-target="count" aria-live="polite" class="text-sm text-stone-600 dark:text-stone-300">
-        <%= t(".selected", count: @vcard_import.selected_candidate_ids.size) %>
-      </p>
-    </div>
-    <% @vcard_import.errors.where(:selected_candidate_ids).each do |error| %>
-      <p class="mt-2 text-sm text-red-600"><%= error.message %></p>
     <% end %>
-
-    <ul class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <%= render VcardImportCandidateComponent.with_collection(@vcard_import.candidates, selected_candidate_ids: @vcard_import.selected_candidate_ids) %>
-    </ul>
-    <p hidden data-filter-list-target="empty" aria-live="polite" class="mt-8 text-center text-sm text-stone-500 dark:text-stone-400"><%= t(".no_results") %></p>
-
-    <div class="mt-8 flex flex-wrap items-center gap-3">
-      <% selection_required = @vcard_import.selected_candidate_ids.empty? %>
-      <div data-vcard-import-preview-target="submitWrapper"
-           class="relative inline-flex <%= "group" if selection_required %>"
-           tabindex="<%= selection_required ? 0 : -1 %>"
-           aria-labelledby="vcard-import-submit"
-           aria-describedby="<%= "vcard-import-selection-required" if selection_required %>">
-        <%= render ButtonComponent.new(type: :submit,
-              id: "vcard-import-submit",
-              disabled: selection_required,
-              aria: (selection_required ? { describedby: "vcard-import-selection-required" } : {}),
-              data: { vcard_import_preview_target: "submit" },
-              class: "disabled:cursor-not-allowed disabled:opacity-50") do %>
-          <%= t(".save_selection") %>
-        <% end %>
-        <span id="vcard-import-selection-required"
-              role="tooltip"
-              data-vcard-import-preview-target="selectionHint"
-              class="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-max max-w-64 -translate-x-1/2 rounded-lg bg-stone-900 px-3 py-2 text-xs font-normal text-white shadow-lg group-hover:block group-focus-within:block dark:bg-stone-100 dark:text-stone-900">
-          <%= t(".selection_required_hint") %>
-        </span>
-      </div>
-    </div>
   <% end %>
+
+  <% if @vcard_import.duplicate_count.positive? %>
+    <%= render InlineNoticeComponent.new(class: "mt-4") do %>
+      <%= t(".duplicates", count: @vcard_import.duplicate_count) %>
+    <% end %>
+  <% end %>
+
+  <% if @vcard_import.unsupported_properties? %>
+    <%= render InlineNoticeComponent.new(class: "mt-4") do %>
+      <%= t(".unsupported_information_summary") %>
+    <% end %>
+  <% end %>
+
+  <%= render VcardImportPreviewComponent.new(vcard_import: @vcard_import) %>
 </div>

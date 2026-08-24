@@ -23,7 +23,7 @@ class ButtonComponent < ViewComponent::Base
 
   def classes
     [
-      "cursor-pointer rounded-lg text-sm font-medium",
+      "cursor-pointer rounded-lg text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50",
       SIZES.fetch(@size),
       VARIANTS.fetch(@variant),
       @extra_classes
