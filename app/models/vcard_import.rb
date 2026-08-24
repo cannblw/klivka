@@ -30,6 +30,7 @@ class VcardImport < ApplicationRecord
   validates :candidates, presence: true
   validates :rejected_count, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :expires_at, presence: true
+  validates :selected_candidate_ids, presence: true, on: :import
   validate :candidate_payload_is_valid
   validate :selection_is_valid
 

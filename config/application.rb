@@ -45,6 +45,14 @@ module FriendCrm
     config.x.vcard_import_preview_lifetime = Integer(ENV.fetch("VCARD_IMPORT_PREVIEW_LIFETIME_HOURS", "1"), 10).hours
     raise ArgumentError, "VCARD_IMPORT_PREVIEW_LIFETIME_HOURS must be positive" unless config.x.vcard_import_preview_lifetime.positive?
 
+    config.x.vcard_import_upload_rate_limit = Integer(ENV.fetch("VCARD_IMPORT_UPLOAD_RATE_LIMIT", "10"), 10)
+    raise ArgumentError, "VCARD_IMPORT_UPLOAD_RATE_LIMIT must be positive" unless config.x.vcard_import_upload_rate_limit.positive?
+
+    config.x.vcard_import_upload_rate_window = Integer(ENV.fetch("VCARD_IMPORT_UPLOAD_RATE_WINDOW_MINUTES", "60"), 10).minutes
+    unless config.x.vcard_import_upload_rate_window.positive?
+      raise ArgumentError, "VCARD_IMPORT_UPLOAD_RATE_WINDOW_MINUTES must be positive"
+    end
+
     # Optional email confirmation for registrations; see .env.example
     config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
 

@@ -1,4 +1,4 @@
-<section class="mt-6" data-controller="<%= "entry-type-picker" if searchable? %>">
+<section class="mt-6" data-controller="<%= "filter-list" if searchable? %>">
   <div class="flex flex-wrap items-center justify-between gap-3">
     <h2 class="text-sm font-medium text-stone-500 dark:text-stone-400">
       <%= t(searchable? ? "entries.type_picker.all_heading" : "entries.type_picker.common_heading") %>
@@ -16,14 +16,14 @@
             id: "entry-type-search",
             placeholder: t("entries.type_picker.search_placeholder"),
             autocomplete: "off",
-            data: { action: "input->entry-type-picker#filter" },
+            data: { action: "input->filter-list#filter" },
             class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
     </div>
   <% end %>
 
   <ul class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
     <% displayed_types.each do |type| %>
-      <li data-entry-type-picker-target="<%= "item" if searchable? %>"
+      <li data-filter-list-target="<%= "item" if searchable? %>"
           data-search-value="<%= label_for(type) if searchable? %>">
         <% if unavailable?(type) %>
           <div data-entry-type-unavailable class="flex h-full items-center gap-2 rounded-lg border border-stone-200 bg-stone-100 px-3 py-3 text-sm font-medium text-stone-400 dark:border-stone-700 dark:bg-stone-800/50 dark:text-stone-500">
@@ -43,7 +43,7 @@
   </ul>
 
   <% if searchable? %>
-    <p hidden data-entry-type-picker-target="empty" aria-live="polite" class="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
+    <p hidden data-filter-list-target="empty" aria-live="polite" class="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
       <%= t("entries.type_picker.no_results") %>
     </p>
   <% end %>
