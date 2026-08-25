@@ -150,6 +150,30 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='#{friend_keep_in_touch_setting_path(friends(:ada))}']"
   end
 
+  test "show links back to the birthday agenda that opened the friend" do
+    get friend_url(friends(:ada)), params: { from: "birthdays" }
+
+    assert_response :success
+    assert_select "a[href='#{birthdays_path}']", text: /Birthdays/
+  end
+
+  test "show links back to a focused birthday month" do
+    get friend_url(friends(:ada)), params: { from: "birthdays", month: 12 }
+
+    assert_response :success
+    assert_select "a[href='#{birthdays_path(month: 12)}']", text: /Birthdays/
+    assert_select "form[action='#{friend_path(friends(:ada))}'] input[type='hidden'][name='from'][value='birthdays']"
+    assert_select "form[action='#{friend_path(friends(:ada))}'] input[type='hidden'][name='month'][value='12']"
+  end
+
+  test "show does not accept an arbitrary birthday return month" do
+    get friend_url(friends(:ada)), params: { from: "birthdays", month: "outside" }
+
+    assert_response :success
+    assert_select "a[href='#{birthdays_path}']", text: /Birthdays/
+    assert_select "input[type='hidden'][name='month']", count: 0
+  end
+
   test "show opens the quick interaction dialog when requested by a reminder link" do
     get friend_url(friends(:ada)), params: { quick_interaction: "today" }
 

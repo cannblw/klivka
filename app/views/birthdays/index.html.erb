@@ -1,15 +1,71 @@
 <% content_for :title, t(".title") %>
 
 <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
-<p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= l(Date.current, format: "%B") %></p>
+<p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".description", year: @today.year) %></p>
 
-<% if @birthdays.any? %>
-  <div class="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-    <%= render BirthdayCardComponent.with_collection(@birthdays) %>
+<%= render BirthdayMonthNavigationComponent.new(selected_month: @selected_month) %>
+
+<div class="mt-4 max-w-xl">
+  <%= render BirthdayReminderStatusComponent.new(user: Current.user) %>
+</div>
+
+<% if @selected_month %>
+  <div class="mt-8">
+    <% if @birthdays_by_month[@selected_month].present? %>
+      <%= render BirthdayMonthSectionComponent.new(
+            month: @selected_month,
+            birthdays: @birthdays_by_month.fetch(@selected_month),
+            year: @today.year,
+            return_month: @selected_month
+          ) %>
+    <% else %>
+      <div class="py-12 text-center text-stone-500 dark:text-stone-400" data-birthdays-empty="month">
+        <p class="text-lg font-medium"><%= t(".empty_month_title", month: t("date.month_names")[@selected_month]) %></p>
+        <p class="mt-1 text-sm"><%= t(".empty_month_hint") %></p>
+      </div>
+    <% end %>
   </div>
 <% else %>
-  <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
-    <p class="text-lg font-medium"><%= t(".empty_title") %></p>
-    <p class="mt-1 text-sm"><%= t(".empty_hint") %></p>
+  <% upcoming_months = @birthdays_by_month.keys.select { _1 >= @today.month }.sort %>
+  <% past_months = @birthdays_by_month.keys.select { _1 < @today.month }.sort %>
+
+  <div class="mt-8 space-y-8" data-birthdays-agenda="upcoming">
+    <% if upcoming_months.any? %>
+      <% upcoming_months.each do |month| %>
+        <%= render BirthdayMonthSectionComponent.new(
+              month:,
+              birthdays: @birthdays_by_month.fetch(month),
+              year: @today.year
+            ) %>
+      <% end %>
+    <% else %>
+      <div class="py-12 text-center text-stone-500 dark:text-stone-400" data-birthdays-empty="upcoming">
+        <% if past_months.any? %>
+          <p class="text-lg font-medium"><%= t(".empty_upcoming_title") %></p>
+          <p class="mt-1 text-sm"><%= t(".empty_upcoming_hint") %></p>
+        <% else %>
+          <p class="text-lg font-medium"><%= t(".empty_all_title") %></p>
+          <p class="mt-1 text-sm"><%= t(".empty_all_hint") %></p>
+        <% end %>
+      </div>
+    <% end %>
   </div>
+
+  <% if past_months.any? %>
+    <details class="mt-10 border-t border-stone-200 pt-5 dark:border-stone-700" data-birthdays-agenda="past">
+      <summary class="cursor-pointer text-sm font-medium text-stone-700 hover:text-stone-900 dark:text-stone-200 dark:hover:text-stone-100">
+        <%= t(".earlier_this_year") %>
+      </summary>
+      <div class="mt-6 space-y-8">
+        <% past_months.each do |month| %>
+          <%= render BirthdayMonthSectionComponent.new(
+                month:,
+                birthdays: @birthdays_by_month.fetch(month),
+                year: @today.year,
+                heading_level: 3
+              ) %>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
 <% end %>

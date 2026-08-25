@@ -1,0 +1,8 @@
+<section aria-labelledby="birthdays-month-<%= month %>">
+  <%= tag.public_send(heading_tag, month_name, id: "birthdays-month-#{month}", class: "text-lg font-semibold") %>
+  <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+    <% birthdays.each do |birthday| %>
+      <%= render BirthdayCardComponent.new(birthday:, year:, return_month:) %>
+    <% end %>
+  </div>
+</section>

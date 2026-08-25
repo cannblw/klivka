@@ -339,8 +339,16 @@ en:
     index:
       title: "Birthdays"
       heading: "Birthdays"
-      empty_title: "No birthdays this month"
-      empty_hint: "Birthdays for your friends will appear here."
+      description: "Birthdays in %{year}"
+      month_navigation: "Choose a birthday month"
+      current_and_upcoming: "Current and upcoming"
+      earlier_this_year: "Earlier this year"
+      empty_month_title: "No birthdays in %{month}"
+      empty_month_hint: "Choose another month to keep looking."
+      empty_upcoming_title: "No more birthdays this year"
+      empty_upcoming_hint: "Earlier birthdays are still available below."
+      empty_all_title: "No birthdays saved yet"
+      empty_all_hint: "Birthdays appear here when you add them to friend profiles."
 
   settings:
     show:
@@ -419,6 +427,7 @@ en:
         hint: "Add your first friend. All you need is a name."
     show:
       back: "← Friends"
+      back_to_birthdays: "← Birthdays"
       delete: "Delete friend"
       more_actions: "More friend actions"
     create:

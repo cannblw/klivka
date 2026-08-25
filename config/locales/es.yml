@@ -350,8 +350,16 @@ es:
     index:
       title: "Cumpleaños"
       heading: "Cumpleaños"
-      empty_title: "No hay cumpleaños este mes"
-      empty_hint: "Los cumpleaños de tus amigos aparecerán aquí."
+      description: "Cumpleaños de %{year}"
+      month_navigation: "Elegir un mes de cumpleaños"
+      current_and_upcoming: "Actuales y próximos"
+      earlier_this_year: "Anteriores de este año"
+      empty_month_title: "No hay cumpleaños en %{month}"
+      empty_month_hint: "Elige otro mes para seguir buscando."
+      empty_upcoming_title: "No quedan cumpleaños este año"
+      empty_upcoming_hint: "Puedes consultar los cumpleaños anteriores más abajo."
+      empty_all_title: "Aún no has guardado ningún cumpleaños"
+      empty_all_hint: "Los cumpleaños aparecerán aquí cuando los añadas a los perfiles de tus amigos."
 
   settings:
     show:
@@ -430,6 +438,7 @@ es:
         hint: "Añade a tu primer amigo. Solo necesitas un nombre."
     show:
       back: "← Amigos"
+      back_to_birthdays: "← Cumpleaños"
       delete: "Eliminar amigo"
       more_actions: "Más acciones para esta amistad"
     create:

@@ -1,0 +1,12 @@
+<nav aria-label="<%= t("birthdays.index.month_navigation") %>" class="mt-6">
+  <div class="flex gap-1 overflow-x-auto pb-2">
+    <%= link_to t("birthdays.index.current_and_upcoming"), helpers.birthdays_path,
+          aria: { current: ("page" if current_page?) },
+          class: link_classes(active: current_page?) %>
+    <% (1..12).each do |month| %>
+      <%= link_to month_name(month), helpers.birthdays_path(month:),
+            aria: { current: ("page" if current_page?(month)) },
+            class: link_classes(active: current_page?(month)) %>
+    <% end %>
+  </div>
+</nav>
