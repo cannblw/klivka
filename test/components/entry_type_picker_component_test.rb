@@ -8,6 +8,8 @@ class EntryTypePickerComponentTest < ViewComponent::TestCase
 
     available_type_count = EntryTypePickerComponent::COMMON_TYPES.size - 1
     assert_selector "li", count: available_type_count
+    assert_selector "section.mt-8 h2.text-lg.font-semibold"
+    assert_selector "ul.sm\\:grid-cols-2.xl\\:grid-cols-4"
     assert_selector "input[type='search']", count: 0
     assert_selector "a", text: "Birthday", count: 0
     path = Rails.application.routes.url_helpers.new_friend_entry_path(friend)
@@ -20,6 +22,7 @@ class EntryTypePickerComponentTest < ViewComponent::TestCase
     render_inline(EntryTypePickerComponent.new(friend: friend, searchable: true))
 
     assert_selector "label.sr-only[for='entry-type-search']", text: "Search entry types"
+    assert_selector "ul.sm\\:grid-cols-2.xl\\:grid-cols-4"
     assert_selector "li[data-filter-list-target='item']", count: Entry::CREATABLE_TYPES.size
     assert_selector "[data-entry-type-unavailable]", text: /Birthday\s+Added/
     assert_selector "[data-filter-list-target='empty'][hidden]", text: "No matching entry types", visible: :all

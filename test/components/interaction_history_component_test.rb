@@ -9,7 +9,7 @@ class InteractionHistoryComponentTest < ViewComponent::TestCase
     rendered = render_inline InteractionHistoryComponent.new(friend: friend, interactions: [ newer, older ], total_count: 3)
 
     assert_selector "#interactions-history"
-    assert_selector "#interactions-history-heading", text: "Interactions"
+    assert_selector "#interactions-history-heading.text-lg.font-semibold", text: "Interactions"
     assert_selector "time[datetime='#{newer.occurred_on.iso8601}']", text: /#{Regexp.escape(I18n.l(newer.occurred_on, format: :long))}/
     assert_selector "li", text: /Newer/
     assert_selector "li", text: /Call/
@@ -24,6 +24,7 @@ class InteractionHistoryComponentTest < ViewComponent::TestCase
     render_inline InteractionHistoryComponent.new(friend: friend, interactions: [], total_count: 0)
 
     assert_selector "#interactions-history", text: "No interactions recorded yet."
+    assert_selector "#interactions-history.mt-8"
     assert_no_selector "a", text: /View all/
   end
 

@@ -1,0 +1,13 @@
+<div class="group relative inline-flex gap-2" <%= tag.attributes(group_options) %>>
+  <% choices.each do |value, label| %>
+    <label class="<%= pill_classes(value) %>">
+      <%= form.radio_button field, value, **input_options(value) %>
+      <%= label %>
+    </label>
+  <% end %>
+  <% if tooltip? %>
+    <span id="<%= tooltip_id %>" class="pointer-events-none absolute left-0 top-full z-10 mt-2 hidden w-max max-w-64 rounded-lg bg-stone-900 px-3 py-2 text-xs font-normal text-white shadow-lg group-hover:block group-focus-within:block dark:bg-stone-100 dark:text-stone-900">
+      <%= disabled_tooltip %>
+    </span>
+  <% end %>
+</div>

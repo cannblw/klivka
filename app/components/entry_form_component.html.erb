@@ -17,23 +17,22 @@
       <%= text_field_tag "entry[content][number]", entry.content&.dig("number"),
             placeholder: t("entries.phone_number_placeholder"),
             autocomplete: "tel",
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            class: FormStyling::INPUT_CLASSES %>
       <%= label_tag "entry_content_label", t("entries.phone_label_placeholder"), class: "sr-only" %>
       <%= text_field_tag "entry[content][label]", entry.content&.dig("label"),
             placeholder: t("entries.phone_label_placeholder"),
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            class: FormStyling::INPUT_CLASSES %>
     </div>
   <% when "Entry::Note" %>
     <%= label_tag "entry_content_text", t("entries.kinds.note"), class: "sr-only" %>
     <%= text_area_tag "entry[content][text]", entry.content&.dig("text"), rows: 3,
           placeholder: t("entries.note_placeholder"),
-          class: "w-full resize-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+          class: FormStyling::TEXTAREA_CLASSES %>
   <% when "Entry::Birthday" %>
     <div id="birthday-fields">
       <%= form.label :entry_date, t("entries.date_field_label"), class: "sr-only" %>
-      <%= form.date_field :entry_date,
-            data: { reminder_date_target: "date", action: "change->reminder-date#update" },
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <%= render InputFieldComponent.new(form, :entry_date, type: :date,
+            data: { reminder_date_target: "date", action: "change->reminder-date#update" }) %>
       <% entry.errors.full_messages_for(:entry_date).each do |message| %>
         <p class="mt-1 text-sm text-red-600"><%= message %></p>
       <% end %>
@@ -48,7 +47,7 @@
         <%= email_field_tag "entry[content][email]", entry.email,
               placeholder: t("entries.email_address_placeholder"),
               autocomplete: "email",
-              class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+              class: FormStyling::INPUT_CLASSES %>
         <% entry.errors.full_messages_for(:email).each do |message| %>
           <p class="mt-1 text-sm text-red-600"><%= message %></p>
         <% end %>
@@ -57,18 +56,17 @@
       <%= text_field_tag "entry[content][label]", entry.label,
             id: "email_entry_label",
             placeholder: t("entries.email_label_placeholder"),
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            class: FormStyling::INPUT_CLASSES %>
     </div>
   <% when "Entry::Date" %>
     <div id="date-fields" class="space-y-3">
       <%= form.label :entry_date, t("entries.date_field_label"), class: "sr-only" %>
-      <%= form.date_field :entry_date,
-            data: { reminder_date_target: "date", action: "change->reminder-date#update" },
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+      <%= render InputFieldComponent.new(form, :entry_date, type: :date,
+            data: { reminder_date_target: "date", action: "change->reminder-date#update" }) %>
       <%= label_tag "entry_content_label", t("entries.date_label_placeholder"), class: "sr-only" %>
       <%= text_field_tag "entry[content][label]", entry.label,
             placeholder: t("entries.date_label_placeholder"),
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            class: FormStyling::INPUT_CLASSES %>
       <% entry.errors.full_messages_for(:entry_date).each do |message| %>
         <p class="text-sm text-red-600"><%= message %></p>
       <% end %>
@@ -81,26 +79,26 @@
           <%= number_field_tag "entry[entry_year]", entry.entry_year,
                 placeholder: t("entries.year_label"),
                 required: true,
-                class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+                class: FormStyling::INPUT_CLASSES %>
         </div>
         <div>
           <%= label_tag "entry_entry_month", t("entries.month_label"), class: "sr-only" %>
           <%= select_tag "entry[entry_month]",
                 options_for_select((1..12).map { |month| [ t("date.month_names")[month], month ] }, entry.entry_month),
                 include_blank: t("entries.month_label"),
-                class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+                class: FormStyling::INPUT_CLASSES %>
         </div>
         <div>
           <%= label_tag "entry_entry_day", t("entries.day_label"), class: "sr-only" %>
           <%= number_field_tag "entry[entry_day]", entry.entry_day,
                 placeholder: t("entries.day_label"),
-                class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+                class: FormStyling::INPUT_CLASSES %>
         </div>
       </div>
       <%= label_tag "entry_content_note", t("entries.first_met_note_placeholder"), class: "sr-only" %>
       <%= text_area_tag "entry[content][note]", entry.note, rows: 3,
             placeholder: t("entries.first_met_note_placeholder"),
-            class: "w-full resize-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            class: FormStyling::TEXTAREA_CLASSES %>
       <% entry.errors.full_messages_for(:entry_date).each do |message| %>
         <p class="text-sm text-red-600"><%= message %></p>
       <% end %>
@@ -120,7 +118,7 @@
       <%= label_tag "entry_content_title", t("entries.gift_list_title_placeholder"), class: "sr-only" %>
       <%= text_field_tag "entry[content][title]", entry.title,
             placeholder: t("entries.gift_list_title_placeholder"),
-            class: "w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+            class: FormStyling::INPUT_CLASSES %>
       <ul data-gift-list-target="list" class="space-y-3">
         <% (entry.items.presence || [ {} ]).each_with_index do |item, index| %>
           <%= render GiftListItemFieldComponent.new(item: item, index: index, position: index + 1) %>

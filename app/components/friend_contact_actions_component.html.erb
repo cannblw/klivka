@@ -1,34 +1,34 @@
 <%= helpers.turbo_frame_tag FriendContactActionsComponent::DOM_ID do %>
   <% if contact_entries.any? %>
-    <div class="mt-3" data-controller="dialog">
-    <h2 id="contact-actions-heading" class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t("contact_actions.heading") %></h2>
-    <div role="group" class="mt-2 flex flex-wrap gap-2" aria-labelledby="contact-actions-heading">
-      <% [ :phone, :email ].each do |kind| %>
-        <% initial_entries_for(kind).each do |entry| %>
-          <%= link_to href_for(entry),
-                class: "inline-flex max-w-full items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50",
-                aria: { label: action_label_for(entry) } do %>
-            <span class="material-icons" style="font-size:18px" aria-hidden="true"><%= action_icon_for(entry) %></span>
-            <span class="min-w-0">
-              <% if label_for(entry).present? %>
-                <span class="block text-xs font-normal opacity-75"><%= label_for(entry) %></span>
-              <% end %>
-              <span class="block break-all"><%= value_for(entry) %></span>
-            </span>
+    <div class="mt-8" data-controller="dialog">
+      <h2 id="contact-actions-heading" class="text-lg font-semibold text-stone-900 dark:text-stone-100"><%= t("contact_actions.heading") %></h2>
+      <div role="group" class="mt-3 flex flex-wrap gap-2" aria-labelledby="contact-actions-heading">
+        <% [ :phone, :email ].each do |kind| %>
+          <% initial_entries_for(kind).each do |entry| %>
+            <%= link_to href_for(entry),
+                  class: "inline-flex max-w-full items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50",
+                  aria: { label: action_label_for(entry) } do %>
+              <span class="material-icons" style="font-size:18px" aria-hidden="true"><%= action_icon_for(entry) %></span>
+              <span class="min-w-0">
+                <% if label_for(entry).present? %>
+                  <span class="block text-xs font-normal opacity-75"><%= label_for(entry) %></span>
+                <% end %>
+                <span class="block break-all"><%= value_for(entry) %></span>
+              </span>
+            <% end %>
           <% end %>
         <% end %>
-      <% end %>
+
+        <% if overflow? %>
+          <button type="button" data-action="dialog#open"
+                  class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700">
+            <%= t("contact_actions.view_all", count: contact_entries.size) %>
+          </button>
+        <% end %>
+      </div>
 
       <% if overflow? %>
-        <button type="button" data-action="dialog#open"
-                class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700">
-          <%= t("contact_actions.view_all", count: contact_entries.size) %>
-        </button>
-      <% end %>
-    </div>
-
-    <% if overflow? %>
-      <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
+        <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
               aria-labelledby="contact-methods-title"
               class="m-auto w-[calc(100%_-_2rem)] max-w-lg rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
         <div class="p-6">
@@ -70,8 +70,8 @@
             <% end %>
           </div>
         </div>
-      </dialog>
-    <% end %>
+        </dialog>
+      <% end %>
     </div>
   <% end %>
 <% end %>

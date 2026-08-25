@@ -48,3 +48,68 @@
 - Use American English for code identifiers, comments, documentation, and English UI copy unless an established external term requires different spelling. Write other locales naturally rather than applying English spelling conventions to them.
 - Em dashes (—) are forbidden in UI copy in any locale; use a period, comma, or colon instead.
 - Never commit without being asked. `db/schema.rb` is committed alongside migrations.
+
+## Design system
+
+### Typography
+
+The application uses **DM Sans** (loaded from Google Fonts) as its typeface, configured as the default `--font-sans` in `app/assets/tailwind/application.css`. Do not add other typefaces without discussion.
+
+Heading hierarchy:
+
+- Page title (`<h1>`): `text-2xl font-bold`
+- Section heading (`<h2>`): `text-lg font-semibold`
+- Subsection heading or label: `text-sm font-medium text-stone-700 dark:text-stone-200`
+- Muted label: `text-sm font-medium text-stone-500 dark:text-stone-400`
+- Body text: `text-sm`
+- Small or helper text: `text-xs`
+
+### Color palette
+
+- **Neutrals** (stone): `stone-50` backgrounds, `stone-100` page background, `stone-200` borders, `stone-300` input borders, `stone-400` to `stone-500` muted text, `stone-600` secondary text, `stone-700` labels, `stone-800` dark-mode card background, `stone-900` dark-mode page background and light-mode body text.
+- **Brand accent** (amber): `amber-600` primary buttons and active states, `amber-500` hover and focus, `amber-700` link text in light mode, `amber-400` link text in dark mode, `amber-50` active pill backgrounds, `amber-100` avatar backgrounds, `amber-900/30` dark-mode accent backgrounds.
+- **Destructive** (red): `red-600` delete buttons and error text, `red-500` hover, `red-400` dark mode.
+- **Success** (emerald): `emerald-600` success flash backgrounds.
+
+Do not introduce new colors outside this palette. Discuss any new semantic color first.
+
+### Dark mode
+
+Dark mode is driven by `data-theme="dark"` on the `<html>` element, not `prefers-color-scheme`. Every visual element must include `dark:` variants. The custom variant is defined in `app/assets/tailwind/application.css`.
+
+### Icons
+
+Use Material Icons via `<span class="material-icons" style="font-size: Npx" aria-hidden="true">icon_name</span>`. Always include `aria-hidden="true"` and ensure a text alternative exists nearby through a visible label, an `aria-label` on the parent control, or screen-reader-only text.
+
+### Component catalog
+
+Use these shared components instead of writing equivalent markup inline. Do not duplicate the patterns they encapsulate.
+
+| Component | Purpose | When to use |
+|-----------|---------|-------------|
+| `ButtonComponent` | `<button>` with variant and size styling | Every standard clickable button. Variants: `:primary` and `:ghost`. Sizes: `:sm` and `:md`. |
+| `SectionComponent` | Responsive, full-width bordered card with an optional heading and description | Related content in a visual section, such as settings panels and upload forms. Use `heading_id:` when the section needs an accessible name. Do not hand-write the equivalent card container. |
+| `InputFieldComponent` | Text, email, password, search, number, or date input with consistent styling and inline errors | Supported form-builder-backed input fields. |
+| `TextareaFieldComponent` | Textarea with consistent styling and inline errors | Every form-builder-backed textarea. |
+| `SelectFieldComponent` | Select with consistent styling and a chevron icon | Form-builder-backed select fields. |
+| `FilterSearchFieldComponent` | Search input wired to client-side list filtering | Filterable lists that use the `filter-list` controller. |
+| `TogglePillGroupComponent` | Radio buttons styled as horizontal pills | Small exclusive choice sets such as language and theme. Supply a stable tooltip ID when disabled guidance is shown. |
+| `ConfirmDialogComponent` | Accessible confirmation dialog with confirm and cancel actions | Every destructive-action confirmation. Do not write inline confirmation dialogs. |
+| `CardComponent` | Narrow centered card | Authentication screens such as sign in, registration, and password reset. |
+| `FlashComponent` | Toast notification | Flash messages, normally rendered by the application layout. |
+| `InlineNoticeComponent` | Inline warning banner | Non-dismissible warnings within page content. |
+
+### Shared form styling
+
+`FormStyling` (`app/components/form_styling.rb`) defines `INPUT_CLASSES` and `TEXTAREA_CLASSES`. Use these constants for `_tag` helpers such as `text_field_tag` and `text_area_tag` that cannot use field components. Specialized field components may also use them as their base styling.
+
+For supported form-builder-backed fields, use `InputFieldComponent`, `TextareaFieldComponent`, or `SelectFieldComponent` instead of referencing the constants directly.
+
+### Spacing and responsive layout
+
+- Between page sections: `space-y-6`
+- Between form fields: `space-y-4`, or `space-y-3` for compact forms
+- Between items within a section: `space-y-3`
+- Section content below a heading or description: `mt-4`, handled by `SectionComponent`
+- Page heading to the first section: `mt-6`
+- Let section cards fill their responsive parent. Constrain inner content with `max-w-xl` when wider controls or line lengths would hurt readability on desktop.

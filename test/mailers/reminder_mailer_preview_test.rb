@@ -12,7 +12,14 @@ class ReminderMailerPreviewTest < ActionMailer::TestCase
     record_counts = reminder_record_counts
 
     preview = ReminderMailerPreview.new
-    messages = [ preview.keep_in_touch, preview.birthday, preview.significant_date ]
+    messages = [
+      preview.keep_in_touch,
+      preview.keep_in_touch_spanish,
+      preview.birthday,
+      preview.birthday_spanish,
+      preview.significant_date,
+      preview.significant_date_spanish
+    ]
 
     assert messages.all?(&:multipart?)
     assert_equal record_counts, reminder_record_counts

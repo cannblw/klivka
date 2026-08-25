@@ -1,4 +1,6 @@
 class SelectFieldComponent < ViewComponent::Base
+  include FormStyling
+
   def initialize(form, field, choices:, selected: nil, select_options: {}, wrapper_class: nil, **options)
     @form = form
     @field = field
@@ -18,7 +20,7 @@ class SelectFieldComponent < ViewComponent::Base
   end
 
   def select_classes
-    base = "w-full appearance-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 pr-10 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100"
+    base = "#{INPUT_CLASSES} appearance-none pr-10"
     [ base, options.delete(:class) ].compact.join(" ")
   end
 

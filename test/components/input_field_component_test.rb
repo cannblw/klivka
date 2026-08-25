@@ -20,6 +20,10 @@ class InputFieldComponentTest < ViewComponent::TestCase
       tag(:number, options)
     end
 
+    def date_field(field, **options)
+      tag(:date, options)
+    end
+
     def text_field(field, **options)
       tag(:text, options)
     end
@@ -64,6 +68,13 @@ class InputFieldComponentTest < ViewComponent::TestCase
       min: 0, step: 1)
 
     assert_selector "input[type='number'][min='0'][step='1']"
+  end
+
+  test "renders a date field" do
+    render_inline InputFieldComponent.new(FakeForm.new, :entry_date, type: :date,
+      data: { action: "change->reminder-date#update" })
+
+    assert_selector "input[type='date']"
   end
 
   test "appends extra classes" do

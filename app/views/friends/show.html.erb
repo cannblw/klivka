@@ -4,40 +4,37 @@
 
 <% ordered_entries = @friend.entries.includes(:entry_reminder).ordered.to_a %>
 
-<div data-controller="toggle" class="mt-4">
-  <div class="flex flex-wrap items-center justify-between gap-4">
-    <div data-controller="toggle" class="flex items-center gap-2">
-      <h1 class="text-2xl font-bold" data-toggle-target="content"><%= @friend.name %></h1>
+<div class="mt-4">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div data-controller="toggle" class="flex min-w-0 items-center gap-2">
+      <h1 class="min-w-0 break-words text-2xl font-bold <%= "hidden" if @friend.errors.any? %>" data-toggle-target="content"><%= @friend.name %></h1>
 
-      <div data-toggle-target="content" class="hidden">
-        <%= form_with model: @friend, method: :patch, class: "flex items-start gap-2" do |form| %>
-          <div>
-            <%= form.text_field :name, value: @friend.name,
-                  class: "w-48 rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm font-bold focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
-            <% @friend.errors.full_messages_for(:name).each do |message| %>
-              <p class="mt-1 text-sm text-red-600"><%= message %></p>
-            <% end %>
-          </div>
+      <div data-toggle-target="content" class="<%= "hidden" unless @friend.errors.any? %>">
+        <%= form_with model: @friend, method: :patch, class: "flex max-w-full flex-wrap items-start gap-2" do |form| %>
+          <%= render InputFieldComponent.new(form, :name, type: :text, value: @friend.name, class: "w-48 font-bold") %>
           <%= render ButtonComponent.new(type: :submit, size: :sm, class: "font-bold") do %>
             <%= t("friends.rename.save") %>
           <% end %>
-          <button type="button" data-action="toggle#toggle"
-                  class="rounded-lg px-2 py-1.5 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700">
+          <%= render ButtonComponent.new(variant: :ghost, size: :sm, data: { action: "toggle#toggle" }) do %>
             <%= t("friends.rename.cancel") %>
-          </button>
+          <% end %>
         <% end %>
       </div>
 
-      <button type="button" data-action="toggle#toggle"
-              class="shrink-0 text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
-              aria-label="<%= t("friends.rename.link") %>">
+      <%= render ButtonComponent.new(
+            variant: :ghost,
+            size: :sm,
+            class: "shrink-0 text-stone-400 dark:text-stone-500",
+            data: { action: "toggle#toggle", toggle_target: "content" },
+            aria: { label: t("friends.rename.link") }
+          ) do %>
         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"/>
         </svg>
-      </button>
+      <% end %>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
       <%= render QuickInteractionComponent.new(
             friend: @friend,
             interaction: @interaction_to_enrich,
@@ -49,12 +46,17 @@
             class: "rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-200 dark:border-stone-600 dark:text-stone-200 dark:hover:bg-stone-700" %>
 
       <div data-controller="dropdown" class="relative">
-        <button type="button" data-action="dropdown#toggle"
-                class="rounded-lg px-2 py-2 text-sm font-medium text-stone-400 hover:bg-stone-200 hover:text-stone-600 dark:text-stone-500 dark:hover:bg-stone-700 dark:hover:text-stone-300 cursor-pointer">
+        <%= render ButtonComponent.new(
+              variant: :ghost,
+              size: :sm,
+              class: "text-stone-400 dark:text-stone-500",
+              data: { action: "dropdown#toggle" },
+              aria: { label: t(".more_actions"), haspopup: "menu" }
+            ) do %>
           <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/>
           </svg>
-        </button>
+        <% end %>
 
         <div data-dropdown-target="menu" data-action="click->dropdown#close"
              class="absolute right-0 z-40 mt-1 hidden w-44 rounded-lg border border-stone-200 bg-stone-50 py-1 shadow-lg dark:border-stone-700 dark:bg-stone-800">
@@ -84,7 +86,7 @@
     <p id="last-contacted" class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.last_contacted.never") %></p>
   <% end %>
 
-  <%= render ContactReminderComponent.new(friend: @friend, setting: @keep_in_touch_setting) %>
+  <%= render ContactReminderComponent.new(friend: @friend, setting: @keep_in_touch_setting, class: "mt-6") %>
 
   <%= render FriendContactActionsComponent.new(entries: ordered_entries) %>
 
@@ -105,7 +107,7 @@
          data-entry-sortable-reorder-url-value="<%= reorder_friend_entries_path(@friend) %>"
          data-entry-sortable-error-message-value="<%= t("entries.reorder.invalid_order") %>"
          data-entry-sortable-moved-message-value="<%= t("entries.reorder.moved", position: "__POSITION__") %>">
-      <div class="mt-6 space-y-4">
+      <div class="mt-8 space-y-4">
         <% ordered_entries.each do |entry| %>
           <%= render EntryCardComponent.new(entry: entry, friend: @friend) %>
         <% end %>

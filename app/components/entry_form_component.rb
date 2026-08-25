@@ -1,4 +1,6 @@
 class EntryFormComponent < ViewComponent::Base
+  include FormStyling
+
   def initialize(entry:, friend:)
     @entry = entry
     @friend = friend

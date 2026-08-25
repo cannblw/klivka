@@ -30,6 +30,18 @@ class ContactReminderComponentTest < ViewComponent::TestCase
     assert_selector "form[action='#{disable_friend_keep_in_touch_setting_path(friend)}'][method='post']", visible: :all
   end
 
+  test "uses a compact responsive layout and accepts parent spacing" do
+    friend = users(:one).friends.create!(name: "Name Only")
+    setting = friend.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current)
+
+    render_inline ContactReminderComponent.new(friend: friend, setting: setting, class: "mt-6", data: { testid: "reminder" })
+
+    assert_selector "section#contact-reminder.mt-6.p-4.sm\\:p-5[data-testid='reminder']"
+    assert_selector ".sm\\:flex-row.sm\\:justify-between"
+    assert_selector ".bg-stone-100", text: /Next suggestion/
+    assert_selector "details", text: /Change frequency/
+  end
+
   test "renders contact and snooze actions when a reminder is due" do
     friend = users(:one).friends.create!(name: "Name Only")
     setting = friend.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current - 7.days)

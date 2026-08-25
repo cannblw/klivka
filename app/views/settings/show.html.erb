@@ -2,53 +2,53 @@
 
 <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
 
-<%= form_with model: @user, url: settings_path, method: :patch,
-      data: { controller: "settings-form theme" }, class: "mt-8 max-w-xl space-y-8" do |form| %>
+<div class="mt-6 space-y-6">
+  <%= render SectionComponent.new(title: t(".account"), description: t(".account_description")) do %>
+    <div class="max-w-xl">
+      <p class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t(".email") %></p>
+      <p class="mt-1 text-sm"><%= @user.email_address %></p>
+      <% unless demo_mode? %>
+        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <%= t(".password_note") %>
+          <%= link_to t(".password_link"), new_password_path, class: "font-medium text-amber-600 hover:text-amber-500" %>.
+        </p>
+      <% end %>
+    </div>
+  <% end %>
 
-  <div>
-    <p class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t(".email") %></p>
-    <p class="mt-1 text-sm"><%= @user.email_address %></p>
-    <% unless demo_mode? %>
-      <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-        <%= t(".password_note") %>
-        <%= link_to t(".password_link"), new_password_path, class: "font-medium text-amber-600 hover:text-amber-500" %>.
-      </p>
+  <%= render SectionComponent.new(title: t(".preferences"), description: t(".preferences_description")) do %>
+    <%= form_with model: @user, url: settings_path, method: :patch,
+          data: { controller: "settings-form theme" }, class: "max-w-xl space-y-5" do |form| %>
+      <fieldset>
+        <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t(".language") %></legend>
+        <div class="mt-2">
+          <%= render TogglePillGroupComponent.new(
+                form: form,
+                field: :locale,
+                choices: [ [ :en, t(".locales.en") ], [ :es, t(".locales.es") ] ],
+                selected: demo_mode? ? :en : @user.locale,
+                disabled: demo_mode?,
+                disabled_tooltip: demo_mode? ? t(".language_switch_disabled") : nil,
+                disabled_tooltip_id: "language-switch-disabled",
+                data: { action: "change->settings-form#submit" }
+              ) %>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t(".theme") %></legend>
+        <div class="mt-2">
+          <%= render TogglePillGroupComponent.new(
+                form: form,
+                field: :theme,
+                choices: [ [ :light, t(".themes.light") ], [ :dark, t(".themes.dark") ] ],
+                selected: @user.theme,
+                data: { action: "change->theme#toggle change->settings-form#submit" }
+              ) %>
+        </div>
+      </fieldset>
     <% end %>
-  </div>
+  <% end %>
 
-  <fieldset>
-    <legend class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t(".language") %></legend>
-    <div class="group relative mt-2 inline-flex gap-2">
-      <% [ :en, :es ].each do |locale| %>
-        <label class="cursor-pointer select-none rounded-lg border px-4 py-2 text-sm font-medium transition
-                      <%= (demo_mode? ? locale == :en : @user.locale == locale.to_s) ? "border-amber-600 bg-amber-50 text-amber-700 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400" : "border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-stone-500" %>">
-          <%= form.radio_button :locale, locale, checked: demo_mode? ? locale == :en : @user.locale == locale.to_s,
-                disabled: demo_mode?, data: { action: "change->settings-form#submit" }, class: "sr-only" %>
-          <%= t(".locales.#{locale}") %>
-        </label>
-      <% end %>
-      <% if demo_mode? %>
-        <span id="language-switch-disabled" class="pointer-events-none absolute left-0 top-full z-10 mt-2 hidden w-max max-w-64 rounded-lg bg-stone-900 px-3 py-2 text-xs font-normal text-white shadow-lg group-hover:block group-focus-within:block dark:bg-stone-100 dark:text-stone-900">
-          <%= t(".language_switch_disabled") %>
-        </span>
-      <% end %>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t(".theme") %></legend>
-    <div class="mt-2 flex gap-2">
-      <% [ :light, :dark ].each do |theme| %>
-        <label class="cursor-pointer select-none rounded-lg border px-4 py-2 text-sm font-medium transition
-                      <%= @user.theme == theme.to_s ? "border-amber-600 bg-amber-50 text-amber-700 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400" : "border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-stone-500" %>">
-          <%= form.radio_button :theme, theme, checked: @user.theme == theme.to_s,
-                data: { action: "change->theme#toggle change->settings-form#submit" }, class: "sr-only" %>
-          <%= t(".themes.#{theme}") %>
-        </label>
-      <% end %>
-    </div>
-  </fieldset>
-
-<% end %>
-
-<%= render ReminderSettingsComponent.new(user: @user) %>
+  <%= render ReminderSettingsComponent.new(user: @user) %>
+</div>

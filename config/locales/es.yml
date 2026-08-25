@@ -349,6 +349,10 @@ es:
     show:
       title: "Ajustes"
       heading: "Ajustes"
+      account: "Cuenta"
+      account_description: "Tu correo electrónico y contraseña."
+      preferences: "Preferencias"
+      preferences_description: "Idioma y tema."
       email: "Correo electrónico"
       password_note: "Para cambiar tu contraseña, haz clic"
       password_link: "aquí"
@@ -407,6 +411,7 @@ es:
     show:
       back: "← Amigos"
       delete: "Eliminar amigo"
+      more_actions: "Más acciones para esta amistad"
     create:
       created: "Se ha añadido a %{name}."
     update:
@@ -460,9 +465,13 @@ es:
   confirmations_mailer:
     confirm:
       subject: "Confirma tu correo electrónico"
-      instructions: "Confirma tu correo electrónico en"
-      link_text: "esta página de confirmación"
-      expires: "Este enlace caducará en 2 días."
+      preheader: "Confirma tu correo electrónico para terminar de configurar Klivka."
+      eyebrow: "Te damos la bienvenida a Klivka"
+      heading: "Confirma tu correo electrónico"
+      body: "Solo falta un paso para que tu cuenta esté lista."
+      cta: "Confirmar correo"
+      expires: "Por seguridad, este enlace caduca en 2 días."
+      fallback: "Si el botón no funciona, copia y pega este enlace en tu navegador:"
 
   passwords:
     invalid_token: "El enlace para restablecer la contraseña no es válido o ha caducado."
@@ -488,12 +497,19 @@ es:
   passwords_mailer:
     reset:
       subject: "Restablece tu contraseña"
-      instructions: "Puedes restablecer tu contraseña en"
-      link_text: "esta página de restablecimiento"
-      expires: "Este enlace caducará en %{time}."
+      preheader: "Usa este enlace seguro para elegir una nueva contraseña de Klivka."
+      eyebrow: "Restablecimiento de contraseña"
+      heading: "Elige una nueva contraseña"
+      body: "Hemos recibido una solicitud para restablecer tu contraseña de Klivka."
+      cta: "Restablecer contraseña"
+      expires: "Por seguridad, este enlace caduca en %{time}."
+      ignore: "Si no has solicitado este cambio, puedes ignorar este correo. Tu contraseña no cambiará."
+      fallback: "Si el botón no funciona, copia y pega este enlace en tu navegador:"
+
+  mailer:
+    footer: "Un mensaje de Klivka, tu cuaderno privado para cuidar tus relaciones."
 
   reminder_mailer:
-    footer: "Un recordatorio amable de Klivka, tu cuaderno privado para cuidar tus relaciones."
     keep_in_touch:
       subject: "Un recordatorio para mantener el contacto con %{name}"
       eyebrow: "Mantén el contacto"
