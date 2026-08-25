@@ -6,7 +6,7 @@
   <h1 class="mt-4 text-2xl font-bold"><%= t(".heading") %></h1>
   <p class="mt-2 text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
 
-  <div class="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-5 dark:border-stone-700 dark:bg-stone-800">
+  <%= render SectionComponent.new(class: "mt-6") do %>
     <%= form_with model: @vcard_import do |form| %>
       <%= render FileFieldComponent.new(
             form:,
@@ -25,5 +25,5 @@
               class: "rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700" %>
       </div>
     <% end %>
-  </div>
+  <% end %>
 </div>

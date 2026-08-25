@@ -30,8 +30,7 @@
 
   <div>
     <%= form.label :note, t("interactions.follow_up.note"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-    <%= form.text_area :note, rows: 4, placeholder: t("interactions.follow_up.note_placeholder"),
-          class: "mt-1 w-full resize-none rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+    <%= render TextareaFieldComponent.new(form, :note, rows: 4, placeholder: t("interactions.follow_up.note_placeholder"), class: "mt-1") %>
   </div>
 
   <div class="flex gap-2">

@@ -48,21 +48,11 @@
   <% end %>
 </section>
 
-<dialog id="delete-interaction-dialog"
-        data-controller="dialog"
-        data-dialog-target="dialog"
-        class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
-  <div class="p-6">
-    <h2 class="text-lg font-semibold dark:text-stone-100"><%= t("interactions.delete_confirm.title") %></h2>
-    <p class="mt-2 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.delete_confirm.body") %></p>
-    <div class="mt-4 flex justify-end gap-2">
-      <button type="button" data-action="dialog#close"
-              class="rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700">
-        <%= t("interactions.delete_confirm.cancel") %>
-      </button>
-      <%= link_to t("interactions.history.delete"), "#", id: "delete-interaction-confirm-link",
-            data: { action: "click->dialog#close" },
-            class: "rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500" %>
-    </div>
-  </div>
-</dialog>
+<%= render ConfirmDialogComponent.new(
+      id: "delete-interaction-dialog",
+      title: t("interactions.delete_confirm.title"),
+      body: t("interactions.delete_confirm.body"),
+      confirm_label: t("interactions.history.delete"),
+      cancel_label: t("interactions.delete_confirm.cancel"),
+      confirm_link_id: "delete-interaction-confirm-link"
+    ) %>
