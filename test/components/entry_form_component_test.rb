@@ -47,16 +47,15 @@ class EntryFormComponentTest < ViewComponent::TestCase
       text: "In non-leap years, Klivka will remind you on February 28."
   end
 
-  test "renders an existing date reminder as enabled" do
+  test "explains the global reminder timing on a birthday form" do
     entry = entries(:ada_birthday)
 
     render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
 
-    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='checkbox'][value='0'][checked]"
-    assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][value='1']"
-    assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option[selected][value='months']"
-    assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='hidden'][value='#{EntryReminder::YEARLY_RECURRENCE}']", visible: :all
-    assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='radio']", count: 0
+    assert_selector "[data-birthday-reminder-status='enabled']"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
+    assert_selector "input[name^='entry[entry_reminder_attributes]']", count: 0
+    assert_selector "form[data-controller~='reminder-date']", count: 0
   end
 
   test "does not render reminder controls for a First Met entry" do

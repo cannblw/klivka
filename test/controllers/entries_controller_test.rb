@@ -326,38 +326,6 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame"
   end
 
-  test "update turns off an existing date reminder" do
-    entry = entries(:ada_birthday)
-
-    patch friend_entry_url(friends(:ada), entry),
-      params: { entry: { entry_reminder_attributes: { id: entry.entry_reminder.id, _destroy: "1" } } },
-      headers: { "Turbo-Frame" => "true" }
-
-    assert_response :success
-    assert_nil entry.reload.entry_reminder
-  end
-
-  test "update changes an existing date reminder's lead time" do
-    entry = entries(:ada_birthday)
-
-    patch friend_entry_url(friends(:ada), entry),
-      params: {
-        entry: {
-          entry_reminder_attributes: {
-            id: entry.entry_reminder.id,
-            lead_value: "2",
-            lead_unit: "days",
-            _destroy: "0"
-          }
-        }
-      },
-      headers: { "Turbo-Frame" => "true" }
-
-    assert_response :success
-    assert_equal 2, entry.reload.entry_reminder.lead_value
-    assert_equal "days", entry.entry_reminder.lead_unit
-  end
-
   test "update normalizes an email and renders its mail link" do
     patch friend_entry_url(friends(:ada), entries(:email)),
       params: { entry: { content: { email: " NEW@EXAMPLE.COM ", label: " Personal " } } },

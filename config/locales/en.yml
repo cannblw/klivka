@@ -21,6 +21,9 @@ en:
         reminder_email_enabled: "Email reminders"
         default_reminder_lead_value: "Default reminder amount"
         default_reminder_lead_unit: "Default reminder unit"
+        birthday_reminders_enabled: "Birthday reminders"
+        birthday_reminder_lead_value: "Birthday reminder amount"
+        birthday_reminder_lead_unit: "Birthday reminder unit"
       entry/email:
         email: "Email"
       entry/date:
@@ -58,8 +61,6 @@ en:
           attributes:
             entry:
               ineligible_for_reminders: "does not support reminders"
-            recurrence:
-              birthday_must_repeat_yearly: "must repeat yearly for birthdays"
         interaction:
           attributes:
             occurred_on:
@@ -327,6 +328,13 @@ en:
       quarterly: "Every three months"
       yearly: "Yearly"
 
+  birthday_reminder_status:
+    enabled: "You'll be reminded about every birthday %{timing}."
+    disabled: "Birthday reminders are off."
+    no_channels: "Birthday reminders are on, but every notification channel is off."
+    settings: "Change in Settings"
+    enable_channel: "Enable a channel in Settings"
+
   birthdays:
     index:
       title: "Birthdays"
@@ -358,14 +366,26 @@ en:
       updated: "Settings saved."
     reminders:
       heading: "Reminders"
-      description: "Choose how you want Klivka to notify you."
-      delivery_channels: "Reminder delivery channels"
+      description: "Choose where reminders arrive and how early Klivka should notify you."
+      delivery_channels: "Channels"
+      delivery_channels_hint: "These choices apply to birthday, date, and keep-in-touch reminders."
       in_app: "In-app reminders"
       in_app_hint: "Allow reminders to appear while you use Klivka."
       email: "Email reminders"
       email_hint: "Allow reminder emails to be sent to your account address."
-      default_lead: "How far in advance"
-      default_lead_hint: "Used as the default when you add a date reminder. You can change it for each reminder later."
+      no_channels: "Turn on at least one notification channel to receive reminders."
+      birthdays:
+        heading: "Birthday reminders"
+        description: "Klivka can remind you before every birthday you save."
+        enabled: "Remind me about birthdays"
+        enabled_hint: "This applies to all existing and future birthdays."
+        timing: "How far in advance"
+        timing_hint: "This timing applies to every birthday."
+      other_dates:
+        heading: "Other date reminders"
+        description: "Reminders for anniversaries and other saved dates are optional. You turn them on separately for each date."
+        timing: "Default reminder timing"
+        timing_hint: "This is filled in when you turn on a date reminder. You can change it for that date before saving."
       lead_value: "Amount"
       lead_unit: "Unit"
       lead_units:

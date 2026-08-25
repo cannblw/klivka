@@ -33,7 +33,8 @@ class EntryCardComponentTest < ViewComponent::TestCase
   end
 
   test "shows reminder timing as accessible text when a date reminder is enabled" do
-    entry = entries(:ada_birthday)
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 12, 10))
+    entry.create_entry_reminder!(lead_value: 1, lead_unit: "months", recurrence: EntryReminder::YEARLY_RECURRENCE)
 
     render_inline(EntryCardComponent.new(entry: entry, friend: entry.friend))
 

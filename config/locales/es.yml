@@ -32,6 +32,9 @@ es:
         reminder_email_enabled: "Recordatorios por correo electrónico"
         default_reminder_lead_value: "Antelación predeterminada del recordatorio"
         default_reminder_lead_unit: "Unidad de antelación predeterminada del recordatorio"
+        birthday_reminders_enabled: "Recordatorios de cumpleaños"
+        birthday_reminder_lead_value: "Antelación del recordatorio de cumpleaños"
+        birthday_reminder_lead_unit: "Unidad del recordatorio de cumpleaños"
       entry/email:
         email: "Correo electrónico"
       entry/date:
@@ -69,8 +72,6 @@ es:
           attributes:
             entry:
               ineligible_for_reminders: "no admite recordatorios"
-            recurrence:
-              birthday_must_repeat_yearly: "debe repetirse cada año para los cumpleaños"
         interaction:
           attributes:
             occurred_on:
@@ -338,6 +339,13 @@ es:
       quarterly: "Cada tres meses"
       yearly: "Anual"
 
+  birthday_reminder_status:
+    enabled: "Te recordaremos todos los cumpleaños %{timing}."
+    disabled: "Los recordatorios de cumpleaños están desactivados."
+    no_channels: "Los recordatorios de cumpleaños están activados, pero todos los canales de notificación están desactivados."
+    settings: "Cambiar en Ajustes"
+    enable_channel: "Activar un canal en Ajustes"
+
   birthdays:
     index:
       title: "Cumpleaños"
@@ -369,14 +377,26 @@ es:
       updated: "Ajustes guardados."
     reminders:
       heading: "Recordatorios"
-      description: "Elige cómo quieres que te avise Klivka."
-      delivery_channels: "Canales de entrega de recordatorios"
+      description: "Elige dónde recibir los recordatorios y con cuánta antelación debe avisarte Klivka."
+      delivery_channels: "Canales"
+      delivery_channels_hint: "Estas opciones se aplican a los recordatorios de cumpleaños, fechas y contacto."
       in_app: "Recordatorios en la aplicación"
       in_app_hint: "Permite que aparezcan recordatorios mientras usas Klivka."
       email: "Recordatorios por correo electrónico"
       email_hint: "Permite que se envíen recordatorios al correo electrónico de tu cuenta."
-      default_lead: "Con cuánta antelación"
-      default_lead_hint: "Esta antelación se usará al añadir un recordatorio de fecha. Podrás cambiarla para cada recordatorio."
+      no_channels: "Activa al menos un canal de notificación para recibir recordatorios."
+      birthdays:
+        heading: "Recordatorios de cumpleaños"
+        description: "Klivka puede avisarte antes de cada cumpleaños que guardes."
+        enabled: "Recordarme los cumpleaños"
+        enabled_hint: "Se aplica a todos los cumpleaños, tanto actuales como futuros."
+        timing: "Con cuánta antelación"
+        timing_hint: "Esta antelación se aplica a todos los cumpleaños."
+      other_dates:
+        heading: "Recordatorios de otras fechas"
+        description: "Los recordatorios de aniversarios y otras fechas guardadas son opcionales. Se activan por separado para cada fecha."
+        timing: "Antelación predeterminada"
+        timing_hint: "Este valor aparece al activar el recordatorio de una fecha. Puedes cambiarlo para esa fecha antes de guardar."
       lead_value: "Cantidad"
       lead_unit: "Unidad"
       lead_units:

@@ -25,7 +25,10 @@ class SettingsController < ApplicationController
       :reminder_in_app_enabled,
       :reminder_email_enabled,
       :default_reminder_lead_value,
-      :default_reminder_lead_unit
+      :default_reminder_lead_unit,
+      :birthday_reminders_enabled,
+      :birthday_reminder_lead_value,
+      :birthday_reminder_lead_unit
     ]
     permitted = params.expect(user: permitted_attributes)
     demo_mode? ? permitted.except(:locale) : permitted

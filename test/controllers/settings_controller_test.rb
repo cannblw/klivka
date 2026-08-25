@@ -17,7 +17,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
       reminder_in_app_enabled: false,
       reminder_email_enabled: true,
       default_reminder_lead_value: 2,
-      default_reminder_lead_unit: "years"
+      default_reminder_lead_unit: "years",
+      birthday_reminders_enabled: false,
+      birthday_reminder_lead_value: 3,
+      birthday_reminder_lead_unit: "days"
     )
 
     get settings_path
@@ -32,6 +35,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='user[reminder_email_enabled]'][type='checkbox'][checked]", count: 1
     assert_select "input[name='user[default_reminder_lead_value]'][type='number'][value='2']", count: 1
     assert_select "select[name='user[default_reminder_lead_unit]'] option[selected][value='years']", count: 1
+    assert_select "input[name='user[birthday_reminders_enabled]'][type='checkbox']:not([checked])", count: 1
+    assert_select "input[name='user[birthday_reminder_lead_value]'][value='3']", count: 1
+    assert_select "select[name='user[birthday_reminder_lead_unit]'] option[selected][value='days']", count: 1
   end
 
   test "update persists the locale and re-renders in that language" do
@@ -69,7 +75,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
         reminder_in_app_enabled: "0",
         reminder_email_enabled: "0",
         default_reminder_lead_value: "3",
-        default_reminder_lead_unit: "days"
+        default_reminder_lead_unit: "days",
+        birthday_reminders_enabled: "0",
+        birthday_reminder_lead_value: "2",
+        birthday_reminder_lead_unit: "years"
       }
     }
 
@@ -78,6 +87,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_not_predicate user, :reminder_email_enabled?
     assert_equal 3, user.default_reminder_lead_value
     assert_equal "days", user.default_reminder_lead_unit
+    assert_not_predicate user, :birthday_reminders_enabled?
+    assert_equal 2, user.birthday_reminder_lead_value
+    assert_equal "years", user.birthday_reminder_lead_unit
     assert_redirected_to settings_url
     follow_redirect!
     assert_select "#flash [role='status']", text: I18n.t("settings.update.updated")
@@ -92,5 +104,16 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal original_unit, users(:one).reload.default_reminder_lead_unit
     assert_select "#reminder-settings-heading"
     assert_select ".text-red-600", text: /Default reminder unit/
+  end
+
+  test "update rejects an unsupported birthday reminder unit" do
+    original_unit = users(:one).birthday_reminder_lead_unit
+
+    patch settings_path, params: { user: { birthday_reminder_lead_unit: "weeks" } }
+
+    assert_response :unprocessable_entity
+    assert_equal original_unit, users(:one).reload.birthday_reminder_lead_unit
+    assert_select "#reminder-settings-heading"
+    assert_select ".text-red-600", text: /Birthday reminder unit/
   end
 end
