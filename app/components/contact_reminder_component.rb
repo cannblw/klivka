@@ -1,12 +1,21 @@
 class ContactReminderComponent < ViewComponent::Base
-  def initialize(friend:, setting:)
+  def initialize(friend:, setting:, **options)
     @friend = friend
     @setting = setting
+    @extra_classes = options.delete(:class)
+    @options = options
   end
 
   private
 
-  attr_reader :friend, :setting
+  attr_reader :friend, :setting, :options
+
+  def classes
+    [
+      "rounded-xl border border-stone-200 bg-stone-50 p-4 sm:p-5 dark:border-stone-700 dark:bg-stone-800",
+      @extra_classes
+    ].compact.join(" ")
+  end
 
   def enabled?
     setting&.enabled?

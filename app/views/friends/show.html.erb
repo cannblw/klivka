@@ -84,7 +84,7 @@
     <p id="last-contacted" class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.last_contacted.never") %></p>
   <% end %>
 
-  <%= render ContactReminderComponent.new(friend: @friend, setting: @keep_in_touch_setting) %>
+  <%= render ContactReminderComponent.new(friend: @friend, setting: @keep_in_touch_setting, class: "mt-6") %>
 
   <%= render FriendContactActionsComponent.new(entries: ordered_entries) %>
 
