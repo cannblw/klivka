@@ -338,6 +338,10 @@ en:
     show:
       title: "Settings"
       heading: "Settings"
+      account: "Account"
+      account_description: "Your login email and password."
+      preferences: "Preferences"
+      preferences_description: "Language and theme."
       email: "Email"
       password_note: "To change your password, click"
       password_link: "here"

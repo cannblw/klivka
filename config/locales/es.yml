@@ -349,6 +349,10 @@ es:
     show:
       title: "Ajustes"
       heading: "Ajustes"
+      account: "Cuenta"
+      account_description: "Tu correo electrónico y contraseña."
+      preferences: "Preferencias"
+      preferences_description: "Idioma y tema."
       email: "Correo electrónico"
       password_note: "Para cambiar tu contraseña, haz clic"
       password_link: "aquí"

@@ -1,8 +1,9 @@
-<section class="mt-8 max-w-xl rounded-lg border border-stone-200 p-5 dark:border-stone-700" aria-labelledby="reminder-settings-heading">
-  <h2 id="reminder-settings-heading" class="text-lg font-semibold"><%= t("settings.reminders.heading") %></h2>
-  <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.description") %></p>
-
-  <%= form_with model: user, url: helpers.settings_path, method: :patch, class: "mt-5 space-y-5" do |form| %>
+<%= render SectionComponent.new(
+      title: t("settings.reminders.heading"),
+      description: t("settings.reminders.description"),
+      heading_id: "reminder-settings-heading"
+    ) do %>
+  <%= form_with model: user, url: helpers.settings_path, method: :patch, class: "mt-1 max-w-xl space-y-5" do |form| %>
     <fieldset class="space-y-3">
       <legend class="sr-only"><%= t("settings.reminders.delivery_channels") %></legend>
 
@@ -45,4 +46,4 @@
       <%= t("settings.reminders.save") %>
     <% end %>
   <% end %>
-</section>
+<% end %>
