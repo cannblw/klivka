@@ -108,6 +108,22 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ "Zelda Early", "Aaron Same Day", "Zelda Same Day" ], names
   end
 
+  test "birthday agenda shows an occurrence without inventing an age for an unknown year" do
+    friend = users(:one).friends.create!(name: "Yearless Birthday")
+    Entry::Birthday.create!(
+      friend:, entry_date: Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday_year_known: false
+    )
+
+    travel_to Date.new(2026, 3, 1) do
+      get birthdays_url(month: 3)
+
+      occurrence = I18n.l(Date.new(2026, 3, 3), format: :long)
+      assert_select "main", /#{Regexp.escape(occurrence)}/
+      assert_select "main", text: /years old/, count: 0
+      assert_select "main", text: /2000/, count: 0
+    end
+  end
+
   test "shows the global birthday reminder status" do
     get birthdays_url
 

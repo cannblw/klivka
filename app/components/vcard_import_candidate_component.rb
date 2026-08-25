@@ -86,7 +86,8 @@ class VcardImportCandidateComponent < ViewComponent::Base
     when Entry::Email.name
       [ t("entries.kinds.email"), contact_value(entry) ]
     when Entry::Birthday.name
-      [ t("entries.kinds.birthday"), localized_date(entry.fetch("entry_date")) ]
+      format = entry["birthday_year_known"] == false ? :month_day : :long
+      [ t("entries.kinds.birthday"), localized_date(entry.fetch("entry_date"), format:) ]
     when Entry::Date.name
       [ entry.dig("content", "label").presence || t("entries.kinds.date"), localized_date(entry.fetch("entry_date")) ]
     when Entry::Note.name
@@ -98,7 +99,7 @@ class VcardImportCandidateComponent < ViewComponent::Base
     [ entry.dig("content", "label").presence, entry.dig("content", "number") || entry.dig("content", "email") ].compact.join(": ")
   end
 
-  def localized_date(date)
-    I18n.l(Date.iso8601(date), format: :long)
+  def localized_date(date, format: :long)
+    I18n.l(Date.iso8601(date), format:)
   end
 end

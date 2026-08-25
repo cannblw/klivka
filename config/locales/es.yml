@@ -17,6 +17,7 @@ es:
 
   date:
     formats:
+      month_day: "%-d de %B"
       month_year: "%B de %Y"
       year: "%Y"
 
