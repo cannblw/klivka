@@ -1,4 +1,8 @@
-<%= t(".instructions") %>
-<%= confirmation_url(@user.generate_token_for(:email_confirmation)) %>
+<%= t(".heading") %>
+
+<%= t(".body") %>
+
+<%= t(".cta") %>:
+<%= @confirmation_url %>
 
 <%= t(".expires") %>

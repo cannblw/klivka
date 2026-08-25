@@ -1,22 +1,38 @@
 class ReminderMailerPreview < ActionMailer::Preview
   def keep_in_touch
-    ReminderMailer.with(delivery: delivery_for(keep_in_touch_source)).keep_in_touch
+    reminder(:keep_in_touch, keep_in_touch_source, :en)
+  end
+
+  def keep_in_touch_spanish
+    reminder(:keep_in_touch, keep_in_touch_source, :es)
   end
 
   def birthday
-    ReminderMailer.with(delivery: delivery_for(birthday_source)).birthday
+    reminder(:birthday, birthday_source, :en)
+  end
+
+  def birthday_spanish
+    reminder(:birthday, birthday_source, :es)
   end
 
   def significant_date
-    ReminderMailer.with(delivery: delivery_for(significant_date_source)).significant_date
+    reminder(:significant_date, significant_date_source, :en)
+  end
+
+  def significant_date_spanish
+    reminder(:significant_date, significant_date_source, :es)
   end
 
   private
 
-  def delivery_for(source)
+  def reminder(action, source, locale)
+    ReminderMailer.with(delivery: delivery_for(source, locale:)).public_send(action)
+  end
+
+  def delivery_for(source, locale:)
     occurrence_on = Date.current + 14.days
     ReminderDelivery.new(
-      user: preview_user,
+      user: preview_user(locale),
       source:,
       channel: ReminderDelivery::EMAIL_CHANNEL,
       reminder_on: occurrence_on,
@@ -24,8 +40,10 @@ class ReminderMailerPreview < ActionMailer::Preview
     )
   end
 
-  def preview_user
-    @preview_user ||= User.find_by!(email_address: Rails.application.config.x.development_seed_email_address)
+  def preview_user(locale = nil)
+    user = User.find_by!(email_address: Rails.application.config.x.development_seed_email_address)
+    user.locale = locale.to_s if locale
+    user
   end
 
   def preview_friend
@@ -37,7 +55,7 @@ class ReminderMailerPreview < ActionMailer::Preview
   end
 
   def birthday_source
-    birthday = Entry::Birthday.joins(:friend).find_by!(friends: { user_id: preview_user.id })
+    birthday = Entry::Birthday.new(friend: preview_friend, entry_date: Date.new(1990, 9, 14))
     EntryReminder.new(entry: birthday)
   end
 

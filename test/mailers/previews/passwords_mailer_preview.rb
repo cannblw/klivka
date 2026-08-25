@@ -1,7 +1,15 @@
-# Preview all emails at http://localhost:3000/rails/mailers/passwords_mailer
 class PasswordsMailerPreview < ActionMailer::Preview
-  # Preview this email at http://localhost:3000/rails/mailers/passwords_mailer/reset
   def reset
-    PasswordsMailer.reset(User.take)
+    PasswordsMailer.reset(preview_user(:en))
+  end
+
+  def reset_spanish
+    PasswordsMailer.reset(preview_user(:es))
+  end
+
+  private
+
+  def preview_user(locale)
+    User.take!.tap { |user| user.locale = locale.to_s }
   end
 end

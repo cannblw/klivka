@@ -1,4 +1,10 @@
-<%= t(".instructions") %>
-<%= edit_password_url(@user.password_reset_token) %>
+<%= t(".heading") %>
+
+<%= t(".body") %>
+
+<%= t(".cta") %>:
+<%= @password_reset_url %>
 
 <%= t(".expires", time: distance_of_time_in_words(0, @user.password_reset_token_expires_in)) %>
+
+<%= t(".ignore") %>
