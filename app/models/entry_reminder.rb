@@ -19,7 +19,7 @@
 #  entry_id  (entry_id => entries.id) ON DELETE => cascade
 #
 class EntryReminder < ApplicationRecord
-  EXCLUDED_DATE_ENTRY_CLASSES = [ Entry::FirstMet ].freeze
+  EXCLUDED_DATE_ENTRY_CLASSES = [ Entry::Birthday, Entry::FirstMet ].freeze
   LEAD_UNITS = Rails.application.config.x.reminder_lead_units
   ONE_TIME_RECURRENCE = "one_time".freeze
   YEARLY_RECURRENCE = "yearly".freeze
@@ -38,7 +38,7 @@ class EntryReminder < ApplicationRecord
   validates :lead_unit, inclusion: { in: LEAD_UNITS.keys }
   validates :recurrence, inclusion: { in: RECURRENCES }
   # Check constraints cannot inspect the associated STI row, so eligibility is enforced at the model boundary.
-  validate :validate_entry_eligibility, :validate_birthday_recurrence
+  validate :validate_entry_eligibility
 
   def self.eligible_entry?(entry)
     entry.is_a?(Entry::Date) && EXCLUDED_DATE_ENTRY_CLASSES.none? { entry.is_a?(_1) }
@@ -99,11 +99,5 @@ class EntryReminder < ApplicationRecord
     return if self.class.eligible_entry?(entry)
 
     errors.add(:entry, :ineligible_for_reminders)
-  end
-
-  def validate_birthday_recurrence
-    return unless entry.is_a?(Entry::Birthday) && !yearly?
-
-    errors.add(:recurrence, :birthday_must_repeat_yearly)
   end
 end

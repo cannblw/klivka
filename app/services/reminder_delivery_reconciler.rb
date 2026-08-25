@@ -68,6 +68,8 @@ class ReminderDeliveryReconciler
       keep_in_touch_current?(source, delivery, latest_interaction_on: latest_interactions[source.friend_id])
     when EntryReminder
       entry_reminder_current?(source, delivery)
+    when Entry::Birthday
+      birthday_reminder_current?(source, delivery)
     else
       false
     end
@@ -83,6 +85,14 @@ class ReminderDeliveryReconciler
   def entry_reminder_current?(reminder, delivery)
     reminder.next_reminder_on(on: delivery.reminder_on) == delivery.reminder_on &&
       delivery.occurrence_on == delivery.reminder_on + reminder.lead_days
+  end
+
+  def birthday_reminder_current?(birthday, delivery)
+    return false unless user.birthday_reminders_enabled?
+
+    occurrence_on = birthday.occurrence_on(year: delivery.occurrence_on.year)
+    delivery.occurrence_on == occurrence_on &&
+      delivery.reminder_on == occurrence_on - user.birthday_reminder_lead_days
   end
 
   def preload_entries(sources)

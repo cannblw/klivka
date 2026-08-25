@@ -49,7 +49,10 @@ class DemoSeedData
       reminder_in_app_enabled: Rails.application.config.x.reminder_default_in_app_enabled,
       reminder_email_enabled: Rails.application.config.x.reminder_default_email_enabled,
       default_reminder_lead_value: Rails.application.config.x.reminder_default_lead_value,
-      default_reminder_lead_unit: Rails.application.config.x.reminder_default_lead_unit
+      default_reminder_lead_unit: Rails.application.config.x.reminder_default_lead_unit,
+      birthday_reminders_enabled: Rails.application.config.x.birthday_reminder_default_enabled,
+      birthday_reminder_lead_value: Rails.application.config.x.reminder_default_lead_value,
+      birthday_reminder_lead_unit: Rails.application.config.x.reminder_default_lead_unit
     )
   end
 end

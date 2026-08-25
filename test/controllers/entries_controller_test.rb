@@ -120,7 +120,7 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal EntryReminder::YEARLY_RECURRENCE, reminder.recurrence
   end
 
-  test "create leaves a date reminder off when the reminder checkbox is cleared" do
+  test "create leaves a date reminder off when a reminder is not added" do
     assert_no_difference -> { EntryReminder.count } do
       post friend_entries_url(friends(:ada)),
         params: {
@@ -152,7 +152,8 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "input[name='entry[entry_reminder_attributes][_destroy]'][type='checkbox'][value='0'][checked]"
+    assert_select "input[name='entry[entry_reminder_attributes][_destroy]'][type='hidden'][value='0']", visible: :all
+    assert_select "#entry-reminder-options:not(.hidden)"
     assert_select "input[name='entry[entry_reminder_attributes][lead_value]'][value='-1']"
     assert_select "main", /Reminder amount must be greater than or equal to 0/
   end
@@ -326,27 +327,31 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame"
   end
 
-  test "update turns off an existing date reminder" do
-    entry = entries(:ada_birthday)
+  test "update removes an existing date reminder" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+    reminder = entry.create_entry_reminder!(lead_value: 1, lead_unit: "months")
 
     patch friend_entry_url(friends(:ada), entry),
-      params: { entry: { entry_reminder_attributes: { id: entry.entry_reminder.id, _destroy: "1" } } },
+      params: { entry: { entry_reminder_attributes: { id: reminder.id, _destroy: "1" } } },
       headers: { "Turbo-Frame" => "true" }
 
     assert_response :success
     assert_nil entry.reload.entry_reminder
+    assert_select "[data-entry-reminder-summary]", count: 0
   end
 
-  test "update changes an existing date reminder's lead time" do
-    entry = entries(:ada_birthday)
+  test "update changes an existing date reminder" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+    reminder = entry.create_entry_reminder!(lead_value: 1, lead_unit: "months")
 
     patch friend_entry_url(friends(:ada), entry),
       params: {
         entry: {
           entry_reminder_attributes: {
-            id: entry.entry_reminder.id,
+            id: reminder.id,
             lead_value: "2",
             lead_unit: "days",
+            recurrence: EntryReminder::YEARLY_RECURRENCE,
             _destroy: "0"
           }
         }
@@ -354,8 +359,10 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
       headers: { "Turbo-Frame" => "true" }
 
     assert_response :success
-    assert_equal 2, entry.reload.entry_reminder.lead_value
-    assert_equal "days", entry.entry_reminder.lead_unit
+    reminder.reload
+    assert_equal 2, reminder.lead_value
+    assert_equal "days", reminder.lead_unit
+    assert_predicate reminder, :yearly?
   end
 
   test "update normalizes an email and renders its mail link" do

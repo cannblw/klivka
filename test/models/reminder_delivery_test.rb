@@ -129,6 +129,22 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
     assert delivery.errors.of_kind?(:source, :invalid)
   end
 
+  test "supports birthdays but rejects other entry types as delivery sources" do
+    birthday_delivery = ReminderDelivery.new(
+      user: users(:one), source: entries(:ada_birthday), channel: "email",
+      reminder_on: Date.new(2026, 11, 10), occurrence_on: Date.new(2026, 12, 10)
+    )
+    date_entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2026, 12, 10))
+    date_delivery = ReminderDelivery.new(
+      user: users(:one), source: date_entry, channel: "email",
+      reminder_on: Date.new(2026, 11, 10), occurrence_on: Date.new(2026, 12, 10)
+    )
+
+    assert_predicate birthday_delivery, :valid?
+    assert_not_predicate date_delivery, :valid?
+    assert date_delivery.errors.of_kind?(:source, :invalid)
+  end
+
   test "keeps the audit record when its reminder source is deleted" do
     delivery = ReminderDelivery.create!(
       user: users(:one), source: @setting, channel: "email",

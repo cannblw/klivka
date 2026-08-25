@@ -18,8 +18,3 @@
 #
 #  entry_id  (entry_id => entries.id) ON DELETE => cascade
 #
-ada_birthday:
-  entry: ada_birthday
-  lead_value: 1
-  lead_unit: months
-  recurrence: yearly

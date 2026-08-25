@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_21_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -108,7 +108,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_120000) do
     t.check_constraint "(claimed_at IS NULL AND claim_token IS NULL) OR (claimed_at IS NOT NULL AND claim_token IS NOT NULL)", name: "reminder_deliveries_claim_is_complete"
     t.check_constraint "attempts >= 0", name: "reminder_deliveries_attempts_are_nonnegative"
     t.check_constraint "channel IN ('in_app', 'email')", name: "reminder_deliveries_channel_is_supported"
-    t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder')", name: "reminder_deliveries_source_type_is_supported"
+    t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder', 'Entry')", name: "reminder_deliveries_source_type_is_supported"
     t.check_constraint "status IN ('pending', 'delivered', 'failed', 'canceled')", name: "reminder_deliveries_status_is_supported"
   end
 
@@ -122,6 +122,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_120000) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "birthday_reminder_lead_unit", default: "months", null: false
+    t.integer "birthday_reminder_lead_value", default: 1, null: false
+    t.boolean "birthday_reminders_enabled", default: true, null: false
     t.datetime "confirmed_at"
     t.datetime "created_at", null: false
     t.string "default_reminder_lead_unit", default: "months", null: false
@@ -137,6 +140,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_120000) do
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["reminders_scanned_through_on"], name: "index_users_on_reminders_scanned_through_on"
+    t.check_constraint "birthday_reminder_lead_value BETWEEN 0 AND 2147483647 AND birthday_reminder_lead_unit IN ('days', 'months', 'years')", name: "users_birthday_reminder_lead_is_supported"
+    t.check_constraint "birthday_reminders_enabled IN (TRUE, FALSE)", name: "users_birthday_reminders_enabled_is_boolean"
     t.check_constraint "default_reminder_lead_value BETWEEN 0 AND 2147483647 AND default_reminder_lead_unit IN ('days', 'months', 'years')", name: "users_default_reminder_lead_is_supported"
     t.check_constraint "reminder_email_enabled IN (TRUE, FALSE)", name: "users_reminder_email_enabled_is_boolean"
     t.check_constraint "reminder_in_app_enabled IN (TRUE, FALSE)", name: "users_reminder_in_app_enabled_is_boolean"

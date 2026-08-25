@@ -29,12 +29,30 @@ class EntryFormComponentTest < ViewComponent::TestCase
     assert_selector "form[data-controller~='reminder-date']"
     assert_selector "input[name='entry[entry_date]'][data-reminder-date-target='date'][data-action='change->reminder-date#update']"
     assert_selector "fieldset", text: "Reminder"
-    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='checkbox'][value='0']:not([checked])"
+    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='hidden'][value='1'][data-reminder-date-target='destroyField']", visible: :all
+    assert_selector "[data-reminder-date-target='addButton']:not(.hidden) button[data-action='reminder-date#enable'][aria-expanded='false']"
+    assert_selector "#entry-reminder-options[data-reminder-date-target='fields'].hidden"
+    assert_selector "[data-entry-reminder-status='on']", count: 0
     assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][type='number'][value='1'][min='0'][max='#{FriendCrm::MAX_INT32}']"
     assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option[selected][value='months']"
     assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='radio'][value='one_time'][checked]"
     assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='radio'][value='yearly']:not([checked])"
     assert_nil entry.entry_reminder
+  end
+
+  test "renders an existing date reminder as on with controls ready to edit" do
+    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+    entry.create_entry_reminder!(lead_value: 2, lead_unit: "days", recurrence: EntryReminder::YEARLY_RECURRENCE)
+
+    render_inline EntryFormComponent.new(entry:, friend: entry.friend)
+
+    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='hidden'][value='0']", visible: :all
+    assert_selector "[data-reminder-date-target='addButton'].hidden button[aria-expanded='true']", visible: :all
+    assert_selector "#entry-reminder-options:not(.hidden)"
+    assert_selector "[data-entry-reminder-status='on']"
+    assert_selector "button[data-action='reminder-date#disable'][class~='!text-red-600'][class~='dark:!text-red-400']"
+    assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][value='2']"
+    assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][value='yearly'][checked]"
   end
 
   test "explains leap-day reminder behavior when a leap-day reminder is enabled" do
@@ -47,16 +65,27 @@ class EntryFormComponentTest < ViewComponent::TestCase
       text: "In non-leap years, Klivka will remind you on February 28."
   end
 
-  test "renders an existing date reminder as enabled" do
+  test "explains the global reminder timing on a birthday form" do
     entry = entries(:ada_birthday)
 
     render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
 
-    assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='checkbox'][value='0'][checked]"
-    assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][value='1']"
-    assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option[selected][value='months']"
-    assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='hidden'][value='#{EntryReminder::YEARLY_RECURRENCE}']", visible: :all
-    assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='radio']", count: 0
+    assert_selector "[data-birthday-reminder-status='enabled']"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
+    assert_selector "input[name^='entry[entry_reminder_attributes]']", count: 0
+    assert_selector "form[data-controller~='reminder-date']", count: 0
+  end
+
+  test "links to settings from a birthday form when birthday reminders are disabled" do
+    user = users(:one)
+    user.update!(birthday_reminders_enabled: false)
+    entry = entries(:ada_birthday)
+
+    render_inline EntryFormComponent.new(entry:, friend: entry.friend)
+
+    assert_selector "#birthday-fields [data-birthday-reminder-status='disabled']" do
+      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
+    end
   end
 
   test "does not render reminder controls for a First Met entry" do
@@ -65,20 +94,6 @@ class EntryFormComponentTest < ViewComponent::TestCase
     render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
 
     assert_selector "input[name='entry[entry_reminder_attributes][_destroy]']", count: 0
-  end
-
-  test "localizes date reminder controls" do
-    entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
-
-    I18n.with_locale(:es) do
-      render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
-
-      assert_text "Recordatorio"
-      assert_text "Recuérdame esta fecha"
-      assert_text "Una vez"
-      assert_text "Cada año"
-      assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option", text: "Meses"
-    end
   end
 
   test "renders separate year, optional month, and optional day fields for First Met" do

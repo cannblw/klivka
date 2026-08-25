@@ -33,6 +33,8 @@ class EntriesController < ApplicationController
 
   def update
     if @entry.update(entry_params_for_update)
+      @entry.reload
+
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [

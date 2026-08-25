@@ -76,6 +76,11 @@ module FriendCrm
     config.x.reminder_default_email_enabled = boolean_values[ENV.fetch("REMINDER_DEFAULT_EMAIL_ENABLED", "true")]
     raise ArgumentError, "REMINDER_DEFAULT_EMAIL_ENABLED must be true or false" if config.x.reminder_default_email_enabled.nil?
 
+    config.x.birthday_reminder_default_enabled = boolean_values[ENV.fetch("BIRTHDAY_REMINDER_DEFAULT_ENABLED", "true")]
+    if config.x.birthday_reminder_default_enabled.nil?
+      raise ArgumentError, "BIRTHDAY_REMINDER_DEFAULT_ENABLED must be true or false"
+    end
+
     config.x.reminder_default_lead_value = Integer(ENV.fetch("REMINDER_DEFAULT_LEAD_VALUE", "1"), 10)
     if config.x.reminder_default_lead_value.negative? ||
         config.x.reminder_default_lead_value > MAX_INT32

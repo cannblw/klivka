@@ -21,8 +21,4 @@ class EntryReminderFieldsComponent < ViewComponent::Base
   def leap_day_notice_visible?
     reminder_enabled && reminder.yearly? && entry.leap_day?
   end
-
-  def recurrence_editable?
-    !entry.is_a?(Entry::Birthday)
-  end
 end

@@ -34,6 +34,9 @@ class DemoResetJobTest < ActiveJob::TestCase
       assert_equal Rails.application.config.x.reminder_default_email_enabled, demo_user.reminder_email_enabled
       assert_equal Rails.application.config.x.reminder_default_lead_value, demo_user.default_reminder_lead_value
       assert_equal Rails.application.config.x.reminder_default_lead_unit, demo_user.default_reminder_lead_unit
+      assert_equal Rails.application.config.x.birthday_reminder_default_enabled, demo_user.birthday_reminders_enabled
+      assert_equal Rails.application.config.x.reminder_default_lead_value, demo_user.birthday_reminder_lead_value
+      assert_equal Rails.application.config.x.reminder_default_lead_unit, demo_user.birthday_reminder_lead_unit
       assert_equal now, state.reload.started_at
       assert_equal now, state.last_activity_at
     end

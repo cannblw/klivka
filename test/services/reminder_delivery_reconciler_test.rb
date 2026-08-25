@@ -104,6 +104,61 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     assert_equal ReminderDelivery::CANCELED_STATUS, deleted_delivery.reload.status
   end
 
+  test "keeps a birthday delivery that matches the global preference" do
+    user = users(:one)
+    user.update!(birthday_reminder_lead_value: 30, birthday_reminder_lead_unit: "days")
+    delivery = create_delivery(
+      entries(:ada_birthday),
+      reminder_on: Date.new(2026, 11, 10),
+      occurrence_on: Date.new(2026, 12, 10)
+    )
+
+    assert_equal 0, reconcile
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
+  end
+
+  test "cancels birthday work when global preferences or the birthday change" do
+    user = users(:one)
+    birthday = entries(:ada_birthday)
+    user.update!(birthday_reminder_lead_value: 30, birthday_reminder_lead_unit: "days")
+    disabled_delivery = create_delivery(
+      birthday,
+      reminder_on: Date.new(2026, 11, 10),
+      occurrence_on: Date.new(2026, 12, 10)
+    )
+    user.update!(birthday_reminders_enabled: false)
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, disabled_delivery.reload.status
+
+    user.update!(birthday_reminders_enabled: true)
+    changed_delivery = create_delivery(
+      birthday,
+      channel: "email",
+      reminder_on: Date.new(2027, 11, 10),
+      occurrence_on: Date.new(2027, 12, 10)
+    )
+    birthday.update!(entry_date: Date.new(1815, 12, 11))
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, changed_delivery.reload.status
+  end
+
+  test "cancels birthday work when its birthday source is deleted" do
+    user = users(:one)
+    birthday = entries(:ada_birthday)
+    user.update!(birthday_reminder_lead_value: 30, birthday_reminder_lead_unit: "days")
+    delivery = create_delivery(
+      birthday,
+      reminder_on: Date.new(2026, 11, 10),
+      occurrence_on: Date.new(2026, 12, 10)
+    )
+    birthday.destroy!
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+  end
+
   test "does not alter completed delivery history" do
     setting = create_setting
     delivery = create_delivery(setting)

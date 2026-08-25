@@ -7,6 +7,7 @@ class FriendsController < ApplicationController
 
   def show
     @friend = Current.user.friends.friendly.find(params[:id])
+    prepare_return_navigation
     @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
     @interaction_count = @friend.interactions.count
     prepare_quick_interaction
@@ -14,9 +15,10 @@ class FriendsController < ApplicationController
 
   def update
     @friend = Current.user.friends.friendly.find(params[:id])
+    prepare_return_navigation
 
     if @friend.update(friend_params)
-      redirect_to @friend
+      redirect_to friend_path(@friend, **@return_params)
     else
       prepare_quick_interaction
       render :show, status: :unprocessable_entity
@@ -42,6 +44,20 @@ class FriendsController < ApplicationController
   end
 
   private
+
+  def prepare_return_navigation
+    if params[:from] == "birthdays"
+      month = Integer(params[:month], exception: false)
+      month = nil unless month&.between?(1, 12)
+      @return_params = { from: "birthdays", month: }.compact
+      @back_path = birthdays_path(month:)
+      @back_translation_key = "friends.show.back_to_birthdays"
+    else
+      @return_params = {}
+      @back_path = root_path
+      @back_translation_key = "friends.show.back"
+    end
+  end
 
   def prepare_quick_interaction
     @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a

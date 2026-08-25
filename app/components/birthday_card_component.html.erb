@@ -1,13 +1,13 @@
-<%= link_to friend, class: "flex items-center gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm transition hover:shadow-md dark:border-stone-700 dark:bg-stone-800 dark:hover:shadow-lg dark:hover:shadow-stone-900/30" do %>
+<%= link_to friend_path, class: "flex items-center gap-3 rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm transition hover:border-amber-300 hover:bg-amber-50 hover:shadow-md focus-visible:border-amber-500 focus-visible:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-stone-700 dark:bg-stone-800 dark:hover:border-amber-700 dark:hover:bg-amber-900/20 dark:hover:shadow-lg dark:hover:shadow-stone-900/30 dark:focus-visible:border-amber-600 dark:focus-visible:bg-amber-900/20" do %>
   <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-sm font-semibold text-amber-700 dark:bg-amber-800 dark:text-amber-200">
     <%= friend.initials %>
   </div>
   <div class="min-w-0">
     <p class="truncate font-medium"><%= friend.name %></p>
     <p class="text-sm text-stone-500 dark:text-stone-400">
-      <%= l(birthday.entry_date, format: :long) %>
-      <% if birthday.age %>
-        (<%= birthday.age %> <%= t("entries.age") %>)
+      <%= l(occurrence_on, format: :long) %>
+      <% if age %>
+        (<%= age %> <%= t("entries.age") %>)
       <% end %>
     </p>
   </div>

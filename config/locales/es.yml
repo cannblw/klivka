@@ -32,6 +32,9 @@ es:
         reminder_email_enabled: "Recordatorios por correo electrónico"
         default_reminder_lead_value: "Antelación predeterminada del recordatorio"
         default_reminder_lead_unit: "Unidad de antelación predeterminada del recordatorio"
+        birthday_reminders_enabled: "Recordatorios de cumpleaños"
+        birthday_reminder_lead_value: "Antelación del recordatorio de cumpleaños"
+        birthday_reminder_lead_unit: "Unidad del recordatorio de cumpleaños"
       entry/email:
         email: "Correo electrónico"
       entry/date:
@@ -69,8 +72,6 @@ es:
           attributes:
             entry:
               ineligible_for_reminders: "no admite recordatorios"
-            recurrence:
-              birthday_must_repeat_yearly: "debe repetirse cada año para los cumpleaños"
         interaction:
           attributes:
             occurred_on:
@@ -151,8 +152,10 @@ es:
     gift_list_add_item: "Añadir idea"
     reminder:
       heading: "Recordatorio"
-      description: "Elige si quieres que Klivka te recuerde esta fecha y con cuánta antelación."
-      enabled: "Recuérdame esta fecha"
+      description: "Añade un recordatorio si quieres que Klivka te avise de esta fecha."
+      add: "Añadir recordatorio"
+      "on": "Recordatorio activado"
+      remove: "Eliminar recordatorio"
       lead: "Con cuánta antelación"
       lead_value: "Cantidad"
       lead_unit: "Unidad"
@@ -215,7 +218,7 @@ es:
       heading: "Ideas, si te sirven"
       description: "Añádelas cuando te vengan a la mente."
       first_met: "Cómo os conocisteis"
-      date: "Una fecha para recordar"
+      date: "Una fecha"
       gift_list: "Ideas de regalos"
     create:
       created: "Entrada añadida."
@@ -338,12 +341,28 @@ es:
       quarterly: "Cada tres meses"
       yearly: "Anual"
 
+  birthday_reminder_status:
+    enabled: "Te recordaremos todos los cumpleaños %{timing}."
+    disabled: "Los recordatorios de cumpleaños están desactivados."
+    no_channels: "Los recordatorios de cumpleaños están activados, pero todos los canales de notificación están desactivados."
+    settings: "Cambiar en Ajustes"
+    enable_reminders: "Activarlos en Ajustes"
+    enable_channel: "Activar un canal en Ajustes"
+
   birthdays:
     index:
       title: "Cumpleaños"
       heading: "Cumpleaños"
-      empty_title: "No hay cumpleaños este mes"
-      empty_hint: "Los cumpleaños de tus amigos aparecerán aquí."
+      description: "Cumpleaños de %{year}"
+      month_navigation: "Elegir un mes de cumpleaños"
+      current_and_upcoming: "Actuales y próximos"
+      earlier_this_year: "Anteriores de este año"
+      empty_month_title: "No hay cumpleaños en %{month}"
+      empty_month_hint: "Elige otro mes para seguir buscando."
+      empty_upcoming_title: "No quedan cumpleaños este año"
+      empty_upcoming_hint: "Puedes consultar los cumpleaños anteriores más abajo."
+      empty_all_title: "Aún no has guardado ningún cumpleaños"
+      empty_all_hint: "Los cumpleaños aparecerán aquí cuando los añadas a los perfiles de tus amigos."
 
   settings:
     show:
@@ -369,14 +388,26 @@ es:
       updated: "Ajustes guardados."
     reminders:
       heading: "Recordatorios"
-      description: "Elige cómo quieres que te avise Klivka."
-      delivery_channels: "Canales de entrega de recordatorios"
+      description: "Elige dónde recibir los recordatorios y con cuánta antelación debe avisarte Klivka."
+      delivery_channels: "Canales"
+      delivery_channels_hint: "Estas opciones se aplican a los recordatorios de cumpleaños, fechas y contacto."
       in_app: "Recordatorios en la aplicación"
       in_app_hint: "Permite que aparezcan recordatorios mientras usas Klivka."
       email: "Recordatorios por correo electrónico"
       email_hint: "Permite que se envíen recordatorios al correo electrónico de tu cuenta."
-      default_lead: "Con cuánta antelación"
-      default_lead_hint: "Esta antelación se usará al añadir un recordatorio de fecha. Podrás cambiarla para cada recordatorio."
+      no_channels: "Activa al menos un canal de notificación para recibir recordatorios."
+      birthdays:
+        heading: "Recordatorios de cumpleaños"
+        description: "Klivka puede avisarte antes de cada cumpleaños que guardes."
+        enabled: "Recordarme los cumpleaños"
+        enabled_hint: "Se aplica a todos los cumpleaños, tanto actuales como futuros."
+        timing: "Con cuánta antelación"
+        timing_hint: "Esta antelación se aplica a todos los cumpleaños."
+      other_dates:
+        heading: "Recordatorios de otras fechas"
+        description: "Los recordatorios de aniversarios y otras fechas guardadas son opcionales. Se activan por separado para cada fecha."
+        timing: "Antelación predeterminada"
+        timing_hint: "Este valor aparece al activar el recordatorio de una fecha. Puedes cambiarlo para esa fecha antes de guardar."
       lead_value: "Cantidad"
       lead_unit: "Unidad"
       lead_units:
@@ -410,6 +441,7 @@ es:
         hint: "Añade a tu primer amigo. Solo necesitas un nombre."
     show:
       back: "← Amigos"
+      back_to_birthdays: "← Cumpleaños"
       delete: "Eliminar amigo"
       more_actions: "Más acciones para esta amistad"
     create:

@@ -20,11 +20,10 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
   end
 
   test "selects birthday and significant-date mailers from their entry source" do
-    birthday_reminder = entries(:ada_birthday).entry_reminder
     birthday_delivery = create_delivery(
-      birthday_reminder,
-      reminder_on: birthday_reminder.reminder_on(year: 2026),
-      occurrence_on: birthday_reminder.entry.occurrence_on(year: 2026)
+      entries(:ada_birthday),
+      reminder_on: Date.new(2026, 11, 10),
+      occurrence_on: Date.new(2026, 12, 10)
     )
     date_entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2026, 9, 7), content: { "label" => "Moving day" })
     date_reminder = date_entry.create_entry_reminder!(lead_value: 1, lead_unit: "days", recurrence: "one_time")
