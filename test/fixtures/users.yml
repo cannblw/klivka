@@ -5,6 +5,9 @@
 # Table name: users
 #
 #  id                           :integer          not null, primary key
+#  birthday_reminder_lead_unit  :string           default("months"), not null
+#  birthday_reminder_lead_value :integer          default(1), not null
+#  birthday_reminders_enabled   :boolean          default(TRUE), not null
 #  confirmed_at                 :datetime
 #  default_reminder_lead_unit   :string           default("months"), not null
 #  default_reminder_lead_value  :integer          default(1), not null

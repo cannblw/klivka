@@ -5,6 +5,9 @@ require "test_helper"
 # Table name: users
 #
 #  id                           :integer          not null, primary key
+#  birthday_reminder_lead_unit  :string           default("months"), not null
+#  birthday_reminder_lead_value :integer          default(1), not null
+#  birthday_reminders_enabled   :boolean          default(TRUE), not null
 #  confirmed_at                 :datetime
 #  default_reminder_lead_unit   :string           default("months"), not null
 #  default_reminder_lead_value  :integer          default(1), not null
@@ -80,6 +83,9 @@ class UserTest < ActiveSupport::TestCase
     assert_predicate user, :reminder_email_enabled?
     assert_equal 1, user.default_reminder_lead_value
     assert_equal "months", user.default_reminder_lead_unit
+    assert_equal Rails.application.config.x.birthday_reminder_default_enabled, user.birthday_reminders_enabled
+    assert_equal 1, user.birthday_reminder_lead_value
+    assert_equal "months", user.birthday_reminder_lead_unit
   end
 
   test "the shared demo allows in-app reminders but suppresses email reminders" do
@@ -99,12 +105,14 @@ class UserTest < ActiveSupport::TestCase
       configuration.reminder_default_in_app_enabled,
       configuration.reminder_default_email_enabled,
       configuration.reminder_default_lead_value,
-      configuration.reminder_default_lead_unit
+      configuration.reminder_default_lead_unit,
+      configuration.birthday_reminder_default_enabled
     ]
     configuration.reminder_default_in_app_enabled = false
     configuration.reminder_default_email_enabled = false
     configuration.reminder_default_lead_value = 2
     configuration.reminder_default_lead_unit = "years"
+    configuration.birthday_reminder_default_enabled = false
 
     user = User.new(
       email_address: "custom-reminders@example.com",
@@ -112,18 +120,21 @@ class UserTest < ActiveSupport::TestCase
       reminder_in_app_enabled: true,
       reminder_email_enabled: true,
       default_reminder_lead_value: 1,
-      default_reminder_lead_unit: "months"
+      default_reminder_lead_unit: "months",
+      birthday_reminders_enabled: true
     )
 
     assert_predicate user, :reminder_in_app_enabled?
     assert_predicate user, :reminder_email_enabled?
     assert_equal 1, user.default_reminder_lead_value
     assert_equal "months", user.default_reminder_lead_unit
+    assert_predicate user, :birthday_reminders_enabled?
   ensure
     configuration.reminder_default_in_app_enabled,
       configuration.reminder_default_email_enabled,
       configuration.reminder_default_lead_value,
-      configuration.reminder_default_lead_unit = original_defaults
+      configuration.reminder_default_lead_unit,
+      configuration.birthday_reminder_default_enabled = original_defaults
   end
 
   test "rejects a reminder lead value below zero" do
@@ -152,6 +163,37 @@ class UserTest < ActiveSupport::TestCase
     assert user.errors.of_kind?(:default_reminder_lead_unit, :inclusion)
   end
 
+  test "preserves birthday reminder preferences independently from general reminder defaults" do
+    user = User.new(
+      email_address: "birthday-reminders@example.com",
+      password: "a-safe-password",
+      default_reminder_lead_value: 2,
+      default_reminder_lead_unit: "days",
+      birthday_reminders_enabled: false,
+      birthday_reminder_lead_value: 3,
+      birthday_reminder_lead_unit: "months"
+    )
+
+    assert_not_predicate user, :birthday_reminders_enabled?
+    assert_equal 3, user.birthday_reminder_lead_value
+    assert_equal "months", user.birthday_reminder_lead_unit
+  end
+
+  test "rejects an invalid birthday reminder preference" do
+    user = User.new(
+      email_address: "invalid-birthday-reminders@example.com",
+      password: "a-safe-password",
+      birthday_reminders_enabled: nil,
+      birthday_reminder_lead_value: -1,
+      birthday_reminder_lead_unit: "weeks"
+    )
+
+    assert_not_predicate user, :valid?
+    assert user.errors.of_kind?(:birthday_reminders_enabled, :inclusion)
+    assert user.errors.of_kind?(:birthday_reminder_lead_value, :greater_than_or_equal_to)
+    assert user.errors.of_kind?(:birthday_reminder_lead_unit, :inclusion)
+  end
+
   test "database rejects a negative reminder lead value" do
     assert_raises ActiveRecord::StatementInvalid do
       users(:one).update_column(:default_reminder_lead_value, -1)
@@ -167,6 +209,11 @@ class UserTest < ActiveSupport::TestCase
       User.connection.execute(
         "UPDATE users SET default_reminder_lead_value = #{overflowing_value} WHERE id = #{quoted_id}"
       )
+    end
+  end
+  test "database rejects an invalid birthday reminder preference" do
+    assert_raises ActiveRecord::StatementInvalid do
+      users(:one).update_column(:birthday_reminder_lead_value, -1)
     end
   end
 end

@@ -3,6 +3,9 @@
 # Table name: users
 #
 #  id                           :integer          not null, primary key
+#  birthday_reminder_lead_unit  :string           default("months"), not null
+#  birthday_reminder_lead_value :integer          default(1), not null
+#  birthday_reminders_enabled   :boolean          default(TRUE), not null
 #  confirmed_at                 :datetime
 #  default_reminder_lead_unit   :string           default("months"), not null
 #  default_reminder_lead_value  :integer          default(1), not null
@@ -38,16 +41,19 @@ class User < ApplicationRecord
   attribute :reminder_email_enabled, :boolean, default: -> { Rails.application.config.x.reminder_default_email_enabled }
   attribute :default_reminder_lead_value, :integer, default: -> { Rails.application.config.x.reminder_default_lead_value }
   attribute :default_reminder_lead_unit, :string, default: -> { Rails.application.config.x.reminder_default_lead_unit }
+  attribute :birthday_reminders_enabled, :boolean, default: -> { Rails.application.config.x.birthday_reminder_default_enabled }
+  attribute :birthday_reminder_lead_value, :integer, default: -> { Rails.application.config.x.reminder_default_lead_value }
+  attribute :birthday_reminder_lead_unit, :string, default: -> { Rails.application.config.x.reminder_default_lead_unit }
 
   after_initialize :set_default_time_zone, if: :new_record?
 
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :time_zone, presence: true
   validate :time_zone_is_supported
-  validates :reminder_in_app_enabled, :reminder_email_enabled, inclusion: { in: [ true, false ] }
-  validates :default_reminder_lead_value,
+  validates :reminder_in_app_enabled, :reminder_email_enabled, :birthday_reminders_enabled, inclusion: { in: [ true, false ] }
+  validates :default_reminder_lead_value, :birthday_reminder_lead_value,
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: FriendCrm::MAX_INT32 }
-  validates :default_reminder_lead_unit, inclusion: { in: REMINDER_LEAD_UNITS.keys }
+  validates :default_reminder_lead_unit, :birthday_reminder_lead_unit, inclusion: { in: REMINDER_LEAD_UNITS.keys }
 
   # The seeded development account deliberately uses a short, local-only password.
   validates :password, length: { minimum: 8 }, allow_nil: true, unless: -> { Rails.env.development? }
