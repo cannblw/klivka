@@ -333,6 +333,7 @@ en:
     disabled: "Birthday reminders are off."
     no_channels: "Birthday reminders are on, but every notification channel is off."
     settings: "Change in Settings"
+    enable_reminders: "Enable them in Settings"
     enable_channel: "Enable a channel in Settings"
 
   birthdays:

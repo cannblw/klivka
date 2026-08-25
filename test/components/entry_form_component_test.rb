@@ -58,6 +58,18 @@ class EntryFormComponentTest < ViewComponent::TestCase
     assert_selector "form[data-controller~='reminder-date']", count: 0
   end
 
+  test "links to settings from a birthday form when birthday reminders are disabled" do
+    user = users(:one)
+    user.update!(birthday_reminders_enabled: false)
+    entry = entries(:ada_birthday)
+
+    render_inline EntryFormComponent.new(entry:, friend: entry.friend)
+
+    assert_selector "#birthday-fields [data-birthday-reminder-status='disabled']" do
+      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
+    end
+  end
+
   test "does not render reminder controls for a First Met entry" do
     entry = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019")
 

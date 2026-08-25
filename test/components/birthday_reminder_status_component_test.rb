@@ -5,7 +5,7 @@ class BirthdayReminderStatusComponentTest < ViewComponent::TestCase
     user = users(:one)
     user.update!(birthday_reminder_lead_value: 2, birthday_reminder_lead_unit: "days")
 
-    render_inline BirthdayReminderStatusComponent.new(user:)
+    render_inline BirthdayReminderStatusComponent.new(user:, enable_reminders_link: true)
 
     assert_selector "[data-birthday-reminder-status='enabled']"
     assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}']"
@@ -17,7 +17,9 @@ class BirthdayReminderStatusComponentTest < ViewComponent::TestCase
 
     render_inline BirthdayReminderStatusComponent.new(user:)
 
-    assert_selector "[data-birthday-reminder-status='disabled']"
+    assert_selector "[data-birthday-reminder-status='disabled']" do
+      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}']"
+    end
   end
 
   test "explains when birthday reminders have no delivery channel" do

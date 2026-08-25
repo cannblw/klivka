@@ -1,11 +1,12 @@
 class BirthdayReminderStatusComponent < ViewComponent::Base
-  def initialize(user:)
+  def initialize(user:, enable_reminders_link: false)
     @user = user
+    @enable_reminders_link = enable_reminders_link
   end
 
   private
 
-  attr_reader :user
+  attr_reader :user, :enable_reminders_link
 
   def status_key
     return :disabled unless user.birthday_reminders_enabled?
@@ -23,7 +24,11 @@ class BirthdayReminderStatusComponent < ViewComponent::Base
   end
 
   def settings_link_key
-    status_key == :no_channels ? :enable_channel : :settings
+    case status_key
+    when :disabled then enable_reminders_link ? :enable_reminders : :settings
+    when :no_channels then :enable_channel
+    else :settings
+    end
   end
 
   def timing
