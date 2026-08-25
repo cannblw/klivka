@@ -26,12 +26,14 @@
 #
 class Entry::Birthday < Entry::Date
   UNKNOWN_YEAR_ANCHOR = 2000
+  INPUT_BASES = %w[year age].freeze
 
   self.vcard_import_property = :bday
 
-  attr_writer :entry_year, :entry_month, :entry_day, :current_age
+  attr_writer :entry_year, :entry_month, :entry_day, :current_age, :birthday_input_basis
 
   before_validation :set_entry_date_from_parts, :set_default_birthday_year_known
+  after_validation :remove_redundant_date_presence_error
 
   validates :friend_id, uniqueness: { message: :one_birthday_per_friend }
   validates :birthday_year_known, inclusion: { in: [ true, false ] }
@@ -66,7 +68,11 @@ class Entry::Birthday < Entry::Date
   end
 
   def current_age
-    submitted_part(:current_age, nil)
+    submitted_part(:current_age, age)
+  end
+
+  def birthday_input_basis
+    submitted_part(:birthday_input_basis, birthday_year_known? ? "year" : nil)
   end
 
   private
@@ -79,8 +85,13 @@ class Entry::Birthday < Entry::Date
     month = @entry_month.to_s.strip
     day = @entry_day.to_s.strip
     age = @current_age.to_s.strip
+    basis = @birthday_input_basis.to_s.strip
 
-    if month.blank? || day.blank? || (year.present? && age.present?)
+    basis_is_invalid = (basis.present? && !INPUT_BASES.include?(basis)) ||
+      (basis == "year" && year.blank?) ||
+      (basis == "age" && age.blank?)
+
+    if month.blank? || day.blank? || basis_is_invalid
       invalidate_date_parts
       return
     end
@@ -88,20 +99,19 @@ class Entry::Birthday < Entry::Date
     month_number = Integer(month, 10)
     day_number = Integer(day, 10)
 
-    if year.present?
+    if basis == "age" && age.present?
+      set_entry_date_from_age(age:, month: month_number, day: day_number)
+    elsif year.present?
       self.entry_date = ::Date.new(Integer(year, 10), month_number, day_number)
+      raise ArgumentError if entry_date > ::Date.current
+
       self.birthday_year_known = true
+      if basis.blank? && age.present?
+        age_number = Integer(age, 10)
+        raise ArgumentError if age_number.negative? || age_number != self.age(on: ::Date.current)
+      end
     elsif age.present?
-      age_number = Integer(age, 10)
-      raise ArgumentError if age_number.negative?
-
-      occurrence = birthday_occurrence(year: ::Date.current.year, month: month_number, day: day_number)
-      birth_year = ::Date.current.year - age_number
-      birth_year -= 1 if occurrence > ::Date.current
-      raise ArgumentError unless birth_year.positive?
-
-      self.entry_date = ::Date.new(birth_year, month_number, day_number)
-      self.birthday_year_known = true
+      set_entry_date_from_age(age:, month: month_number, day: day_number)
     else
       self.entry_date = ::Date.new(UNKNOWN_YEAR_ANCHOR, month_number, day_number)
       self.birthday_year_known = false
@@ -118,8 +128,25 @@ class Entry::Birthday < Entry::Date
     errors.add(:entry_date, :invalid) if @invalid_date_parts
   end
 
+  def remove_redundant_date_presence_error
+    errors.delete(:entry_date, :blank) if @invalid_date_parts
+  end
+
   def birthday_occurrence(year:, month:, day:)
     ::Date.new(year, month, [ day, ::Date.new(year, month, -1).day ].min)
+  end
+
+  def set_entry_date_from_age(age:, month:, day:)
+    age_number = Integer(age, 10)
+    raise ArgumentError if age_number.negative?
+
+    occurrence = birthday_occurrence(year: ::Date.current.year, month:, day:)
+    birth_year = ::Date.current.year - age_number
+    birth_year -= 1 if occurrence > ::Date.current
+    raise ArgumentError unless birth_year.positive?
+
+    self.entry_date = ::Date.new(birth_year, month, day)
+    self.birthday_year_known = true
   end
 
   def invalidate_date_parts
@@ -131,7 +158,8 @@ class Entry::Birthday < Entry::Date
     instance_variable_defined?(:@entry_year) ||
       instance_variable_defined?(:@entry_month) ||
       instance_variable_defined?(:@entry_day) ||
-      instance_variable_defined?(:@current_age)
+      instance_variable_defined?(:@current_age) ||
+      instance_variable_defined?(:@birthday_input_basis)
   end
 
   def submitted_part(name, fallback)

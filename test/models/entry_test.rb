@@ -400,13 +400,71 @@ class EntryTest < ActiveSupport::TestCase
     end
   end
 
-  test "birthday rejects a year and current age together" do
+  test "birthday accepts a matching year and current age together" do
     birthday = Entry::Birthday.new(
       friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", current_age: "43"
     )
 
+    assert birthday.valid?
+    assert_equal Date.new(1983, 3, 3), birthday.entry_date
+  end
+
+  test "birthday rejects a year and current age that disagree" do
+    birthday = Entry::Birthday.new(
+      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", current_age: "42"
+    )
+
     assert_not birthday.valid?
     assert birthday.errors.of_kind?(:entry_date, :invalid)
+  end
+
+  test "birthday uses the selected year basis when the submitted age is stale" do
+    travel_to Date.new(2026, 8, 25) do
+      birthday = Entry::Birthday.new(
+        friend: friends(:bob), entry_month: "9", entry_day: "3", entry_year: "1983", current_age: "43",
+        birthday_input_basis: "year"
+      )
+
+      assert birthday.valid?
+      assert_equal Date.new(1983, 9, 3), birthday.entry_date
+      assert_equal 42, birthday.age
+    end
+  end
+
+  test "birthday uses the selected age basis when the submitted year is stale" do
+    travel_to Date.new(2026, 8, 25) do
+      birthday = Entry::Birthday.new(
+        friend: friends(:bob), entry_month: "9", entry_day: "3", entry_year: "1983", current_age: "43",
+        birthday_input_basis: "age"
+      )
+
+      assert birthday.valid?
+      assert_equal Date.new(1982, 9, 3), birthday.entry_date
+      assert_equal 43, birthday.age
+    end
+  end
+
+  test "birthday rejects an unsupported or empty input basis" do
+    unsupported = Entry::Birthday.new(
+      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", birthday_input_basis: "date"
+    )
+    missing_age = Entry::Birthday.new(
+      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", birthday_input_basis: "age"
+    )
+
+    assert_not unsupported.valid?
+    assert unsupported.errors.of_kind?(:entry_date, :invalid)
+    assert_not missing_age.valid?
+    assert missing_age.errors.of_kind?(:entry_date, :invalid)
+  end
+
+  test "birthday rejects a birth date in the future" do
+    travel_to Date.new(2026, 8, 25) do
+      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "9", entry_day: "1", entry_year: "2026")
+
+      assert_not birthday.valid?
+      assert birthday.errors.of_kind?(:entry_date, :invalid)
+    end
   end
 
   test "birthday rejects missing and impossible date parts" do

@@ -308,6 +308,23 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert birthday.birthday_year_known?
   end
 
+  test "create honors current age as the birthday calculation basis" do
+    friend = users(:one).friends.create!(name: "Birthday Age Basis")
+
+    travel_to Date.new(2026, 8, 25) do
+      post friend_entries_url(friend), params: {
+        entry: {
+          type: "Entry::Birthday", entry_month: "9", entry_day: "3", entry_year: "1983", current_age: "43",
+          birthday_input_basis: "age"
+        }
+      }
+    end
+
+    assert_redirected_to friend_url(friend)
+    birthday = friend.entries.find_by!(type: "Entry::Birthday")
+    assert_equal Date.new(1982, 9, 3), birthday.entry_date
+  end
+
   test "edit renders the form" do
     get edit_friend_entry_url(friends(:ada), entries(:phone))
 

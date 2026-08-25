@@ -76,6 +76,19 @@ class EntryFormComponentTest < ViewComponent::TestCase
     assert_selector "form[data-controller~='reminder-date']", count: 0
   end
 
+  test "renders adaptive birthday fields instead of a full date input" do
+    entry = entries(:ada_birthday)
+
+    render_inline EntryFormComponent.new(entry:, friend: entry.friend)
+
+    assert_selector "#birthday-fields [data-controller='birthday-fields']"
+    assert_selector "select[name='entry[entry_month]'][required]"
+    assert_selector "input[name='entry[entry_day]'][required]"
+    assert_selector "input[name='entry[entry_year]'][value='1815']"
+    assert_selector "input[name='entry[current_age]']"
+    assert_selector "input[name='entry[entry_date]']", count: 0
+  end
+
   test "links to settings from a birthday form when birthday reminders are disabled" do
     user = users(:one)
     user.update!(birthday_reminders_enabled: false)
