@@ -400,6 +400,7 @@ en:
     show:
       back: "← Friends"
       delete: "Delete friend"
+      more_actions: "More friend actions"
     create:
       created: "%{name} added."
     update:

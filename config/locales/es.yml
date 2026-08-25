@@ -411,6 +411,7 @@ es:
     show:
       back: "← Amigos"
       delete: "Eliminar amigo"
+      more_actions: "Más acciones para esta amistad"
     create:
       created: "Se ha añadido a %{name}."
     update:

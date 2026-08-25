@@ -123,6 +123,8 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", /Ada Lovelace/
+    assert_select "button[aria-label][aria-haspopup='menu']"
+    assert_select "[data-controller='toggle'] input[name='friend[name]']"
     assert_select "#contact-actions-heading", text: "Contact actions"
     assert_select "[aria-labelledby='contact-actions-heading'] a[href='tel:555-1234'] .break-all", text: "555-1234"
     assert_select "[aria-labelledby='contact-actions-heading'] a[href='mailto:ada@example.com']"
@@ -209,6 +211,8 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "main", /can't be blank/
+    assert_select "h1[data-toggle-target='content'].hidden"
+    assert_select "[data-toggle-target='content']:not(.hidden) input[name='friend[name]']"
   end
 
   test "destroy removes the friend and redirects to root" do
