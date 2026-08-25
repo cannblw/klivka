@@ -1,0 +1,11 @@
+<section class="<%= classes %>" <%= tag.attributes(section_options) %>>
+  <% if title %>
+    <h2 class="text-lg font-semibold" <%= tag.attributes({ id: heading_id }) if heading_id %>><%= title %></h2>
+  <% end %>
+  <% if description %>
+    <p class="<%= "mt-1" if title %> text-sm text-stone-600 dark:text-stone-300"><%= description %></p>
+  <% end %>
+  <div class="<%= "mt-4" if title || description %>">
+    <%= content %>
+  </div>
+</section>
