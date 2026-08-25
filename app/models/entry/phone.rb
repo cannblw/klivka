@@ -2,14 +2,15 @@
 #
 # Table name: entries
 #
-#  id         :integer          not null, primary key
-#  content    :json
-#  entry_date :date
-#  position   :integer          default(0), not null
-#  type       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  friend_id  :integer          not null
+#  id                  :integer          not null, primary key
+#  birthday_year_known :boolean
+#  content             :json
+#  entry_date          :date
+#  position            :integer          default(0), not null
+#  type                :string           not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  friend_id           :integer          not null
 #
 # Indexes
 #

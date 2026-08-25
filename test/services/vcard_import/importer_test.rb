@@ -42,6 +42,27 @@ class VcardImport::ImporterTest < ActiveSupport::TestCase
     assert_equal [], vcard_import.reload.selected_candidate_ids
   end
 
+  test "vCard importer preserves a birthday without a year" do
+    vcard_import = users(:one).vcard_imports.create!(
+      candidates: [ {
+        "id" => 0,
+        "name" => "Yearless Birthday",
+        "entries" => [ {
+          "type" => "Entry::Birthday",
+          "entry_date" => "2000-03-03",
+          "birthday_year_known" => false
+        } ]
+      } ]
+    )
+
+    VcardImport::Importer.call(vcard_import:, selected_candidate_ids: [ 0 ])
+
+    birthday = users(:one).friends.order(:id).last.entries.find_by!(type: "Entry::Birthday")
+    assert_equal Date.new(2000, 3, 3), birthday.entry_date
+    assert_not birthday.birthday_year_known?
+    assert_nil birthday.age
+  end
+
   test "vCard importer rolls back every contact when an entry cannot be imported" do
     vcard_import = users(:one).vcard_imports.create!(
       candidates: [

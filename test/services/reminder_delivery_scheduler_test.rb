@@ -122,6 +122,25 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_empty ReminderDelivery.where(source: entries(:ada_birthday))
   end
 
+  test "birthday reminders schedule from month and day when the birth year is unknown" do
+    user = users(:one)
+    friend = user.friends.create!(name: "Yearless Birthday")
+    birthday = Entry::Birthday.create!(
+      friend:, entry_date: Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday_year_known: false
+    )
+    user.update!(
+      birthday_reminder_lead_value: 1,
+      birthday_reminder_lead_unit: "days",
+      reminders_scanned_through_on: Date.new(2027, 3, 1)
+    )
+
+    schedule(user, at: Time.utc(2027, 3, 2, 12))
+
+    delivery = ReminderDelivery.where(source: birthday).first!
+    assert_equal Date.new(2027, 3, 2), delivery.reminder_on
+    assert_equal Date.new(2027, 3, 3), delivery.occurrence_on
+  end
+
   test "birthday scheduling observes leap-day birthdays on February 28" do
     user = users(:one)
     friend = user.friends.create!(name: "Leap Day Friend")

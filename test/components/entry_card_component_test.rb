@@ -54,6 +54,19 @@ class EntryCardComponentTest < ViewComponent::TestCase
     assert_selector ".material-icons", text: "notifications_none", count: 0
   end
 
+  test "birthday card shows only month and day when the birth year is unknown" do
+    friend = users(:one).friends.create!(name: "Yearless Birthday")
+    birthday = Entry::Birthday.create!(
+      friend:, entry_date: Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday_year_known: false
+    )
+
+    render_inline EntryCardComponent.new(entry: birthday, friend:)
+
+    assert_text "March 3"
+    assert_no_text Entry::Birthday::UNKNOWN_YEAR_ANCHOR.to_s
+    assert_no_text "years old"
+  end
+
   test "describes a same-day reminder naturally in Spanish" do
     entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2026, 8, 11), label: "Aniversario")
     entry.create_entry_reminder!(lead_value: 0, lead_unit: "days")

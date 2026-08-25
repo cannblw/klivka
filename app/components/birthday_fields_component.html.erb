@@ -1,0 +1,64 @@
+<div class="space-y-4" <%= tag.attributes(controller_values) %>>
+  <%= form.hidden_field :birthday_input_basis, data: { birthday_fields_target: "basis" } %>
+  <div>
+    <p class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("entries.birthday.date_heading") %></p>
+    <p id="birthday-date-hint" class="mt-1 text-xs text-stone-500 dark:text-stone-400"><%= t("entries.birthday.date_hint") %></p>
+    <div class="mt-2 grid grid-cols-2 gap-3">
+      <div>
+        <%= form.label :entry_month, t("entries.birthday.month_label"), class: "mb-1 block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= render SelectFieldComponent.new(form, :entry_month,
+              choices: month_choices,
+              selected: entry.entry_month,
+              select_options: { include_blank: t("entries.birthday.month_placeholder") },
+              required: true,
+              aria: { describedby: "birthday-date-hint" },
+              data: { birthday_fields_target: "month", action: "change->birthday-fields#dateChanged" }) %>
+      </div>
+      <div>
+        <%= form.label :entry_day, t("entries.birthday.day_label"), class: "mb-1 block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= render InputFieldComponent.new(form, :entry_day,
+              type: :number,
+              min: 1,
+              max: 31,
+              step: 1,
+              required: true,
+              placeholder: t("entries.birthday.day_placeholder"),
+              aria: { describedby: "birthday-date-hint" },
+              data: { birthday_fields_target: "day", action: "input->birthday-fields#dateChanged" }) %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("entries.birthday.year_heading") %></p>
+    <p id="birthday-year-hint" class="mt-1 text-xs text-stone-500 dark:text-stone-400"><%= t("entries.birthday.year_hint") %></p>
+    <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div>
+        <%= form.label :entry_year, t("entries.birthday.year_label"), class: "mb-1 block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= render InputFieldComponent.new(form, :entry_year,
+              type: :number,
+              min: 1,
+              max: today.year,
+              step: 1,
+              placeholder: t("entries.birthday.year_placeholder"),
+              aria: { describedby: "birthday-year-hint" },
+              data: { birthday_fields_target: "year", action: "input->birthday-fields#yearChanged" }) %>
+      </div>
+      <div>
+        <%= form.label :current_age, t("entries.birthday.age_label"), class: "mb-1 block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= render InputFieldComponent.new(form, :current_age,
+              type: :number,
+              min: 0,
+              max: today.year - 1,
+              step: 1,
+              placeholder: t("entries.birthday.age_placeholder"),
+              aria: { describedby: "birthday-year-hint" },
+              data: { birthday_fields_target: "age", action: "input->birthday-fields#ageChanged" }) %>
+      </div>
+    </div>
+  </div>
+
+  <% entry.errors.full_messages_for(:entry_date).each do |message| %>
+    <p class="text-sm text-red-600 dark:text-red-400"><%= message %></p>
+  <% end %>
+</div>

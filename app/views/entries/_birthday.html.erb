@@ -1,6 +1,6 @@
 <% date = entry.entry_date %>
 <% if date %>
-  <%= l(date, format: :long) %>
+  <%= l(date, format: entry.birthday_year_known? ? :long : :month_day) %>
   <% if entry.age %>
     <span class="text-stone-500 dark:text-stone-400">(<%= entry.age %> <%= t("entries.age") %>)</span>
   <% end %>

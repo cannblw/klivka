@@ -2,14 +2,15 @@
 #
 # Table name: entries
 #
-#  id         :integer          not null, primary key
-#  content    :json
-#  entry_date :date
-#  position   :integer          default(0), not null
-#  type       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  friend_id  :integer          not null
+#  id                  :integer          not null, primary key
+#  birthday_year_known :boolean
+#  content             :json
+#  entry_date          :date
+#  position            :integer          default(0), not null
+#  type                :string           not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  friend_id           :integer          not null
 #
 # Indexes
 #
@@ -49,6 +50,7 @@ class Entry < ApplicationRecord
   validates :type, presence: true
   validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :entry_date, absence: true, unless: :date_entry?
+  validates :birthday_year_known, absence: true, unless: :birthday_entry?
 
   scope :ordered, -> { order(position: :asc, created_at: :desc, id: :desc) }
 
@@ -78,5 +80,9 @@ class Entry < ApplicationRecord
 
   def date_entry?
     is_a?(Entry::Date)
+  end
+
+  def birthday_entry?
+    is_a?(Entry::Birthday)
   end
 end

@@ -34,4 +34,21 @@ class VcardImportCandidateComponentTest < ViewComponent::TestCase
 
     assert_selector "#vcard-import-candidate-4-details [role='note']", count: 2
   end
+
+  test "vCard candidate component does not expose the anchor year for a yearless birthday" do
+    candidate = {
+      "id" => 4,
+      "name" => "Yearless Birthday",
+      "entries" => [ {
+        "type" => "Entry::Birthday",
+        "entry_date" => "2000-03-03",
+        "birthday_year_known" => false
+      } ]
+    }
+
+    render_inline VcardImportCandidateComponent.new(candidate:)
+
+    assert_text "Birthday: March 3"
+    assert_no_text "2000"
+  end
 end

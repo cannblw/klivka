@@ -30,13 +30,9 @@
           class: FormStyling::TEXTAREA_CLASSES %>
   <% when "Entry::Birthday" %>
     <div id="birthday-fields">
-      <%= form.label :entry_date, t("entries.date_field_label"), class: "sr-only" %>
-      <%= render InputFieldComponent.new(form, :entry_date, type: :date) %>
-      <% entry.errors.full_messages_for(:entry_date).each do |message| %>
-        <p class="mt-1 text-sm text-red-600"><%= message %></p>
-      <% end %>
+      <%= render BirthdayFieldsComponent.new(form:, entry:) %>
       <% entry.errors.full_messages_for(:friend_id).each do |message| %>
-        <p class="mt-1 text-sm text-red-600"><%= message %></p>
+        <p class="mt-1 text-sm text-red-600 dark:text-red-400"><%= message %></p>
       <% end %>
       <div class="mt-3">
         <%= render BirthdayReminderStatusComponent.new(user: friend.user, enable_reminders_link: true) %>

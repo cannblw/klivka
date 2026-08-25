@@ -112,7 +112,7 @@ class VcardImport::ParserTest < ActiveSupport::TestCase
     end
   end
 
-  test "does not map partial dates that Klivka cannot represent faithfully" do
+  test "imports a birthday without a year while rejecting unsupported partial anniversary dates" do
     result = VcardImport::Parser.new(<<~VCARD).call
       BEGIN:VCARD
       VERSION:4.0
@@ -122,7 +122,30 @@ class VcardImport::ParserTest < ActiveSupport::TestCase
       END:VCARD
     VCARD
 
-    assert_empty result.candidates.first.fetch("entries")
+    assert_equal [ {
+      "type" => "Entry::Birthday",
+      "entry_date" => "2000-12-10",
+      "birthday_year_known" => false
+    } ], result.candidates.first.fetch("entries")
+  end
+
+  test "imports hyphenated yearless birthdays and rejects impossible birthday dates" do
+    result = VcardImport::Parser.new(<<~VCARD).call
+      BEGIN:VCARD
+      VERSION:4.0
+      FN:Leap Friend
+      BDAY:--02-29
+      END:VCARD
+      BEGIN:VCARD
+      VERSION:4.0
+      FN:Invalid Friend
+      BDAY:--02-30
+      END:VCARD
+    VCARD
+
+    assert_equal "2000-02-29", result.candidates.first.fetch("entries").first.fetch("entry_date")
+    assert_equal false, result.candidates.first.fetch("entries").first.fetch("birthday_year_known")
+    assert_empty result.candidates.second.fetch("entries")
   end
 
   test "enforces the configured card limit before parsing" do

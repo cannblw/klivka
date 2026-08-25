@@ -6,6 +6,7 @@ en:
 
   date:
     formats:
+      month_day: "%B %-d"
       month_year: "%B %Y"
       year: "%Y"
 
@@ -130,6 +131,19 @@ en:
     year_label: "Year"
     month_label: "Month (optional)"
     day_label: "Day (optional)"
+    birthday:
+      date_heading: "When is their birthday?"
+      date_hint: "You only need the month and day."
+      month_label: "Month"
+      month_placeholder: "Choose month"
+      day_label: "Day"
+      day_placeholder: "Day"
+      year_heading: "Do you know when they were born?"
+      year_hint: "Enter whichever one you know, or leave both blank."
+      year_label: "Birth year"
+      year_placeholder: "Year (optional)"
+      age_label: "Current age"
+      age_placeholder: "Age (optional)"
     date_label_placeholder: "What happened?"
     first_met_note_placeholder: "Where or how did you meet? (optional)"
     first_met_years_ago:

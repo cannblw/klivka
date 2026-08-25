@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_130000) do
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
   end
 
   create_table "entries", force: :cascade do |t|
+    t.boolean "birthday_year_known"
     t.json "content"
     t.datetime "created_at", null: false
     t.date "entry_date"
@@ -35,6 +36,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
     t.index ["friend_id"], name: "index_entries_on_friend_id"
     t.index ["friend_id"], name: "index_entries_on_friend_id_for_birthday", unique: true, where: "type = 'Entry::Birthday'"
     t.index ["friend_id"], name: "index_entries_on_friend_id_for_first_met", unique: true, where: "type = 'Entry::FirstMet'"
+    t.check_constraint "(type = 'Entry::Birthday' AND birthday_year_known IS NOT NULL) OR (type <> 'Entry::Birthday' AND birthday_year_known IS NULL)", name: "entries_birthday_year_knowledge_matches_type"
     t.check_constraint "(type IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NOT NULL) OR (type NOT IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NULL)", name: "entries_date_types_require_entry_date"
     t.check_constraint "position >= 0", name: "entries_position_non_negative"
   end
