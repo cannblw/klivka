@@ -1,6 +1,6 @@
 <% content_for :title, @friend.name %>
 
-<%= link_to t(@back_translation_key), @back_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
+<%= link_to t(@back_translation_key || "friends.show.back"), @back_path || root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
 
 <% ordered_entries = @friend.entries.includes(:entry_reminder).ordered.to_a %>
 
@@ -11,7 +11,7 @@
 
       <div data-toggle-target="content" class="<%= "hidden" unless @friend.errors.any? %>">
         <%= form_with model: @friend, method: :patch, class: "flex max-w-full flex-wrap items-start gap-2" do |form| %>
-          <% @return_params.each do |name, value| %>
+          <% (@return_params || {}).each do |name, value| %>
             <%= hidden_field_tag name, value %>
           <% end %>
           <%= render InputFieldComponent.new(form, :name, type: :text, value: @friend.name, class: "w-48 font-bold") %>

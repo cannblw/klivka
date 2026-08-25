@@ -12,7 +12,7 @@ class FriendSuggestionsComponentTest < ViewComponent::TestCase
     suggestion_links = rendered_component.css("a").index_by { |link| link.css("span").last.text.strip }
     {
       "How you met" => "Entry::FirstMet",
-      "A date to remember" => "Entry::Date",
+      "A date" => "Entry::Date",
       "Gift ideas" => "Entry::GiftList"
     }.each do |label, type|
       expected_path = Rails.application.routes.url_helpers.new_friend_entry_path(friend, type: type)

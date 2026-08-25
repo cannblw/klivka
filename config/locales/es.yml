@@ -152,8 +152,10 @@ es:
     gift_list_add_item: "Añadir idea"
     reminder:
       heading: "Recordatorio"
-      description: "Elige si quieres que Klivka te recuerde esta fecha y con cuánta antelación."
-      enabled: "Recuérdame esta fecha"
+      description: "Añade un recordatorio si quieres que Klivka te avise de esta fecha."
+      add: "Añadir recordatorio"
+      "on": "Recordatorio activado"
+      remove: "Eliminar recordatorio"
       lead: "Con cuánta antelación"
       lead_value: "Cantidad"
       lead_unit: "Unidad"
@@ -216,7 +218,7 @@ es:
       heading: "Ideas, si te sirven"
       description: "Añádelas cuando te vengan a la mente."
       first_met: "Cómo os conocisteis"
-      date: "Una fecha para recordar"
+      date: "Una fecha"
       gift_list: "Ideas de regalos"
     create:
       created: "Entrada añadida."

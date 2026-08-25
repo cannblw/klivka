@@ -16,7 +16,8 @@
       <% if reminder %>
         <div class="flex flex-wrap items-center gap-2">
           <div class="min-w-0"><%= render "entries/#{kind_key}", entry: entry %></div>
-          <p class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-xs font-medium leading-none text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+          <p class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-xs font-medium leading-none text-amber-800 dark:bg-amber-900/30 dark:text-amber-200"
+             data-entry-reminder-summary>
             <span class="material-icons leading-none" style="font-size: 16px" aria-hidden="true">notifications_none</span>
             <span><%= reminder_summary %></span>
           </p>

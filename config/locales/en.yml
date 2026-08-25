@@ -141,8 +141,10 @@ en:
     gift_list_add_item: "Add idea"
     reminder:
       heading: "Reminder"
-      description: "Choose whether and when Klivka reminds you."
-      enabled: "Remind me about this date"
+      description: "Add a reminder if you want Klivka to notify you about this date."
+      add: "Add reminder"
+      "on": "Reminder on"
+      remove: "Remove reminder"
       lead: "How far in advance"
       lead_value: "Amount"
       lead_unit: "Unit"
@@ -205,7 +207,7 @@ en:
       heading: "Ideas, if useful"
       description: "Add these whenever they come to mind."
       first_met: "How you met"
-      date: "A date to remember"
+      date: "A date"
       gift_list: "Gift ideas"
     create:
       created: "Entry added."
