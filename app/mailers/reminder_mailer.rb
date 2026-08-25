@@ -26,6 +26,7 @@ class ReminderMailer < ApplicationMailer
     @user = delivery.user
     @friend = source_friend
     @entry = delivery.source.entry if delivery.source.is_a?(EntryReminder)
+    @entry = delivery.source if delivery.source.is_a?(Entry::Birthday)
     @occurrence_on = delivery.occurrence_on
     @friend_url = friend_url(friend)
     @settings_url = settings_url
@@ -38,7 +39,7 @@ class ReminderMailer < ApplicationMailer
 
   def source_friend
     source = delivery.source
-    source.is_a?(KeepInTouchSetting) ? source.friend : source.entry.friend
+    source.is_a?(EntryReminder) ? source.entry.friend : source.friend
   end
 
   def mail_for_delivery

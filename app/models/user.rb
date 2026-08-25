@@ -84,6 +84,10 @@ class User < ApplicationRecord
     end
   end
 
+  def birthday_reminder_lead_days
+    birthday_reminder_lead_value * REMINDER_LEAD_UNITS.fetch(birthday_reminder_lead_unit)
+  end
+
   def shared_demo_account?
     Rails.application.config.x.demo_mode && email_address == Rails.application.config.x.demo_user_email_address
   end

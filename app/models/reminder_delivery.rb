@@ -40,7 +40,8 @@ class ReminderDelivery < ApplicationRecord
   CANCELED_STATUS = "canceled".freeze
   STATUSES = [ PENDING_STATUS, DELIVERED_STATUS, FAILED_STATUS, CANCELED_STATUS ].freeze
 
-  SOURCE_TYPES = %w[KeepInTouchSetting EntryReminder].freeze
+  BIRTHDAY_SOURCE_TYPE = Entry.polymorphic_name.freeze
+  SOURCE_TYPES = [ "KeepInTouchSetting", "EntryReminder", BIRTHDAY_SOURCE_TYPE ].freeze
 
   belongs_to :user
   belongs_to :source, polymorphic: true
@@ -53,14 +54,20 @@ class ReminderDelivery < ApplicationRecord
   validates :claim_token, presence: true, if: :claimed_at?
   validates :claimed_at, presence: true, if: :claim_token?
   validates :channel, uniqueness: { scope: %i[source_type source_id reminder_on] }
-  validate :source_belongs_to_user
+  validate :source_is_supported, :source_belongs_to_user
 
   private
+
+  def source_is_supported
+    return if source.blank? || source.is_a?(KeepInTouchSetting) || source.is_a?(EntryReminder) || source.is_a?(Entry::Birthday)
+
+    errors.add(:source, :invalid)
+  end
 
   def source_belongs_to_user
     return if source.blank? || user.blank?
 
-    source_user = source.is_a?(KeepInTouchSetting) ? source.friend.user : source.entry.friend.user
+    source_user = source.is_a?(EntryReminder) ? source.entry.friend.user : source.friend.user
     errors.add(:source, :invalid) unless source_user == user
   end
 end

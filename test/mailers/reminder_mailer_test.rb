@@ -19,8 +19,7 @@ class ReminderMailerTest < ActionMailer::TestCase
 
   test "birthday email uses the account locale and links to the friend" do
     users(:one).update!(locale: "es")
-    reminder = entries(:ada_birthday).entry_reminder
-    delivery = create_delivery(reminder, reminder_on: Date.new(2026, 12, 1), occurrence_on: Date.new(2026, 12, 10))
+    delivery = create_delivery(entries(:ada_birthday), reminder_on: Date.new(2026, 12, 1), occurrence_on: Date.new(2026, 12, 10))
 
     mail = ReminderMailer.with(delivery:).birthday
 

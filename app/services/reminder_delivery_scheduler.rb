@@ -13,6 +13,7 @@ class ReminderDeliveryScheduler
     scan_dates = dates_to_scan(through: local_date)
     created_count = schedule_keep_in_touch_reminders(through: local_date)
     created_count += schedule_entry_reminders(during: scan_dates)
+    created_count += schedule_birthday_reminders(during: scan_dates)
     user.update!(reminders_scanned_through_on: [ user.reminders_scanned_through_on, local_date ].compact.max)
     created_count
   end
@@ -49,6 +50,14 @@ class ReminderDeliveryScheduler
     end
   end
 
+  def schedule_birthday_reminders(during:)
+    return 0 unless user.birthday_reminders_enabled?
+
+    process_in_batches(birthdays, preload: :friend) do |birthday|
+      birthday_reminder_dates_during(birthday, during:)
+    end
+  end
+
   def process_in_batches(relation, preload:)
     relation.in_batches(of: batch_size).sum do |batch|
       deliveries = batch.preload(preload).flat_map do |source|
@@ -64,7 +73,13 @@ class ReminderDeliveryScheduler
   end
 
   def entry_reminders
-    EntryReminder.joins(entry: :friend).where(friends: { user_id: user.id })
+    EntryReminder.joins(entry: :friend)
+      .where(friends: { user_id: user.id })
+      .where.not(entries: { type: "Entry::Birthday" })
+  end
+
+  def birthdays
+    Entry::Birthday.joins(:friend).where(friends: { user_id: user.id })
   end
 
   def latest_interactions_for(settings)
@@ -80,6 +95,19 @@ class ReminderDeliveryScheduler
       break if reminder.one_time?
 
       reminder_on = reminder.next_reminder_on(on: reminder_on.next_day)
+    end
+
+    latest_dates ? [ latest_dates ] : []
+  end
+
+  def birthday_reminder_dates_during(birthday, during:)
+    lead_days = user.birthday_reminder_lead_days
+    occurrence_on = birthday.next_occurrence_on(on: during.begin + lead_days)
+    latest_dates = nil
+
+    while (reminder_on = occurrence_on - lead_days) <= during.end
+      latest_dates = [ reminder_on, occurrence_on ]
+      occurrence_on = birthday.next_occurrence_on(on: occurrence_on.next_day)
     end
 
     latest_dates ? [ latest_dates ] : []

@@ -43,6 +43,12 @@ class AddBirthdayReminderPreferences < ActiveRecord::Migration[8.1]
       SQL
       name: "users_birthday_reminder_lead_is_supported"
 
+    remove_check_constraint :reminder_deliveries, name: "reminder_deliveries_source_type_is_supported"
+    # Polymorphic associations store the STI base class, so birthday delivery sources are represented as Entry.
+    add_check_constraint :reminder_deliveries,
+      "source_type IN ('KeepInTouchSetting', 'EntryReminder', 'Entry')",
+      name: "reminder_deliveries_source_type_is_supported"
+
     birthday_reminders = EntryReminderRecord.where(
       entry_id: EntryRecord.where(type: "Entry::Birthday").select(:id)
     )
@@ -51,6 +57,10 @@ class AddBirthdayReminderPreferences < ActiveRecord::Migration[8.1]
   end
 
   def down
+    remove_check_constraint :reminder_deliveries, name: "reminder_deliveries_source_type_is_supported"
+    add_check_constraint :reminder_deliveries,
+      "source_type IN ('KeepInTouchSetting', 'EntryReminder')",
+      name: "reminder_deliveries_source_type_is_supported"
     remove_check_constraint :users, name: "users_birthday_reminder_lead_is_supported"
     remove_check_constraint :users, name: "users_birthday_reminders_enabled_is_boolean"
     remove_column :users, :birthday_reminder_lead_unit

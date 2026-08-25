@@ -93,6 +93,84 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_equal [ Date.new(2027, 2, 28) ], reminder.reminder_deliveries.distinct.pluck(:occurrence_on)
   end
 
+  test "records each enabled channel for a birthday using the account timing" do
+    user = users(:one)
+    user.update!(
+      birthday_reminder_lead_value: 1,
+      birthday_reminder_lead_unit: "days",
+      reminders_scanned_through_on: Date.new(2026, 12, 8)
+    )
+
+    assert_equal 2, schedule(user, at: Time.utc(2026, 12, 9, 12))
+
+    deliveries = ReminderDelivery.where(source: entries(:ada_birthday))
+    assert_equal %w[email in_app], deliveries.order(:channel).pluck(:channel)
+    assert_equal [ Date.new(2026, 12, 9) ], deliveries.distinct.pluck(:reminder_on)
+    assert_equal [ Date.new(2026, 12, 10) ], deliveries.distinct.pluck(:occurrence_on)
+  end
+
+  test "birthday reminders do not create work when globally disabled" do
+    user = users(:one)
+    user.update!(
+      birthday_reminders_enabled: false,
+      birthday_reminder_lead_value: 1,
+      birthday_reminder_lead_unit: "days",
+      reminders_scanned_through_on: Date.new(2026, 12, 8)
+    )
+
+    assert_equal 0, schedule(user, at: Time.utc(2026, 12, 9, 12))
+    assert_empty ReminderDelivery.where(source: entries(:ada_birthday))
+  end
+
+  test "birthday scheduling observes leap-day birthdays on February 28" do
+    user = users(:one)
+    friend = user.friends.create!(name: "Leap Day Friend")
+    birthday = Entry::Birthday.create!(friend:, entry_date: Date.new(2000, 2, 29))
+    user.update!(
+      birthday_reminder_lead_value: 0,
+      birthday_reminder_lead_unit: "days",
+      reminders_scanned_through_on: Date.new(2027, 2, 27)
+    )
+
+    schedule(user, at: Time.utc(2027, 2, 28, 12))
+
+    delivery = ReminderDelivery.where(source: birthday).first!
+    assert_equal Date.new(2027, 2, 28), delivery.reminder_on
+    assert_equal Date.new(2027, 2, 28), delivery.occurrence_on
+  end
+
+  test "birthday scheduling keeps separate work for friends sharing a birthday" do
+    user = users(:one)
+    friend = user.friends.create!(name: "Same Birthday Friend")
+    birthday = Entry::Birthday.create!(friend:, entry_date: Date.new(1990, 12, 10))
+    user.update!(
+      birthday_reminder_lead_value: 1,
+      birthday_reminder_lead_unit: "days",
+      reminders_scanned_through_on: Date.new(2026, 12, 8)
+    )
+
+    schedule(user, at: Time.utc(2026, 12, 9, 12))
+
+    assert_equal 2, ReminderDelivery.where(source: entries(:ada_birthday)).count
+    assert_equal 2, ReminderDelivery.where(source: birthday).count
+  end
+
+  test "birthday scheduling only processes birthdays owned by the requested account" do
+    other_friend = users(:two).friends.create!(name: "Other Account Birthday")
+    other_birthday = Entry::Birthday.create!(friend: other_friend, entry_date: Date.new(1990, 12, 10))
+    user = users(:one)
+    user.update!(
+      birthday_reminder_lead_value: 1,
+      birthday_reminder_lead_unit: "days",
+      reminders_scanned_through_on: Date.new(2026, 12, 8)
+    )
+
+    schedule(user, at: Time.utc(2026, 12, 9, 12))
+
+    assert_equal 2, ReminderDelivery.where(source: entries(:ada_birthday)).count
+    assert_empty ReminderDelivery.where(source: other_birthday)
+  end
+
   test "processes only reminders belonging to the requested account" do
     other_setting = create_setting(friends(:bob), enabled_on: Date.new(2026, 8, 1))
     own_setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))

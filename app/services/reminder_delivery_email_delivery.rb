@@ -67,10 +67,10 @@ class ReminderDeliveryEmailDelivery
     case source
     when KeepInTouchSetting
       ReminderMailer.with(delivery:).keep_in_touch
+    when Entry::Birthday
+      ReminderMailer.with(delivery:).birthday
     when EntryReminder
-      if source.entry.is_a?(Entry::Birthday)
-        ReminderMailer.with(delivery:).birthday
-      elsif source.entry.is_a?(Entry::Date)
+      if source.entry.is_a?(Entry::Date)
         ReminderMailer.with(delivery:).significant_date
       else
         raise MailTransports::DeliveryError, "Reminder source is not email-eligible"

@@ -108,7 +108,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
     t.check_constraint "(claimed_at IS NULL AND claim_token IS NULL) OR (claimed_at IS NOT NULL AND claim_token IS NOT NULL)", name: "reminder_deliveries_claim_is_complete"
     t.check_constraint "attempts >= 0", name: "reminder_deliveries_attempts_are_nonnegative"
     t.check_constraint "channel IN ('in_app', 'email')", name: "reminder_deliveries_channel_is_supported"
-    t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder')", name: "reminder_deliveries_source_type_is_supported"
+    t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder', 'Entry')", name: "reminder_deliveries_source_type_is_supported"
     t.check_constraint "status IN ('pending', 'delivered', 'failed', 'canceled')", name: "reminder_deliveries_status_is_supported"
   end
 
