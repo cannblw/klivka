@@ -280,6 +280,34 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "#birthday-fields"
   end
 
+  test "create accepts a birthday without a known year" do
+    friend = users(:one).friends.create!(name: "Yearless Birthday")
+
+    post friend_entries_url(friend), params: {
+      entry: { type: "Entry::Birthday", entry_month: "3", entry_day: "3", entry_year: "" }
+    }
+
+    assert_redirected_to friend_url(friend)
+    birthday = friend.entries.find_by!(type: "Entry::Birthday")
+    assert_equal Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday.entry_date
+    assert_not birthday.birthday_year_known?
+  end
+
+  test "create accepts a birthday with current age" do
+    friend = users(:one).friends.create!(name: "Birthday With Age")
+
+    travel_to Date.new(2026, 8, 25) do
+      post friend_entries_url(friend), params: {
+        entry: { type: "Entry::Birthday", entry_month: "3", entry_day: "3", current_age: "43" }
+      }
+    end
+
+    assert_redirected_to friend_url(friend)
+    birthday = friend.entries.find_by!(type: "Entry::Birthday")
+    assert_equal Date.new(1983, 3, 3), birthday.entry_date
+    assert birthday.birthday_year_known?
+  end
+
   test "edit renders the form" do
     get edit_friend_entry_url(friends(:ada), entries(:phone))
 

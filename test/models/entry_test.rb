@@ -4,14 +4,15 @@ require "test_helper"
 #
 # Table name: entries
 #
-#  id         :integer          not null, primary key
-#  content    :json
-#  entry_date :date
-#  position   :integer          default(0), not null
-#  type       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  friend_id  :integer          not null
+#  id                  :integer          not null, primary key
+#  birthday_year_known :boolean
+#  content             :json
+#  entry_date          :date
+#  position            :integer          default(0), not null
+#  type                :string           not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  friend_id           :integer          not null
 #
 # Indexes
 #
@@ -350,6 +351,128 @@ class EntryTest < ActiveSupport::TestCase
 
   test "age accepts an on: parameter" do
     assert_equal 200, entries(:ada_birthday).age(on: Date.new(2015, 12, 10))
+  end
+
+  test "birthday accepts a month and day without a year" do
+    birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3")
+
+    assert birthday.valid?
+    assert_equal Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday.entry_date
+    assert_not birthday.birthday_year_known?
+    assert_nil birthday.entry_year
+    assert_nil birthday.age(on: Date.new(2026, 3, 3))
+  end
+
+  test "birthday accepts a month day and year" do
+    birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983")
+
+    assert birthday.valid?
+    assert_equal Date.new(1983, 3, 3), birthday.entry_date
+    assert birthday.birthday_year_known?
+  end
+
+  test "birthday calculates the year from current age after this year's birthday" do
+    travel_to Date.new(2026, 8, 25) do
+      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3", current_age: "43")
+
+      assert birthday.valid?
+      assert_equal Date.new(1983, 3, 3), birthday.entry_date
+      assert birthday.birthday_year_known?
+    end
+  end
+
+  test "birthday calculates the year from current age before this year's birthday" do
+    travel_to Date.new(2026, 2, 25) do
+      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3", current_age: "42")
+
+      assert birthday.valid?
+      assert_equal Date.new(1983, 3, 3), birthday.entry_date
+    end
+  end
+
+  test "birthday current age uses the observed leap-day birthday" do
+    travel_to Date.new(2025, 2, 28) do
+      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "2", entry_day: "29", current_age: "25")
+
+      assert birthday.valid?
+      assert_equal Date.new(2000, 2, 29), birthday.entry_date
+      assert_equal 25, birthday.age
+    end
+  end
+
+  test "birthday rejects a year and current age together" do
+    birthday = Entry::Birthday.new(
+      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", current_age: "43"
+    )
+
+    assert_not birthday.valid?
+    assert birthday.errors.of_kind?(:entry_date, :invalid)
+  end
+
+  test "birthday rejects missing and impossible date parts" do
+    missing_day = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "")
+    impossible_date = Entry::Birthday.new(friend: friends(:bob), entry_month: "2", entry_day: "30")
+
+    assert_not missing_day.valid?
+    assert missing_day.errors.of_kind?(:entry_date, :invalid)
+    assert_not impossible_date.valid?
+    assert impossible_date.errors.of_kind?(:entry_date, :invalid)
+  end
+
+  test "birthday can add or remove a known year" do
+    birthday = Entry::Birthday.create!(friend: friends(:bob), entry_month: "3", entry_day: "3")
+
+    birthday.update!(entry_month: "3", entry_day: "3", entry_year: "1983")
+    assert_equal Date.new(1983, 3, 3), birthday.entry_date
+    assert birthday.birthday_year_known?
+
+    birthday.update!(entry_month: "3", entry_day: "3", entry_year: "")
+    assert_equal Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday.entry_date
+    assert_not birthday.birthday_year_known?
+  end
+
+  test "non-birthday entries reject birthday year knowledge" do
+    note = Entry::Note.new(friend: friends(:ada), content: { text: "Hello" }, birthday_year_known: true)
+
+    assert_not note.valid?
+    assert note.errors.of_kind?(:birthday_year_known, :present)
+  end
+
+  test "database requires birthdays to declare whether the year is known" do
+    friend = users(:one).friends.create!(name: "Database Birthday")
+    timestamp = Time.current
+
+    assert_raises ActiveRecord::StatementInvalid do
+      Entry.transaction(requires_new: true) do
+        Entry.insert_all!([ {
+          friend_id: friend.id,
+          type: "Entry::Birthday",
+          position: 0,
+          entry_date: Date.new(1983, 3, 3),
+          content: {},
+          created_at: timestamp,
+          updated_at: timestamp
+        } ])
+      end
+    end
+  end
+
+  test "database keeps birthday year knowledge off other entry types" do
+    timestamp = Time.current
+
+    assert_raises ActiveRecord::StatementInvalid do
+      Entry.transaction(requires_new: true) do
+        Entry.insert_all!([ {
+          friend_id: friends(:ada).id,
+          type: "Entry::Note",
+          position: 10,
+          content: { text: "A note" },
+          birthday_year_known: true,
+          created_at: timestamp,
+          updated_at: timestamp
+        } ])
+      end
+    end
   end
 
   test "for_month defaults to current month" do
