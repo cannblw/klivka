@@ -26,6 +26,8 @@ class FriendContactActionsComponentTest < ViewComponent::TestCase
     render_inline(FriendContactActionsComponent.new(entries: entries))
 
     assert_selector "#contact-actions-heading", text: "Contact actions"
+    assert_selector "#contact-actions-heading.text-lg.font-semibold"
+    assert_selector "[data-controller='dialog'].mt-8"
     assert_selector "[aria-labelledby='contact-actions-heading'] a[href^='tel:']", count: 2
     assert_selector "[aria-labelledby='contact-actions-heading'] a[href^='mailto:']", count: 2
     assert_selector "[aria-label='Call 555-1000'] .text-xs", text: "Mobile"

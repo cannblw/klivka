@@ -6,7 +6,7 @@ class FriendSuggestionsComponentTest < ViewComponent::TestCase
 
     rendered_component = render_inline(FriendSuggestionsComponent.new(friend: friend, entries: friend.entries.ordered.to_a))
 
-    assert_selector "h2", text: "Ideas, if useful"
+    assert_selector "section.mt-8 h2.text-base.font-semibold", text: "Ideas, if useful"
     assert_selector "p", text: "Add these whenever they come to mind."
 
     suggestion_links = rendered_component.css("a").index_by { |link| link.css("span").last.text.strip }

@@ -107,7 +107,7 @@
          data-entry-sortable-reorder-url-value="<%= reorder_friend_entries_path(@friend) %>"
          data-entry-sortable-error-message-value="<%= t("entries.reorder.invalid_order") %>"
          data-entry-sortable-moved-message-value="<%= t("entries.reorder.moved", position: "__POSITION__") %>">
-      <div class="mt-6 space-y-4">
+      <div class="mt-8 space-y-4">
         <% ordered_entries.each do |entry| %>
           <%= render EntryCardComponent.new(entry: entry, friend: @friend) %>
         <% end %>
