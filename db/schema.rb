@@ -75,7 +75,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_130000) do
     t.index ["user_id", "slug"], name: "index_friends_on_user_id_and_slug", unique: true
     t.index ["user_id"], name: "index_friends_on_user_id"
     t.check_constraint "length(name) <= 255", name: "friends_name_is_within_maximum_length"
-    t.check_constraint "length(name) <= 255", name: "friends_name_is_within_maximum_length"
   end
 
   create_table "interactions", force: :cascade do |t|
