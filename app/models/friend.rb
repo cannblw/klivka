@@ -19,6 +19,8 @@
 #  user_id  (user_id => users.id)
 #
 class Friend < ApplicationRecord
+  NAME_MAX_LENGTH = 255
+
   extend FriendlyId
   friendly_id :name, use: [ :slugged, :scoped, FriendlyId::UnicodeSlug ], scope: :user
 
@@ -27,7 +29,7 @@ class Friend < ApplicationRecord
   has_many :interactions, dependent: :destroy
   has_one :keep_in_touch_setting, dependent: :destroy
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
 
   def should_generate_new_friendly_id?
     name_changed? || super
