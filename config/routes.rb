@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resource :settings, only: %i[ show update ]
   resource :time_zone, only: :update
+  resources :categories, only: %i[ index create update destroy ] do
+    get :friend_suggestions, on: :collection
+  end
   get "friends/import", to: "vcard_imports#new", as: :new_vcard_import
   post "friends/import", to: "vcard_imports#create", as: :vcard_imports
   get "friends/import/preview", to: "vcard_imports#show", as: :vcard_import
@@ -14,6 +17,7 @@ Rails.application.routes.draw do
   post "friends/batch/preview", to: "batch_friend_creations#preview", as: :preview_batch_friend_creation
   post "friends/batch", to: "batch_friend_creations#create", as: :batch_friend_creation
   resources :friends, only: [ :index, :show, :create, :update, :destroy ] do
+    resource :category_assignment, only: :update
     resources :entries, only: %i[ new create edit update destroy ] do
       patch :reorder, on: :collection
     end

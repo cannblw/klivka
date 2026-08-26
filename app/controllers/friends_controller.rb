@@ -1,7 +1,12 @@
 class FriendsController < ApplicationController
   def index
     @sort = params[:sort].presence_in(FriendSearch::SORTS.keys) || FriendSearch::DEFAULT_SORT
+    @view = params[:view] == "all" ? "all" : "grouped"
     @friends = FriendSearch.call(Current.user, params[:query], sort: @sort)
+    ActiveRecord::Associations::Preloader.new(records: @friends, associations: :category).call
+    @grouping_available = Current.user.friends.where.not(category_id: nil).exists?
+    @grouped_view = @grouping_available && @view == "grouped" && params[:query].blank?
+    prepare_friend_groups if @grouped_view
     @friend = Friend.new
     @batch_creation = BatchFriendCreation.preview(user: Current.user, names: "")
     @batch_mode = params[:batch] == "true"
@@ -13,6 +18,7 @@ class FriendsController < ApplicationController
     @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
     @interaction_count = @friend.interactions.count
     prepare_quick_interaction
+    prepare_categories
   end
 
   def update
@@ -23,6 +29,7 @@ class FriendsController < ApplicationController
       redirect_to friend_path(@friend, **@return_params)
     else
       prepare_quick_interaction
+      prepare_categories
       render :show, status: :unprocessable_entity
     end
   end
@@ -49,6 +56,12 @@ class FriendsController < ApplicationController
 
   private
 
+  def prepare_friend_groups
+    friends_by_category = @friends.group_by(&:category)
+    @categorized_friend_groups = friends_by_category.except(nil).sort_by { |category, _friends| category.normalized_name }
+    @uncategorized_friends = friends_by_category.fetch(nil, [])
+  end
+
   def prepare_return_navigation
     if params[:from] == "birthdays"
       month = Integer(params[:month], exception: false)
@@ -70,6 +83,10 @@ class FriendsController < ApplicationController
     @interaction_to_enrich = @friend.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = params[:quick_interaction] == "today"
     @keep_in_touch_setting = @friend.keep_in_touch_setting
+  end
+
+  def prepare_categories
+    @categories = Current.user.categories.order(:normalized_name).to_a
   end
 
   def friend_params

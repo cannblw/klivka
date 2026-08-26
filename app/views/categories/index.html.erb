@@ -1,0 +1,62 @@
+<% content_for :title, t(".title") %>
+
+<%= link_to t(".back"), root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
+
+<h1 class="mt-4 text-2xl font-bold"><%= t(".heading") %></h1>
+<p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
+
+<div class="mt-6 space-y-6">
+  <%= render SectionComponent.new(title: t(".new.heading"), description: t(".new.description")) do %>
+    <%= form_with model: @category.new_record? ? @category : (@new_category || Category.new), class: "flex max-w-xl flex-col gap-3 sm:flex-row sm:items-start" do |form| %>
+      <div class="min-w-0 flex-1">
+        <%= render InputFieldComponent.new(form, :name, type: :text,
+              maxlength: FriendCrm::STRING_MAX_LENGTH,
+              placeholder: t(".new.placeholder"),
+              autocomplete: "off",
+              class: "w-full") %>
+      </div>
+      <%= render ButtonComponent.new(type: :submit) do %>
+        <%= t(".new.submit") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= turbo_frame_tag "category_organizer" do %>
+    <% if @categories.any? %>
+      <div class="space-y-4">
+        <%= render CategoryManagementComponent.with_collection(@categories) %>
+        <% if @uncategorized_friends.any? %>
+          <%= render SectionComponent.new(title: t(".uncategorized.heading")) do %>
+            <p data-friend-count="<%= @uncategorized_friends.size %>" class="text-sm text-stone-500 dark:text-stone-400">
+              <%= t("categories.friend_count", count: @uncategorized_friends.size) %>
+            </p>
+            <ul class="mt-3 divide-y divide-stone-200 dark:divide-stone-700">
+              <% @uncategorized_friends.each do |friend| %>
+                <li class="py-2">
+                  <%= link_to friend.name, friend_path(friend), data: { turbo_frame: "_top" }, class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <%= render SectionComponent.new do %>
+        <div class="py-6 text-center">
+          <p class="text-sm font-medium"><%= t(".empty.heading") %></p>
+          <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".empty.description") %></p>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<%= render ConfirmDialogComponent.new(
+      id: "delete-category-dialog",
+      title: t("categories.delete.title"),
+      body: t("categories.delete.body", count: 0),
+      confirm_label: t("categories.delete.confirm"),
+      cancel_label: t("categories.actions.cancel"),
+      confirm_link_id: "delete-category-confirm-link",
+      turbo_method: :delete
+    ) %>

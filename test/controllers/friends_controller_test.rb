@@ -21,9 +21,85 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='search'][name='query']"
     assert_select "select[name='sort']"
     assert_select "select[name='sort'] option", count: 3
+    assert_select "header a[href='#{categories_path}']"
     assert_select "turbo-frame#friends_grid"
     assert_select "main", /Ada Lovelace/
     assert_select "main", /Grace Hopper/
+    assert_select "nav[aria-label='Friend view']", count: 0
+    assert_select "#uncategorized-friends-heading", count: 0
+  end
+
+  test "index groups friends after the first category assignment" do
+    friends(:ada).update!(category: categories(:family))
+
+    get root_url
+
+    assert_response :success
+    assert_select "nav[aria-label='Friend view'] a[aria-current='true'][href='#{root_path}']"
+    assert_select "section[aria-labelledby='friend-category-#{categories(:family).id}-heading']" do
+      assert_select "h2", text: categories(:family).name
+      assert_select "a", text: /Ada Lovelace/
+      assert_select "a", { text: /Grace Hopper/, count: 0 }
+    end
+    assert_select "section[aria-labelledby='friend-category-#{categories(:friends).id}-heading']", count: 0
+    assert_select "section[aria-labelledby='uncategorized-friends-heading']" do
+      assert_select "a", text: /Grace Hopper/
+    end
+  end
+
+  test "grouped view applies the selected sort within each category" do
+    friends(:ada).update!(category: categories(:family), updated_at: 2.days.ago)
+    friends(:grace).update!(category: categories(:family), updated_at: 1.day.ago)
+
+    get root_url, params: { sort: "recently_updated" }
+
+    names = css_select("section[aria-labelledby='friend-category-#{categories(:family).id}-heading'] a p.font-medium").map { |node| node.text.strip }
+    assert_equal [ "Grace Hopper", "Ada Lovelace" ], names
+    assert_select "a[href='#{root_path(sort: "recently_updated", view: "all")}']"
+  end
+
+  test "grouped view omits Uncategorized when every friend has a category" do
+    friends(:ada).update!(category: categories(:family))
+    friends(:grace).update!(category: categories(:friends))
+
+    get root_url
+
+    assert_response :success
+    assert_select "#uncategorized-friends-heading", count: 0
+  end
+
+  test "all friends view stays flat and shows category context" do
+    friends(:ada).update!(category: categories(:family))
+
+    get root_url, params: { view: "all" }
+
+    assert_response :success
+    assert_select "input[type='hidden'][name='view'][value='all']"
+    assert_select "nav[aria-label='Friend view'] a[aria-current='true'][href='#{root_path(view: "all")}']"
+    assert_select "section[aria-labelledby^='friend-category-']", count: 0
+    assert_select "a[href='#{friend_path(friends(:ada))}']", text: /#{categories(:family).name}/
+  end
+
+  test "invalid friend view defaults to grouped" do
+    friends(:ada).update!(category: categories(:family))
+
+    get root_url, params: { view: "columns" }
+
+    assert_response :success
+    assert_select "section[aria-labelledby='friend-category-#{categories(:family).id}-heading']"
+    assert_select "input[type='hidden'][name='view']", count: 0
+  end
+
+  test "search results stay flat and preserve the selected friend view" do
+    friends(:ada).update!(category: categories(:family))
+
+    get root_url, params: { query: "ada", view: "all" }
+
+    assert_response :success
+    assert_select "input[type='hidden'][name='view'][value='all']"
+    assert_select "nav[aria-label='Friend view']", count: 0
+    assert_select "section[aria-labelledby^='friend-category-']", count: 0
+    assert_select "a[href='#{friend_path(friends(:ada))}']", text: /#{categories(:family).name}/
   end
 
   test "index shows an empty state when there are no friends" do
@@ -148,6 +224,7 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /No contact yet/
     assert_select "#contact-reminder-heading", text: "Keep in touch"
     assert_select "form[action='#{friend_keep_in_touch_setting_path(friends(:ada))}']"
+    assert_select "form[action='#{friend_category_assignment_path(friends(:ada))}'] select[name='category_assignment[category_id]']"
   end
 
   test "show links back to the birthday agenda that opened the friend" do

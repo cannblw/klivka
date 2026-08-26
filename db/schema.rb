@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_130000) do
+  create_table "categories", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "normalized_name"], name: "index_categories_on_user_id_and_normalized_name", unique: true
+    t.index ["user_id"], name: "index_categories_on_user_id"
+    t.check_constraint "length(name) <= 255", name: "categories_name_is_within_maximum_length"
+  end
+
   create_table "demo_states", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
@@ -54,11 +65,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_120000) do
   end
 
   create_table "friends", force: :cascade do |t|
+    t.integer "category_id"
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["category_id"], name: "index_friends_on_category_id"
     t.index ["user_id", "slug"], name: "index_friends_on_user_id_and_slug", unique: true
     t.index ["user_id"], name: "index_friends_on_user_id"
     t.check_constraint "length(name) <= 255", name: "friends_name_is_within_maximum_length"
@@ -163,8 +176,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_120000) do
     t.check_constraint "rejected_count >= 0", name: "vcard_imports_rejected_count_is_nonnegative"
   end
 
+  add_foreign_key "categories", "users", on_delete: :cascade
   add_foreign_key "entries", "friends"
   add_foreign_key "entry_reminders", "entries", on_delete: :cascade
+  add_foreign_key "friends", "categories", on_delete: :nullify
   add_foreign_key "friends", "users"
   add_foreign_key "interactions", "friends"
   add_foreign_key "keep_in_touch_settings", "friends"

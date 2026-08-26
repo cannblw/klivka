@@ -82,6 +82,7 @@ en:
 
   nav:
     birthdays: "Birthdays"
+    categories: "Categories"
     sign_out: "Sign out"
     settings: "Settings"
 
@@ -419,7 +420,71 @@ en:
         years: "Years"
       save: "Save reminder settings"
 
+  categories:
+    actions:
+      cancel: "Cancel"
+      delete: "Delete"
+      rename_category: "Rename %{name}"
+      save: "Save"
+    create:
+      created: "%{name} created."
+    delete:
+      title: "Delete category?"
+      body:
+        one: "One friend will become uncategorized. The friend and their information will not be deleted."
+        other: "%{count} friends will become uncategorized. The friends and their information will not be deleted."
+      confirm: "Delete category"
+    destroy:
+      deleted:
+        one: "%{name} deleted. One friend is now uncategorized."
+        other: "%{name} deleted. %{count} friends are now uncategorized."
+    friend_count:
+      one: "1 friend"
+      other: "%{count} friends"
+    friend_count_parenthetical:
+      one: "(1 friend)"
+      other: "(%{count} friends)"
+    organizer:
+      add_friend: "Add or move a friend"
+      current_category: "Currently in %{category}"
+      empty: "No friends in this category yet."
+      error: "Friends could not be loaded. Try again."
+      friends_in: "Friends in %{category}"
+      loading: "Loading matching friends"
+      no_results: "No matching friends"
+      remove: "Move to Uncategorized"
+      results: "%{count} matching friends available"
+      search_placeholder: "Search friends"
+    index:
+      back: "← Friends"
+      title: "Categories"
+      heading: "Categories"
+      description: "Use optional categories to organize friends in the way that feels useful to you."
+      new:
+        heading: "Create a category"
+        description: "A category can be something like Family, Friends, or Neighbors."
+        placeholder: "Category name"
+        submit: "Create category"
+      uncategorized:
+        heading: "Uncategorized"
+      empty:
+        heading: "No categories yet"
+        description: "Create one whenever a simple group would make your friends easier to find."
+    update:
+      updated: "%{name} saved."
+
+  category_assignments:
+    update:
+      updated: "%{name}'s category updated."
+
   friends:
+    category:
+      cancel: "Cancel"
+      edit: "Change category"
+      label: "Friend category"
+      save: "Save"
+      uncategorized: "Uncategorized"
+      value: "Category: %{category}"
     index:
       title: "Friends"
       heading: "Friends"
@@ -432,6 +497,11 @@ en:
         name: "Name"
         recently_added: "Recently added"
         recently_updated: "Recently updated"
+      uncategorized: "Uncategorized"
+      view_toggle:
+        label: "Friend view"
+        grouped: "Grouped"
+        all: "All friends"
       no_results: "No friends matching '%{query}'"
       modal:
         heading: "Add a friend"
