@@ -448,8 +448,18 @@ es:
         heading: "Añade un amigo"
         hint: "Solo necesitas un nombre."
         name_placeholder: "Nombre"
+        add_multiple: "Añadir varios amigos"
         cancel: "Cancelar"
         submit: "Añadir amigo"
+      batch_modal:
+        heading: "Añade varios amigos"
+        hint: "Escribe cada nombre en una línea distinta. Podrás revisarlo todo antes de añadir a nadie."
+        names_label: "Nombres"
+        placeholder: "Marie Curie\nKatherine Johnson\nDorothy Vaughan"
+        names_required: "Escribe al menos un nombre para continuar."
+        add_one: "Añadir un amigo"
+        cancel: "Cancelar"
+        submit: "Revisar amigos"
       empty:
         heading: "Aún no hay amigos"
         hint: "Añade a tu primer amigo. Solo necesitas un nombre."
@@ -470,6 +480,32 @@ es:
       link: "Renombrar"
       save: "Guardar"
       cancel: "Cancelar"
+
+  batch_friend_creations:
+    preview:
+      title: "Revisa los amigos"
+      heading: "Revisa los amigos"
+      description: "Comprueba los nombres, haz los cambios necesarios y desmarca a quien no quieras añadir."
+      back: "← Escribir nombres"
+      include: "Añadir a este amigo"
+      name_label: "Nombre"
+      possible_duplicate: "Posible duplicado. Puedes añadir a este amigo de todos modos."
+      duplicates:
+        one: "Es posible que un nombre ya esté en Klivka o aparezca más de una vez."
+        other: "Es posible que %{count} nombres ya estén en Klivka o aparezcan más de una vez."
+      fix_errors: "Revisa los nombres señalados antes de añadir a estos amigos."
+      selection_required: "Selecciona al menos a un amigo para añadirlo."
+      submit: "Añadir los amigos seleccionados"
+      start_over: "Empezar de nuevo"
+    create:
+      result: "%{created} %{skipped}"
+      created:
+        one: "Se ha añadido un amigo."
+        other: "Se han añadido %{count} amigos."
+      skipped:
+        zero: "No se ha omitido ningún nombre."
+        one: "Se ha omitido un nombre."
+        other: "Se han omitido %{count} nombres."
 
   sessions:
     new:

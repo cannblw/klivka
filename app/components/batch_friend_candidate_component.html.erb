@@ -1,0 +1,35 @@
+<li class="rounded-xl border border-stone-200 bg-stone-50 p-4 dark:border-stone-700 dark:bg-stone-800">
+  <%= hidden_field_tag field_name(:id), candidate.id %>
+  <div class="flex items-start gap-3">
+    <%= hidden_field_tag field_name(:selected), "0", id: nil %>
+    <%= check_box_tag field_name(:selected), "1", candidate.selected,
+          id: "#{dom_id}-selected",
+          class: "mt-1 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-700" %>
+    <div class="min-w-0 flex-1">
+      <label for="<%= "#{dom_id}-selected" %>" class="text-sm font-medium text-stone-700 dark:text-stone-200">
+        <%= t("batch_friend_creations.preview.include") %>
+      </label>
+      <label for="<%= "#{dom_id}-name" %>" class="mt-3 block text-sm font-medium text-stone-700 dark:text-stone-200">
+        <%= t("batch_friend_creations.preview.name_label") %>
+      </label>
+      <%= text_field_tag field_name(:name), candidate.name,
+            id: "#{dom_id}-name",
+            maxlength: Friend::NAME_MAX_LENGTH,
+            autocomplete: "off",
+            aria: { describedby: description_ids, invalid: candidate.errors.any? },
+            class: "mt-1 #{FormStyling::INPUT_CLASSES}" %>
+      <% if candidate.duplicate %>
+        <p id="<%= "#{dom_id}-duplicate" %>" role="note" class="mt-2 text-sm font-medium text-amber-700 dark:text-amber-400">
+          <%= t("batch_friend_creations.preview.possible_duplicate") %>
+        </p>
+      <% end %>
+      <% if candidate.errors.any? %>
+        <div id="<%= "#{dom_id}-errors" %>" class="mt-2 space-y-1 text-sm text-red-600 dark:text-red-400">
+          <% candidate.errors.each do |message| %>
+            <p><%= message %></p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</li>

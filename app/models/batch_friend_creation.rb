@@ -3,7 +3,7 @@ class BatchFriendCreation
 
   Candidate = Struct.new(:id, :name, :selected, :duplicate, :errors, keyword_init: true)
 
-  attr_reader :user, :candidates, :created_friends
+  attr_reader :user, :candidates, :created_friends, :names
 
   validate :validate_candidates
 
@@ -13,6 +13,21 @@ class BatchFriendCreation
       next if normalized_name.blank?
 
       Candidate.new(id: index.to_s, name: normalized_name, selected: true, duplicate: false, errors: [])
+    end
+
+    mark_duplicates(user:, candidates:)
+    new(user:, candidates:, names:)
+  end
+
+  def self.from_review(user:, candidates:)
+    candidates = candidates.map.with_index do |attributes, index|
+      Candidate.new(
+        id: index.to_s,
+        name: attributes.fetch("name", "").squish,
+        selected: ActiveModel::Type::Boolean.new.cast(attributes["selected"]),
+        duplicate: false,
+        errors: []
+      )
     end
 
     mark_duplicates(user:, candidates:)
@@ -30,9 +45,10 @@ class BatchFriendCreation
   end
   private_class_method :mark_duplicates
 
-  def initialize(user:, candidates:)
+  def initialize(user:, candidates:, names: nil)
     @user = user
     @candidates = candidates
+    @names = names
     @created_friends = []
     super()
   end
@@ -52,6 +68,10 @@ class BatchFriendCreation
 
   def skipped_count
     candidates.size - selected_count
+  end
+
+  def duplicate_count
+    candidates.count(&:duplicate)
   end
 
   def validate_candidates
