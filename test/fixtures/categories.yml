@@ -1,0 +1,34 @@
+# == Schema Information
+#
+# Table name: categories
+#
+#  id              :integer          not null, primary key
+#  name            :string           not null
+#  normalized_name :string           not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  user_id         :integer          not null
+#
+# Indexes
+#
+#  index_categories_on_user_id                      (user_id)
+#  index_categories_on_user_id_and_normalized_name  (user_id,normalized_name) UNIQUE
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id) ON DELETE => cascade
+#
+family:
+  user: one
+  name: Family
+  normalized_name: family
+
+friends:
+  user: one
+  name: Friends
+  normalized_name: friends
+
+family_for_user_two:
+  user: two
+  name: Family
+  normalized_name: family
