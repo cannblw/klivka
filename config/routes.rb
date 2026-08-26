@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   post "friends/import", to: "vcard_imports#create", as: :vcard_imports
   get "friends/import/preview", to: "vcard_imports#show", as: :vcard_import
   patch "friends/import/preview", to: "vcard_imports#update"
+  get "friends/batch", to: "batch_friend_creations#new", as: :new_batch_friend_creation
+  post "friends/batch/preview", to: "batch_friend_creations#preview", as: :preview_batch_friend_creation
+  post "friends/batch", to: "batch_friend_creations#create", as: :batch_friend_creation
   resources :friends, only: [ :index, :show, :create, :update, :destroy ] do
     resource :category_assignment, only: :update
     resources :entries, only: %i[ new create edit update destroy ] do

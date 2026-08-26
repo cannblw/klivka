@@ -8,6 +8,8 @@ class FriendsController < ApplicationController
     @grouped_view = @grouping_available && @view == "grouped" && params[:query].blank?
     prepare_friend_groups if @grouped_view
     @friend = Friend.new
+    @batch_creation = BatchFriendCreation.preview(user: Current.user, names: "")
+    @batch_mode = params[:batch] == "true"
   end
 
   def show
@@ -46,6 +48,8 @@ class FriendsController < ApplicationController
       redirect_to @friend, notice: t(".created", name: @friend.name)
     else
       @friends = Current.user.friends.order(:name)
+      @batch_creation = BatchFriendCreation.preview(user: Current.user, names: "")
+      @batch_mode = false
       render :index, status: :unprocessable_entity
     end
   end

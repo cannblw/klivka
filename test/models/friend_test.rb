@@ -24,7 +24,7 @@ require "test_helper"
 #  user_id      (user_id => users.id)
 #
 class FriendTest < ActiveSupport::TestCase
-  test "friend name has a portable length limit" do
+  test "friend names have a portable maximum length" do
     friend = users(:one).friends.new(name: "a" * (FriendCrm::STRING_MAX_LENGTH + 1))
 
     assert_not friend.valid?
