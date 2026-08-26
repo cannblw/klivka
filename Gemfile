@@ -85,7 +85,7 @@ gem "dotiw", "~> 5.5"
 # vcard is pre-1.0, so minor releases may contain breaking changes. Allow only 0.4.x patches.
 gem "vcard", "~> 0.4.0"
 
-gem "resend", "~> 1.9"
+gem "resend", "~> 1.10"
 
 gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
 
