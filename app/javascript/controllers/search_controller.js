@@ -25,6 +25,7 @@ export default class extends Controller {
   prepareFormData(event) {
     if (event.formData.get("query") === "") event.formData.delete("query")
     if (event.formData.get("sort") === "") event.formData.delete("sort")
+    if (event.formData.get("view") === "") event.formData.delete("view")
   }
 
   clearPendingSearch() {

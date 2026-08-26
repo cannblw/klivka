@@ -50,6 +50,7 @@
           search_delay_value: Rails.application.config.x.friend_search_debounce_milliseconds
         },
         class: "w-full" do |form| %>
+    <%= form.hidden_field :view, value: "all" if @view == "all" %>
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
       <div class="min-w-0 flex-1">
         <%= render InputFieldComponent.new(form, :query, type: :search,
@@ -80,9 +81,37 @@
 
 <%= turbo_frame_tag "friends_grid" do %>
   <% if @friends.any? %>
-    <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
-      <%= render FriendCardComponent.with_collection(@friends) %>
-    </div>
+    <% if @grouping_available && params[:query].blank? %>
+      <div class="mt-6 flex justify-end">
+        <%= render FriendViewToggleComponent.new(view: @view, sort: @sort) %>
+      </div>
+    <% end %>
+
+    <% if @grouped_view %>
+      <div class="mt-6 space-y-6">
+        <% @categorized_friend_groups.each do |category, friends| %>
+          <section aria-labelledby="friend-category-<%= category.id %>-heading">
+            <h2 id="friend-category-<%= category.id %>-heading" class="text-lg font-semibold"><%= category.name %></h2>
+            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+              <%= render FriendCardComponent.with_collection(friends) %>
+            </div>
+          </section>
+        <% end %>
+
+        <% if @uncategorized_friends.any? %>
+          <section aria-labelledby="uncategorized-friends-heading">
+            <h2 id="uncategorized-friends-heading" class="text-lg font-semibold"><%= t(".uncategorized") %></h2>
+            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+              <%= render FriendCardComponent.with_collection(@uncategorized_friends) %>
+            </div>
+          </section>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+        <%= render FriendCardComponent.with_collection(@friends, show_category: true) %>
+      </div>
+    <% end %>
   <% elsif params[:query].present? %>
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
       <p class="text-lg font-medium"><%= t(".no_results", query: params[:query]) %></p>

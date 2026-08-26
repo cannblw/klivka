@@ -1,0 +1,42 @@
+<%= render SectionComponent.new(title: category.name, heading_id: "category-#{category.id}-heading") do %>
+  <div data-controller="toggle" class="space-y-3">
+    <p data-friend-count="<%= friend_count %>" class="text-sm text-stone-500 dark:text-stone-400">
+      <%= t("categories.friend_count", count: friend_count) %>
+    </p>
+
+    <div data-toggle-target="content" class="flex flex-wrap items-center gap-2 <%= "hidden" if category.errors.any? %>">
+      <%= render ButtonComponent.new(variant: :ghost, size: :sm, data: { action: "toggle#toggle" }) do %>
+        <%= t("categories.actions.rename") %>
+      <% end %>
+      <%= render ButtonComponent.new(
+            variant: :ghost,
+            size: :sm,
+            class: "text-red-600 hover:text-red-500 dark:text-red-400",
+            data: {
+              controller: "delete-category",
+              action: "click->delete-category#click",
+              delete_category_url: category_path(category),
+              delete_category_message: t("categories.delete.body", count: friend_count)
+            }
+          ) do %>
+        <%= t("categories.actions.delete") %>
+      <% end %>
+    </div>
+
+    <div data-toggle-target="content" class="<%= "hidden" unless category.errors.any? %>">
+      <%= form_with model: category, class: "flex max-w-xl flex-col gap-3 sm:flex-row sm:items-start" do |form| %>
+        <div class="min-w-0 flex-1">
+          <%= render InputFieldComponent.new(form, :name, type: :text, maxlength: FriendCrm::STRING_MAX_LENGTH, autocomplete: "off", class: "w-full") %>
+        </div>
+        <div class="flex gap-2">
+          <%= render ButtonComponent.new(type: :submit, size: :sm) do %>
+            <%= t("categories.actions.save") %>
+          <% end %>
+          <%= render ButtonComponent.new(variant: :ghost, size: :sm, data: { action: "toggle#toggle" }) do %>
+            <%= t("categories.actions.cancel") %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

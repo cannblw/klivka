@@ -93,6 +93,7 @@ es:
 
   nav:
     birthdays: "Cumpleaños"
+    categories: "Categorías"
     sign_out: "Cerrar sesión"
     settings: "Ajustes"
 
@@ -430,6 +431,45 @@ es:
         years: "Años"
       save: "Guardar ajustes de recordatorios"
 
+  categories:
+    actions:
+      cancel: "Cancelar"
+      delete: "Eliminar"
+      rename: "Renombrar"
+      save: "Guardar"
+    create:
+      created: "Se ha creado %{name}."
+    delete:
+      title: "¿Eliminar la categoría?"
+      body:
+        one: "Un amigo se quedará sin categoría. No se eliminará ni al amigo ni su información."
+        other: "%{count} amigos se quedarán sin categoría. No se eliminarán ni los amigos ni su información."
+      confirm: "Eliminar categoría"
+    destroy:
+      deleted:
+        one: "Se ha eliminado %{name}. Un amigo se ha quedado sin categoría."
+        other: "Se ha eliminado %{name}. %{count} amigos se han quedado sin categoría."
+    friend_count:
+      one: "1 amigo"
+      other: "%{count} amigos"
+    index:
+      back: "← Amigos"
+      title: "Categorías"
+      heading: "Categorías"
+      description: "Usa categorías opcionales para organizar a tus amigos de la forma que te resulte útil."
+      new:
+        heading: "Crea una categoría"
+        description: "Puede ser algo como Familia, Amigos o Vecinos."
+        placeholder: "Nombre de la categoría"
+        submit: "Crear categoría"
+      uncategorized:
+        heading: "Sin categoría"
+      empty:
+        heading: "Aún no hay categorías"
+        description: "Crea una cuando agrupar a tus amigos te ayude a encontrarlos más fácilmente."
+    update:
+      updated: "Se ha guardado %{name}."
+
   friends:
     index:
       title: "Amigos"
@@ -443,6 +483,11 @@ es:
         name: "Nombre"
         recently_added: "Añadidos recientemente"
         recently_updated: "Actualizados recientemente"
+      uncategorized: "Sin categoría"
+      view_toggle:
+        label: "Vista de amigos"
+        grouped: "Por categoría"
+        all: "Todos"
       no_results: "Ningún amigo coincide con '%{query}'"
       modal:
         heading: "Añade un amigo"

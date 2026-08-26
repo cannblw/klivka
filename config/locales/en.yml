@@ -82,6 +82,7 @@ en:
 
   nav:
     birthdays: "Birthdays"
+    categories: "Categories"
     sign_out: "Sign out"
     settings: "Settings"
 
@@ -419,6 +420,45 @@ en:
         years: "Years"
       save: "Save reminder settings"
 
+  categories:
+    actions:
+      cancel: "Cancel"
+      delete: "Delete"
+      rename: "Rename"
+      save: "Save"
+    create:
+      created: "%{name} created."
+    delete:
+      title: "Delete category?"
+      body:
+        one: "One friend will become uncategorized. The friend and their information will not be deleted."
+        other: "%{count} friends will become uncategorized. The friends and their information will not be deleted."
+      confirm: "Delete category"
+    destroy:
+      deleted:
+        one: "%{name} deleted. One friend is now uncategorized."
+        other: "%{name} deleted. %{count} friends are now uncategorized."
+    friend_count:
+      one: "1 friend"
+      other: "%{count} friends"
+    index:
+      back: "← Friends"
+      title: "Categories"
+      heading: "Categories"
+      description: "Use optional categories to organize friends in the way that feels useful to you."
+      new:
+        heading: "Create a category"
+        description: "A category can be something like Family, Friends, or Neighbors."
+        placeholder: "Category name"
+        submit: "Create category"
+      uncategorized:
+        heading: "Uncategorized"
+      empty:
+        heading: "No categories yet"
+        description: "Create one whenever a simple group would make your friends easier to find."
+    update:
+      updated: "%{name} saved."
+
   friends:
     index:
       title: "Friends"
@@ -432,6 +472,11 @@ en:
         name: "Name"
         recently_added: "Recently added"
         recently_updated: "Recently updated"
+      uncategorized: "Uncategorized"
+      view_toggle:
+        label: "Friend view"
+        grouped: "Grouped"
+        all: "All friends"
       no_results: "No friends matching '%{query}'"
       modal:
         heading: "Add a friend"

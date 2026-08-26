@@ -15,4 +15,20 @@ class FriendCardComponentTest < ViewComponent::TestCase
 
     assert_text "A"
   end
+
+  test "optionally renders the friend's category" do
+    friend = Friend.create!(name: "Ada Lovelace", user: users(:one), category: categories(:family))
+
+    render_inline FriendCardComponent.new(friend: friend, show_category: true)
+
+    assert_text categories(:family).name
+  end
+
+  test "omits the category when the surrounding view already provides it" do
+    friend = Friend.create!(name: "Ada Lovelace", user: users(:one), category: categories(:family))
+
+    render_inline FriendCardComponent.new(friend: friend)
+
+    assert_no_text categories(:family).name
+  end
 end

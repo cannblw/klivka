@@ -51,7 +51,7 @@ class CategoryTest < ActiveSupport::TestCase
     duplicate = users(:one).categories.new(name: "  CLOSE   FRIENDS ")
 
     assert_not duplicate.valid?
-    assert duplicate.errors.added?(:normalized_name, :taken, value: "close friends")
+    assert duplicate.errors.added?(:name, :taken)
   end
 
   test "different users can use the same category name" do

@@ -25,12 +25,20 @@ class Category < ApplicationRecord
   before_validation :normalize_name
 
   validates :name, presence: true, length: { maximum: FriendCrm::STRING_MAX_LENGTH }
-  validates :normalized_name, presence: true, uniqueness: { scope: :user_id }
+  validates :normalized_name, presence: true
+  validate :name_is_unique_for_user
 
   private
 
   def normalize_name
     self.name = StringNormalizer.call(name)
     self.normalized_name = name.downcase
+  end
+
+  def name_is_unique_for_user
+    return if normalized_name.blank? || user.nil?
+    return unless user.categories.where(normalized_name: normalized_name).where.not(id: id).exists?
+
+    errors.add(:name, :taken)
   end
 end
