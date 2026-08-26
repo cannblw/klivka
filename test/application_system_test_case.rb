@@ -6,10 +6,13 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   private
 
   def sign_in_as(user)
+    session = user.sessions.create!
+    cookie_jar = ActionDispatch::TestRequest.create.cookie_jar
+    cookie_jar.signed[:session_id] = session.id
+
     visit new_session_path
-    fill_in "Email address", with: user.email_address
-    fill_in "Password", with: "password"
-    click_button "Sign in"
+    page.driver.browser.manage.add_cookie(name: "session_id", value: cookie_jar[:session_id])
+    visit root_path
     assert_current_path root_path
   end
 end
