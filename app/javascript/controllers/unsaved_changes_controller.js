@@ -13,12 +13,14 @@ export default class extends Controller {
     this.boundHandleSubmit = this.handleSubmit.bind(this)
     this.boundHandleBeforeVisit = this.handleBeforeVisit.bind(this)
     this.boundHandleBeforeUnload = this.handleBeforeUnload.bind(this)
+    this.boundHandleDiscard = this.handleDiscard.bind(this)
 
     this.element.addEventListener("input", this.boundHandleInput)
     this.element.addEventListener("change", this.boundHandleInput)
     this.element.addEventListener("submit", this.boundHandleSubmit)
     document.addEventListener("turbo:before-visit", this.boundHandleBeforeVisit)
     window.addEventListener("beforeunload", this.boundHandleBeforeUnload)
+    document.getElementById(CONFIRM_LINK_ID)?.addEventListener("click", this.boundHandleDiscard)
   }
 
   disconnect() {
@@ -27,6 +29,7 @@ export default class extends Controller {
     this.element.removeEventListener("submit", this.boundHandleSubmit)
     document.removeEventListener("turbo:before-visit", this.boundHandleBeforeVisit)
     window.removeEventListener("beforeunload", this.boundHandleBeforeUnload)
+    document.getElementById(CONFIRM_LINK_ID)?.removeEventListener("click", this.boundHandleDiscard)
   }
 
   snapshotFields() {
@@ -61,6 +64,10 @@ export default class extends Controller {
     const link = document.getElementById(CONFIRM_LINK_ID)
     if (link) link.href = event.detail.url
     document.getElementById(DIALOG_ID)?.showModal()
+  }
+
+  handleDiscard() {
+    this.isDirty = false
   }
 
   handleBeforeUnload(event) {
