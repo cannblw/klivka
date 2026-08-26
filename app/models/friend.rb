@@ -27,7 +27,7 @@ class Friend < ApplicationRecord
   has_many :interactions, dependent: :destroy
   has_one :keep_in_touch_setting, dependent: :destroy
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: FriendCrm::STRING_MAX_LENGTH }
 
   def should_generate_new_friendly_id?
     name_changed? || super

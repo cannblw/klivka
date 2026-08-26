@@ -9,6 +9,8 @@ Bundler.require(*Rails.groups)
 module FriendCrm
   # PostgreSQL integer columns are signed 32-bit values; use this limit for persisted integers so SQLite stays compatible.
   MAX_INT32 = 2_147_483_647
+  # SQLite does not enforce declared string lengths; use this limit with explicit constraints so PostgreSQL and SQLite stay compatible.
+  STRING_MAX_LENGTH = 255
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

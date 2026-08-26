@@ -1,6 +1,6 @@
 <% content_for :title, t(".title") %>
 
-<div data-controller="dialog" data-dialog-open-value="<%= @friend.errors.any? %>">
+<div data-controller="dialog toggle" data-dialog-open-value="<%= @friend.errors.any? || @batch_mode %>">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
 
@@ -18,24 +18,77 @@
   <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
           class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
     <div class="p-6">
-      <h2 class="text-lg font-semibold dark:text-stone-100"><%= t(".modal.heading") %></h2>
-      <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".modal.hint") %></p>
+      <div data-toggle-target="content" class="<%= "hidden" if @batch_mode %>">
+        <h2 class="text-lg font-semibold dark:text-stone-100"><%= t(".modal.heading") %></h2>
+        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".modal.hint") %></p>
 
-      <%= form_with model: @friend, class: "mt-4" do |form| %>
-        <%= render InputFieldComponent.new(form, :name, type: :text,
-              placeholder: t(".modal.name_placeholder"),
-              autofocus: true,
-              autocomplete: "off",
-              class: "w-full") %>
-        <div class="mt-4 flex justify-end gap-2">
-          <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
-            <%= t(".modal.cancel") %>
+        <%= form_with model: @friend, class: "mt-4" do |form| %>
+          <%= render InputFieldComponent.new(form, :name, type: :text,
+                placeholder: t(".modal.name_placeholder"),
+                autofocus: !@batch_mode,
+                autocomplete: "off",
+                class: "w-full") %>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <%= render ButtonComponent.new(
+                  variant: :ghost,
+                  size: :sm,
+                  class: "!p-0 text-xs text-amber-700 underline decoration-amber-300 underline-offset-4 hover:!bg-transparent hover:text-amber-600 dark:text-amber-400 dark:decoration-amber-700 dark:hover:text-amber-300",
+                  data: { action: "toggle#toggle" }
+                ) do %>
+              <%= t(".modal.add_multiple") %>
+            <% end %>
+            <div class="flex gap-2">
+              <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
+                <%= t(".modal.cancel") %>
+              <% end %>
+              <%= render ButtonComponent.new(type: :submit) do %>
+                <%= t(".modal.submit") %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div data-toggle-target="content" class="<%= "hidden" unless @batch_mode %>">
+        <h2 class="text-lg font-semibold dark:text-stone-100"><%= t(".batch_modal.heading") %></h2>
+        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".batch_modal.hint") %></p>
+
+        <%= form_with url: preview_batch_friend_creation_path,
+              scope: :batch_friend_creation,
+              class: "mt-4",
+              data: { turbo: false } do |form| %>
+          <label for="batch-friend-names" class="sr-only"><%= t(".batch_modal.names_label") %></label>
+          <%= form.text_area :names,
+                value: @batch_creation.names,
+                id: "batch-friend-names",
+                rows: 8,
+                autofocus: @batch_mode,
+                class: FormStyling::TEXTAREA_CLASSES,
+                placeholder: t(".batch_modal.placeholder"),
+                aria: { describedby: ("batch-friend-errors" if @batch_creation.errors.any?), invalid: @batch_creation.errors.any? } %>
+          <% if @batch_creation.errors.any? %>
+            <p id="batch-friend-errors" class="mt-2 text-sm text-red-600 dark:text-red-400"><%= t(".batch_modal.names_required") %></p>
           <% end %>
-          <%= render ButtonComponent.new(type: :submit) do %>
-            <%= t(".modal.submit") %>
-          <% end %>
-        </div>
-      <% end %>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <%= render ButtonComponent.new(
+                  variant: :ghost,
+                  size: :sm,
+                  class: "!p-0 text-xs text-amber-700 underline decoration-amber-300 underline-offset-4 hover:!bg-transparent hover:text-amber-600 dark:text-amber-400 dark:decoration-amber-700 dark:hover:text-amber-300",
+                  data: { action: "toggle#toggle" }
+                ) do %>
+              <%= t(".batch_modal.add_one") %>
+            <% end %>
+            <div class="flex gap-2">
+              <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
+                <%= t(".batch_modal.cancel") %>
+              <% end %>
+              <%= render ButtonComponent.new(type: :submit) do %>
+                <%= t(".batch_modal.submit") %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </dialog>
 </div>

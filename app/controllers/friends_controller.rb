@@ -3,6 +3,8 @@ class FriendsController < ApplicationController
     @sort = params[:sort].presence_in(FriendSearch::SORTS.keys) || FriendSearch::DEFAULT_SORT
     @friends = FriendSearch.call(Current.user, params[:query], sort: @sort)
     @friend = Friend.new
+    @batch_creation = BatchFriendCreation.preview(user: Current.user, names: "")
+    @batch_mode = params[:batch] == "true"
   end
 
   def show
@@ -39,6 +41,8 @@ class FriendsController < ApplicationController
       redirect_to @friend, notice: t(".created", name: @friend.name)
     else
       @friends = Current.user.friends.order(:name)
+      @batch_creation = BatchFriendCreation.preview(user: Current.user, names: "")
+      @batch_mode = false
       render :index, status: :unprocessable_entity
     end
   end
