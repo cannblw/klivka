@@ -16,6 +16,7 @@ class FriendsController < ApplicationController
     @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
     @interaction_count = @friend.interactions.count
     prepare_quick_interaction
+    prepare_categories
   end
 
   def update
@@ -26,6 +27,7 @@ class FriendsController < ApplicationController
       redirect_to friend_path(@friend, **@return_params)
     else
       prepare_quick_interaction
+      prepare_categories
       render :show, status: :unprocessable_entity
     end
   end
@@ -77,6 +79,10 @@ class FriendsController < ApplicationController
     @interaction_to_enrich = @friend.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = params[:quick_interaction] == "today"
     @keep_in_touch_setting = @friend.keep_in_touch_setting
+  end
+
+  def prepare_categories
+    @categories = Current.user.categories.order(:normalized_name).to_a
   end
 
   def friend_params

@@ -21,21 +21,32 @@
     <% end %>
   <% end %>
 
-  <% if @categories.any? %>
-    <div class="space-y-4">
-      <%= render CategoryManagementComponent.with_collection(@categories) %>
-      <%= render SectionComponent.new(title: t(".uncategorized.heading")) do %>
-        <p data-friend-count="<%= @uncategorized_count %>" class="text-sm text-stone-500 dark:text-stone-400">
-          <%= t("categories.friend_count", count: @uncategorized_count) %>
-        </p>
-      <% end %>
-    </div>
-  <% else %>
-    <%= render SectionComponent.new do %>
-      <div class="py-6 text-center">
-        <p class="text-sm font-medium"><%= t(".empty.heading") %></p>
-        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".empty.description") %></p>
+  <%= turbo_frame_tag "category_organizer" do %>
+    <% if @categories.any? %>
+      <div class="space-y-4">
+        <%= render CategoryManagementComponent.with_collection(@categories) %>
+        <% if @uncategorized_friends.any? %>
+          <%= render SectionComponent.new(title: t(".uncategorized.heading")) do %>
+            <p data-friend-count="<%= @uncategorized_friends.size %>" class="text-sm text-stone-500 dark:text-stone-400">
+              <%= t("categories.friend_count", count: @uncategorized_friends.size) %>
+            </p>
+            <ul class="mt-3 divide-y divide-stone-200 dark:divide-stone-700">
+              <% @uncategorized_friends.each do |friend| %>
+                <li class="py-2">
+                  <%= link_to friend.name, friend_path(friend), data: { turbo_frame: "_top" }, class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        <% end %>
       </div>
+    <% else %>
+      <%= render SectionComponent.new do %>
+        <div class="py-6 text-center">
+          <p class="text-sm font-medium"><%= t(".empty.heading") %></p>
+          <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".empty.description") %></p>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
 </div>

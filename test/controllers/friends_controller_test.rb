@@ -224,6 +224,7 @@ class FriendsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /No contact yet/
     assert_select "#contact-reminder-heading", text: "Keep in touch"
     assert_select "form[action='#{friend_keep_in_touch_setting_path(friends(:ada))}']"
+    assert_select "form[action='#{friend_category_assignment_path(friends(:ada))}'] select[name='category_assignment[category_id]']"
   end
 
   test "show links back to the birthday agenda that opened the friend" do

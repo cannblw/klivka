@@ -6,6 +6,16 @@ class CategoriesController < ApplicationController
     prepare_index
   end
 
+  def friend_suggestions
+    category = Current.user.categories.find(params[:category_id])
+    return render json: [] if params[:query].blank?
+
+    friends = FriendSearch.call(Current.user, params[:query]).reject { |friend| friend.category_id == category.id }
+    ActiveRecord::Associations::Preloader.new(records: friends, associations: :category).call
+
+    render json: friends.map { |friend| suggestion_for(friend) }
+  end
+
   def create
     @category = Current.user.categories.new(category_params)
 
@@ -43,10 +53,18 @@ class CategoriesController < ApplicationController
   def prepare_index
     @categories = Current.user.categories.includes(:friends).order(:normalized_name).to_a
     @categories.map! { |category| category.id == @category.id ? @category : category } if @category.persisted?
-    @uncategorized_count = Current.user.friends.where(category_id: nil).count
+    @uncategorized_friends = Current.user.friends.where(category_id: nil).order(:name, :id).to_a
   end
 
   def category_params
     params.expect(category: [ :name ])
+  end
+
+  def suggestion_for(friend)
+    {
+      name: friend.name,
+      category: friend.category&.name,
+      assignment_url: friend_category_assignment_path(friend)
+    }
   end
 end

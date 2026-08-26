@@ -29,6 +29,7 @@ class InteractionsController < ApplicationController
       @recent_interactions = @friend.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
       @interaction_count = @friend.interactions.count
       @keep_in_touch_setting = @friend.keep_in_touch_setting
+      @categories = Current.user.categories.order(:normalized_name).to_a
       render "friends/show", status: :unprocessable_entity
     else
       render :new, status: :unprocessable_entity

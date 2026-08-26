@@ -435,7 +435,7 @@ es:
     actions:
       cancel: "Cancelar"
       delete: "Eliminar"
-      rename: "Renombrar"
+      rename_category: "Renombrar %{name}"
       save: "Guardar"
     create:
       created: "Se ha creado %{name}."
@@ -452,6 +452,20 @@ es:
     friend_count:
       one: "1 amigo"
       other: "%{count} amigos"
+    friend_count_parenthetical:
+      one: "(1 amigo)"
+      other: "(%{count} amigos)"
+    organizer:
+      add_friend: "Añadir o mover un amigo"
+      current_category: "Ahora está en %{category}"
+      empty: "Aún no hay amigos en esta categoría."
+      error: "No se han podido cargar los amigos. Inténtalo de nuevo."
+      friends_in: "Amigos en %{category}"
+      loading: "Cargando amigos que coinciden"
+      no_results: "No hay amigos que coincidan"
+      remove: "Mover a Sin categoría"
+      results: "%{count} amigos disponibles"
+      search_placeholder: "Buscar amigos"
     index:
       back: "← Amigos"
       title: "Categorías"
@@ -470,7 +484,18 @@ es:
     update:
       updated: "Se ha guardado %{name}."
 
+  category_assignments:
+    update:
+      updated: "Se ha actualizado la categoría de %{name}."
+
   friends:
+    category:
+      cancel: "Cancelar"
+      edit: "Cambiar categoría"
+      label: "Categoría del amigo"
+      save: "Guardar"
+      uncategorized: "Sin categoría"
+      value: "Categoría: %{category}"
     index:
       title: "Amigos"
       heading: "Amigos"

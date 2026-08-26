@@ -424,7 +424,7 @@ en:
     actions:
       cancel: "Cancel"
       delete: "Delete"
-      rename: "Rename"
+      rename_category: "Rename %{name}"
       save: "Save"
     create:
       created: "%{name} created."
@@ -441,6 +441,20 @@ en:
     friend_count:
       one: "1 friend"
       other: "%{count} friends"
+    friend_count_parenthetical:
+      one: "(1 friend)"
+      other: "(%{count} friends)"
+    organizer:
+      add_friend: "Add or move a friend"
+      current_category: "Currently in %{category}"
+      empty: "No friends in this category yet."
+      error: "Friends could not be loaded. Try again."
+      friends_in: "Friends in %{category}"
+      loading: "Loading matching friends"
+      no_results: "No matching friends"
+      remove: "Move to Uncategorized"
+      results: "%{count} matching friends available"
+      search_placeholder: "Search friends"
     index:
       back: "← Friends"
       title: "Categories"
@@ -459,7 +473,18 @@ en:
     update:
       updated: "%{name} saved."
 
+  category_assignments:
+    update:
+      updated: "%{name}'s category updated."
+
   friends:
+    category:
+      cancel: "Cancel"
+      edit: "Change category"
+      label: "Friend category"
+      save: "Save"
+      uncategorized: "Uncategorized"
+      value: "Category: %{category}"
     index:
       title: "Friends"
       heading: "Friends"

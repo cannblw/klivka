@@ -19,9 +19,44 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1"
     assert_select "header a[href='#{categories_path}']"
+    assert_select "turbo-frame#category_organizer"
     assert_select "section[aria-labelledby='category-#{categories(:family).id}-heading'] [data-friend-count='1']"
     assert_select "section[aria-labelledby='category-#{categories(:family_for_user_two).id}-heading']", count: 0
     assert_select "form[action='#{categories_path}'] input[name='category[name]']"
+  end
+
+  test "friend suggestions reuse friend search and identify current categories" do
+    friends(:grace).update!(category: categories(:friends))
+
+    get friend_suggestions_categories_url, params: { category_id: categories(:family).id, query: "grac" }
+
+    assert_response :success
+    suggestion = response.parsed_body.sole
+    assert_equal friends(:grace).name, suggestion.fetch("name")
+    assert_equal categories(:friends).name, suggestion.fetch("category")
+    assert_equal friend_category_assignment_path(friends(:grace)), suggestion.fetch("assignment_url")
+  end
+
+  test "friend suggestions exclude friends already in the destination category" do
+    friends(:ada).update!(category: categories(:family))
+
+    get friend_suggestions_categories_url, params: { category_id: categories(:family).id, query: "ada" }
+
+    assert_response :success
+    assert_empty response.parsed_body
+  end
+
+  test "friend suggestions require a query" do
+    get friend_suggestions_categories_url, params: { category_id: categories(:family).id }
+
+    assert_response :success
+    assert_empty response.parsed_body
+  end
+
+  test "friend suggestions cannot use another user's category" do
+    get friend_suggestions_categories_url, params: { category_id: categories(:family_for_user_two).id, query: "ada" }
+
+    assert_response :not_found
   end
 
   test "create adds a category for the current user" do

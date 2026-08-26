@@ -1,0 +1,36 @@
+<div data-controller="toggle" class="mt-2">
+  <div data-toggle-target="content" class="flex items-center gap-1.5">
+    <p class="text-sm text-stone-500 dark:text-stone-400">
+      <%= t("friends.category.value", category: friend.category&.name || t("friends.category.uncategorized")) %>
+    </p>
+    <%= render ButtonComponent.new(
+          variant: :ghost,
+          size: :sm,
+          class: "shrink-0 text-stone-400 dark:text-stone-500",
+          data: { action: "toggle#toggle" },
+          aria: { label: t("friends.category.edit") }
+        ) do %>
+      <span class="material-icons" style="font-size: 16px" aria-hidden="true">edit</span>
+    <% end %>
+  </div>
+
+  <div data-toggle-target="content" class="hidden">
+    <%= form_with url: friend_category_assignment_path(friend), method: :patch, scope: :category_assignment,
+          class: "flex max-w-xl flex-col gap-2 sm:flex-row sm:items-start" do |form| %>
+      <div class="min-w-0 flex-1 sm:max-w-xs">
+        <%= render SelectFieldComponent.new(form, :category_id,
+              choices: [ [ t("friends.category.uncategorized"), "" ] ] + categories.map { |category| [ category.name, category.id ] },
+              selected: friend.category_id,
+              aria: { label: t("friends.category.label") }) %>
+      </div>
+      <div class="flex gap-2">
+        <%= render ButtonComponent.new(type: :submit, size: :sm) do %>
+          <%= t("friends.category.save") %>
+        <% end %>
+        <%= render ButtonComponent.new(variant: :ghost, size: :sm, data: { action: "toggle#toggle" }) do %>
+          <%= t("friends.category.cancel") %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

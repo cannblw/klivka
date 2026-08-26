@@ -13,6 +13,10 @@ class CategoryManagementComponentTest < ViewComponent::TestCase
     assert_selector "form[action='#{path}'] input[name='category[name]']"
     assert_selector "[data-controller='delete-category'][data-delete-category-url='#{path}']"
     assert_selector "[data-friend-count='1']"
+    assert_selector "[data-controller='friend-autocomplete']"
+    assignment_path = Rails.application.routes.url_helpers.friend_category_assignment_path(friends(:ada))
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.friend_path(friends(:ada))}'][data-turbo-frame='_top']"
+    assert_selector "form[action='#{assignment_path}'] input[name='category_assignment[category_id]'][value='']", visible: :all
   end
 
   test "category management reveals the rename form after a validation error" do
