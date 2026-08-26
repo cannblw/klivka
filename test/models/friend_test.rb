@@ -22,10 +22,10 @@ require "test_helper"
 #
 class FriendTest < ActiveSupport::TestCase
   test "friend names have a portable maximum length" do
-    friend = users(:one).friends.new(name: "a" * (Friend::NAME_MAX_LENGTH + 1))
+    friend = users(:one).friends.new(name: "a" * (FriendCrm::STRING_MAX_LENGTH + 1))
 
     assert_not friend.valid?
-    assert friend.errors.added?(:name, :too_long, count: Friend::NAME_MAX_LENGTH)
+    assert friend.errors.added?(:name, :too_long, count: FriendCrm::STRING_MAX_LENGTH)
   end
 
   test "slug regenerates when name changes" do

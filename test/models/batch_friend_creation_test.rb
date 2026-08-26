@@ -61,7 +61,7 @@ class BatchFriendCreationTest < ActiveSupport::TestCase
 
   test "save validates every selected name before creating any friends" do
     creation = BatchFriendCreation.preview(user: users(:one), names: "Marie Curie\nKatherine Johnson")
-    creation.candidates.second.name = "a" * (Friend::NAME_MAX_LENGTH + 1)
+    creation.candidates.second.name = "a" * (FriendCrm::STRING_MAX_LENGTH + 1)
 
     assert_no_difference "Friend.count" do
       assert_not creation.save
