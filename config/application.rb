@@ -178,6 +178,3 @@ module Klivka
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end
-
-# Released migrations reference the original namespace and cannot be rewritten safely.
-FriendCrm = Klivka

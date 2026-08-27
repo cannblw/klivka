@@ -12,6 +12,7 @@
 - Only portable column types: `string`, `text`, `integer`, `decimal`, `boolean`, `datetime`, `json`, `date`. Never `jsonb`, PG arrays, or `uuid` columns.
 - No adapter-conditional migrations. `schema.rb` must load identically on both adapters.
 - Treat migrations absent from `main` as unreleased. Consolidate related unreleased migrations when one coherent migration best represents the final schema, such as folding new columns into a branch-only create-table migration. Keep migrations separate when they cover meaningfully independent tables or concerns, and never rewrite a migration already present on `main`.
+- Keep migrations deterministic by defining schema-bound policy values inside the migration instead of referencing mutable application constants. When the same policy also has a shared application constant, keep the values synchronized: ask the user whether an application-level change should include a new migration for the database constraint, and update the application constant in the same changeset when a migration changes the database value.
 - Avoid raw SQL; use ActiveRecord/Arel. If raw SQL is unavoidable and must differ by adapter, use `ApplicationRecord.adapter_sql(sqlite:, postgres:)` to branch cleanly.
 - Explain non-obvious database portability choices with a concise comment describing why the adapters need that representation, constraint, constant, or query. Keep comments focused on the adapter difference rather than restating the code.
 
