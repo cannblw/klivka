@@ -24,7 +24,7 @@ class Category < ApplicationRecord
 
   before_validation :normalize_name
 
-  validates :name, presence: true, length: { maximum: FriendCrm::STRING_MAX_LENGTH }
+  validates :name, presence: true, length: { maximum: Klivka::STRING_MAX_LENGTH }
   validates :normalized_name, presence: true
   validate :name_is_unique_for_user
 

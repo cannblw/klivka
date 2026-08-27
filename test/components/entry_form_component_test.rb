@@ -33,7 +33,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
     assert_selector "[data-reminder-date-target='addButton']:not(.hidden) button[data-action='reminder-date#enable'][aria-expanded='false']"
     assert_selector "#entry-reminder-options[data-reminder-date-target='fields'].hidden"
     assert_selector "[data-entry-reminder-status='on']", count: 0
-    assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][type='number'][value='1'][min='0'][max='#{FriendCrm::MAX_INT32}']"
+    assert_selector "input[name='entry[entry_reminder_attributes][lead_value]'][type='number'][value='1'][min='0'][max='#{Klivka::MAX_INT32}']"
     assert_selector "select[name='entry[entry_reminder_attributes][lead_unit]'] option[selected][value='months']"
     assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='radio'][value='one_time'][checked]"
     assert_selector "input[name='entry[entry_reminder_attributes][recurrence]'][type='radio'][value='yearly']:not([checked])"

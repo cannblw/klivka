@@ -10,7 +10,7 @@
     <%= form_with model: @category.new_record? ? @category : (@new_category || Category.new), class: "flex max-w-xl flex-col gap-3 sm:flex-row sm:items-start" do |form| %>
       <div class="min-w-0 flex-1">
         <%= render InputFieldComponent.new(form, :name, type: :text,
-              maxlength: FriendCrm::STRING_MAX_LENGTH,
+              maxlength: Klivka::STRING_MAX_LENGTH,
               placeholder: t(".new.placeholder"),
               autocomplete: "off",
               class: "w-full") %>

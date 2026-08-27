@@ -14,7 +14,7 @@
       </label>
       <%= text_field_tag field_name(:name), candidate.name,
             id: "#{dom_id}-name",
-            maxlength: FriendCrm::STRING_MAX_LENGTH,
+            maxlength: Klivka::STRING_MAX_LENGTH,
             autocomplete: "off",
             aria: { describedby: description_ids, invalid: candidate.errors.any? },
             class: "mt-1 #{FormStyling::INPUT_CLASSES}" %>

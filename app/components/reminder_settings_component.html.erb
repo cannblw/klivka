@@ -50,7 +50,7 @@
       <div class="grid gap-3 sm:grid-cols-2">
         <div>
           <%= form.label :birthday_reminder_lead_value, t("settings.reminders.lead_value"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
-          <%= render InputFieldComponent.new(form, :birthday_reminder_lead_value, type: :number, min: 0, max: FriendCrm::MAX_INT32, step: 1) %>
+          <%= render InputFieldComponent.new(form, :birthday_reminder_lead_value, type: :number, min: 0, max: Klivka::MAX_INT32, step: 1) %>
         </div>
         <div>
           <%= form.label :birthday_reminder_lead_unit, t("settings.reminders.lead_unit"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
@@ -70,7 +70,7 @@
       <div class="mt-3 grid gap-3 sm:grid-cols-2">
         <div>
           <%= form.label :default_reminder_lead_value, t("settings.reminders.lead_value"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
-          <%= render InputFieldComponent.new(form, :default_reminder_lead_value, type: :number, min: 0, max: FriendCrm::MAX_INT32, step: 1, class: "mt-1") %>
+          <%= render InputFieldComponent.new(form, :default_reminder_lead_value, type: :number, min: 0, max: Klivka::MAX_INT32, step: 1, class: "mt-1") %>
         </div>
         <div>
           <%= form.label :default_reminder_lead_unit, t("settings.reminders.lead_unit"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>

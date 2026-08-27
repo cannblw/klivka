@@ -1,6 +1,10 @@
 require "test_helper"
 
 class ApplicationConfigurationTest < ActiveSupport::TestCase
+  test "application uses the Klivka namespace" do
+    assert_equal Klivka::Application, Rails.application.class
+  end
+
   test "defines safe demo defaults" do
     configuration = Rails.application.config.x
 

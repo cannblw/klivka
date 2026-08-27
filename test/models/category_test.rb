@@ -33,10 +33,10 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   test "category name has a portable length limit" do
-    category = users(:one).categories.new(name: "a" * (FriendCrm::STRING_MAX_LENGTH + 1))
+    category = users(:one).categories.new(name: "a" * (Klivka::STRING_MAX_LENGTH + 1))
 
     assert_not category.valid?
-    assert category.errors.added?(:name, :too_long, count: FriendCrm::STRING_MAX_LENGTH)
+    assert category.errors.added?(:name, :too_long, count: Klivka::STRING_MAX_LENGTH)
   end
 
   test "category normalizes Unicode and whitespace while preserving capitalization" do

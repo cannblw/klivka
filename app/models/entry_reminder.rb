@@ -34,7 +34,7 @@ class EntryReminder < ApplicationRecord
 
   validates :entry, uniqueness: true
   validates :lead_value,
-    numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: FriendCrm::MAX_INT32 }
+    numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: Klivka::MAX_INT32 }
   validates :lead_unit, inclusion: { in: LEAD_UNITS.keys }
   validates :recurrence, inclusion: { in: RECURRENCES }
   # Check constraints cannot inspect the associated STI row, so eligibility is enforced at the model boundary.

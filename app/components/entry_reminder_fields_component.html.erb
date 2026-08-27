@@ -72,7 +72,7 @@
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
           <div>
             <%= reminder_form.label :lead_value, t("entries.reminder.lead_value"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
-            <%= render InputFieldComponent.new(reminder_form, :lead_value, type: :number, min: 0, max: FriendCrm::MAX_INT32, step: 1, class: "mt-1") %>
+            <%= render InputFieldComponent.new(reminder_form, :lead_value, type: :number, min: 0, max: Klivka::MAX_INT32, step: 1, class: "mt-1") %>
           </div>
           <div>
             <%= reminder_form.label :lead_unit, t("entries.reminder.lead_unit"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>

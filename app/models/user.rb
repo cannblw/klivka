@@ -53,7 +53,7 @@ class User < ApplicationRecord
   validate :time_zone_is_supported
   validates :reminder_in_app_enabled, :reminder_email_enabled, :birthday_reminders_enabled, inclusion: { in: [ true, false ] }
   validates :default_reminder_lead_value, :birthday_reminder_lead_value,
-    numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: FriendCrm::MAX_INT32 }
+    numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: Klivka::MAX_INT32 }
   validates :default_reminder_lead_unit, :birthday_reminder_lead_unit, inclusion: { in: REMINDER_LEAD_UNITS.keys }
 
   # The seeded development account deliberately uses a short, local-only password.

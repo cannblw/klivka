@@ -1,4 +1,6 @@
 class AddBirthdayReminderPreferences < ActiveRecord::Migration[8.1]
+  MAX_INT32 = 2_147_483_647
+
   class EntryRecord < ActiveRecord::Base
     self.table_name = "entries"
   end
@@ -38,7 +40,7 @@ class AddBirthdayReminderPreferences < ActiveRecord::Migration[8.1]
       name: "users_birthday_reminders_enabled_is_boolean"
     add_check_constraint :users,
       <<~SQL.squish,
-        birthday_reminder_lead_value BETWEEN 0 AND #{FriendCrm::MAX_INT32} AND
+        birthday_reminder_lead_value BETWEEN 0 AND #{MAX_INT32} AND
         birthday_reminder_lead_unit IN ('days', 'months', 'years')
       SQL
       name: "users_birthday_reminder_lead_is_supported"
