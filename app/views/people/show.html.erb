@@ -4,6 +4,51 @@
 
 <% ordered_entries = @person.entries.includes(:entry_reminder).ordered.to_a %>
 
+<% if @person.archived? %>
+  <div class="mt-4 space-y-6">
+    <%= render InlineNoticeComponent.new(data: { archived_person_notice: true }) do %>
+      <p class="font-medium"><%= t(".archived_notice.heading") %></p>
+      <p class="mt-1"><%= t(".archived_notice.body") %></p>
+    <% end %>
+
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <h1 class="min-w-0 break-words text-2xl font-bold"><%= @person.name %></h1>
+      <div class="flex flex-wrap gap-2">
+        <%= form_with url: restore_person_path(@person), method: :patch do %>
+          <%= render ButtonComponent.new(type: :submit) do %>
+            <%= t(".restore") %>
+          <% end %>
+        <% end %>
+        <%= render ButtonComponent.new(
+              variant: :ghost,
+              class: "text-red-600 hover:text-red-500 dark:text-red-400",
+              data: { controller: "delete-person", delete_person_url: person_path(@person), action: "click->delete-person#click" }
+            ) do %>
+          <%= t(".delete_permanently") %>
+        <% end %>
+      </div>
+    </div>
+
+    <%= render InteractionHistoryComponent.new(
+          person: @person,
+          interactions: @recent_interactions,
+          total_count: @interaction_count,
+          heading_key: "interactions.history.last_heading",
+          editable: false
+        ) %>
+
+    <% if ordered_entries.any? %>
+      <section aria-labelledby="archived-person-entries-heading">
+        <h2 id="archived-person-entries-heading" class="text-lg font-semibold"><%= t(".saved_entries") %></h2>
+        <div id="entries-feed" class="mt-3 space-y-4">
+          <% ordered_entries.each do |entry| %>
+            <%= render EntryCardComponent.new(entry: entry, person: @person, editable: false) %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+<% else %>
 <div class="mt-4">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
     <div data-controller="toggle" class="flex min-w-0 items-center gap-2">
@@ -63,7 +108,10 @@
 
         <div data-dropdown-target="menu" data-action="click->dropdown#close"
              class="absolute right-0 z-40 mt-1 hidden w-44 rounded-lg border border-stone-200 bg-stone-50 py-1 shadow-lg dark:border-stone-700 dark:bg-stone-800">
-          <%= link_to t(".delete"), "#",
+          <%= link_to t(".archive"), "#",
+                data: { controller: "archive-person", archive_person_url: archive_person_path(@person), action: "click->archive-person#click" },
+                class: "block px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700" %>
+          <%= link_to t(".delete_permanently"), "#",
                 data: { controller: "delete-person", delete_person_url: person_path(@person), action: "click->delete-person#click" },
                 class: "block px-4 py-2 text-sm text-red-600 hover:bg-stone-100 dark:text-red-400 dark:hover:bg-stone-700" %>
         </div>
@@ -121,3 +169,4 @@
     </div>
   <% end %>
 </div>
+<% end %>

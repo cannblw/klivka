@@ -1,12 +1,17 @@
 class EntryCardComponent < ViewComponent::Base
-  def initialize(entry:, person:)
+  def initialize(entry:, person:, editable: true)
     @entry = entry
     @person = person
+    @editable = editable
   end
 
   private
 
   attr_reader :entry, :person
+
+  def editable?
+    @editable
+  end
 
   def kind_key
     entry.type.demodulize.underscore

@@ -490,6 +490,7 @@ en:
       heading: "People"
       add_person: "Add someone"
       import_contacts: "Import contacts"
+      archived_people: "Archived people"
       search_label: "Search people"
       search_placeholder: "Search people..."
       sort_label: "Sort people"
@@ -525,16 +526,45 @@ en:
     show:
       back: "← People"
       back_to_birthdays: "← Birthdays"
-      delete: "Delete person"
+      back_to_archived: "← Archived people"
+      archive: "Archive person"
+      restore: "Restore"
+      delete_permanently: "Delete permanently"
+      saved_entries: "Saved entries"
+      archived_notice:
+        heading: "This person is archived"
+        body: "Their saved information is read-only, and reminders are paused. Restore them to make changes or receive reminders again."
       more_actions: "More actions"
+    archived:
+      title: "Archived people"
+      heading: "Archived people"
+      description: "People here are out of your everyday lists. Their saved information and reminder settings are still here."
+      back: "← People"
+      restore: "Restore"
+      delete_permanently: "Delete permanently"
+      empty:
+        heading: "No archived people"
+        hint: "People you archive will appear here."
     create:
       created: "%{name} added."
     update:
       updated: "Name updated."
     destroy:
-      deleted: "%{name} has been deleted."
-    delete_confirm_title: "Delete person?"
-    delete_confirm_body: "All entries will also be deleted. This cannot be undone."
+      deleted: "%{name} has been permanently deleted."
+    archive:
+      archived: "%{name} has been archived."
+    restore:
+      restored: "%{name} has been restored."
+    archive_confirm:
+      title: "Archive this person?"
+      body: "Contact, birthday, and significant-date reminders will stop. Their entries, interactions, and reminder settings will be preserved."
+      confirm: "Archive person"
+      cancel: "Cancel"
+    delete_confirm:
+      title: "Permanently delete this person?"
+      body: "All saved information for this person will be deleted. This cannot be undone."
+      confirm: "Delete permanently"
+      cancel: "Cancel"
     rename:
       link: "Rename"
       save: "Save"

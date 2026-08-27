@@ -102,11 +102,22 @@
         ) %>
 
     <%= render ConfirmDialogComponent.new(
+          id: "archive-person-dialog",
+          title: t("people.archive_confirm.title"),
+          body: t("people.archive_confirm.body"),
+          confirm_label: t("people.archive_confirm.confirm"),
+          cancel_label: t("people.archive_confirm.cancel"),
+          confirm_link_id: "archive-person-confirm-link",
+          destructive: false,
+          turbo_method: :patch
+        ) %>
+
+    <%= render ConfirmDialogComponent.new(
           id: "delete-person-dialog",
-          title: t("people.delete_confirm_title"),
-          body: t("people.delete_confirm_body"),
-          confirm_label: t("people.show.delete"),
-          cancel_label: t("people.rename.cancel"),
+          title: t("people.delete_confirm.title"),
+          body: t("people.delete_confirm.body"),
+          confirm_label: t("people.delete_confirm.confirm"),
+          cancel_label: t("people.delete_confirm.cancel"),
           confirm_link_id: "delete-person-confirm-link",
           turbo_method: :delete
         ) %>
