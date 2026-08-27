@@ -57,10 +57,10 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   test "person names have a portable maximum length" do
-    person = users(:one).people.new(name: "a" * (FriendCrm::STRING_MAX_LENGTH + 1))
+    person = users(:one).people.new(name: "a" * (Klivka::STRING_MAX_LENGTH + 1))
 
     assert_not person.valid?
-    assert person.errors.added?(:name, :too_long, count: FriendCrm::STRING_MAX_LENGTH)
+    assert person.errors.added?(:name, :too_long, count: Klivka::STRING_MAX_LENGTH)
   end
 
   test "category assignment is optional" do

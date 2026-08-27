@@ -202,7 +202,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "database rejects reminder lead days outside the portable integer range" do
     # Bypass adapter-specific integer casting so both SQLite and PostgreSQL exercise the database boundary itself.
-    overflowing_value = FriendCrm::MAX_INT32 + 1
+    overflowing_value = Klivka::MAX_INT32 + 1
     quoted_id = User.connection.quote(users(:one).id)
 
     assert_raises ActiveRecord::StatementInvalid do

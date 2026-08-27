@@ -23,7 +23,7 @@ class ReminderSettingsComponentTest < ViewComponent::TestCase
     assert_selector "input[name='user[reminder_in_app_enabled]'][type='checkbox']", count: 1
     assert_selector "input[name='user[reminder_in_app_enabled]'][type='checkbox']:not([checked])", count: 1
     assert_selector "input[name='user[reminder_email_enabled]'][type='checkbox'][checked]", count: 1
-    assert_selector "input[name='user[default_reminder_lead_value]'][type='number'][value='2'][min='0'][max='#{FriendCrm::MAX_INT32}'][step='1']", count: 1
+    assert_selector "input[name='user[default_reminder_lead_value]'][type='number'][value='2'][min='0'][max='#{Klivka::MAX_INT32}'][step='1']", count: 1
     assert_selector "select[name='user[default_reminder_lead_unit]'] option[selected][value='years']", count: 1
     assert_selector "input[name='user[birthday_reminders_enabled]'][type='checkbox']:not([checked])", count: 1
     assert_selector "input[name='user[birthday_reminder_lead_value]'][type='number'][value='3']", count: 1

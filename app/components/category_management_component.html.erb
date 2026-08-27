@@ -18,7 +18,7 @@
         <div data-toggle-target="content" class="<%= "hidden" unless category.errors.any? %>">
           <%= form_with model: category, class: "flex max-w-xl flex-col gap-2 sm:flex-row sm:items-start" do |form| %>
             <div class="min-w-0 flex-1">
-              <%= render InputFieldComponent.new(form, :name, type: :text, maxlength: FriendCrm::STRING_MAX_LENGTH, autocomplete: "off", class: "w-full") %>
+              <%= render InputFieldComponent.new(form, :name, type: :text, maxlength: Klivka::STRING_MAX_LENGTH, autocomplete: "off", class: "w-full") %>
             </div>
             <div class="flex gap-2">
               <%= render ButtonComponent.new(type: :submit, size: :sm) do %>

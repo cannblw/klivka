@@ -61,7 +61,7 @@ class BatchPersonCreationTest < ActiveSupport::TestCase
 
   test "save validates every selected name before creating any people" do
     creation = BatchPersonCreation.preview(user: users(:one), names: "Marie Curie\nKatherine Johnson")
-    creation.candidates.second.name = "a" * (FriendCrm::STRING_MAX_LENGTH + 1)
+    creation.candidates.second.name = "a" * (Klivka::STRING_MAX_LENGTH + 1)
 
     assert_no_difference "Person.count" do
       assert_not creation.save

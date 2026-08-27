@@ -6,7 +6,7 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module FriendCrm
+module Klivka
   # PostgreSQL integer columns are signed 32-bit values; use this limit for persisted integers so SQLite stays compatible.
   MAX_INT32 = 2_147_483_647
   # SQLite does not enforce declared string lengths; use this limit with explicit constraints so PostgreSQL and SQLite stay compatible.
@@ -178,3 +178,6 @@ module FriendCrm
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end
+
+# Released migrations reference the original namespace and cannot be rewritten safely.
+FriendCrm = Klivka
