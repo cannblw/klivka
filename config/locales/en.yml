@@ -366,7 +366,7 @@ en:
       empty_upcoming_title: "No more birthdays this year"
       empty_upcoming_hint: "Earlier birthdays are still available below."
       empty_all_title: "No birthdays saved yet"
-      empty_all_hint: "Birthdays appear here when you add them to person profiles."
+      empty_all_hint: "Birthdays appear here when you add them to people's profiles."
 
   settings:
     show:
@@ -431,8 +431,8 @@ en:
     delete:
       title: "Delete category?"
       body:
-        one: "One person will become uncategorized. The person and their information will not be deleted."
-        other: "%{count} people will become uncategorized. The people and their information will not be deleted."
+        one: "One person will become uncategorized. Their information will not be deleted."
+        other: "%{count} people will become uncategorized. Their information will not be deleted."
       confirm: "Delete category"
     destroy:
       deleted:
@@ -462,14 +462,14 @@ en:
       description: "Use optional categories to organize people in the way that feels useful to you."
       new:
         heading: "Create a category"
-        description: "A category can be something like Family, People, or Neighbors."
+        description: "A category can be something like Family, Friends, or Neighbors."
         placeholder: "Category name"
         submit: "Create category"
       uncategorized:
         heading: "Uncategorized"
       empty:
         heading: "No categories yet"
-        description: "Create one whenever a simple group would make your people easier to find."
+        description: "Create one whenever a simple group would make people easier to find."
     update:
       updated: "%{name} saved."
 
@@ -481,14 +481,14 @@ en:
     category:
       cancel: "Cancel"
       edit: "Change category"
-      label: "Person category"
+      label: "Category for this person"
       save: "Save"
       uncategorized: "Uncategorized"
       value: "Category: %{category}"
     index:
       title: "People"
       heading: "People"
-      add_person: "Add person"
+      add_person: "Add someone"
       import_contacts: "Import contacts"
       search_label: "Search people"
       search_placeholder: "Search people..."
@@ -499,17 +499,17 @@ en:
         recently_updated: "Recently updated"
       uncategorized: "Uncategorized"
       view_toggle:
-        label: "Person view"
+        label: "People view"
         grouped: "Grouped"
         all: "All people"
       no_results: "No people matching '%{query}'"
       modal:
-        heading: "Add a person"
+        heading: "Add someone"
         hint: "All you need is a name."
         name_placeholder: "Name"
         add_multiple: "Add several people"
         cancel: "Cancel"
-        submit: "Add person"
+        submit: "Add someone"
       batch_modal:
         heading: "Add several people"
         hint: "Put each name on a separate line. You can review everything before adding anyone."
@@ -520,27 +520,21 @@ en:
         cancel: "Cancel"
         submit: "Review people"
       empty:
-        heading: "No people yet"
-        hint: "Add your first person. All you need is a name."
+        heading: "No one here yet"
+        hint: "Add someone to get started. All you need is a name."
     show:
       back: "← People"
       back_to_birthdays: "← Birthdays"
       delete: "Delete person"
-      more_actions: "More person actions"
+      more_actions: "More actions"
     create:
       created: "%{name} added."
     update:
-      updated: "Person renamed."
+      updated: "Name updated."
     destroy:
       deleted: "%{name} has been deleted."
     delete_confirm_title: "Delete person?"
     delete_confirm_body: "All entries will also be deleted. This cannot be undone."
-    rename:
-      created: "%{name} added."
-    update:
-      updated: "Person renamed."
-    destroy:
-      deleted: "%{name} has been deleted."
     rename:
       link: "Rename"
       save: "Save"

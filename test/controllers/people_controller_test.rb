@@ -31,7 +31,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#people_grid"
     assert_select "main", /Ada Lovelace/
     assert_select "main", /Grace Hopper/
-    assert_select "nav[aria-label='Person view']", count: 0
+    assert_select "nav[aria-label='People view']", count: 0
     assert_select "#uncategorized-people-heading", count: 0
   end
 
@@ -41,7 +41,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     get root_url
 
     assert_response :success
-    assert_select "nav[aria-label='Person view'] a[aria-current='true'][href='#{root_path}']"
+    assert_select "nav[aria-label='People view'] a[aria-current='true'][href='#{root_path}']"
     assert_select "section[aria-labelledby='person-category-#{categories(:family).id}-heading']" do
       assert_select "h2", text: categories(:family).name
       assert_select "a", text: /Ada Lovelace/
@@ -81,7 +81,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[type='hidden'][name='view'][value='all']"
-    assert_select "nav[aria-label='Person view'] a[aria-current='true'][href='#{root_path(view: "all")}']"
+    assert_select "nav[aria-label='People view'] a[aria-current='true'][href='#{root_path(view: "all")}']"
     assert_select "section[aria-labelledby^='person-category-']", count: 0
     assert_select "a[href='#{person_path(people(:ada))}']", text: /#{categories(:family).name}/
   end
@@ -103,7 +103,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[type='hidden'][name='view'][value='all']"
-    assert_select "nav[aria-label='Person view']", count: 0
+    assert_select "nav[aria-label='People view']", count: 0
     assert_select "section[aria-labelledby^='person-category-']", count: 0
     assert_select "a[href='#{person_path(people(:ada))}']", text: /#{categories(:family).name}/
   end
@@ -114,7 +114,10 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     get root_url
 
     assert_response :success
-    assert_select "main", /No people yet/
+    assert_select "turbo-frame#people_grid" do
+      assert_select "a[href^='/people/']", count: 0
+      assert_select "p", count: 2
+    end
   end
 
   test "create adds a name-only person without creating entries" do

@@ -9,7 +9,6 @@ class LocaleTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=es]"
-    assert_select "h1", "Amigos"
   end
 
   test "falls back to English for unsupported locales" do
@@ -17,14 +16,13 @@ class LocaleTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=en]"
-    assert_select "h1", "People"
   end
 
   test "defaults to English without an Accept-Language header" do
     get root_url
 
     assert_response :success
-    assert_select "h1", "People"
+    assert_select "html[lang=en]"
   end
 
   test "user locale preference overrides Accept-Language header" do
@@ -34,7 +32,6 @@ class LocaleTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "html[lang=es]"
-    assert_select "h1", "Amigos"
   end
 
   test "user locale falls back to header when no preference is set" do

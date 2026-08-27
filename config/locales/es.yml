@@ -377,7 +377,7 @@ es:
       empty_upcoming_title: "No quedan cumpleaños este año"
       empty_upcoming_hint: "Puedes consultar los cumpleaños anteriores más abajo."
       empty_all_title: "Aún no has guardado ningún cumpleaños"
-      empty_all_hint: "Los cumpleaños aparecerán aquí cuando los añadas a los perfiles de tus amigos."
+      empty_all_hint: "Los cumpleaños aparecerán aquí cuando los añadas a los perfiles de las personas."
 
   settings:
     show:
@@ -442,35 +442,35 @@ es:
     delete:
       title: "¿Eliminar la categoría?"
       body:
-        one: "Un amigo se quedará sin categoría. No se eliminará ni al amigo ni su información."
-        other: "%{count} amigos se quedarán sin categoría. No se eliminarán ni los amigos ni su información."
+        one: "Una persona se quedará sin categoría. No se eliminará su información."
+        other: "%{count} personas se quedarán sin categoría. No se eliminará su información."
       confirm: "Eliminar categoría"
     destroy:
       deleted:
-        one: "Se ha eliminado %{name}. Un amigo se ha quedado sin categoría."
-        other: "Se ha eliminado %{name}. %{count} amigos se han quedado sin categoría."
+        one: "Se ha eliminado %{name}. Una persona se ha quedado sin categoría."
+        other: "Se ha eliminado %{name}. %{count} personas se han quedado sin categoría."
     person_count:
-      one: "1 amigo"
-      other: "%{count} amigos"
+      one: "1 persona"
+      other: "%{count} personas"
     person_count_parenthetical:
-      one: "(1 amigo)"
-      other: "(%{count} amigos)"
+      one: "(1 persona)"
+      other: "(%{count} personas)"
     organizer:
-      add_person: "Añadir o mover un amigo"
+      add_person: "Añadir o mover una persona"
       current_category: "Ahora está en %{category}"
-      empty: "Aún no hay amigos en esta categoría."
-      error: "No se han podido cargar los amigos. Inténtalo de nuevo."
-      people_in: "Amigos en %{category}"
-      loading: "Cargando amigos que coinciden"
-      no_results: "No hay amigos que coincidan"
+      empty: "Aún no hay personas en esta categoría."
+      error: "No se han podido cargar las personas. Inténtalo de nuevo."
+      people_in: "Personas en %{category}"
+      loading: "Cargando personas que coinciden"
+      no_results: "No hay personas que coincidan"
       remove: "Mover a Sin categoría"
-      results: "%{count} amigos disponibles"
-      search_placeholder: "Buscar amigos"
+      results: "%{count} personas disponibles"
+      search_placeholder: "Buscar personas"
     index:
-      back: "← Amigos"
+      back: "← Personas"
       title: "Categorías"
       heading: "Categorías"
-      description: "Usa categorías opcionales para organizar a tus amigos de la forma que te resulte útil."
+      description: "Usa categorías opcionales para organizar a las personas de la forma que te resulte útil."
       new:
         heading: "Crea una categoría"
         description: "Puede ser algo como Familia, Amigos o Vecinos."
@@ -480,7 +480,7 @@ es:
         heading: "Sin categoría"
       empty:
         heading: "Aún no hay categorías"
-        description: "Crea una cuando agrupar a tus amigos te ayude a encontrarlos más fácilmente."
+        description: "Crea una cuando agrupar a las personas te ayude a encontrarlas más fácilmente."
     update:
       updated: "Se ha guardado %{name}."
 
@@ -492,59 +492,59 @@ es:
     category:
       cancel: "Cancelar"
       edit: "Cambiar categoría"
-      label: "Categoría del amigo"
+      label: "Categoría de esta persona"
       save: "Guardar"
       uncategorized: "Sin categoría"
       value: "Categoría: %{category}"
     index:
-      title: "Amigos"
-      heading: "Amigos"
-      add_person: "Añadir amigo"
+      title: "Personas"
+      heading: "Personas"
+      add_person: "Añadir a alguien"
       import_contacts: "Importar contactos"
-      search_label: "Buscar amigos"
-      search_placeholder: "Buscar amigos..."
-      sort_label: "Ordenar amigos"
+      search_label: "Buscar personas"
+      search_placeholder: "Buscar personas..."
+      sort_label: "Ordenar personas"
       sort_options:
         name: "Nombre"
         recently_added: "Añadidos recientemente"
         recently_updated: "Actualizados recientemente"
       uncategorized: "Sin categoría"
       view_toggle:
-        label: "Vista de amigos"
+        label: "Vista de personas"
         grouped: "Por categoría"
         all: "Todos"
-      no_results: "Ningún amigo coincide con '%{query}'"
+      no_results: "Nadie coincide con '%{query}'"
       modal:
-        heading: "Añade un amigo"
+        heading: "Añade a alguien"
         hint: "Solo necesitas un nombre."
         name_placeholder: "Nombre"
-        add_multiple: "Añadir varios amigos"
+        add_multiple: "Añadir varias personas"
         cancel: "Cancelar"
-        submit: "Añadir amigo"
+        submit: "Añadir a esta persona"
       batch_modal:
-        heading: "Añade varios amigos"
+        heading: "Añade varias personas"
         hint: "Escribe cada nombre en una línea distinta. Podrás revisarlo todo antes de añadir a nadie."
         names_label: "Nombres"
         placeholder: "Marie Curie\nKatherine Johnson\nDorothy Vaughan"
         names_required: "Escribe al menos un nombre para continuar."
-        add_one: "Añadir un amigo"
+        add_one: "Añadir una persona"
         cancel: "Cancelar"
-        submit: "Revisar amigos"
+        submit: "Revisar personas"
       empty:
-        heading: "Aún no hay amigos"
-        hint: "Añade a tu primer amigo. Solo necesitas un nombre."
+        heading: "Aún no has añadido a nadie"
+        hint: "Añade a alguien para empezar. Solo necesitas un nombre."
     show:
-      back: "← Amigos"
+      back: "← Personas"
       back_to_birthdays: "← Cumpleaños"
-      delete: "Eliminar amigo"
-      more_actions: "Más acciones para esta amistad"
+      delete: "Eliminar persona"
+      more_actions: "Más acciones"
     create:
       created: "Se ha añadido a %{name}."
     update:
-      updated: "Amigo renombrado."
+      updated: "Nombre actualizado."
     destroy:
       deleted: "%{name} ha sido eliminado."
-    delete_confirm_title: "¿Eliminar amigo?"
+    delete_confirm_title: "¿Eliminar persona?"
     delete_confirm_body: "Todas las entradas también se eliminarán. No se puede deshacer."
     rename:
       link: "Renombrar"
@@ -553,25 +553,25 @@ es:
 
   batch_person_creations:
     preview:
-      title: "Revisa los amigos"
-      heading: "Revisa los amigos"
+      title: "Revisa las personas"
+      heading: "Revisa las personas"
       description: "Comprueba los nombres, haz los cambios necesarios y desmarca a quien no quieras añadir."
       back: "← Escribir nombres"
-      include: "Añadir a este amigo"
+      include: "Añadir a esta persona"
       name_label: "Nombre"
-      possible_duplicate: "Posible duplicado. Puedes añadir a este amigo de todos modos."
+      possible_duplicate: "Posible duplicado. Puedes añadir a esta persona de todos modos."
       duplicates:
         one: "Es posible que un nombre ya esté en Klivka o aparezca más de una vez."
         other: "Es posible que %{count} nombres ya estén en Klivka o aparezcan más de una vez."
-      fix_errors: "Revisa los nombres señalados antes de añadir a estos amigos."
-      selection_required: "Selecciona al menos a un amigo para añadirlo."
-      submit: "Añadir los amigos seleccionados"
+      fix_errors: "Revisa los nombres señalados antes de añadir a estas personas."
+      selection_required: "Selecciona al menos a una persona para añadirla."
+      submit: "Añadir las personas seleccionadas"
       start_over: "Empezar de nuevo"
     create:
       result: "%{created} %{skipped}"
       created:
-        one: "Se ha añadido un amigo."
-        other: "Se han añadido %{count} amigos."
+        one: "Se ha añadido una persona."
+        other: "Se han añadido %{count} personas."
       skipped:
         zero: "No se ha omitido ningún nombre."
         one: "Se ha omitido un nombre."
@@ -701,7 +701,7 @@ es:
       rate_limited: "Vuelve a intentarlo dentro de un rato."
       too_many_cards: "Ese archivo contiene más de %{count} contactos."
     new:
-      back: "Volver a tus amistades"
+      back: "Volver a Personas"
       cancel: "Cancelar"
       choose_file: "Elegir una vCard"
       description: "Elige un archivo vCard y, después, los contactos que quieras añadir."
