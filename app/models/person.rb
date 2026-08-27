@@ -3,6 +3,7 @@
 # Table name: people
 #
 #  id          :integer          not null, primary key
+#  archived_at :datetime
 #  name        :string           not null
 #  slug        :string           not null
 #  created_at  :datetime         not null
@@ -13,6 +14,7 @@
 # Indexes
 #
 #  index_people_on_category_id       (category_id)
+#  index_people_on_user_id_and_archived_at  (user_id,archived_at)
 #  index_people_on_user_id           (user_id)
 #  index_people_on_user_id_and_slug  (user_id,slug) UNIQUE
 #
@@ -33,6 +35,21 @@ class Person < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: Klivka::STRING_MAX_LENGTH }
   validate :category_belongs_to_user
+
+  scope :active, -> { where(archived_at: nil) }
+  scope :archived, -> { where.not(archived_at: nil) }
+
+  def archive!(at: Time.current)
+    update!(archived_at: at)
+  end
+
+  def restore!
+    update!(archived_at: nil)
+  end
+
+  def archived?
+    archived_at.present?
+  end
 
   def should_generate_new_friendly_id?
     name_changed? || super
