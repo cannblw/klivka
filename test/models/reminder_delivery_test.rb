@@ -33,7 +33,7 @@ require "test_helper"
 #
 class ReminderDeliveryTest < ActiveSupport::TestCase
   setup do
-    @setting = friends(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    @setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
   end
 
   test "records separate in-app and email work for one reminder occurrence" do
@@ -95,7 +95,7 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
 
     assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:channel, "push") }
     assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:status, "queued") }
-    assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:source_type, "Friend") }
+    assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:source_type, "Person") }
   end
 
   test "requires complete claim metadata at the model and database boundaries" do
@@ -134,7 +134,7 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
       user: users(:one), source: entries(:ada_birthday), channel: "email",
       reminder_on: Date.new(2026, 11, 10), occurrence_on: Date.new(2026, 12, 10)
     )
-    date_entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2026, 12, 10))
+    date_entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2026, 12, 10))
     date_delivery = ReminderDelivery.new(
       user: users(:one), source: date_entry, channel: "email",
       reminder_on: Date.new(2026, 11, 10), occurrence_on: Date.new(2026, 12, 10)
@@ -160,8 +160,8 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
 
   test "deleting the owning account deletes its delivery history" do
     user = User.create!(email_address: "ledger-owner@example.com", password: "password", time_zone: "UTC")
-    friend = user.friends.create!(name: "Ledger source")
-    setting = friend.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Ledger source")
+    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
     ReminderDelivery.create!(
       user:, source: setting, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)

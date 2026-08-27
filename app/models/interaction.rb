@@ -8,23 +8,23 @@
 #  occurred_on    :date             not null
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  friend_id      :integer          not null
+#  person_id      :integer          not null
 #
 # Indexes
 #
-#  index_interactions_on_friend_id                  (friend_id)
-#  index_interactions_on_friend_id_and_occurred_on  (friend_id,occurred_on)
+#  index_interactions_on_person_id                  (person_id)
+#  index_interactions_on_person_id_and_occurred_on  (person_id,occurred_on)
 #
 # Foreign Keys
 #
-#  friend_id  (friend_id => friends.id)
+#  person_id  (person_id => people.id)
 #
 class Interaction < ApplicationRecord
   CONTACT_METHODS = %w[call message video in_person other].freeze
 
   attr_writer :validation_date
 
-  belongs_to :friend
+  belongs_to :person
 
   validates :occurred_on, presence: true
   validates :contact_method, inclusion: { in: CONTACT_METHODS }, allow_nil: true

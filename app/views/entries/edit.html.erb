@@ -1,5 +1,5 @@
 <%= turbo_frame_tag dom_id(@entry) do %>
   <div class="rounded-lg border border-stone-200 bg-stone-50 p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800">
-    <%= render EntryFormComponent.new(entry: @entry, friend: @friend) %>
+    <%= render EntryFormComponent.new(entry: @entry, person: @person) %>
   </div>
 <% end %>

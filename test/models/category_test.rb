@@ -40,15 +40,15 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   test "category normalizes Unicode and whitespace while preserving capitalization" do
-    category = users(:one).categories.create!(name: "  Close\u00A0\u00A0Friends  ")
+    category = users(:one).categories.create!(name: "  Close\u00A0\u00A0People  ")
 
-    assert_equal "Close Friends", category.name
-    assert_equal "close friends", category.normalized_name
+    assert_equal "Close People", category.name
+    assert_equal "close people", category.normalized_name
   end
 
   test "category names are unique per user after normalization" do
-    users(:one).categories.create!(name: "Close Friends")
-    duplicate = users(:one).categories.new(name: "  CLOSE   FRIENDS ")
+    users(:one).categories.create!(name: "Close People")
+    duplicate = users(:one).categories.new(name: "  CLOSE   PEOPLE ")
 
     assert_not duplicate.valid?
     assert duplicate.errors.added?(:name, :taken)
@@ -70,12 +70,12 @@ class CategoryTest < ActiveSupport::TestCase
     end
   end
 
-  test "deleting a category leaves its friends uncategorized" do
-    friend = users(:one).friends.create!(name: "Katherine Johnson", category: categories(:family))
+  test "deleting a category leaves its people uncategorized" do
+    person = users(:one).people.create!(name: "Katherine Johnson", category: categories(:family))
 
     categories(:family).destroy!
 
-    assert_nil friend.reload.category
+    assert_nil person.reload.category
   end
 
   test "deleting a user deletes the user's categories" do

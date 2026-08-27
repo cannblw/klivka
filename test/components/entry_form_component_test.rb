@@ -2,9 +2,9 @@ require "test_helper"
 
 class EntryFormComponentTest < ViewComponent::TestCase
   test "renders only the selected entry type fields" do
-    entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+    entry = Entry::Date.new(person: people(:ada), entry_date: Date.new(2020, 1, 2))
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "input[name='entry[type]'][value='Entry::Date']", visible: :all
     assert_selector "#date-fields"
@@ -14,7 +14,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
   test "renders persisted entries without an editable type" do
     entry = entries(:phone)
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "input[name='entry[type]']", count: 0
     assert_selector "#phone-fields"
@@ -22,9 +22,9 @@ class EntryFormComponentTest < ViewComponent::TestCase
   end
 
   test "renders reminder controls for a date entry using the account defaults" do
-    entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+    entry = Entry::Date.new(person: people(:ada), entry_date: Date.new(2020, 1, 2))
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "form[data-controller~='reminder-date']"
     assert_selector "input[name='entry[entry_date]'][data-reminder-date-target='date'][data-action='change->reminder-date#update']"
@@ -41,10 +41,10 @@ class EntryFormComponentTest < ViewComponent::TestCase
   end
 
   test "renders an existing date reminder as on with controls ready to edit" do
-    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 1, 2))
+    entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2020, 1, 2))
     entry.create_entry_reminder!(lead_value: 2, lead_unit: "days", recurrence: EntryReminder::YEARLY_RECURRENCE)
 
-    render_inline EntryFormComponent.new(entry:, friend: entry.friend)
+    render_inline EntryFormComponent.new(entry:, person: entry.person)
 
     assert_selector "input[name='entry[entry_reminder_attributes][_destroy]'][type='hidden'][value='0']", visible: :all
     assert_selector "[data-reminder-date-target='addButton'].hidden button[aria-expanded='true']", visible: :all
@@ -56,10 +56,10 @@ class EntryFormComponentTest < ViewComponent::TestCase
   end
 
   test "explains leap-day reminder behavior when a leap-day reminder is enabled" do
-    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2020, 2, 29))
+    entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2020, 2, 29))
     entry.create_entry_reminder!(lead_value: 1, lead_unit: "months", recurrence: EntryReminder::YEARLY_RECURRENCE)
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "[data-reminder-date-target='notice'][aria-live='polite']:not(.hidden)",
       text: "In non-leap years, Klivka will remind you on February 28."
@@ -68,7 +68,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
   test "explains the global reminder timing on a birthday form" do
     entry = entries(:ada_birthday)
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "[data-birthday-reminder-status='enabled']"
     assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
@@ -79,7 +79,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
   test "renders adaptive birthday fields instead of a full date input" do
     entry = entries(:ada_birthday)
 
-    render_inline EntryFormComponent.new(entry:, friend: entry.friend)
+    render_inline EntryFormComponent.new(entry:, person: entry.person)
 
     assert_selector "#birthday-fields [data-controller='birthday-fields']"
     assert_selector "select[name='entry[entry_month]'][required]"
@@ -94,7 +94,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
     user.update!(birthday_reminders_enabled: false)
     entry = entries(:ada_birthday)
 
-    render_inline EntryFormComponent.new(entry:, friend: entry.friend)
+    render_inline EntryFormComponent.new(entry:, person: entry.person)
 
     assert_selector "#birthday-fields [data-birthday-reminder-status='disabled']" do
       assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
@@ -102,17 +102,17 @@ class EntryFormComponentTest < ViewComponent::TestCase
   end
 
   test "does not render reminder controls for a First Met entry" do
-    entry = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019")
+    entry = Entry::FirstMet.new(person: people(:ada), entry_year: "2019")
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "input[name='entry[entry_reminder_attributes][_destroy]']", count: 0
   end
 
   test "renders separate year, optional month, and optional day fields for First Met" do
-    entry = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019", entry_month: "5")
+    entry = Entry::FirstMet.new(person: people(:ada), entry_year: "2019", entry_month: "5")
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "input[name='entry[entry_year]'][required]"
     assert_selector "select[name='entry[entry_month]'] option[selected][value='5']", text: "May"
@@ -122,11 +122,11 @@ class EntryFormComponentTest < ViewComponent::TestCase
 
   test "renders gift ideas as an editable sortable checklist" do
     entry = Entry::GiftList.new(
-      friend: friends(:ada),
+      person: people(:ada),
       items: [ { "id" => "gift-1", "text" => "Iguana hammock", "checked" => true } ]
     )
 
-    render_inline(EntryFormComponent.new(entry: entry, friend: entry.friend))
+    render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "#gift-list-fields[data-controller='gift-list']"
     assert_selector "li[data-gift-list-target='item']", count: 1

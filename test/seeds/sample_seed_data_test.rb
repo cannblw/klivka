@@ -5,22 +5,22 @@ class SampleSeedDataTest < ActiveSupport::TestCase
     @user = User.create!(email_address: "seed-data@example.com", password: "password")
   end
 
-  test "creates a varied set of one hundred friends" do
+  test "creates a varied set of one hundred people" do
     SampleSeedData.call(user: @user)
 
-    assert_equal 100, @user.friends.count
-    assert_equal 12, @user.friends.left_joins(:entries).where(entries: { id: nil }).count
-    assert_equal 50, @user.friends.joins(:entries).where(entries: { type: "Entry::Phone" }).count
-    assert_equal 40, @user.friends.joins(:entries).where(entries: { type: "Entry::Note" }).count
-    assert_equal 30, @user.friends.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
-    assert_equal 32, @user.friends.joins(:entries).where(entries: { type: "Entry::Email" }).count
-    assert_equal 152, @user.friends.joins(:entries).count
+    assert_equal 100, @user.people.count
+    assert_equal 12, @user.people.left_joins(:entries).where(entries: { id: nil }).count
+    assert_equal 50, @user.people.joins(:entries).where(entries: { type: "Entry::Phone" }).count
+    assert_equal 40, @user.people.joins(:entries).where(entries: { type: "Entry::Note" }).count
+    assert_equal 30, @user.people.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
+    assert_equal 32, @user.people.joins(:entries).where(entries: { type: "Entry::Email" }).count
+    assert_equal 152, @user.people.joins(:entries).count
   end
 
-  test "creates friends for contact action scenarios" do
+  test "creates people for contact action scenarios" do
     SampleSeedData.call(user: @user)
 
-    contact_actions, phone_overflow, email_overflow, email_entry = @user.friends.order(:id).first(4)
+    contact_actions, phone_overflow, email_overflow, email_entry = @user.people.order(:id).first(4)
 
     assert_equal 3, contact_actions.entries.where(type: "Entry::Phone").count
     assert_equal 3, contact_actions.entries.where(type: "Entry::Email").count
@@ -31,24 +31,24 @@ class SampleSeedDataTest < ActiveSupport::TestCase
     assert_equal "Work", email.label
   end
 
-  test "replaces the seed user's friends without changing other accounts" do
+  test "replaces the seed user's people without changing other accounts" do
     other_user = User.create!(email_address: "other-seed-data@example.com", password: "password")
-    other_friend = other_user.friends.create!(name: "Other Friend")
+    other_person = other_user.people.create!(name: "Other Person")
 
     SampleSeedData.call(user: @user)
-    replaced_friend = @user.friends.first
-    seeded_email = @user.friends.order(:id).fourth.entries.find_by!(type: "Entry::Email").email
-    replaced_friend.update!(name: "Changed Seed Friend")
-    @user.friends.create!(name: "Temporary Friend")
+    replaced_person = @user.people.first
+    seeded_email = @user.people.order(:id).fourth.entries.find_by!(type: "Entry::Email").email
+    replaced_person.update!(name: "Changed Seed Person")
+    @user.people.create!(name: "Temporary Person")
 
     SampleSeedData.call(user: @user)
 
-    assert_equal 100, @user.friends.count
-    assert_equal 152, Entry.joins(:friend).where(friends: { user_id: @user.id }).count
-    assert_not @user.friends.exists?(name: "Changed Seed Friend")
-    assert_not @user.friends.exists?(name: "Temporary Friend")
-    assert_equal 3, @user.friends.order(:id).third.entries.where(type: "Entry::Email").count
-    assert_equal seeded_email, @user.friends.order(:id).fourth.entries.find_by!(type: "Entry::Email").email
-    assert_equal other_friend, other_user.friends.find_by(name: "Other Friend")
+    assert_equal 100, @user.people.count
+    assert_equal 152, Entry.joins(:person).where(people: { user_id: @user.id }).count
+    assert_not @user.people.exists?(name: "Changed Seed Person")
+    assert_not @user.people.exists?(name: "Temporary Person")
+    assert_equal 3, @user.people.order(:id).third.entries.where(type: "Entry::Email").count
+    assert_equal seeded_email, @user.people.order(:id).fourth.entries.find_by!(type: "Entry::Email").email
+    assert_equal other_person, other_user.people.find_by(name: "Other Person")
   end
 end

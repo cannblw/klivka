@@ -77,12 +77,12 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-birthdays-empty='upcoming']"
   end
 
-  test "birthday cards link to friend profiles and show the age reached that year" do
+  test "birthday cards link to person profiles and show the age reached that year" do
     travel_to Date.new(2026, 12, 31) do
       get birthdays_url(month: 12)
 
-      profile_path = Rails.application.routes.url_helpers.friend_path(
-        friends(:ada),
+      profile_path = Rails.application.routes.url_helpers.person_path(
+        people(:ada),
         { from: "birthdays", month: 12 }
       )
       profile_link = css_select("a").find { _1["href"] == profile_path }
@@ -94,13 +94,13 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "orders birthdays within a month by day and then friend name" do
-    first_friend = users(:one).friends.create!(name: "Zelda Early")
-    second_friend = users(:one).friends.create!(name: "Aaron Same Day")
-    third_friend = users(:one).friends.create!(name: "Zelda Same Day")
-    Entry::Birthday.create!(friend: first_friend, entry_date: Date.new(1990, 12, 1))
-    Entry::Birthday.create!(friend: second_friend, entry_date: Date.new(1990, 12, 5))
-    Entry::Birthday.create!(friend: third_friend, entry_date: Date.new(1990, 12, 5))
+  test "orders birthdays within a month by day and then person name" do
+    first_person = users(:one).people.create!(name: "Zelda Early")
+    second_person = users(:one).people.create!(name: "Aaron Same Day")
+    third_person = users(:one).people.create!(name: "Zelda Same Day")
+    Entry::Birthday.create!(person: first_person, entry_date: Date.new(1990, 12, 1))
+    Entry::Birthday.create!(person: second_person, entry_date: Date.new(1990, 12, 5))
+    Entry::Birthday.create!(person: third_person, entry_date: Date.new(1990, 12, 5))
 
     get birthdays_url(month: 12)
 
@@ -109,9 +109,9 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "birthday agenda shows an occurrence without inventing an age for an unknown year" do
-    friend = users(:one).friends.create!(name: "Yearless Birthday")
+    person = users(:one).people.create!(name: "Yearless Birthday")
     Entry::Birthday.create!(
-      friend:, entry_date: Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday_year_known: false
+      person:, entry_date: Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday_year_known: false
     )
 
     travel_to Date.new(2026, 3, 1) do

@@ -2,7 +2,7 @@ require "test_helper"
 
 class BirthdayFieldsComponentTest < ViewComponent::TestCase
   test "renders required month and day with optional year and age" do
-    entry = Entry::Birthday.new(friend: friends(:ada), entry_month: "5", entry_day: "12")
+    entry = Entry::Birthday.new(person: people(:ada), entry_month: "5", entry_day: "12")
 
     render_inline BirthdayFieldsComponent.new(form: form_for(entry), entry:, today: Date.new(2026, 8, 25))
 
@@ -31,7 +31,7 @@ class BirthdayFieldsComponentTest < ViewComponent::TestCase
 
   test "keeps submitted values and displays a date error" do
     entry = Entry::Birthday.new(
-      friend: friends(:ada), entry_month: "2", entry_day: "30", current_age: "20"
+      person: people(:ada), entry_month: "2", entry_day: "30", current_age: "20"
     )
     entry.validate
 

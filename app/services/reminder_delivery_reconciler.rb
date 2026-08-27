@@ -65,7 +65,7 @@ class ReminderDeliveryReconciler
   def source_current?(delivery, latest_interactions:)
     case (source = delivery.source)
     when KeepInTouchSetting
-      keep_in_touch_current?(source, delivery, latest_interaction_on: latest_interactions[source.friend_id])
+      keep_in_touch_current?(source, delivery, latest_interaction_on: latest_interactions[source.person_id])
     when EntryReminder
       entry_reminder_current?(source, delivery)
     when Entry::Birthday
@@ -103,10 +103,10 @@ class ReminderDeliveryReconciler
   end
 
   def latest_interactions_for(sources)
-    friend_ids = sources.grep(KeepInTouchSetting).map(&:friend_id)
-    return {} if friend_ids.empty?
+    person_ids = sources.grep(KeepInTouchSetting).map(&:person_id)
+    return {} if person_ids.empty?
 
-    Interaction.where(friend_id: friend_ids).group(:friend_id).maximum(:occurred_on)
+    Interaction.where(person_id: person_ids).group(:person_id).maximum(:occurred_on)
   end
 
   def batch_size

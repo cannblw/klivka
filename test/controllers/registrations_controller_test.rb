@@ -18,7 +18,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert User.find_by!(email_address: "new@example.com").confirmed?
     assert_equal "Asia/Kolkata", User.find_by!(email_address: "new@example.com").time_zone
     follow_redirect!
-    assert_select "h1", "Friends"
+    assert_select "h1", "People"
   end
 
   test "create with confirmation required sends an email instead of signing in" do

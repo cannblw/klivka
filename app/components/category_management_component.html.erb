@@ -32,19 +32,19 @@
         </div>
       </div>
 
-      <p data-friend-count="<%= friend_count %>" class="shrink-0 text-sm text-stone-500 dark:text-stone-400">
-        <%= t("categories.friend_count_parenthetical", count: friend_count) %>
+      <p data-person-count="<%= person_count %>" class="shrink-0 text-sm text-stone-500 dark:text-stone-400">
+        <%= t("categories.person_count_parenthetical", count: person_count) %>
       </p>
     </div>
 
-    <%= render CategoryFriendAutocompleteComponent.new(category: category) %>
+    <%= render CategoryPersonAutocompleteComponent.new(category: category) %>
 
-    <% if category.friends.any? %>
-      <ul class="divide-y divide-stone-200 dark:divide-stone-700" aria-label="<%= t("categories.organizer.friends_in", category: category.name) %>">
-        <% category.friends.sort_by { |friend| [ FriendNameNormalizer.call(friend.name), friend.id ] }.each do |friend| %>
+    <% if category.people.any? %>
+      <ul class="divide-y divide-stone-200 dark:divide-stone-700" aria-label="<%= t("categories.organizer.people_in", category: category.name) %>">
+        <% category.people.sort_by { |person| [ PersonNameNormalizer.call(person.name), person.id ] }.each do |person| %>
           <li class="flex flex-wrap items-center justify-between gap-2 py-2">
-            <%= link_to friend.name, friend_path(friend), data: { turbo_frame: "_top" }, class: "min-w-0 truncate text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
-            <%= form_with url: friend_category_assignment_path(friend), method: :patch, scope: :category_assignment do |form| %>
+            <%= link_to person.name, person_path(person), data: { turbo_frame: "_top" }, class: "min-w-0 truncate text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+            <%= form_with url: person_category_assignment_path(person), method: :patch, scope: :category_assignment do |form| %>
               <%= form.hidden_field :category_id, value: "" %>
               <%= form.hidden_field :return_to, value: "categories" %>
               <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
@@ -67,7 +67,7 @@
               controller: "delete-category",
               action: "click->delete-category#click",
               delete_category_url: category_path(category),
-              delete_category_message: t("categories.delete.body", count: friend_count)
+              delete_category_message: t("categories.delete.body", count: person_count)
             }
           ) do %>
         <%= t("categories.actions.delete") %>

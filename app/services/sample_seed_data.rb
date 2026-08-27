@@ -2,7 +2,7 @@ require "faker"
 require "set"
 
 class SampleSeedData
-  FRIEND_COUNT = 100
+  PERSON_COUNT = 100
   RANDOM_SEED = 20_260_802
   ENTRY_PATTERNS = [
     [],
@@ -64,12 +64,12 @@ class SampleSeedData
     previous_random = Faker::Config.random
     Faker::Config.random = Random.new(RANDOM_SEED)
 
-    Friend.transaction do
-      @user.friends.destroy_all
+    Person.transaction do
+      @user.people.destroy_all
 
-      friend_names.each_with_index do |name, index|
-        friend = @user.friends.create!(name: name)
-        seed_entries(friend, index, CONTACT_SCENARIOS[index])
+      person_names.each_with_index do |name, index|
+        person = @user.people.create!(name: name)
+        seed_entries(person, index, CONTACT_SCENARIOS[index])
       end
     end
   ensure
@@ -78,27 +78,27 @@ class SampleSeedData
 
   private
 
-  def friend_names
+  def person_names
     names = Set.new
-    names.add(Faker::Name.name) until names.length == FRIEND_COUNT
+    names.add(Faker::Name.name) until names.length == PERSON_COUNT
     names.to_a
   end
 
-  def seed_entries(friend, index, scenario_entries)
+  def seed_entries(person, index, scenario_entries)
     if scenario_entries
       scenario_entries.each do |entry|
         kind = entry.fetch(:kind)
-        create_entry(friend, kind:, content: scenario_content_for(kind, entry[:label]))
+        create_entry(person, kind:, content: scenario_content_for(kind, entry[:label]))
       end
     else
       entry_pattern(index).each do |kind|
-        create_entry(friend, kind:, content: content_for(kind))
+        create_entry(person, kind:, content: content_for(kind))
       end
     end
   end
 
-  def create_entry(friend, kind:, content:)
-    friend.entries.create!(
+  def create_entry(person, kind:, content:)
+    person.entries.create!(
       type: "Entry::#{kind.to_s.camelize}",
       content:,
       entry_date: kind == :birthday ? Faker::Date.birthday(min_age: 18, max_age: 80) : nil

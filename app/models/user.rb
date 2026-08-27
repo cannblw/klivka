@@ -31,7 +31,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :categories, dependent: :destroy
-  has_many :friends, dependent: :destroy
+  has_many :people, dependent: :destroy
   has_many :reminder_deliveries, dependent: :destroy
   has_many :vcard_imports, dependent: :destroy
 

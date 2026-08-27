@@ -4,10 +4,10 @@
       <%= t(heading_key) %>
     </h2>
     <div class="flex items-center gap-3">
-      <%= link_to t("interactions.history.add"), new_friend_interaction_path(friend),
+      <%= link_to t("interactions.history.add"), new_person_interaction_path(person),
             class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
       <% if show_view_all? %>
-        <%= link_to t("interactions.history.view_all", count: total_count), friend_interactions_path(friend),
+        <%= link_to t("interactions.history.view_all", count: total_count), person_interactions_path(person),
               class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
       <% end %>
     </div>
@@ -35,10 +35,10 @@
             <p class="mt-1 whitespace-pre-wrap text-sm text-stone-600 dark:text-stone-300"><%= interaction.note %></p>
           <% end %>
           <div class="mt-2 flex gap-3 text-xs">
-            <%= link_to t("interactions.history.edit"), edit_friend_interaction_path(friend, interaction),
+            <%= link_to t("interactions.history.edit"), edit_person_interaction_path(person, interaction),
                   class: "font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
             <%= link_to t("interactions.history.delete"), "#delete-interaction-dialog",
-                  data: { controller: "delete-interaction", delete_interaction_url: friend_interaction_path(friend, interaction), action: "click->delete-interaction#click" },
+                  data: { controller: "delete-interaction", delete_interaction_url: person_interaction_path(person, interaction), action: "click->delete-interaction#click" },
                   class: "font-medium text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300" %>
           </div>
         </li>

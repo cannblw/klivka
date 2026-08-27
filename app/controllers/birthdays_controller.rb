@@ -3,10 +3,10 @@ class BirthdaysController < ApplicationController
     @today = Date.current
     @selected_month = selected_month
     birthdays = Entry::Birthday
-      .where(friend_id: Current.user.friends.select(:id))
-      .includes(:friend)
+      .where(person_id: Current.user.people.select(:id))
+      .includes(:person)
       .to_a
-      .sort_by { |birthday| [ birthday.entry_date.month, birthday.entry_date.day, birthday.friend.name.downcase ] }
+      .sort_by { |birthday| [ birthday.entry_date.month, birthday.entry_date.day, birthday.person.name.downcase ] }
     @birthdays_by_month = birthdays.group_by { _1.entry_date.month }
   end
 

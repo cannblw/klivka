@@ -12,40 +12,40 @@
 #  type                :string           not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  friend_id           :integer          not null
+#  person_id           :integer          not null
 #
 # Indexes
 #
 #  index_entries_on_entry_date               (entry_date)
-#  index_entries_on_friend_id                (friend_id)
-#  index_entries_on_friend_id_and_position   (friend_id,position)
-#  index_entries_on_friend_id_for_birthday   (friend_id) UNIQUE WHERE type = 'Entry::Birthday'
-#  index_entries_on_friend_id_for_first_met  (friend_id) UNIQUE WHERE type = 'Entry::FirstMet'
+#  index_entries_on_person_id                (person_id)
+#  index_entries_on_person_id_and_position   (person_id,position)
+#  index_entries_on_person_id_for_birthday   (person_id) UNIQUE WHERE type = 'Entry::Birthday'
+#  index_entries_on_person_id_for_first_met  (person_id) UNIQUE WHERE type = 'Entry::FirstMet'
 #
 # Foreign Keys
 #
-#  friend_id  (friend_id => friends.id)
+#  person_id  (person_id => people.id)
 #
 phone:
-  friend: ada
+  person: ada
   type: Entry::Phone
   position: 0
   content: {"number": "555-1234"}
 
 email:
-  friend: ada
+  person: ada
   type: Entry::Email
   position: 1
   content: {"email": "ada@example.com", "label": "Work"}
 
 note:
-  friend: grace
+  person: grace
   type: Entry::Note
   position: 0
   content: {"text": "Met at the climbing gym"}
 
 ada_birthday:
-  friend: ada
+  person: ada
   type: Entry::Birthday
   position: 2
   entry_date: "1815-12-10"
@@ -53,7 +53,7 @@ ada_birthday:
   content: {}
 
 grace_birthday:
-  friend: grace
+  person: grace
   type: Entry::Birthday
   position: 1
   entry_date: "1906-07-09"

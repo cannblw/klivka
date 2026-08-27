@@ -11,8 +11,8 @@ class BirthdayCardComponent < ViewComponent::Base
 
   attr_reader :birthday, :year, :return_month
 
-  def friend
-    birthday.friend
+  def person
+    birthday.person
   end
 
   def occurrence_on
@@ -23,7 +23,7 @@ class BirthdayCardComponent < ViewComponent::Base
     birthday.age(on: occurrence_on)
   end
 
-  def friend_path
-    helpers.friend_path(friend, from: "birthdays", month: return_month)
+  def person_path
+    helpers.person_path(person, from: "birthdays", month: return_month)
   end
 end

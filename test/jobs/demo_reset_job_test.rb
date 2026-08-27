@@ -6,7 +6,7 @@ class DemoResetJobTest < ActiveJob::TestCase
 
     with_demo_mode do |demo_user|
       DemoPersonaSeedData.call(user: demo_user)
-      demo_user.friends.create!(name: "Visitor addition")
+      demo_user.people.create!(name: "Visitor addition")
       demo_user.update!(
         locale: "es",
         theme: "dark",
@@ -25,8 +25,8 @@ class DemoResetJobTest < ActiveJob::TestCase
       DemoResetJob.perform_now(at: now)
 
       demo_user.reload
-      assert_equal DemoPersonaSeedData::FRIEND_COUNT, demo_user.friends.count
-      assert_not demo_user.friends.exists?(name: "Visitor addition")
+      assert_equal DemoPersonaSeedData::PERSON_COUNT, demo_user.people.count
+      assert_not demo_user.people.exists?(name: "Visitor addition")
       assert_nil demo_user.locale
       assert_nil demo_user.theme
       assert_equal Rails.application.config.x.default_time_zone, demo_user.time_zone
@@ -46,7 +46,7 @@ class DemoResetJobTest < ActiveJob::TestCase
     now = Time.zone.parse("2026-08-04 12:00:00")
 
     with_demo_mode do |demo_user|
-      visitor_friend = demo_user.friends.create!(name: "Active visitor addition")
+      visitor_person = demo_user.people.create!(name: "Active visitor addition")
       state = DemoState.create!(
         key: DemoState::SHARED_KEY,
         started_at: now - 25.hours,
@@ -55,13 +55,13 @@ class DemoResetJobTest < ActiveJob::TestCase
 
       DemoResetJob.perform_now(at: now)
 
-      assert demo_user.friends.exists?(visitor_friend.id)
+      assert demo_user.people.exists?(visitor_person.id)
       assert_equal now - 25.hours, state.reload.started_at
     end
   end
 
   test "does nothing when demo mode is disabled" do
-    assert_no_difference [ "DemoState.count", "Friend.count" ] do
+    assert_no_difference [ "DemoState.count", "Person.count" ] do
       DemoResetJob.perform_now
     end
   end

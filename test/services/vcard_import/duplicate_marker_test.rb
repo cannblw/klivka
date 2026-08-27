@@ -1,7 +1,7 @@
 require "test_helper"
 
 class VcardImport::DuplicateMarkerTest < ActiveSupport::TestCase
-  test "marks candidates whose normalized names match an existing friend" do
+  test "marks candidates whose normalized names match an existing person" do
     candidates = [
       { "id" => 0, "name" => "  ÁDA  LOVELACE ", "entries" => [] },
       { "id" => 1, "name" => "Linus Torvalds", "entries" => [] },

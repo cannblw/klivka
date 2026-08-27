@@ -13,7 +13,7 @@ class VcardImportPreviewComponentTest < ViewComponent::TestCase
     render_inline VcardImportPreviewComponent.new(vcard_import:)
 
     assert_selector "[data-controller~='filter-list'][data-controller~='vcard-import-preview']"
-    assert_selector "form[action='/friends/import/preview'][method='post'] input[name='_method'][value='patch']", visible: :all
+    assert_selector "form[action='/people/import/preview'][method='post'] input[name='_method'][value='patch']", visible: :all
     assert_selector "input#vcard-import-search[type='search']"
     assert_selector "input[type='checkbox'][checked]", count: 2
     assert_selector "button[data-vcard-import-preview-target='selectAll'][disabled]"

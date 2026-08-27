@@ -8,7 +8,7 @@ class BirthdayMonthSectionComponentTest < ViewComponent::TestCase
 
     assert_selector "section[aria-labelledby='birthdays-month-12']"
     assert_selector "h2#birthdays-month-12"
-    assert_selector "a[href='#{Rails.application.routes.url_helpers.friend_path(birthday.friend, from: "birthdays")}']"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.person_path(birthday.person, from: "birthdays")}']"
   end
 
   test "supports a nested heading inside the earlier birthdays disclosure" do

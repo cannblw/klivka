@@ -25,15 +25,15 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
     get new_vcard_import_url
 
     assert_response :success
-    assert_equal "/friends/import", new_vcard_import_path
-    assert_equal "/friends/import/preview", vcard_import_path
+    assert_equal "/people/import", new_vcard_import_path
+    assert_equal "/people/import/preview", vcard_import_path
     assert_select "h1", "Import contacts"
     assert_select "input[type='file'][name='vcard_import[file]']"
   end
 
-  test "a vCard upload creates a selected preview without creating friends or retaining the uploaded file" do
+  test "a vCard upload creates a selected preview without creating people or retaining the uploaded file" do
     assert_difference "VcardImport.count", 1 do
-      assert_no_difference [ "Friend.count", "Entry.count" ] do
+      assert_no_difference [ "Person.count", "Entry.count" ] do
         post vcard_imports_url, params: { vcard_import: { file: uploaded_contacts } }
       end
     end
@@ -122,14 +122,14 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
   test "vCard import creates the explicitly selected contacts" do
     vcard_import = create_preview
 
-    assert_difference "Friend.count", 1 do
+    assert_difference "Person.count", 1 do
       assert_no_difference "Entry.count" do
         patch vcard_import_url, params: { vcard_import: { selected_candidate_ids: [ "1" ] } }
       end
     end
 
-    assert_redirected_to friends_url
-    assert_equal "Grace Hopper", users(:one).friends.order(:id).last.name
+    assert_redirected_to people_url
+    assert_equal "Grace Hopper", users(:one).people.order(:id).last.name
     assert_not VcardImport.exists?(vcard_import.id)
   end
 
@@ -145,7 +145,7 @@ class VcardImportsControllerTest < ActionDispatch::IntegrationTest
   test "vCard import requires at least one selected contact" do
     vcard_import = create_preview
 
-    assert_no_difference [ "Friend.count", "Entry.count", "VcardImport.count" ] do
+    assert_no_difference [ "Person.count", "Entry.count", "VcardImport.count" ] do
       patch vcard_import_url, params: { vcard_import: { selected_candidate_ids: [ "" ] } }
     end
 

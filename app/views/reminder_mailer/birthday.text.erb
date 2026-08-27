@@ -1,6 +1,6 @@
-<%= t(".heading", name: @friend.name) %>
+<%= t(".heading", name: @person.name) %>
 
-<%= t(".body", name: @friend.name, date: l(@occurrence_on, format: :long)) %>
+<%= t(".body", name: @person.name, date: l(@occurrence_on, format: :long)) %>
 
-<%= t(".open_friend", name: @friend.name) %>: <%= @friend_url %>
+<%= t(".open_person", name: @person.name) %>: <%= @person_url %>
 <%= t(".settings") %>: <%= @settings_url %>

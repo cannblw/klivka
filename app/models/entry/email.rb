@@ -10,19 +10,19 @@
 #  type                :string           not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  friend_id           :integer          not null
+#  person_id           :integer          not null
 #
 # Indexes
 #
 #  index_entries_on_entry_date               (entry_date)
-#  index_entries_on_friend_id                (friend_id)
-#  index_entries_on_friend_id_and_position   (friend_id,position)
-#  index_entries_on_friend_id_for_birthday   (friend_id) UNIQUE WHERE type = 'Entry::Birthday'
-#  index_entries_on_friend_id_for_first_met  (friend_id) UNIQUE WHERE type = 'Entry::FirstMet'
+#  index_entries_on_person_id                (person_id)
+#  index_entries_on_person_id_and_position   (person_id,position)
+#  index_entries_on_person_id_for_birthday   (person_id) UNIQUE WHERE type = 'Entry::Birthday'
+#  index_entries_on_person_id_for_first_met  (person_id) UNIQUE WHERE type = 'Entry::FirstMet'
 #
 # Foreign Keys
 #
-#  friend_id  (friend_id => friends.id)
+#  person_id  (person_id => people.id)
 #
 class Entry::Email < Entry
   self.vcard_import_property = :email

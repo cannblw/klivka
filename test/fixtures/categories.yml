@@ -23,10 +23,10 @@ family:
   name: Family
   normalized_name: family
 
-friends:
+people:
   user: one
-  name: Friends
-  normalized_name: friends
+  name: People
+  normalized_name: people
 
 family_for_user_two:
   user: two

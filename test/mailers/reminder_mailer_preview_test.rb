@@ -7,8 +7,8 @@ class ReminderMailerPreviewTest < ActionMailer::TestCase
       password: "preview-password",
       time_zone: "UTC"
     )
-    friend = user.friends.create!(name: "Preview Friend")
-    Entry::Birthday.create!(friend:, entry_date: Date.new(1990, 9, 14))
+    person = user.people.create!(name: "Preview Person")
+    Entry::Birthday.create!(person:, entry_date: Date.new(1990, 9, 14))
     record_counts = reminder_record_counts
 
     preview = ReminderMailerPreview.new

@@ -67,7 +67,7 @@ class ReminderDelivery < ApplicationRecord
   def source_belongs_to_user
     return if source.blank? || user.blank?
 
-    source_user = source.is_a?(EntryReminder) ? source.entry.friend.user : source.friend.user
+    source_user = source.is_a?(EntryReminder) ? source.entry.person.user : source.person.user
     errors.add(:source, :invalid) unless source_user == user
   end
 end

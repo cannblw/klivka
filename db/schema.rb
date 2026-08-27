@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_120000) do
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -38,15 +38,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_130000) do
     t.json "content"
     t.datetime "created_at", null: false
     t.date "entry_date"
-    t.integer "friend_id", null: false
+    t.integer "person_id", null: false
     t.integer "position", default: 0, null: false
     t.string "type", null: false
     t.datetime "updated_at", null: false
     t.index ["entry_date"], name: "index_entries_on_entry_date"
-    t.index ["friend_id", "position"], name: "index_entries_on_friend_id_and_position"
-    t.index ["friend_id"], name: "index_entries_on_friend_id"
-    t.index ["friend_id"], name: "index_entries_on_friend_id_for_birthday", unique: true, where: "type = 'Entry::Birthday'"
-    t.index ["friend_id"], name: "index_entries_on_friend_id_for_first_met", unique: true, where: "type = 'Entry::FirstMet'"
+    t.index ["person_id", "position"], name: "index_entries_on_person_id_and_position"
+    t.index ["person_id"], name: "index_entries_on_person_id"
+    t.index ["person_id"], name: "index_entries_on_person_id_for_birthday", unique: true, where: "type = 'Entry::Birthday'"
+    t.index ["person_id"], name: "index_entries_on_person_id_for_first_met", unique: true, where: "type = 'Entry::FirstMet'"
     t.check_constraint "(type = 'Entry::Birthday' AND birthday_year_known IS NOT NULL) OR (type <> 'Entry::Birthday' AND birthday_year_known IS NULL)", name: "entries_birthday_year_knowledge_matches_type"
     t.check_constraint "(type IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NOT NULL) OR (type NOT IN ('Entry::Date', 'Entry::Birthday', 'Entry::FirstMet') AND entry_date IS NULL)", name: "entries_date_types_require_entry_date"
     t.check_constraint "position >= 0", name: "entries_position_non_negative"
@@ -64,28 +64,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_130000) do
     t.check_constraint "recurrence IN ('one_time', 'yearly')", name: "entry_reminders_recurrence_is_supported"
   end
 
-  create_table "friends", force: :cascade do |t|
-    t.integer "category_id"
-    t.datetime "created_at", null: false
-    t.string "name", null: false
-    t.string "slug", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index ["category_id"], name: "index_friends_on_category_id"
-    t.index ["user_id", "slug"], name: "index_friends_on_user_id_and_slug", unique: true
-    t.index ["user_id"], name: "index_friends_on_user_id"
-    t.check_constraint "length(name) <= 255", name: "friends_name_is_within_maximum_length"
-  end
-
   create_table "interactions", force: :cascade do |t|
     t.string "contact_method"
     t.datetime "created_at", null: false
-    t.integer "friend_id", null: false
     t.text "note"
     t.date "occurred_on", null: false
+    t.integer "person_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["friend_id", "occurred_on"], name: "index_interactions_on_friend_id_and_occurred_on"
-    t.index ["friend_id"], name: "index_interactions_on_friend_id"
+    t.index ["person_id", "occurred_on"], name: "index_interactions_on_person_id_and_occurred_on"
+    t.index ["person_id"], name: "index_interactions_on_person_id"
     t.check_constraint "contact_method IS NULL OR contact_method IN ('call', 'message', 'video', 'in_person', 'other')", name: "interactions_contact_method_is_supported"
   end
 
@@ -93,13 +80,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_130000) do
     t.string "cadence", null: false
     t.datetime "created_at", null: false
     t.date "enabled_on"
-    t.integer "friend_id", null: false
     t.integer "lock_version", default: 0, null: false
+    t.integer "person_id", null: false
     t.date "snoozed_until"
     t.datetime "updated_at", null: false
-    t.index ["friend_id"], name: "index_keep_in_touch_settings_on_friend_id", unique: true
+    t.index ["person_id"], name: "index_keep_in_touch_settings_on_person_id", unique: true
     t.check_constraint "cadence IN ('daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly')", name: "keep_in_touch_settings_cadence_is_supported"
     t.check_constraint "enabled_on IS NOT NULL OR snoozed_until IS NULL", name: "keep_in_touch_settings_disabled_cannot_be_snoozed"
+  end
+
+  create_table "people", force: :cascade do |t|
+    t.integer "category_id"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["category_id"], name: "index_people_on_category_id"
+    t.index ["user_id", "slug"], name: "index_people_on_user_id_and_slug", unique: true
+    t.index ["user_id"], name: "index_people_on_user_id"
+    t.check_constraint "length(name) <= 255", name: "people_name_is_within_maximum_length"
   end
 
   create_table "reminder_deliveries", force: :cascade do |t|
@@ -177,12 +177,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_130000) do
   end
 
   add_foreign_key "categories", "users", on_delete: :cascade
-  add_foreign_key "entries", "friends"
+  add_foreign_key "entries", "people"
   add_foreign_key "entry_reminders", "entries", on_delete: :cascade
-  add_foreign_key "friends", "categories", on_delete: :nullify
-  add_foreign_key "friends", "users"
-  add_foreign_key "interactions", "friends"
-  add_foreign_key "keep_in_touch_settings", "friends"
+  add_foreign_key "interactions", "people"
+  add_foreign_key "keep_in_touch_settings", "people"
+  add_foreign_key "people", "categories", on_delete: :nullify
+  add_foreign_key "people", "users"
   add_foreign_key "reminder_deliveries", "users", on_delete: :cascade
   add_foreign_key "sessions", "users"
   add_foreign_key "vcard_imports", "users", on_delete: :cascade

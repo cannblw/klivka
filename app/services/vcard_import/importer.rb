@@ -29,11 +29,11 @@ class VcardImport::Importer
   end
 
   def import_candidate(candidate)
-    friend = vcard_import.user.friends.create!(name: candidate.fetch("name"))
+    person = vcard_import.user.people.create!(name: candidate.fetch("name"))
 
     candidate.fetch("entries").each_with_index do |entry, position|
       attributes = entry.slice("type", "content", "entry_date", "birthday_year_known")
-      friend.entries.create!(attributes.merge("position" => position))
+      person.entries.create!(attributes.merge("position" => position))
     end
   end
 end

@@ -7,16 +7,16 @@ Rails.application.routes.draw do
   resource :settings, only: %i[ show update ]
   resource :time_zone, only: :update
   resources :categories, only: %i[ index create update destroy ] do
-    get :friend_suggestions, on: :collection
+    get :person_suggestions, on: :collection
   end
-  get "friends/import", to: "vcard_imports#new", as: :new_vcard_import
-  post "friends/import", to: "vcard_imports#create", as: :vcard_imports
-  get "friends/import/preview", to: "vcard_imports#show", as: :vcard_import
-  patch "friends/import/preview", to: "vcard_imports#update"
-  get "friends/batch", to: "batch_friend_creations#new", as: :new_batch_friend_creation
-  post "friends/batch/preview", to: "batch_friend_creations#preview", as: :preview_batch_friend_creation
-  post "friends/batch", to: "batch_friend_creations#create", as: :batch_friend_creation
-  resources :friends, only: [ :index, :show, :create, :update, :destroy ] do
+  get "people/import", to: "vcard_imports#new", as: :new_vcard_import
+  post "people/import", to: "vcard_imports#create", as: :vcard_imports
+  get "people/import/preview", to: "vcard_imports#show", as: :vcard_import
+  patch "people/import/preview", to: "vcard_imports#update"
+  get "people/batch", to: "batch_person_creations#new", as: :new_batch_person_creation
+  post "people/batch/preview", to: "batch_person_creations#preview", as: :preview_batch_person_creation
+  post "people/batch", to: "batch_person_creations#create", as: :batch_person_creation
+  resources :people, only: [ :index, :show, :create, :update, :destroy ] do
     resource :category_assignment, only: :update
     resources :entries, only: %i[ new create edit update destroy ] do
       patch :reorder, on: :collection
@@ -39,5 +39,5 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  root "friends#index"
+  root "people#index"
 end

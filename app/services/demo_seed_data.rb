@@ -22,7 +22,7 @@ class DemoSeedData
         user.save!
       end
 
-      DemoPersonaSeedData.call(user:) if user.friends.none?
+      DemoPersonaSeedData.call(user:) if user.people.none?
       DemoState.current
       user
     end

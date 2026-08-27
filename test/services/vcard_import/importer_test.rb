@@ -1,7 +1,7 @@
 require "test_helper"
 
 class VcardImport::ImporterTest < ActiveSupport::TestCase
-  test "vCard importer creates selected friends and their optional entries, then removes the preview" do
+  test "vCard importer creates selected people and their optional entries, then removes the preview" do
     vcard_import = users(:one).vcard_imports.create!(
       candidates: [
         {
@@ -16,15 +16,15 @@ class VcardImport::ImporterTest < ActiveSupport::TestCase
       ]
     )
 
-    assert_difference "Friend.count", 1 do
+    assert_difference "Person.count", 1 do
       assert_difference "Entry.count", 2 do
         VcardImport::Importer.call(vcard_import:, selected_candidate_ids: [ 0 ])
       end
     end
 
-    friend = users(:one).friends.order(:id).last
-    assert_equal "Ada Lovelace", friend.name
-    assert_equal [ "Entry::Phone", "Entry::Birthday" ], friend.entries.order(:position).pluck(:type)
+    person = users(:one).people.order(:id).last
+    assert_equal "Ada Lovelace", person.name
+    assert_equal [ "Entry::Phone", "Entry::Birthday" ], person.entries.order(:position).pluck(:type)
     assert_not VcardImport.exists?(vcard_import.id)
   end
 
@@ -33,7 +33,7 @@ class VcardImport::ImporterTest < ActiveSupport::TestCase
       candidates: [ { "id" => 0, "name" => "Ada Lovelace", "entries" => [] } ]
     )
 
-    assert_no_difference [ "Friend.count", "Entry.count", "VcardImport.count" ] do
+    assert_no_difference [ "Person.count", "Entry.count", "VcardImport.count" ] do
       assert_raises ActiveRecord::RecordInvalid do
         VcardImport::Importer.call(vcard_import:, selected_candidate_ids: [ 1 ])
       end
@@ -57,7 +57,7 @@ class VcardImport::ImporterTest < ActiveSupport::TestCase
 
     VcardImport::Importer.call(vcard_import:, selected_candidate_ids: [ 0 ])
 
-    birthday = users(:one).friends.order(:id).last.entries.find_by!(type: "Entry::Birthday")
+    birthday = users(:one).people.order(:id).last.entries.find_by!(type: "Entry::Birthday")
     assert_equal Date.new(2000, 3, 3), birthday.entry_date
     assert_not birthday.birthday_year_known?
     assert_nil birthday.age
@@ -75,7 +75,7 @@ class VcardImport::ImporterTest < ActiveSupport::TestCase
       ]
     )
 
-    assert_no_difference [ "Friend.count", "Entry.count", "VcardImport.count" ] do
+    assert_no_difference [ "Person.count", "Entry.count", "VcardImport.count" ] do
       assert_raises ActiveRecord::RecordInvalid do
         VcardImport::Importer.call(vcard_import:, selected_candidate_ids: [ 0, 1 ])
       end

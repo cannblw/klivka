@@ -1,4 +1,4 @@
-<%= form_with model: [ friend, interaction ],
+<%= form_with model: [ person, interaction ],
       data: { interaction_date_target: "form", action: "submit->interaction-date#submit" },
       class: "space-y-4" do |form| %>
   <div>
@@ -37,6 +37,6 @@
     <%= render ButtonComponent.new(type: :submit) do %>
       <%= t("interactions.form.save") %>
     <% end %>
-    <%= link_to t("interactions.follow_up.cancel"), friend, class: "rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700" %>
+    <%= link_to t("interactions.follow_up.cancel"), person, class: "rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700" %>
   </div>
 <% end %>

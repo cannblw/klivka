@@ -12,19 +12,19 @@ require "test_helper"
 #  type                :string           not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  friend_id           :integer          not null
+#  person_id           :integer          not null
 #
 # Indexes
 #
 #  index_entries_on_entry_date               (entry_date)
-#  index_entries_on_friend_id                (friend_id)
-#  index_entries_on_friend_id_and_position   (friend_id,position)
-#  index_entries_on_friend_id_for_birthday   (friend_id) UNIQUE WHERE type = 'Entry::Birthday'
-#  index_entries_on_friend_id_for_first_met  (friend_id) UNIQUE WHERE type = 'Entry::FirstMet'
+#  index_entries_on_person_id                (person_id)
+#  index_entries_on_person_id_and_position   (person_id,position)
+#  index_entries_on_person_id_for_birthday   (person_id) UNIQUE WHERE type = 'Entry::Birthday'
+#  index_entries_on_person_id_for_first_met  (person_id) UNIQUE WHERE type = 'Entry::FirstMet'
 #
 # Foreign Keys
 #
-#  friend_id  (friend_id => friends.id)
+#  person_id  (person_id => people.id)
 #
 class EntryTest < ActiveSupport::TestCase
   test "every allowed entry type resolves to its STI class" do
@@ -49,7 +49,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "position cannot be negative" do
-    entry = Entry::Note.new(friend: friends(:ada), position: -1, content: { text: "A note" })
+    entry = Entry::Note.new(person: people(:ada), position: -1, content: { text: "A note" })
 
     assert_not entry.valid?
     assert_includes entry.errors[:position], "must be greater than or equal to 0"
@@ -61,7 +61,7 @@ class EntryTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::StatementInvalid do
       Entry.transaction(requires_new: true) do
         Entry.insert_all!([ {
-          friend_id: friends(:ada).id,
+          person_id: people(:ada).id,
           type: "Entry::Note",
           position: -1,
           content: { text: "A note" },
@@ -73,13 +73,13 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "instantiates STI subclasses by type" do
-    phone = Entry::Phone.new(friend: friends(:ada))
+    phone = Entry::Phone.new(person: people(:ada))
     assert_instance_of Entry::Phone, phone
     assert_equal "Entry::Phone", phone.type
   end
 
   test "email exposes normalized email and optional label" do
-    email = Entry::Email.new(friend: friends(:ada), content: { email: "  ADA@EXAMPLE.COM ", label: " Work " })
+    email = Entry::Email.new(person: people(:ada), content: { email: "  ADA@EXAMPLE.COM ", label: " Work " })
 
     assert email.valid?
     assert_equal "ada@example.com", email.email
@@ -87,14 +87,14 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "email requires a valid email" do
-    email = Entry::Email.new(friend: friends(:ada), content: { email: "not-an-email" })
+    email = Entry::Email.new(person: people(:ada), content: { email: "not-an-email" })
 
     assert_not email.valid?
     assert email.errors.of_kind?(:email, :invalid)
   end
 
   test "email reports only the presence error when blank" do
-    email = Entry::Email.new(friend: friends(:ada), content: { email: "" })
+    email = Entry::Email.new(person: people(:ada), content: { email: "" })
 
     assert_not email.valid?
     assert email.errors.of_kind?(:email, :blank)
@@ -114,36 +114,36 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "birthday validates entry_date presence" do
-    birthday = Entry::Birthday.new(friend: friends(:ada), entry_date: nil)
+    birthday = Entry::Birthday.new(person: people(:ada), entry_date: nil)
 
     assert_not birthday.valid?
     assert birthday.errors.of_kind?(:entry_date, :blank)
   end
 
-  test "birthday enforces one per friend" do
-    duplicate = Entry::Birthday.new(friend: friends(:ada), entry_date: Date.current)
+  test "birthday enforces one per person" do
+    duplicate = Entry::Birthday.new(person: people(:ada), entry_date: Date.current)
 
     assert_not duplicate.valid?
-    assert duplicate.errors.of_kind?(:friend_id, :taken)
-    assert_includes duplicate.errors[:friend_id], "already has a birthday"
+    assert duplicate.errors.of_kind?(:person_id, :taken)
+    assert_includes duplicate.errors[:person_id], "already has a birthday"
   end
 
   test "date validates entry_date presence" do
-    date_entry = Entry::Date.new(friend: friends(:ada), entry_date: nil)
+    date_entry = Entry::Date.new(person: people(:ada), entry_date: nil)
 
     assert_not date_entry.valid?
     assert date_entry.errors.of_kind?(:entry_date, :blank)
   end
 
   test "a date has one annual occurrence in every year" do
-    date_entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 8, 10))
+    date_entry = Entry::Date.new(person: people(:ada), entry_date: Date.new(2020, 8, 10))
 
     assert_equal Date.new(2026, 8, 10), date_entry.occurrence_on(year: 2026)
     assert_equal Date.new(2027, 8, 10), date_entry.next_occurrence_on(on: Date.new(2026, 8, 11))
   end
 
   test "a leap-day date occurs on February 28 in a non-leap year" do
-    date_entry = Entry::Date.new(friend: friends(:ada), entry_date: Date.new(2020, 2, 29))
+    date_entry = Entry::Date.new(person: people(:ada), entry_date: Date.new(2020, 2, 29))
 
     assert_equal Date.new(2024, 2, 29), date_entry.occurrence_on(year: 2024)
     assert_equal Date.new(2025, 2, 28), date_entry.occurrence_on(year: 2025)
@@ -151,7 +151,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "generic dates are creatable and normalize their optional label" do
     date_entry = Entry::Date.new(
-      friend: friends(:ada),
+      person: people(:ada),
       entry_date: Date.new(2020, 1, 2),
       content: { label: "  Dad's first iguana  " }
     )
@@ -167,7 +167,7 @@ class EntryTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::StatementInvalid do
       Entry.transaction(requires_new: true) do
         Entry.insert_all!([ {
-          friend_id: friends(:ada).id,
+          person_id: people(:ada).id,
           type: "Entry::Date",
           entry_date: nil,
           position: 99,
@@ -181,7 +181,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "non-date entry types reject a date in the model" do
     note = Entry::Note.new(
-      friend: friends(:ada),
+      person: people(:ada),
       entry_date: Date.current,
       content: { text: "A note" }
     )
@@ -196,7 +196,7 @@ class EntryTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::StatementInvalid do
       Entry.transaction(requires_new: true) do
         Entry.insert_all!([ {
-          friend_id: friends(:ada).id,
+          person_id: people(:ada).id,
           type: "Entry::Note",
           entry_date: Date.current,
           position: 99,
@@ -210,7 +210,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "first met accepts a full date and an optional normalized note" do
     first_met = Entry::FirstMet.new(
-      friend: friends(:ada),
+      person: people(:ada),
       entry_date: Date.new(2020, 1, 2),
       content: { note: "  At the market  " }
     )
@@ -221,7 +221,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "first met accepts a year without inventing a month or day" do
-    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019")
+    first_met = Entry::FirstMet.new(person: people(:ada), entry_year: "2019")
 
     assert first_met.valid?
     assert_equal Date.new(2019, 1, 1), first_met.entry_date
@@ -229,7 +229,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "first met accepts a month and year without inventing a day" do
-    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019", entry_month: "5")
+    first_met = Entry::FirstMet.new(person: people(:ada), entry_year: "2019", entry_month: "5")
 
     assert first_met.valid?
     assert_equal Date.new(2019, 5, 1), first_met.entry_date
@@ -249,30 +249,30 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "first met rejects a day without a month" do
-    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019", entry_day: "12")
+    first_met = Entry::FirstMet.new(person: people(:ada), entry_year: "2019", entry_day: "12")
 
     assert_not first_met.valid?
     assert first_met.errors.of_kind?(:entry_date, :invalid)
   end
 
   test "first met rejects malformed numeric date parts instead of truncating them" do
-    first_met = Entry::FirstMet.new(friend: friends(:ada), entry_year: "2019.5")
+    first_met = Entry::FirstMet.new(person: people(:ada), entry_year: "2019.5")
 
     assert_not first_met.valid?
     assert first_met.errors.of_kind?(:entry_date, :invalid)
   end
 
-  test "first met enforces one per friend" do
-    Entry::FirstMet.create!(friend: friends(:ada), entry_date: Date.current)
-    duplicate = Entry::FirstMet.new(friend: friends(:ada), entry_date: Date.current)
+  test "first met enforces one per person" do
+    Entry::FirstMet.create!(person: people(:ada), entry_date: Date.current)
+    duplicate = Entry::FirstMet.new(person: people(:ada), entry_date: Date.current)
 
     assert_not duplicate.valid?
-    assert duplicate.errors.of_kind?(:friend_id, :taken)
+    assert duplicate.errors.of_kind?(:person_id, :taken)
   end
 
   test "gift list normalizes items and generates missing ids" do
     gift_list = Entry::GiftList.new(
-      friend: friends(:ada),
+      person: people(:ada),
       content: {
         title: "  Birthday ideas ",
         items: [ { text: "  A book ", checked: "1" } ]
@@ -288,7 +288,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "gift list preserves unique ids and replaces duplicate ids" do
     gift_list = Entry::GiftList.new(
-      friend: friends(:ada),
+      person: people(:ada),
       content: {
         items: [
           { id: "idea-1", text: "A book" },
@@ -310,7 +310,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "gift list filters blank items" do
     gift_list = Entry::GiftList.new(
-      friend: friends(:ada),
+      person: people(:ada),
       content: { items: [ { text: "A book" }, { text: " " } ] }
     )
 
@@ -319,7 +319,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "gift list requires at least one item" do
-    gift_list = Entry::GiftList.new(friend: friends(:ada), content: { items: [] })
+    gift_list = Entry::GiftList.new(person: people(:ada), content: { items: [] })
 
     assert_not gift_list.valid?
     assert gift_list.errors.of_kind?(:items, :blank)
@@ -344,7 +344,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "age returns nil without entry_date" do
-    birthday = Entry::Birthday.new(friend: friends(:ada), entry_date: nil)
+    birthday = Entry::Birthday.new(person: people(:ada), entry_date: nil)
 
     assert_nil birthday.age
   end
@@ -354,7 +354,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "birthday accepts a month and day without a year" do
-    birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3")
+    birthday = Entry::Birthday.new(person: people(:bob), entry_month: "3", entry_day: "3")
 
     assert birthday.valid?
     assert_equal Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday.entry_date
@@ -364,7 +364,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "birthday accepts a month day and year" do
-    birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983")
+    birthday = Entry::Birthday.new(person: people(:bob), entry_month: "3", entry_day: "3", entry_year: "1983")
 
     assert birthday.valid?
     assert_equal Date.new(1983, 3, 3), birthday.entry_date
@@ -373,7 +373,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "birthday calculates the year from current age after this year's birthday" do
     travel_to Date.new(2026, 8, 25) do
-      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3", current_age: "43")
+      birthday = Entry::Birthday.new(person: people(:bob), entry_month: "3", entry_day: "3", current_age: "43")
 
       assert birthday.valid?
       assert_equal Date.new(1983, 3, 3), birthday.entry_date
@@ -383,7 +383,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "birthday calculates the year from current age before this year's birthday" do
     travel_to Date.new(2026, 2, 25) do
-      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "3", current_age: "42")
+      birthday = Entry::Birthday.new(person: people(:bob), entry_month: "3", entry_day: "3", current_age: "42")
 
       assert birthday.valid?
       assert_equal Date.new(1983, 3, 3), birthday.entry_date
@@ -392,7 +392,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "birthday current age uses the observed leap-day birthday" do
     travel_to Date.new(2025, 2, 28) do
-      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "2", entry_day: "29", current_age: "25")
+      birthday = Entry::Birthday.new(person: people(:bob), entry_month: "2", entry_day: "29", current_age: "25")
 
       assert birthday.valid?
       assert_equal Date.new(2000, 2, 29), birthday.entry_date
@@ -402,7 +402,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "birthday accepts a matching year and current age together" do
     birthday = Entry::Birthday.new(
-      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", current_age: "43"
+      person: people(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", current_age: "43"
     )
 
     assert birthday.valid?
@@ -411,7 +411,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "birthday rejects a year and current age that disagree" do
     birthday = Entry::Birthday.new(
-      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", current_age: "42"
+      person: people(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", current_age: "42"
     )
 
     assert_not birthday.valid?
@@ -421,7 +421,7 @@ class EntryTest < ActiveSupport::TestCase
   test "birthday uses the selected year basis when the submitted age is stale" do
     travel_to Date.new(2026, 8, 25) do
       birthday = Entry::Birthday.new(
-        friend: friends(:bob), entry_month: "9", entry_day: "3", entry_year: "1983", current_age: "43",
+        person: people(:bob), entry_month: "9", entry_day: "3", entry_year: "1983", current_age: "43",
         birthday_input_basis: "year"
       )
 
@@ -434,7 +434,7 @@ class EntryTest < ActiveSupport::TestCase
   test "birthday uses the selected age basis when the submitted year is stale" do
     travel_to Date.new(2026, 8, 25) do
       birthday = Entry::Birthday.new(
-        friend: friends(:bob), entry_month: "9", entry_day: "3", entry_year: "1983", current_age: "43",
+        person: people(:bob), entry_month: "9", entry_day: "3", entry_year: "1983", current_age: "43",
         birthday_input_basis: "age"
       )
 
@@ -446,10 +446,10 @@ class EntryTest < ActiveSupport::TestCase
 
   test "birthday rejects an unsupported or empty input basis" do
     unsupported = Entry::Birthday.new(
-      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", birthday_input_basis: "date"
+      person: people(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", birthday_input_basis: "date"
     )
     missing_age = Entry::Birthday.new(
-      friend: friends(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", birthday_input_basis: "age"
+      person: people(:bob), entry_month: "3", entry_day: "3", entry_year: "1983", birthday_input_basis: "age"
     )
 
     assert_not unsupported.valid?
@@ -460,7 +460,7 @@ class EntryTest < ActiveSupport::TestCase
 
   test "birthday rejects a birth date in the future" do
     travel_to Date.new(2026, 8, 25) do
-      birthday = Entry::Birthday.new(friend: friends(:bob), entry_month: "9", entry_day: "1", entry_year: "2026")
+      birthday = Entry::Birthday.new(person: people(:bob), entry_month: "9", entry_day: "1", entry_year: "2026")
 
       assert_not birthday.valid?
       assert birthday.errors.of_kind?(:entry_date, :invalid)
@@ -468,8 +468,8 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "birthday rejects missing and impossible date parts" do
-    missing_day = Entry::Birthday.new(friend: friends(:bob), entry_month: "3", entry_day: "")
-    impossible_date = Entry::Birthday.new(friend: friends(:bob), entry_month: "2", entry_day: "30")
+    missing_day = Entry::Birthday.new(person: people(:bob), entry_month: "3", entry_day: "")
+    impossible_date = Entry::Birthday.new(person: people(:bob), entry_month: "2", entry_day: "30")
 
     assert_not missing_day.valid?
     assert missing_day.errors.of_kind?(:entry_date, :invalid)
@@ -478,7 +478,7 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "birthday can add or remove a known year" do
-    birthday = Entry::Birthday.create!(friend: friends(:bob), entry_month: "3", entry_day: "3")
+    birthday = Entry::Birthday.create!(person: people(:bob), entry_month: "3", entry_day: "3")
 
     birthday.update!(entry_month: "3", entry_day: "3", entry_year: "1983")
     assert_equal Date.new(1983, 3, 3), birthday.entry_date
@@ -490,20 +490,20 @@ class EntryTest < ActiveSupport::TestCase
   end
 
   test "non-birthday entries reject birthday year knowledge" do
-    note = Entry::Note.new(friend: friends(:ada), content: { text: "Hello" }, birthday_year_known: true)
+    note = Entry::Note.new(person: people(:ada), content: { text: "Hello" }, birthday_year_known: true)
 
     assert_not note.valid?
     assert note.errors.of_kind?(:birthday_year_known, :present)
   end
 
   test "database requires birthdays to declare whether the year is known" do
-    friend = users(:one).friends.create!(name: "Database Birthday")
+    person = users(:one).people.create!(name: "Database Birthday")
     timestamp = Time.current
 
     assert_raises ActiveRecord::StatementInvalid do
       Entry.transaction(requires_new: true) do
         Entry.insert_all!([ {
-          friend_id: friend.id,
+          person_id: person.id,
           type: "Entry::Birthday",
           position: 0,
           entry_date: Date.new(1983, 3, 3),
@@ -521,7 +521,7 @@ class EntryTest < ActiveSupport::TestCase
     assert_raises ActiveRecord::StatementInvalid do
       Entry.transaction(requires_new: true) do
         Entry.insert_all!([ {
-          friend_id: friends(:ada).id,
+          person_id: people(:ada).id,
           type: "Entry::Note",
           position: 10,
           content: { text: "A note" },
@@ -554,8 +554,8 @@ class EntryTest < ActiveSupport::TestCase
     assert_empty results
   end
 
-  test "friend.entries includes all types" do
-    entries = friends(:ada).entries
+  test "person.entries includes all types" do
+    entries = people(:ada).entries
 
     assert_equal 3, entries.size
     assert_includes entries.map(&:type), "Entry::Phone"
@@ -563,22 +563,22 @@ class EntryTest < ActiveSupport::TestCase
     assert_includes entries.map(&:type), "Entry::Email"
   end
 
-  test "entry changes touch the friend" do
-    friend = friends(:ada)
-    original_updated_at = friend.reload.updated_at
+  test "entry changes touch the person" do
+    person = people(:ada)
+    original_updated_at = person.reload.updated_at
 
     travel 1.minute
-    entry = friend.entries.create!(type: "Entry::Note", content: { text: "old" })
-    assert_operator friend.reload.updated_at, :>, original_updated_at
-    created_at = friend.updated_at
+    entry = person.entries.create!(type: "Entry::Note", content: { text: "old" })
+    assert_operator person.reload.updated_at, :>, original_updated_at
+    created_at = person.updated_at
 
     travel 1.minute
     entry.update!(content: { text: "updated" })
-    assert_operator friend.reload.updated_at, :>, created_at
-    updated_at = friend.updated_at
+    assert_operator person.reload.updated_at, :>, created_at
+    updated_at = person.updated_at
 
     travel 1.minute
     entry.destroy!
-    assert_operator friend.reload.updated_at, :>, updated_at
+    assert_operator person.reload.updated_at, :>, updated_at
   end
 end

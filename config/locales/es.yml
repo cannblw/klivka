@@ -23,7 +23,7 @@ es:
 
   activerecord:
     attributes:
-      friend:
+      person:
         name: "Nombre"
       user:
         email_address: "Correo electrónico"
@@ -41,7 +41,7 @@ es:
       entry/date:
         label: "Etiqueta"
       entry/first_met:
-        friend_id: "Primera vez que os conocisteis"
+        person_id: "Primera vez que os conocisteis"
       entry_reminder:
         lead_value: "Antelación del recordatorio"
         lead_unit: "Unidad de antelación del recordatorio"
@@ -58,12 +58,12 @@ es:
       models:
         entry/birthday:
           attributes:
-            friend_id:
-              one_birthday_per_friend: "ya tiene un cumpleaños"
+            person_id:
+              one_birthday_per_person: "ya tiene un cumpleaños"
         entry/first_met:
           attributes:
-            friend_id:
-              one_first_met_per_friend: "ya tiene una fecha de primer encuentro"
+            person_id:
+              one_first_met_per_person: "ya tiene una fecha de primer encuentro"
         entry/gift_list:
           attributes:
             items:
@@ -449,18 +449,18 @@ es:
       deleted:
         one: "Se ha eliminado %{name}. Un amigo se ha quedado sin categoría."
         other: "Se ha eliminado %{name}. %{count} amigos se han quedado sin categoría."
-    friend_count:
+    person_count:
       one: "1 amigo"
       other: "%{count} amigos"
-    friend_count_parenthetical:
+    person_count_parenthetical:
       one: "(1 amigo)"
       other: "(%{count} amigos)"
     organizer:
-      add_friend: "Añadir o mover un amigo"
+      add_person: "Añadir o mover un amigo"
       current_category: "Ahora está en %{category}"
       empty: "Aún no hay amigos en esta categoría."
       error: "No se han podido cargar los amigos. Inténtalo de nuevo."
-      friends_in: "Amigos en %{category}"
+      people_in: "Amigos en %{category}"
       loading: "Cargando amigos que coinciden"
       no_results: "No hay amigos que coincidan"
       remove: "Mover a Sin categoría"
@@ -488,7 +488,7 @@ es:
     update:
       updated: "Se ha actualizado la categoría de %{name}."
 
-  friends:
+  people:
     category:
       cancel: "Cancelar"
       edit: "Cambiar categoría"
@@ -499,7 +499,7 @@ es:
     index:
       title: "Amigos"
       heading: "Amigos"
-      add_friend: "Añadir amigo"
+      add_person: "Añadir amigo"
       import_contacts: "Importar contactos"
       search_label: "Buscar amigos"
       search_placeholder: "Buscar amigos..."
@@ -551,7 +551,7 @@ es:
       save: "Guardar"
       cancel: "Cancelar"
 
-  batch_friend_creations:
+  batch_person_creations:
     preview:
       title: "Revisa los amigos"
       heading: "Revisa los amigos"
@@ -667,7 +667,7 @@ es:
       eyebrow: "Mantén el contacto"
       heading: "Mantén el contacto con %{name}"
       body: "Pediste a Klivka que te recordara mantener el contacto con %{name}."
-      open_friend: "Ver a %{name}"
+      open_person: "Ver a %{name}"
       record_contact: "Registrar contacto"
       settings: "Gestionar ajustes de recordatorios"
 
@@ -677,7 +677,7 @@ es:
       date_label: "Próximamente"
       heading: "Cumpleaños de %{name}"
       body: "El cumpleaños de %{name} es el %{date}."
-      open_friend: "Ver a %{name}"
+      open_person: "Ver a %{name}"
       settings: "Gestionar ajustes de recordatorios"
     significant_date:
       subject: "%{label} de %{name} se acerca"
@@ -685,7 +685,7 @@ es:
       heading: "Una fecha para recordar"
       body: "%{label} de %{name} será el %{date}."
       default_label: "Una fecha importante"
-      open_friend: "Ver a %{name}"
+      open_person: "Ver a %{name}"
       settings: "Gestionar ajustes de recordatorios"
 
   vcard_import:

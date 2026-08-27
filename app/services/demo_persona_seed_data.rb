@@ -100,7 +100,7 @@ class DemoPersonaSeedData
     {
       name: "Claire Dubois",
       birthday: "1997-02-14",
-      first_met: { date: "2021-01-18", note: "Claire was the pastry chef at the tiny café near my old office. We became friends after she rescued my disastrous birthday tart with a very stern lesson about butter temperature." },
+      first_met: { date: "2021-01-18", note: "Claire was the pastry chef at the tiny café near my old office. We became people after she rescued my disastrous birthday tart with a very stern lesson about butter temperature." },
       notes: [
         "Pastry chef and owner of a six-seat bakery in Lyon. She starts work before sunrise and insists that every recipe should include a note about the weather.",
         "Claire is engaged to Mathieu, a bicycle frame builder. They are renovating a yellow townhouse one room at a time and disagree about whether the kitchen needs green or blue tiles.",
@@ -230,7 +230,7 @@ class DemoPersonaSeedData
       first_met: { date: "2020-02-01", note: "Tomás repaired my bicycle after I bent the wheel on a pothole. He explained the repair, charged me less than expected, and remembered my tire pressure forever afterward." },
       notes: [
         "Bicycle mechanic and co-owner of a repair shop in Mexico City. He can diagnose a clicking chain by ear and believes every bike deserves a second chance.",
-        "Tomás shares a house with two friends and a dog called Nube. He is dating Valeria, who is the only person allowed to reorganize his tool wall.",
+        "Tomás shares a house with two people and a dog called Nube. He is dating Valeria, who is the only person allowed to reorganize his tool wall.",
         "He rides at dawn, collects enamel cycling pins, and is learning to cook dishes that do not begin with instant noodles."
       ],
       phone: { number: "000 000 1462", label: "Work" },
@@ -268,7 +268,7 @@ class DemoPersonaSeedData
       first_met: { date: "2018-10-06", note: "Elliot was selling small blue bowls at the autumn craft market. I bought one, chipped it the same week, and brought it back so he could show me how to repair it." },
       notes: [
         "Ceramic artist working from a shared studio in Bristol. Elliot makes practical tableware with uneven edges because he likes evidence that a human made it.",
-        "He lives above the studio with his boyfriend Kieran and a retired racing greyhound named Fig. Fig is terrified of the pottery wheel.",
+        "He lives above the studio with his boyperson Kieran and a retired racing greyhound named Fig. Fig is terrified of the pottery wheel.",
         "Elliot loves folk music, spicy noodles, and second-hand furniture. He is trying to keep one houseplant alive and refuses to admit the fern is already dead."
       ],
       phone: { number: "000 000 0583", label: "Mobile" },
@@ -320,7 +320,7 @@ class DemoPersonaSeedData
     }
   ].freeze
 
-  FRIEND_COUNT = PERSONAS.length
+  PERSON_COUNT = PERSONAS.length
 
   def self.call(user:)
     new(user:).call
@@ -331,8 +331,8 @@ class DemoPersonaSeedData
   end
 
   def call
-    Friend.transaction do
-      @user.friends.destroy_all
+    Person.transaction do
+      @user.people.destroy_all
       PERSONAS.each { |persona| seed_persona(persona) }
     end
   end
@@ -342,45 +342,45 @@ class DemoPersonaSeedData
   attr_reader :user
 
   def seed_persona(persona)
-    friend = user.friends.create!(name: persona.fetch(:name))
-    create_entry(friend, "Entry::Birthday", entry_date: date(persona.fetch(:birthday)))
-    create_entry(friend, "Entry::FirstMet", entry_date: date(persona.dig(:first_met, :date)), content: {
+    person = user.people.create!(name: persona.fetch(:name))
+    create_entry(person, "Entry::Birthday", entry_date: date(persona.fetch(:birthday)))
+    create_entry(person, "Entry::FirstMet", entry_date: date(persona.dig(:first_met, :date)), content: {
       "note" => persona.dig(:first_met, :note), "date_precision" => "day"
     })
-    persona.fetch(:notes).each { |text| create_entry(friend, "Entry::Note", content: { "text" => text }) }
-    create_contact_entry(friend, "Entry::Phone", persona[:phone]) if persona[:phone]
-    create_contact_entry(friend, "Entry::Email", persona[:email]) if persona[:email]
+    persona.fetch(:notes).each { |text| create_entry(person, "Entry::Note", content: { "text" => text }) }
+    create_contact_entry(person, "Entry::Phone", persona[:phone]) if persona[:phone]
+    create_contact_entry(person, "Entry::Email", persona[:email]) if persona[:email]
     persona.fetch(:dates, []).each do |date_entry|
-      create_entry(friend, "Entry::Date", entry_date: date(date_entry.fetch(:date)), content: { "label" => date_entry.fetch(:label) })
+      create_entry(person, "Entry::Date", entry_date: date(date_entry.fetch(:date)), content: { "label" => date_entry.fetch(:label) })
     end
-    create_gift_list(friend, persona[:gift_list]) if persona[:gift_list]
+    create_gift_list(person, persona[:gift_list]) if persona[:gift_list]
     persona.fetch(:interactions).each do |interaction|
-      friend.interactions.create!(
+      person.interactions.create!(
         occurred_on: date(interaction.fetch(:date)),
         contact_method: interaction.fetch(:method),
         note: interaction.fetch(:note)
       )
     end
-    seed_interaction_history(friend, persona.fetch(:interaction_history, {}))
-    friend.create_keep_in_touch_setting!(cadence: persona.fetch(:cadence), enabled_on: date("2026-01-01")) if persona[:cadence]
+    seed_interaction_history(person, persona.fetch(:interaction_history, {}))
+    person.create_keep_in_touch_setting!(cadence: persona.fetch(:cadence), enabled_on: date("2026-01-01")) if persona[:cadence]
   end
 
-  def create_contact_entry(friend, type, attributes)
-    create_entry(friend, type, content: attributes.transform_keys(&:to_s))
+  def create_contact_entry(person, type, attributes)
+    create_entry(person, type, content: attributes.transform_keys(&:to_s))
   end
 
-  def create_gift_list(friend, gift_list)
+  def create_gift_list(person, gift_list)
     items = gift_list.fetch(:items).each_with_index.map do |text, index|
       { "id" => "demo-gift-#{index + 1}", "text" => text, "checked" => false }
     end
-    create_entry(friend, "Entry::GiftList", content: { "title" => gift_list.fetch(:title), "items" => items })
+    create_entry(person, "Entry::GiftList", content: { "title" => gift_list.fetch(:title), "items" => items })
   end
 
-  def seed_interaction_history(friend, history)
+  def seed_interaction_history(person, history)
     return if history.blank?
 
     history.fetch(:count).times do |index|
-      friend.interactions.create!(
+      person.interactions.create!(
         occurred_on: date(history.fetch(:start_date)) - (index * 14).days,
         contact_method: history.fetch(:methods).fetch(index % history.fetch(:methods).length),
         note: history.fetch(:notes).fetch(index % history.fetch(:notes).length)
@@ -388,8 +388,8 @@ class DemoPersonaSeedData
     end
   end
 
-  def create_entry(friend, type, entry_date: nil, content: {})
-    friend.entries.create!(type:, entry_date:, content:)
+  def create_entry(person, type, entry_date: nil, content: {})
+    person.entries.create!(type:, entry_date:, content:)
   end
 
   def date(value)

@@ -4,7 +4,7 @@ class ReminderDeliveryEmailJobTest < ActiveJob::TestCase
   test "retries a failed transport attempt with only the stable ledger identifier" do
     user = users(:one)
     local_date = user.local_date
-    setting = friends(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: local_date - 7.days)
+    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: local_date - 7.days)
     delivery = ReminderDelivery.create!(
       user:, source: setting, channel: "email", reminder_on: local_date, occurrence_on: local_date
     )
