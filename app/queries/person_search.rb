@@ -26,7 +26,7 @@ class PersonSearch
   end
 
   def initialize(user, query, sort: DEFAULT_SORT)
-    @people = user.people
+    @people = user.people.active
     @query = PersonNameNormalizer.call(query)
     @query_tokens = @query.split
     @sort = SORTS.key?(sort.to_s) ? sort.to_s : DEFAULT_SORT

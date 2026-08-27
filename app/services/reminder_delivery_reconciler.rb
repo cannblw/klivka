@@ -19,6 +19,7 @@ class ReminderDeliveryReconciler
       deliveries = batch.preload(:source).to_a
       sources = deliveries.filter_map(&:source)
       preload_entries(sources)
+      preload_people(sources)
       latest_interactions = latest_interactions_for(sources)
       canceled_ids = deliveries.filter_map do |delivery|
         delivery.id unless current?(delivery, latest_interactions:)
@@ -43,6 +44,7 @@ class ReminderDeliveryReconciler
     return false unless source
 
     preload_entries([ source ])
+    preload_people([ source ])
     current?(delivery, latest_interactions: latest_interactions_for([ source ]))
   end
 
@@ -63,7 +65,10 @@ class ReminderDeliveryReconciler
   end
 
   def source_current?(delivery, latest_interactions:)
-    case (source = delivery.source)
+    source = delivery.source
+    return false if source_person(source)&.archived?
+
+    case source
     when KeepInTouchSetting
       keep_in_touch_current?(source, delivery, latest_interaction_on: latest_interactions[source.person_id])
     when EntryReminder
@@ -99,7 +104,21 @@ class ReminderDeliveryReconciler
     reminders = sources.grep(EntryReminder)
     return if reminders.empty?
 
-    ActiveRecord::Associations::Preloader.new(records: reminders, associations: :entry).call
+    ActiveRecord::Associations::Preloader.new(records: reminders, associations: { entry: :person }).call
+  end
+
+  def preload_people(sources)
+    sources_with_people = sources.grep(KeepInTouchSetting) + sources.grep(Entry::Birthday)
+    return if sources_with_people.empty?
+
+    ActiveRecord::Associations::Preloader.new(records: sources_with_people, associations: :person).call
+  end
+
+  def source_person(source)
+    case source
+    when KeepInTouchSetting, Entry::Birthday then source.person
+    when EntryReminder then source.entry.person
+    end
   end
 
   def latest_interactions_for(sources)

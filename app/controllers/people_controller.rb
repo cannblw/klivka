@@ -4,7 +4,7 @@ class PeopleController < ApplicationController
     @view = params[:view] == "all" ? "all" : "grouped"
     @people = PersonSearch.call(Current.user, params[:query], sort: @sort)
     ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
-    @grouping_available = Current.user.people.where.not(category_id: nil).exists?
+    @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?
     @grouped_view = @grouping_available && @view == "grouped" && params[:query].blank?
     prepare_person_groups if @grouped_view
     @person = Person.new
@@ -22,7 +22,7 @@ class PeopleController < ApplicationController
   end
 
   def update
-    @person = Current.user.people.friendly.find(params[:id])
+    @person = Current.user.people.active.friendly.find(params[:id])
     prepare_return_navigation
 
     if @person.update(person_params)
@@ -41,13 +41,28 @@ class PeopleController < ApplicationController
     redirect_to root_path, notice: t(".deleted", name: person.name)
   end
 
+  def archive
+    person = Current.user.people.active.friendly.find(params[:id])
+    person.archive!
+    ReminderDeliveryReconciler.call(user: Current.user)
+
+    redirect_to root_path
+  end
+
+  def restore
+    person = Current.user.people.archived.friendly.find(params[:id])
+    person.restore!
+
+    redirect_to person_path(person)
+  end
+
   def create
     @person = Current.user.people.new(person_params)
 
     if @person.save
       redirect_to @person, notice: t(".created", name: @person.name)
     else
-      @people = Current.user.people.order(:name)
+      @people = Current.user.people.active.order(:name)
       @batch_creation = BatchPersonCreation.preview(user: Current.user, names: "")
       @batch_mode = false
       render :index, status: :unprocessable_entity

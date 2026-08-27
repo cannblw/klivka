@@ -10,6 +10,6 @@ class CategoryManagementComponent < ViewComponent::Base
   attr_reader :category
 
   def person_count
-    category.association(:people).loaded? ? category.people.size : category.people.count
+    category.association(:active_people).loaded? ? category.active_people.size : category.active_people.count
   end
 end

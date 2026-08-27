@@ -9,7 +9,7 @@ class EntriesController < ApplicationController
   end
 
   def create
-    @person = Current.user.people.friendly.find(params[:person_id])
+    @person = Current.user.people.active.friendly.find(params[:person_id])
     klass = Entry.creatable_type(entry_params[:type])
 
     unless klass
@@ -64,7 +64,7 @@ class EntriesController < ApplicationController
   end
 
   def reorder
-    @person = Current.user.people.friendly.find(params[:person_id])
+    @person = Current.user.people.active.friendly.find(params[:person_id])
     requested_ids = params.expect(entry_ids: []).map(&:to_i)
     entries = @person.entries.index_by(&:id)
 
@@ -89,7 +89,7 @@ class EntriesController < ApplicationController
   private
 
   def set_person
-    @person = Current.user.people.friendly.find(params[:person_id])
+    @person = Current.user.people.active.friendly.find(params[:person_id])
   end
 
   def set_entry

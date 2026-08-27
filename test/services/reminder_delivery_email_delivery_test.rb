@@ -74,6 +74,19 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
     assert_empty transport.messages
   end
 
+  test "cancels a claimed delivery when its person was archived" do
+    person = people(:ada)
+    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    delivery = create_delivery(setting)
+    person.archive!
+    transport = RecordingTransport.new
+
+    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
+
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+    assert_empty transport.messages
+  end
+
   test "does not overwrite a newer outcome after its claim expires" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
     delivery = create_delivery(setting)

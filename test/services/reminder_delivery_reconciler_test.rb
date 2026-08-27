@@ -62,6 +62,25 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
   end
 
+  test "cancels pending work for every reminder source belonging to an archived person" do
+    person = people(:ada)
+    setting = create_setting
+    keep_in_touch_delivery = create_delivery(setting)
+    entry = Entry::Date.create!(person:, entry_date: Date.new(2026, 9, 7))
+    reminder = entry.create_entry_reminder!(lead_value: 30, lead_unit: "days", recurrence: "one_time")
+    entry_delivery = create_delivery(reminder, channel: "email", occurrence_on: Date.new(2026, 9, 7))
+    birthday_delivery = create_delivery(
+      entries(:ada_birthday), reminder_on: Date.new(2026, 11, 10), occurrence_on: Date.new(2026, 12, 10)
+    )
+    person.archive!
+
+    assert_equal 3, reconcile
+
+    [ keep_in_touch_delivery, entry_delivery, birthday_delivery ].each do |delivery|
+      assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+    end
+  end
+
   test "does not revoke a pending delivery while an email worker owns its claim" do
     setting = create_setting
     delivery = create_delivery(setting, channel: ReminderDelivery::EMAIL_CHANNEL)

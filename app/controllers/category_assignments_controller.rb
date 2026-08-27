@@ -1,6 +1,6 @@
 class CategoryAssignmentsController < ApplicationController
   def update
-    person = Current.user.people.friendly.find(params[:person_id])
+    person = Current.user.people.active.friendly.find(params[:person_id])
     category = Current.user.categories.find(assignment_params[:category_id]) if assignment_params[:category_id].present?
     person.update!(category: category)
 

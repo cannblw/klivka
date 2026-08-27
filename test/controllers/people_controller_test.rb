@@ -150,6 +150,16 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "main", { text: /Bob Ross/, count: 0 }
   end
 
+  test "index does not list archived people" do
+    people(:ada).archive!
+
+    get root_url
+
+    assert_response :success
+    assert_select "main", text: /Ada Lovelace/, count: 0
+    assert_select "main", /Grace Hopper/
+  end
+
   test "index searches the current user's people" do
     get root_url, params: { query: "ada" }
 
@@ -314,6 +324,51 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "Ada King", people(:ada).reload.name
     assert_redirected_to person_url(people(:ada))
+  end
+
+  test "update rejects an archived person" do
+    people(:ada).archive!
+
+    patch person_url(people(:ada)), params: { person: { name: "Ada King" } }
+
+    assert_response :not_found
+    assert_equal "Ada Lovelace", people(:ada).reload.name
+  end
+
+  test "archive preserves the person and cancels pending reminder work" do
+    person = people(:ada)
+    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    delivery = ReminderDelivery.create!(
+      user: users(:one), source: setting, channel: "in_app",
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
+    )
+
+    assert_no_difference "Person.count" do
+      patch archive_person_url(person)
+    end
+
+    assert_redirected_to root_url
+    assert_predicate person.reload, :archived?
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+  end
+
+  test "restore makes an archived person active again" do
+    person = people(:ada)
+    person.archive!
+
+    patch restore_person_url(person)
+
+    assert_redirected_to person_url(person)
+    assert_not_predicate person.reload, :archived?
+  end
+
+  test "archive and restore reject another user's person" do
+    patch archive_person_url(people(:bob))
+    assert_response :not_found
+
+    people(:bob).archive!
+    patch restore_person_url(people(:bob))
+    assert_response :not_found
   end
 
   test "update with blank name re-renders with error" do

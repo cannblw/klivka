@@ -7,6 +7,13 @@ class PersonSearchTest < ActiveSupport::TestCase
     assert_equal [ "Ada Lovelace", "Grace Hopper" ], PersonSearch.call(@user, "  ").map(&:name)
   end
 
+  test "excludes archived people from blank and matching searches" do
+    people(:ada).archive!
+
+    assert_equal [ "Grace Hopper" ], PersonSearch.call(@user, nil).map(&:name)
+    assert_empty PersonSearch.call(@user, "ada")
+  end
+
   test "supports each sort and direction for matching queries" do
     alice = Person.create!(user: @user, name: "Alice Contact")
     maria = Person.create!(user: @user, name: "Maria Contact")

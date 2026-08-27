@@ -77,6 +77,15 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-birthdays-empty='upcoming']"
   end
 
+  test "does not show birthdays belonging to archived people" do
+    people(:ada).archive!
+
+    get birthdays_url(month: 12)
+
+    assert_response :success
+    assert_select "main", text: /Ada Lovelace/, count: 0
+  end
+
   test "birthday cards link to person profiles and show the age reached that year" do
     travel_to Date.new(2026, 12, 31) do
       get birthdays_url(month: 12)

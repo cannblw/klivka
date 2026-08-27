@@ -200,6 +200,23 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_empty other_setting.reminder_deliveries
   end
 
+  test "does not schedule any reminder source belonging to an archived person" do
+    user = users(:one)
+    person = user.people.create!(name: "Archived Person")
+    setting = create_setting(person, enabled_on: Date.new(2026, 8, 1))
+    date_reminder = create_date_reminder(
+      person:, entry_date: Date.new(2026, 8, 8), lead_value: 0, recurrence: "one_time"
+    )
+    birthday = Entry::Birthday.create!(person:, entry_date: Date.new(1990, 8, 8))
+    person.archive!
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_empty setting.reminder_deliveries
+    assert_empty date_reminder.reminder_deliveries
+    assert_empty ReminderDelivery.where(source: birthday)
+  end
+
   test "records work only for enabled account channels" do
     user = users(:one)
     user.update!(reminder_in_app_enabled: false, reminder_email_enabled: true)
