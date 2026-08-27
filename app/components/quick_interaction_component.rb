@@ -1,8 +1,8 @@
 class QuickInteractionComponent < ViewComponent::Base
   DOM_ID = "quick-interaction-dialog"
 
-  def initialize(friend:, interaction:, time_zone:, open: false)
-    @friend = friend
+  def initialize(person:, interaction:, time_zone:, open: false)
+    @person = person
     @interaction = interaction
     @time_zone = time_zone
     @open = open
@@ -10,7 +10,7 @@ class QuickInteractionComponent < ViewComponent::Base
 
   private
 
-  attr_reader :friend, :interaction, :time_zone
+  attr_reader :person, :interaction, :time_zone
 
   def open?
     @open

@@ -15,7 +15,7 @@
   <a href="#database-support">Database support</a>
 </p>
 
-The core principle: **adding a friend requires a name. Nothing else.** Klivka helps you keep a small, intentional record of friends, family, and meaningful relationships. Add useful context as optional entries, then record interactions when you reach out.
+The core principle: **adding a person requires a name. Nothing else.** Klivka helps you keep a small, intentional record of family, friends, and other meaningful relationships. Add useful context as optional entries, then record interactions when you reach out.
 
 Klivka is designed for private, personal use. Its progressive interface keeps the essentials close while giving each relationship room to grow over time.
 

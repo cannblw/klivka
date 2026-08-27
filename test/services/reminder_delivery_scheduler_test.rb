@@ -2,7 +2,7 @@ require "test_helper"
 
 class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "records each enabled channel for a due keep-in-touch reminder" do
-    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
 
     assert_equal 2, schedule(users(:one), at: Time.utc(2026, 8, 8, 12))
 
@@ -12,7 +12,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   end
 
   test "records late keep-in-touch work against its original due date" do
-    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
 
     schedule(users(:one), at: Time.utc(2026, 8, 10, 12))
 
@@ -22,7 +22,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "records only the latest yearly occurrence missed since the previous successful scan" do
     user = users(:one)
     reminder = create_date_reminder(
-      friend: friends(:ada), entry_date: Date.new(2020, 9, 10), lead_value: 30, recurrence: "yearly"
+      person: people(:ada), entry_date: Date.new(2020, 9, 10), lead_value: 30, recurrence: "yearly"
     )
     mark_scanned(user, through: Date.new(2023, 1, 1))
 
@@ -35,7 +35,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "records a missed one-time entry reminder" do
     user = users(:one)
     reminder = create_date_reminder(
-      friend: friends(:ada), entry_date: Date.new(2026, 9, 10), lead_value: 30, recurrence: "one_time"
+      person: people(:ada), entry_date: Date.new(2026, 9, 10), lead_value: 30, recurrence: "one_time"
     )
     mark_scanned(user, through: Date.new(2026, 8, 10))
 
@@ -49,7 +49,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     user = users(:one)
     schedule(user, at: Time.utc(2026, 8, 12, 8))
     reminder = create_date_reminder(
-      friend: friends(:ada), entry_date: Date.new(2026, 8, 12), lead_value: 0, recurrence: "one_time"
+      person: people(:ada), entry_date: Date.new(2026, 8, 12), lead_value: 0, recurrence: "one_time"
     )
 
     assert_equal 2, schedule(user, at: Time.utc(2026, 8, 12, 16))
@@ -59,7 +59,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "uses the account time zone for its authoritative scan date" do
     user = users(:two)
     reminder = create_date_reminder(
-      friend: friends(:bob), entry_date: Date.new(2026, 8, 11), lead_value: 0, recurrence: "one_time"
+      person: people(:bob), entry_date: Date.new(2026, 8, 11), lead_value: 0, recurrence: "one_time"
     )
 
     schedule(user, at: Time.utc(2026, 8, 11, 22, 30))
@@ -72,7 +72,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     user = users(:one)
     user.update!(time_zone: "Europe/Madrid", reminders_scanned_through_on: Date.new(2026, 3, 28))
     reminder = create_date_reminder(
-      friend: friends(:ada), entry_date: Date.new(2026, 3, 30), lead_value: 0, recurrence: "one_time"
+      person: people(:ada), entry_date: Date.new(2026, 3, 30), lead_value: 0, recurrence: "one_time"
     )
 
     schedule(user, at: Time.utc(2026, 3, 29, 22, 30))
@@ -84,7 +84,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "schedules a leap-day yearly reminder on its non-leap-year occurrence" do
     user = users(:one)
     user.update!(reminders_scanned_through_on: Date.new(2027, 2, 26))
-    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2024, 2, 29))
+    entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2024, 2, 29))
     reminder = entry.create_entry_reminder!(lead_value: 0, lead_unit: "days", recurrence: "yearly")
 
     schedule(user, at: Time.utc(2027, 2, 28, 12))
@@ -124,9 +124,9 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
   test "birthday reminders schedule from month and day when the birth year is unknown" do
     user = users(:one)
-    friend = user.friends.create!(name: "Yearless Birthday")
+    person = user.people.create!(name: "Yearless Birthday")
     birthday = Entry::Birthday.create!(
-      friend:, entry_date: Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday_year_known: false
+      person:, entry_date: Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, 3, 3), birthday_year_known: false
     )
     user.update!(
       birthday_reminder_lead_value: 1,
@@ -143,8 +143,8 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
   test "birthday scheduling observes leap-day birthdays on February 28" do
     user = users(:one)
-    friend = user.friends.create!(name: "Leap Day Friend")
-    birthday = Entry::Birthday.create!(friend:, entry_date: Date.new(2000, 2, 29))
+    person = user.people.create!(name: "Leap Day Person")
+    birthday = Entry::Birthday.create!(person:, entry_date: Date.new(2000, 2, 29))
     user.update!(
       birthday_reminder_lead_value: 0,
       birthday_reminder_lead_unit: "days",
@@ -158,10 +158,10 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_equal Date.new(2027, 2, 28), delivery.occurrence_on
   end
 
-  test "birthday scheduling keeps separate work for friends sharing a birthday" do
+  test "birthday scheduling keeps separate work for people sharing a birthday" do
     user = users(:one)
-    friend = user.friends.create!(name: "Same Birthday Friend")
-    birthday = Entry::Birthday.create!(friend:, entry_date: Date.new(1990, 12, 10))
+    person = user.people.create!(name: "Same Birthday Person")
+    birthday = Entry::Birthday.create!(person:, entry_date: Date.new(1990, 12, 10))
     user.update!(
       birthday_reminder_lead_value: 1,
       birthday_reminder_lead_unit: "days",
@@ -175,8 +175,8 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   end
 
   test "birthday scheduling only processes birthdays owned by the requested account" do
-    other_friend = users(:two).friends.create!(name: "Other Account Birthday")
-    other_birthday = Entry::Birthday.create!(friend: other_friend, entry_date: Date.new(1990, 12, 10))
+    other_person = users(:two).people.create!(name: "Other Account Birthday")
+    other_birthday = Entry::Birthday.create!(person: other_person, entry_date: Date.new(1990, 12, 10))
     user = users(:one)
     user.update!(
       birthday_reminder_lead_value: 1,
@@ -191,8 +191,8 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   end
 
   test "processes only reminders belonging to the requested account" do
-    other_setting = create_setting(friends(:bob), enabled_on: Date.new(2026, 8, 1))
-    own_setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    other_setting = create_setting(people(:bob), enabled_on: Date.new(2026, 8, 1))
+    own_setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
 
     schedule(users(:one), at: Time.utc(2026, 8, 8, 12))
 
@@ -203,7 +203,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "records work only for enabled account channels" do
     user = users(:one)
     user.update!(reminder_in_app_enabled: false, reminder_email_enabled: true)
-    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
 
     schedule(user, at: Time.utc(2026, 8, 8, 12))
 
@@ -212,7 +212,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
   test "records only in-app work for the shared demo account" do
     user = users(:one)
-    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
 
     with_demo_mode(user:) do
       assert_equal 1, schedule(user, at: Time.utc(2026, 8, 8, 12))
@@ -223,7 +223,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
   test "same-day rescans reuse existing ledger rows" do
     user = users(:one)
-    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
     at = Time.utc(2026, 8, 8, 12)
 
     assert_equal 2, schedule(user, at:)
@@ -236,7 +236,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "a valid reminder can become pending again after its channel is re-enabled" do
     user = users(:one)
     user.update!(reminder_email_enabled: false)
-    setting = create_setting(friends(:ada), enabled_on: Date.new(2026, 8, 1))
+    setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
     delivery = ReminderDelivery.create!(
       user:, source: setting, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 7),
@@ -256,7 +256,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "does not advance the checkpoint when scheduling fails" do
     user = users(:one)
     create_date_reminder(
-      friend: friends(:ada), entry_date: Date.new(2026, 8, 11), lead_value: 0, recurrence: "one_time"
+      person: people(:ada), entry_date: Date.new(2026, 8, 11), lead_value: 0, recurrence: "one_time"
     )
     mark_scanned(user, through: Date.new(2026, 8, 10))
     failing_scheduler = Class.new(ReminderDeliveryScheduler) do
@@ -286,10 +286,10 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   test "processes reminder sources across bounded batches" do
     user = users(:one)
     first_reminder = create_date_reminder(
-      friend: friends(:ada), entry_date: Date.new(2026, 8, 12), lead_value: 0, recurrence: "one_time"
+      person: people(:ada), entry_date: Date.new(2026, 8, 12), lead_value: 0, recurrence: "one_time"
     )
     second_reminder = create_date_reminder(
-      friend: friends(:grace), entry_date: Date.new(2026, 8, 12), lead_value: 0, recurrence: "one_time"
+      person: people(:grace), entry_date: Date.new(2026, 8, 12), lead_value: 0, recurrence: "one_time"
     )
     scheduler_class = Class.new(ReminderDeliveryScheduler) do
       private
@@ -312,12 +312,12 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     ReminderDeliveryScheduler.call(user:, at:)
   end
 
-  def create_setting(friend, enabled_on:)
-    friend.create_keep_in_touch_setting!(cadence: "weekly", enabled_on:)
+  def create_setting(person, enabled_on:)
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on:)
   end
 
-  def create_date_reminder(friend:, entry_date:, lead_value:, recurrence:)
-    entry = Entry::Date.create!(friend:, entry_date:)
+  def create_date_reminder(person:, entry_date:, lead_value:, recurrence:)
+    entry = Entry::Date.create!(person:, entry_date:)
     entry.create_entry_reminder!(lead_value:, lead_unit: "days", recurrence:)
   end
 

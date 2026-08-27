@@ -1,0 +1,28 @@
+<div data-controller="person-autocomplete"
+     data-person-autocomplete-url-value="<%= person_suggestions_categories_path(category_id: category.id) %>"
+     data-person-autocomplete-delay-value="<%= Rails.application.config.x.person_search_debounce_milliseconds %>"
+     data-person-autocomplete-no-results-value="<%= t("categories.organizer.no_results") %>"
+     data-person-autocomplete-current-category-value="<%= t("categories.organizer.current_category", category: "__CATEGORY__") %>"
+     data-person-autocomplete-results-value="<%= t("categories.organizer.results", count: "__COUNT__") %>"
+     data-person-autocomplete-loading-value="<%= t("categories.organizer.loading") %>"
+     data-person-autocomplete-error-value="<%= t("categories.organizer.error") %>"
+     class="relative max-w-xl">
+  <label for="category-<%= category.id %>-person-search" class="block text-sm font-medium text-stone-700 dark:text-stone-200">
+    <%= t("categories.organizer.add_person") %>
+  </label>
+  <input id="category-<%= category.id %>-person-search" type="search" autocomplete="off"
+         role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="<%= listbox_id %>"
+         placeholder="<%= t("categories.organizer.search_placeholder") %>"
+         data-person-autocomplete-target="input"
+         data-action="input->person-autocomplete#search keydown->person-autocomplete#keydown blur->person-autocomplete#blur"
+         class="mt-1 <%= FormStyling::INPUT_CLASSES %> w-full">
+  <ul id="<%= listbox_id %>" role="listbox" data-person-autocomplete-target="list"
+      class="absolute z-30 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-stone-200 bg-stone-50 p-1 shadow-lg dark:border-stone-700 dark:bg-stone-800"></ul>
+  <p data-person-autocomplete-target="status" class="sr-only" aria-live="polite"></p>
+
+  <%= form_with url: categories_path, method: :patch, scope: :category_assignment,
+        data: { person_autocomplete_target: "form" }, class: "hidden" do |form| %>
+    <%= form.hidden_field :category_id, value: category.id %>
+    <%= form.hidden_field :return_to, value: "categories" %>
+  <% end %>
+</div>

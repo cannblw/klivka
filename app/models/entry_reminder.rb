@@ -45,7 +45,7 @@ class EntryReminder < ApplicationRecord
   end
 
   def self.default_attributes_for(entry)
-    account = entry&.friend&.user
+    account = entry&.person&.user
 
     {
       lead_value: account&.default_reminder_lead_value,

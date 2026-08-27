@@ -7,20 +7,20 @@ class DemoPersonaSeedDataTest < ActiveSupport::TestCase
   end
 
   test "creates fifteen detailed fictional personas" do
-    assert_equal DemoPersonaSeedData::FRIEND_COUNT, @user.friends.count
-    assert_equal DemoPersonaSeedData::PERSONAS.map { |persona| persona.fetch(:name) }, @user.friends.order(:id).pluck(:name)
-    assert_operator @user.friends.joins(:entries).where(entries: { type: "Entry::Note" }).count, :>=, 15
-    assert_equal 15, @user.friends.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
-    assert_equal 15, @user.friends.joins(:entries).where(entries: { type: "Entry::FirstMet" }).count
-    assert_equal 15, @user.friends.joins(:entries).where(entries: { type: "Entry::GiftList" }).count
-    assert_equal 102, @user.friends.joins(:interactions).count
-    assert_equal 22, @user.friends.find_by!(name: "Marcus Chen").interactions.count
-    assert_equal 30, @user.friends.find_by!(name: "Sofía Álvarez").interactions.count
-    assert_equal 26, @user.friends.find_by!(name: "Claire Dubois").interactions.count
+    assert_equal DemoPersonaSeedData::PERSON_COUNT, @user.people.count
+    assert_equal DemoPersonaSeedData::PERSONAS.map { |persona| persona.fetch(:name) }, @user.people.order(:id).pluck(:name)
+    assert_operator @user.people.joins(:entries).where(entries: { type: "Entry::Note" }).count, :>=, 15
+    assert_equal 15, @user.people.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
+    assert_equal 15, @user.people.joins(:entries).where(entries: { type: "Entry::FirstMet" }).count
+    assert_equal 15, @user.people.joins(:entries).where(entries: { type: "Entry::GiftList" }).count
+    assert_equal 102, @user.people.joins(:interactions).count
+    assert_equal 22, @user.people.find_by!(name: "Marcus Chen").interactions.count
+    assert_equal 30, @user.people.find_by!(name: "Sofía Álvarez").interactions.count
+    assert_equal 26, @user.people.find_by!(name: "Claire Dubois").interactions.count
   end
 
   test "preserves the persona stories and gift ideas as structured entries" do
-    anna = @user.friends.find_by!(name: "Anna Roberts")
+    anna = @user.people.find_by!(name: "Anna Roberts")
 
     assert_includes anna.entries.find_by!(type: "Entry::Note").content.fetch("text"), "Mechanical engineer"
     assert_equal Date.new(2020, 9, 14), anna.entries.find_by!(type: "Entry::FirstMet").entry_date
@@ -31,9 +31,9 @@ class DemoPersonaSeedDataTest < ActiveSupport::TestCase
   end
 
   test "uses reserved fictional contact details" do
-    @user.friends.includes(:entries).each do |friend|
-      email = friend.entries.find { |entry| entry.type == "Entry::Email" }
-      phone = friend.entries.find { |entry| entry.type == "Entry::Phone" }
+    @user.people.includes(:entries).each do |person|
+      email = person.entries.find { |entry| entry.type == "Entry::Email" }
+      phone = person.entries.find { |entry| entry.type == "Entry::Phone" }
 
       assert_match(/@example\.com\z/, email.email)
       assert_match(/\A0/, phone.content.fetch("number"))
@@ -41,21 +41,21 @@ class DemoPersonaSeedDataTest < ActiveSupport::TestCase
   end
 
   test "includes accented Spanish and Polish persona names" do
-    assert @user.friends.exists?(name: "Sofía Álvarez")
-    assert @user.friends.exists?(name: "Tomás Hernández")
-    assert @user.friends.exists?(name: "Elżbieta Wójcik")
-    assert @user.friends.exists?(name: "Łukasz Zieliński")
+    assert @user.people.exists?(name: "Sofía Álvarez")
+    assert @user.people.exists?(name: "Tomás Hernández")
+    assert @user.people.exists?(name: "Elżbieta Wójcik")
+    assert @user.people.exists?(name: "Łukasz Zieliński")
   end
 
   test "replaces only the demo user's existing records" do
     other_user = User.create!(email_address: "other-demo-personas@example.com", password: "password")
-    other_friend = other_user.friends.create!(name: "Unaffected friend")
-    @user.friends.create!(name: "Visitor addition")
+    other_person = other_user.people.create!(name: "Unaffected person")
+    @user.people.create!(name: "Visitor addition")
 
     DemoPersonaSeedData.call(user: @user)
 
-    assert_equal DemoPersonaSeedData::FRIEND_COUNT, @user.friends.count
-    assert_not @user.friends.exists?(name: "Visitor addition")
-    assert_equal other_friend, other_user.friends.find_by(name: "Unaffected friend")
+    assert_equal DemoPersonaSeedData::PERSON_COUNT, @user.people.count
+    assert_not @user.people.exists?(name: "Visitor addition")
+    assert_equal other_person, other_user.people.find_by(name: "Unaffected person")
   end
 end

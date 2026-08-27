@@ -14,7 +14,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
   test "cancels pending work after contact moves the keep-in-touch suggestion" do
     setting = create_setting
     delivery = create_delivery(setting)
-    setting.friend.interactions.create!(occurred_on: Date.new(2026, 8, 8))
+    setting.person.interactions.create!(occurred_on: Date.new(2026, 8, 8))
 
     assert_equal 1, reconcile
 
@@ -89,7 +89,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
   end
 
   test "cancels pending work when an entry reminder changes or is deleted" do
-    entry = Entry::Date.create!(friend: friends(:ada), entry_date: Date.new(2026, 9, 7))
+    entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2026, 9, 7))
     reminder = entry.create_entry_reminder!(lead_value: 30, lead_unit: "days", recurrence: "one_time")
     changed_delivery = create_delivery(reminder, occurrence_on: Date.new(2026, 9, 7))
     reminder.update!(lead_value: 29)
@@ -172,7 +172,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
   private
 
   def create_setting
-    friends(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
   end
 
   def create_delivery(source, channel: "in_app", reminder_on: Date.new(2026, 8, 8), occurrence_on: reminder_on)

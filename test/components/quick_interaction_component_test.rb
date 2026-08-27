@@ -2,12 +2,12 @@ require "test_helper"
 
 class QuickInteractionComponentTest < ViewComponent::TestCase
   test "opens an unsaved interaction form" do
-    friend = friends(:ada)
-    interaction = friend.interactions.new(occurred_on: Date.current)
+    person = people(:ada)
+    interaction = person.interactions.new(occurred_on: Date.current)
 
-    render_inline QuickInteractionComponent.new(friend: friend, interaction: interaction, time_zone: "Europe/Madrid")
+    render_inline QuickInteractionComponent.new(person: person, interaction: interaction, time_zone: "Europe/Madrid")
 
-    path = Rails.application.routes.url_helpers.friend_interactions_path(friend)
+    path = Rails.application.routes.url_helpers.person_interactions_path(person)
     assert_selector "button[type='button'][aria-controls='#{QuickInteractionComponent::DOM_ID}']", text: "Contacted today"
     assert_selector "[data-controller~='dialog'][data-dialog-open-value='false'][data-action*='quick-interaction:open@window->dialog#open'][data-action*='quick-interaction:open@window->interaction-date#setCurrentDate'] dialog##{QuickInteractionComponent::DOM_ID}"
     assert_selector "[data-interaction-date-time-zone-value='Europe/Madrid']"
@@ -21,7 +21,7 @@ class QuickInteractionComponentTest < ViewComponent::TestCase
 
   test "reopens an invalid interaction with errors and submitted details" do
     interaction = Interaction.new(
-      friend: friends(:ada),
+      person: people(:ada),
       occurred_on: Date.tomorrow,
       contact_method: "call",
       note: "Keep this note"
@@ -29,7 +29,7 @@ class QuickInteractionComponentTest < ViewComponent::TestCase
     interaction.validate
 
     render_inline QuickInteractionComponent.new(
-      friend: friends(:ada),
+      person: people(:ada),
       interaction: interaction,
       time_zone: "Europe/Madrid",
       open: true

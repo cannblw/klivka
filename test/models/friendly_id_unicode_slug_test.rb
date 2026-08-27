@@ -21,8 +21,8 @@ class FriendlyIdUnicodeSlugTest < ActiveSupport::TestCase
 
   CASES.each do |description, input, expected|
     test "normalize: #{description}" do
-      friend = Friend.new
-      assert_equal expected, friend.normalize_friendly_id(input)
+      person = Person.new
+      assert_equal expected, person.normalize_friendly_id(input)
     end
   end
 end

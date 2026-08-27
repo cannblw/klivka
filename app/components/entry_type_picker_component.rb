@@ -10,15 +10,15 @@ class EntryTypePickerComponent < ViewComponent::Base
     "Entry::GiftList" => "card_giftcard"
   }.freeze
 
-  def initialize(friend:, types: Entry::CREATABLE_TYPES, searchable: false)
-    @friend = friend
+  def initialize(person:, types: Entry::CREATABLE_TYPES, searchable: false)
+    @person = person
     @types = types
     @searchable = searchable
   end
 
   private
 
-  attr_reader :friend, :types
+  attr_reader :person, :types
 
   def searchable?
     @searchable
@@ -45,6 +45,6 @@ class EntryTypePickerComponent < ViewComponent::Base
   end
 
   def existing_singleton_types
-    @existing_singleton_types ||= friend.entries.where(type: Entry::SINGLETON_TYPES).distinct.pluck(:type)
+    @existing_singleton_types ||= person.entries.where(type: Entry::SINGLETON_TYPES).distinct.pluck(:type)
   end
 end

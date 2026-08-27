@@ -8,7 +8,7 @@ class DemoModeTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_equal demo_user, Session.order(:created_at).last.user
       assert_equal DemoMode::DEMO_SESSION_USER_AGENT, Session.order(:created_at).last.user_agent
-      assert_select "main", /Friends/
+      assert_select "main", /People/
     end
   end
 

@@ -7,19 +7,19 @@ class DemoSeedDataTest < ActiveSupport::TestCase
     assert_predicate user, :persisted?
     assert_equal "demo-seed@example.com", user.email_address
     assert user.password_digest.present?
-    assert_equal DemoPersonaSeedData::FRIEND_COUNT, user.friends.count
+    assert_equal DemoPersonaSeedData::PERSON_COUNT, user.people.count
     assert_equal DemoState::SHARED_KEY, DemoState.current.key
   end
 
   test "does not replace existing demo data during a subsequent seed" do
     user = DemoSeedData.call(email_address: "existing-demo-seed@example.com")
-    user.friends.create!(name: "Visitor addition")
+    user.people.create!(name: "Visitor addition")
 
     reseeded_user = DemoSeedData.call(email_address: user.email_address)
 
     assert_equal user, reseeded_user
-    assert_equal DemoPersonaSeedData::FRIEND_COUNT + 1, reseeded_user.friends.count
-    assert reseeded_user.friends.exists?(name: "Visitor addition")
+    assert_equal DemoPersonaSeedData::PERSON_COUNT + 1, reseeded_user.people.count
+    assert reseeded_user.people.exists?(name: "Visitor addition")
   end
 
   test "restores sample data when the existing demo account is empty" do
@@ -28,7 +28,7 @@ class DemoSeedDataTest < ActiveSupport::TestCase
     seeded_user = DemoSeedData.call(email_address: user.email_address)
 
     assert_equal user, seeded_user
-    assert_equal DemoPersonaSeedData::FRIEND_COUNT, seeded_user.friends.count
+    assert_equal DemoPersonaSeedData::PERSON_COUNT, seeded_user.people.count
   end
 
   test "does not leave a new demo account behind when sample data cannot be created" do

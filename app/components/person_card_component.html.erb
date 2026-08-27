@@ -1,0 +1,9 @@
+<%= link_to person, data: { turbo_frame: "_top" }, class: "block rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm transition hover:shadow-md dark:border-stone-700 dark:bg-stone-800 dark:hover:shadow-lg dark:hover:shadow-stone-900/30" do %>
+  <div class="flex aspect-square items-center justify-center rounded-lg bg-amber-100 text-4xl font-semibold text-amber-700 dark:bg-amber-800 dark:text-amber-200">
+    <%= person.initials %>
+  </div>
+  <p class="mt-3 truncate text-center font-medium"><%= person.name %></p>
+  <% if show_category? %>
+    <p class="mt-1 truncate text-center text-xs text-stone-500 dark:text-stone-400"><%= person.category.name %></p>
+  <% end %>
+<% end %>

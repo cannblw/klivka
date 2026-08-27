@@ -102,12 +102,12 @@
         ) %>
 
     <%= render ConfirmDialogComponent.new(
-          id: "delete-friend-dialog",
-          title: t("friends.delete_confirm_title"),
-          body: t("friends.delete_confirm_body"),
-          confirm_label: t("friends.show.delete"),
-          cancel_label: t("friends.rename.cancel"),
-          confirm_link_id: "delete-friend-confirm-link",
+          id: "delete-person-dialog",
+          title: t("people.delete_confirm_title"),
+          body: t("people.delete_confirm_body"),
+          confirm_label: t("people.show.delete"),
+          cancel_label: t("people.rename.cancel"),
+          confirm_link_id: "delete-person-confirm-link",
           turbo_method: :delete
         ) %>
   </body>

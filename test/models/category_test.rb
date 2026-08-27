@@ -70,12 +70,12 @@ class CategoryTest < ActiveSupport::TestCase
     end
   end
 
-  test "deleting a category leaves its friends uncategorized" do
-    friend = users(:one).friends.create!(name: "Katherine Johnson", category: categories(:family))
+  test "deleting a category leaves its people uncategorized" do
+    person = users(:one).people.create!(name: "Katherine Johnson", category: categories(:family))
 
     categories(:family).destroy!
 
-    assert_nil friend.reload.category
+    assert_nil person.reload.category
   end
 
   test "deleting a user deletes the user's categories" do

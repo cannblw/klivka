@@ -33,7 +33,7 @@ class ReminderDeliveryScheduler
       settings = batch.to_a
       latest_interactions = latest_interactions_for(settings)
       deliveries = settings.flat_map do |setting|
-        latest_interaction_on = latest_interactions[setting.friend_id]
+        latest_interaction_on = latest_interactions[setting.person_id]
         next [] unless setting.due?(on: through, latest_interaction_on:)
 
         reminder_on = setting.next_suggestion_on(latest_interaction_on:)
@@ -53,7 +53,7 @@ class ReminderDeliveryScheduler
   def schedule_birthday_reminders(during:)
     return 0 unless user.birthday_reminders_enabled?
 
-    process_in_batches(birthdays, preload: :friend) do |birthday|
+    process_in_batches(birthdays, preload: :person) do |birthday|
       birthday_reminder_dates_during(birthday, during:)
     end
   end
@@ -69,21 +69,21 @@ class ReminderDeliveryScheduler
   end
 
   def keep_in_touch_settings
-    KeepInTouchSetting.joins(:friend).where(friends: { user_id: user.id }).where.not(enabled_on: nil)
+    KeepInTouchSetting.joins(:person).where(people: { user_id: user.id }).where.not(enabled_on: nil)
   end
 
   def entry_reminders
-    EntryReminder.joins(entry: :friend)
-      .where(friends: { user_id: user.id })
+    EntryReminder.joins(entry: :person)
+      .where(people: { user_id: user.id })
       .where.not(entries: { type: "Entry::Birthday" })
   end
 
   def birthdays
-    Entry::Birthday.joins(:friend).where(friends: { user_id: user.id })
+    Entry::Birthday.joins(:person).where(people: { user_id: user.id })
   end
 
   def latest_interactions_for(settings)
-    Interaction.where(friend_id: settings.map(&:friend_id)).group(:friend_id).maximum(:occurred_on)
+    Interaction.where(person_id: settings.map(&:person_id)).group(:person_id).maximum(:occurred_on)
   end
 
   def reminder_dates_during(reminder, during:)

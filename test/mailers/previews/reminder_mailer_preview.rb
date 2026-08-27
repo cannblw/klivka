@@ -46,22 +46,22 @@ class ReminderMailerPreview < ActionMailer::Preview
     user
   end
 
-  def preview_friend
-    @preview_friend ||= preview_user.friends.order(:id).first!
+  def preview_person
+    @preview_person ||= preview_user.people.order(:id).first!
   end
 
   def keep_in_touch_source
-    KeepInTouchSetting.new(friend: preview_friend, cadence: KeepInTouchSetting::DEFAULT_CADENCE, enabled_on: Date.current)
+    KeepInTouchSetting.new(person: preview_person, cadence: KeepInTouchSetting::DEFAULT_CADENCE, enabled_on: Date.current)
   end
 
   def birthday_source
-    birthday = Entry::Birthday.new(friend: preview_friend, entry_date: Date.new(1990, 9, 14))
+    birthday = Entry::Birthday.new(person: preview_person, entry_date: Date.new(1990, 9, 14))
     EntryReminder.new(entry: birthday)
   end
 
   def significant_date_source
     entry = Entry::Date.new(
-      friend: preview_friend,
+      person: preview_person,
       entry_date: Date.current + 14.days,
       content: { "label" => "A date worth remembering" }
     )

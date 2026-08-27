@@ -20,7 +20,7 @@
 #
 class Category < ApplicationRecord
   belongs_to :user
-  has_many :friends, dependent: :nullify
+  has_many :people, dependent: :nullify
 
   before_validation :normalize_name
 

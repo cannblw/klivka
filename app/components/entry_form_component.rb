@@ -1,14 +1,14 @@
 class EntryFormComponent < ViewComponent::Base
   include FormStyling
 
-  def initialize(entry:, friend:)
+  def initialize(entry:, person:)
     @entry = entry
-    @friend = friend
+    @person = person
   end
 
   private
 
-  attr_reader :entry, :friend
+  attr_reader :entry, :person
 
   def entry_supports_reminders?
     EntryReminder.eligible_entry?(entry)

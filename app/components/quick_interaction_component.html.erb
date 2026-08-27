@@ -15,10 +15,10 @@
           aria-labelledby="quick-interaction-heading"
           class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
     <div class="p-6">
-      <h2 id="quick-interaction-heading" class="text-lg font-semibold dark:text-stone-100"><%= t("interactions.follow_up.heading", name: friend.name) %></h2>
+      <h2 id="quick-interaction-heading" class="text-lg font-semibold dark:text-stone-100"><%= t("interactions.follow_up.heading", name: person.name) %></h2>
       <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.follow_up.hint") %></p>
 
-      <%= form_with model: [ friend, interaction ],
+      <%= form_with model: [ person, interaction ],
             data: { interaction_date_target: "form", action: "submit->interaction-date#submit" },
             class: "mt-4 space-y-4" do |form| %>
         <%= hidden_field_tag :context, "quick_log" %>

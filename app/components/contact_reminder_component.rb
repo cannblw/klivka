@@ -1,6 +1,6 @@
 class ContactReminderComponent < ViewComponent::Base
-  def initialize(friend:, setting:, **options)
-    @friend = friend
+  def initialize(person:, setting:, **options)
+    @person = person
     @setting = setting
     @extra_classes = options.delete(:class)
     @options = options
@@ -8,7 +8,7 @@ class ContactReminderComponent < ViewComponent::Base
 
   private
 
-  attr_reader :friend, :setting, :options
+  attr_reader :person, :setting, :options
 
   def classes
     [
@@ -46,7 +46,7 @@ class ContactReminderComponent < ViewComponent::Base
   end
 
   def activation_form_action
-    setting ? enable_friend_keep_in_touch_setting_path(friend) : friend_keep_in_touch_setting_path(friend)
+    setting ? enable_person_keep_in_touch_setting_path(person) : person_keep_in_touch_setting_path(person)
   end
 
   def activation_form_method

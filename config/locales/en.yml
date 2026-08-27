@@ -12,7 +12,7 @@ en:
 
   activerecord:
     attributes:
-      friend:
+      person:
         name: "Name"
       user:
         email_address: "Email address"
@@ -30,7 +30,7 @@ en:
       entry/date:
         label: "Label"
       entry/first_met:
-        friend_id: "First met"
+        person_id: "First met"
       entry_reminder:
         lead_value: "Reminder amount"
         lead_unit: "Reminder unit"
@@ -47,12 +47,12 @@ en:
       models:
         entry/birthday:
           attributes:
-            friend_id:
-              one_birthday_per_friend: "already has a birthday"
+            person_id:
+              one_birthday_per_person: "already has a birthday"
         entry/first_met:
           attributes:
-            friend_id:
-              one_first_met_per_friend: "already has a first-meet date"
+            person_id:
+              one_first_met_per_person: "already has a first-meet date"
         entry/gift_list:
           attributes:
             items:
@@ -366,7 +366,7 @@ en:
       empty_upcoming_title: "No more birthdays this year"
       empty_upcoming_hint: "Earlier birthdays are still available below."
       empty_all_title: "No birthdays saved yet"
-      empty_all_hint: "Birthdays appear here when you add them to friend profiles."
+      empty_all_hint: "Birthdays appear here when you add them to people's profiles."
 
   settings:
     show:
@@ -431,35 +431,35 @@ en:
     delete:
       title: "Delete category?"
       body:
-        one: "One friend will become uncategorized. The friend and their information will not be deleted."
-        other: "%{count} friends will become uncategorized. The friends and their information will not be deleted."
+        one: "One person will become uncategorized. Their information will not be deleted."
+        other: "%{count} people will become uncategorized. Their information will not be deleted."
       confirm: "Delete category"
     destroy:
       deleted:
-        one: "%{name} deleted. One friend is now uncategorized."
-        other: "%{name} deleted. %{count} friends are now uncategorized."
-    friend_count:
-      one: "1 friend"
-      other: "%{count} friends"
-    friend_count_parenthetical:
-      one: "(1 friend)"
-      other: "(%{count} friends)"
+        one: "%{name} deleted. One person is now uncategorized."
+        other: "%{name} deleted. %{count} people are now uncategorized."
+    person_count:
+      one: "1 person"
+      other: "%{count} people"
+    person_count_parenthetical:
+      one: "(1 person)"
+      other: "(%{count} people)"
     organizer:
-      add_friend: "Add or move a friend"
+      add_person: "Add or move a person"
       current_category: "Currently in %{category}"
-      empty: "No friends in this category yet."
-      error: "Friends could not be loaded. Try again."
-      friends_in: "Friends in %{category}"
-      loading: "Loading matching friends"
-      no_results: "No matching friends"
+      empty: "No people in this category yet."
+      error: "People could not be loaded. Try again."
+      people_in: "People in %{category}"
+      loading: "Loading matching people"
+      no_results: "No matching people"
       remove: "Move to Uncategorized"
-      results: "%{count} matching friends available"
-      search_placeholder: "Search friends"
+      results: "%{count} matching people available"
+      search_placeholder: "Search people"
     index:
-      back: "← Friends"
+      back: "← People"
       title: "Categories"
       heading: "Categories"
-      description: "Use optional categories to organize friends in the way that feels useful to you."
+      description: "Use optional categories to organize people in the way that feels useful to you."
       new:
         heading: "Create a category"
         description: "A category can be something like Family, Friends, or Neighbors."
@@ -469,7 +469,7 @@ en:
         heading: "Uncategorized"
       empty:
         heading: "No categories yet"
-        description: "Create one whenever a simple group would make your friends easier to find."
+        description: "Create one whenever a simple group would make people easier to find."
     update:
       updated: "%{name} saved."
 
@@ -477,96 +477,90 @@ en:
     update:
       updated: "%{name}'s category updated."
 
-  friends:
+  people:
     category:
       cancel: "Cancel"
       edit: "Change category"
-      label: "Friend category"
+      label: "Category for this person"
       save: "Save"
       uncategorized: "Uncategorized"
       value: "Category: %{category}"
     index:
-      title: "Friends"
-      heading: "Friends"
-      add_friend: "Add friend"
+      title: "People"
+      heading: "People"
+      add_person: "Add someone"
       import_contacts: "Import contacts"
-      search_label: "Search friends"
-      search_placeholder: "Search friends..."
-      sort_label: "Sort friends"
+      search_label: "Search people"
+      search_placeholder: "Search people..."
+      sort_label: "Sort people"
       sort_options:
         name: "Name"
         recently_added: "Recently added"
         recently_updated: "Recently updated"
       uncategorized: "Uncategorized"
       view_toggle:
-        label: "Friend view"
+        label: "People view"
         grouped: "Grouped"
-        all: "All friends"
-      no_results: "No friends matching '%{query}'"
+        all: "All people"
+      no_results: "No people matching '%{query}'"
       modal:
-        heading: "Add a friend"
+        heading: "Add someone"
         hint: "All you need is a name."
         name_placeholder: "Name"
-        add_multiple: "Add several friends"
+        add_multiple: "Add several people"
         cancel: "Cancel"
-        submit: "Add friend"
+        submit: "Add someone"
       batch_modal:
-        heading: "Add several friends"
+        heading: "Add several people"
         hint: "Put each name on a separate line. You can review everything before adding anyone."
         names_label: "Names"
         placeholder: "Marie Curie\nKatherine Johnson\nDorothy Vaughan"
         names_required: "Enter at least one name to continue."
-        add_one: "Add one friend"
+        add_one: "Add one person"
         cancel: "Cancel"
-        submit: "Review friends"
+        submit: "Review people"
       empty:
-        heading: "No friends yet"
-        hint: "Add your first friend. All you need is a name."
+        heading: "No one here yet"
+        hint: "Add someone to get started. All you need is a name."
     show:
-      back: "← Friends"
+      back: "← People"
       back_to_birthdays: "← Birthdays"
-      delete: "Delete friend"
-      more_actions: "More friend actions"
+      delete: "Delete person"
+      more_actions: "More actions"
     create:
       created: "%{name} added."
     update:
-      updated: "Friend renamed."
+      updated: "Name updated."
     destroy:
       deleted: "%{name} has been deleted."
-    delete_confirm_title: "Delete friend?"
+    delete_confirm_title: "Delete person?"
     delete_confirm_body: "All entries will also be deleted. This cannot be undone."
-    rename:
-      created: "%{name} added."
-    update:
-      updated: "Friend renamed."
-    destroy:
-      deleted: "%{name} has been deleted."
     rename:
       link: "Rename"
       save: "Save"
       cancel: "Cancel"
 
-  batch_friend_creations:
+  batch_person_creations:
     preview:
-      title: "Review friends"
-      heading: "Review friends"
+      title: "Review people"
+      heading: "Review people"
       description: "Check the names, make any changes, and deselect anyone you do not want to add."
       back: "← Enter names"
-      include: "Add this friend"
+      include: "Add this person"
       name_label: "Name"
-      possible_duplicate: "Possible duplicate. You can still add this friend."
+      possible_duplicate: "Possible duplicate. You can still add this person."
       duplicates:
         one: "One name may already be in Klivka or appears more than once."
         other: "%{count} names may already be in Klivka or appear more than once."
-      fix_errors: "Check the highlighted names before adding these friends."
-      selection_required: "Select at least one friend to add."
-      submit: "Add selected friends"
+      fix_errors: "Check the highlighted names before adding these people."
+      selection_required: "Select at least one person to add."
+      submit: "Add selected people"
       start_over: "Start over"
     create:
       result: "%{created} %{skipped}"
       created:
-        one: "One friend added."
-        other: "%{count} friends added."
+        one: "One person added."
+        other: "%{count} people added."
       skipped:
         zero: "No names skipped."
         one: "One name skipped."
@@ -662,7 +656,7 @@ en:
       eyebrow: "Keep in touch"
       heading: "Keep in touch with %{name}"
       body: "You asked Klivka to remind you to keep in touch with %{name}."
-      open_friend: "Open %{name}"
+      open_person: "Open %{name}"
       record_contact: "Record contact"
       settings: "Manage reminder settings"
 
@@ -672,7 +666,7 @@ en:
       date_label: "Coming up"
       heading: "%{name}'s birthday"
       body: "%{name}'s birthday is on %{date}."
-      open_friend: "Open %{name}"
+      open_person: "Open %{name}"
       settings: "Manage reminder settings"
     significant_date:
       subject: "%{name}: %{label} is coming up"
@@ -680,7 +674,7 @@ en:
       heading: "A date to remember for %{name}"
       body: "%{label} for %{name} is on %{date}."
       default_label: "An important date"
-      open_friend: "Open %{name}"
+      open_person: "Open %{name}"
       settings: "Manage reminder settings"
 
   vcard_import:
@@ -696,7 +690,7 @@ en:
       rate_limited: "Try uploading again in a little while."
       too_many_cards: "That file has more than %{count} cards."
     new:
-      back: "Back to friends"
+      back: "Back to people"
       cancel: "Cancel"
       choose_file: "Choose a vCard"
       description: "Choose a vCard file, then pick the people you want to add."

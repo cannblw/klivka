@@ -25,15 +25,15 @@
     <% if @categories.any? %>
       <div class="space-y-4">
         <%= render CategoryManagementComponent.with_collection(@categories) %>
-        <% if @uncategorized_friends.any? %>
+        <% if @uncategorized_people.any? %>
           <%= render SectionComponent.new(title: t(".uncategorized.heading")) do %>
-            <p data-friend-count="<%= @uncategorized_friends.size %>" class="text-sm text-stone-500 dark:text-stone-400">
-              <%= t("categories.friend_count", count: @uncategorized_friends.size) %>
+            <p data-person-count="<%= @uncategorized_people.size %>" class="text-sm text-stone-500 dark:text-stone-400">
+              <%= t("categories.person_count", count: @uncategorized_people.size) %>
             </p>
             <ul class="mt-3 divide-y divide-stone-200 dark:divide-stone-700">
-              <% @uncategorized_friends.each do |friend| %>
+              <% @uncategorized_people.each do |person| %>
                 <li class="py-2">
-                  <%= link_to friend.name, friend_path(friend), data: { turbo_frame: "_top" }, class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+                  <%= link_to person.name, person_path(person), data: { turbo_frame: "_top" }, class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
                 </li>
               <% end %>
             </ul>

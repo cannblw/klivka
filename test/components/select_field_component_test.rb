@@ -31,7 +31,7 @@ class SelectFieldComponentTest < ViewComponent::TestCase
       selected: "recently_added",
       select_options: { include_blank: "Choose a sort order" },
       wrapper_class: "mt-1",
-      aria: { label: "Sort friends" })
+      aria: { label: "Sort people" })
 
     assert_selector "div.relative.mt-1 > select[name='sort']"
     assert_selector "select[class*='appearance-none'][class*='pr-10'][class*='rounded-lg'][class*='border-stone-300']"
@@ -39,6 +39,6 @@ class SelectFieldComponentTest < ViewComponent::TestCase
     assert_equal :sort, form.field
     assert_equal choices, form.choices
     assert_equal({ selected: "recently_added", include_blank: "Choose a sort order" }, form.select_options)
-    assert_equal({ label: "Sort friends" }, form.html_options[:aria])
+    assert_equal({ label: "Sort people" }, form.html_options[:aria])
   end
 end

@@ -6,14 +6,14 @@ class CategoriesController < ApplicationController
     prepare_index
   end
 
-  def friend_suggestions
+  def person_suggestions
     category = Current.user.categories.find(params[:category_id])
     return render json: [] if params[:query].blank?
 
-    friends = FriendSearch.call(Current.user, params[:query]).reject { |friend| friend.category_id == category.id }
-    ActiveRecord::Associations::Preloader.new(records: friends, associations: :category).call
+    people = PersonSearch.call(Current.user, params[:query]).reject { |person| person.category_id == category.id }
+    ActiveRecord::Associations::Preloader.new(records: people, associations: :category).call
 
-    render json: friends.map { |friend| suggestion_for(friend) }
+    render json: people.map { |person| suggestion_for(person) }
   end
 
   def create
@@ -38,10 +38,10 @@ class CategoriesController < ApplicationController
   end
 
   def destroy
-    friend_count = @category.friends.count
+    person_count = @category.people.count
     @category.destroy!
 
-    redirect_to categories_path, notice: t(".deleted", name: @category.name, count: friend_count)
+    redirect_to categories_path, notice: t(".deleted", name: @category.name, count: person_count)
   end
 
   private
@@ -51,20 +51,20 @@ class CategoriesController < ApplicationController
   end
 
   def prepare_index
-    @categories = Current.user.categories.includes(:friends).order(:normalized_name).to_a
+    @categories = Current.user.categories.includes(:people).order(:normalized_name).to_a
     @categories.map! { |category| category.id == @category.id ? @category : category } if @category.persisted?
-    @uncategorized_friends = Current.user.friends.where(category_id: nil).order(:name, :id).to_a
+    @uncategorized_people = Current.user.people.where(category_id: nil).order(:name, :id).to_a
   end
 
   def category_params
     params.expect(category: [ :name ])
   end
 
-  def suggestion_for(friend)
+  def suggestion_for(person)
     {
-      name: friend.name,
-      category: friend.category&.name,
-      assignment_url: friend_category_assignment_path(friend)
+      name: person.name,
+      category: person.category&.name,
+      assignment_url: person_category_assignment_path(person)
     }
   end
 end

@@ -2,9 +2,9 @@ require "test_helper"
 
 class EntryTypePickerComponentTest < ViewComponent::TestCase
   test "compact actions omit a singleton entry that already exists" do
-    friend = friends(:ada)
+    person = people(:ada)
 
-    render_inline(EntryTypePickerComponent.new(friend: friend, types: EntryTypePickerComponent::COMMON_TYPES))
+    render_inline(EntryTypePickerComponent.new(person: person, types: EntryTypePickerComponent::COMMON_TYPES))
 
     available_type_count = EntryTypePickerComponent::COMMON_TYPES.size - 1
     assert_selector "li", count: available_type_count
@@ -12,14 +12,14 @@ class EntryTypePickerComponentTest < ViewComponent::TestCase
     assert_selector "ul.sm\\:grid-cols-2.xl\\:grid-cols-4"
     assert_selector "input[type='search']", count: 0
     assert_selector "a", text: "Birthday", count: 0
-    path = Rails.application.routes.url_helpers.new_friend_entry_path(friend)
+    path = Rails.application.routes.url_helpers.new_person_entry_path(person)
     assert_selector "a[href='#{path}']", text: "View all"
   end
 
   test "renders all entry types with accessible search" do
-    friend = friends(:ada)
+    person = people(:ada)
 
-    render_inline(EntryTypePickerComponent.new(friend: friend, searchable: true))
+    render_inline(EntryTypePickerComponent.new(person: person, searchable: true))
 
     assert_selector "label.sr-only[for='entry-type-search']", text: "Search entry types"
     assert_selector "ul.sm\\:grid-cols-2.xl\\:grid-cols-4"

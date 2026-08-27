@@ -1,0 +1,178 @@
+<% content_for :title, t(".title") %>
+
+<div data-controller="dialog toggle" data-dialog-open-value="<%= @person.errors.any? || @batch_mode %>">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <% unless demo_mode? %>
+        <%= link_to t(".import_contacts"), new_vcard_import_path,
+              class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+      <% end %>
+      <%= render ButtonComponent.new(data: { action: "dialog#open" }) do %>
+        <%= t(".add_person") %>
+      <% end %>
+    </div>
+  </div>
+
+  <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
+          class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
+    <div class="p-6">
+      <div data-toggle-target="content" class="<%= "hidden" if @batch_mode %>">
+        <h2 class="text-lg font-semibold dark:text-stone-100"><%= t(".modal.heading") %></h2>
+        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".modal.hint") %></p>
+
+        <%= form_with model: @person, class: "mt-4" do |form| %>
+          <%= render InputFieldComponent.new(form, :name, type: :text,
+                placeholder: t(".modal.name_placeholder"),
+                autofocus: !@batch_mode,
+                autocomplete: "off",
+                class: "w-full") %>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <%= render ButtonComponent.new(
+                  variant: :ghost,
+                  size: :sm,
+                  class: "!p-0 text-xs text-amber-700 underline decoration-amber-300 underline-offset-4 hover:!bg-transparent hover:text-amber-600 dark:text-amber-400 dark:decoration-amber-700 dark:hover:text-amber-300",
+                  data: { action: "toggle#toggle" }
+                ) do %>
+              <%= t(".modal.add_multiple") %>
+            <% end %>
+            <div class="flex gap-2">
+              <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
+                <%= t(".modal.cancel") %>
+              <% end %>
+              <%= render ButtonComponent.new(type: :submit) do %>
+                <%= t(".modal.submit") %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div data-toggle-target="content" class="<%= "hidden" unless @batch_mode %>">
+        <h2 class="text-lg font-semibold dark:text-stone-100"><%= t(".batch_modal.heading") %></h2>
+        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".batch_modal.hint") %></p>
+
+        <%= form_with url: preview_batch_person_creation_path,
+              scope: :batch_person_creation,
+              class: "mt-4",
+              data: { turbo: false } do |form| %>
+          <label for="batch-person-names" class="sr-only"><%= t(".batch_modal.names_label") %></label>
+          <%= form.text_area :names,
+                value: @batch_creation.names,
+                id: "batch-person-names",
+                rows: 8,
+                autofocus: @batch_mode,
+                class: FormStyling::TEXTAREA_CLASSES,
+                placeholder: t(".batch_modal.placeholder"),
+                aria: { describedby: ("batch-person-errors" if @batch_creation.errors.any?), invalid: @batch_creation.errors.any? } %>
+          <% if @batch_creation.errors.any? %>
+            <p id="batch-person-errors" class="mt-2 text-sm text-red-600 dark:text-red-400"><%= t(".batch_modal.names_required") %></p>
+          <% end %>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <%= render ButtonComponent.new(
+                  variant: :ghost,
+                  size: :sm,
+                  class: "!p-0 text-xs text-amber-700 underline decoration-amber-300 underline-offset-4 hover:!bg-transparent hover:text-amber-600 dark:text-amber-400 dark:decoration-amber-700 dark:hover:text-amber-300",
+                  data: { action: "toggle#toggle" }
+                ) do %>
+              <%= t(".batch_modal.add_one") %>
+            <% end %>
+            <div class="flex gap-2">
+              <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
+                <%= t(".batch_modal.cancel") %>
+              <% end %>
+              <%= render ButtonComponent.new(type: :submit) do %>
+                <%= t(".batch_modal.submit") %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </dialog>
+</div>
+
+<div class="mt-8 rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800/80 sm:p-6">
+  <%= form_with url: root_path, method: :get,
+        data: {
+          controller: "search",
+          action: "formdata->search#prepareFormData",
+          turbo_action: "advance",
+          turbo_frame: "people_grid",
+          search_delay_value: Rails.application.config.x.person_search_debounce_milliseconds
+        },
+        class: "w-full" do |form| %>
+    <%= form.hidden_field :view, value: "all" if @view == "all" %>
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+      <div class="min-w-0 flex-1">
+        <%= render InputFieldComponent.new(form, :query, type: :search,
+              value: params[:query],
+              placeholder: t(".search_placeholder"),
+              autocomplete: "off",
+              aria: { label: t(".search_label") },
+              data: { action: "input->search#debounce" },
+              class: "w-full rounded-xl !border-amber-300 px-4 py-3 text-base shadow-inner focus:!border-amber-500 dark:!border-amber-700 dark:focus:!border-amber-500") %>
+      </div>
+      <div class="sm:w-56">
+        <label for="sort" class="mb-1 block text-sm font-medium text-stone-500 dark:text-stone-400">
+          <%= t(".sort_label") %>
+        </label>
+        <%= render SelectFieldComponent.new(form, :sort,
+              choices: [
+                [ t(".sort_options.name"), "" ],
+                [ t(".sort_options.recently_added"), "recently_added" ],
+                [ t(".sort_options.recently_updated"), "recently_updated" ]
+              ],
+              selected: @sort == PersonSearch::DEFAULT_SORT ? "" : @sort,
+              aria: { label: t(".sort_label") },
+              data: { search_target: "sort", action: "change->search#submit" }) %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "people_grid" do %>
+  <% if @people.any? %>
+    <% if @grouping_available && params[:query].blank? %>
+      <div class="mt-6 flex justify-end">
+        <%= render PersonViewToggleComponent.new(view: @view, sort: @sort) %>
+      </div>
+    <% end %>
+
+    <% if @grouped_view %>
+      <div class="mt-6 space-y-6">
+        <% @categorized_person_groups.each do |category, people| %>
+          <section aria-labelledby="person-category-<%= category.id %>-heading">
+            <h2 id="person-category-<%= category.id %>-heading" class="text-lg font-semibold"><%= category.name %></h2>
+            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+              <%= render PersonCardComponent.with_collection(people) %>
+            </div>
+          </section>
+        <% end %>
+
+        <% if @uncategorized_people.any? %>
+          <section aria-labelledby="uncategorized-people-heading">
+            <h2 id="uncategorized-people-heading" class="text-lg font-semibold"><%= t(".uncategorized") %></h2>
+            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+              <%= render PersonCardComponent.with_collection(@uncategorized_people) %>
+            </div>
+          </section>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+        <%= render PersonCardComponent.with_collection(@people, show_category: true) %>
+      </div>
+    <% end %>
+  <% elsif params[:query].present? %>
+    <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
+      <p class="text-lg font-medium"><%= t(".no_results", query: params[:query]) %></p>
+    </div>
+  <% else %>
+    <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
+      <p class="text-lg font-medium"><%= t(".empty.heading") %></p>
+      <p class="mt-1 text-sm"><%= t(".empty.hint") %></p>
+    </div>
+  <% end %>
+<% end %>

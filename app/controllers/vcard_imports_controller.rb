@@ -39,7 +39,7 @@ class VcardImportsController < ApplicationController
 
   def update
     VcardImport::Importer.call(vcard_import: @vcard_import, selected_candidate_ids:)
-    redirect_to friends_path, notice: t("vcard_imports.show.selection_saved")
+    redirect_to people_path, notice: t("vcard_imports.show.selection_saved")
   rescue ActiveRecord::RecordInvalid => error
     raise unless error.record.equal?(@vcard_import)
 

@@ -1,0 +1,18 @@
+<% if suggestions.any? %>
+  <section class="mt-8" aria-labelledby="person-suggestions-heading">
+    <h2 id="person-suggestions-heading" class="text-base font-semibold text-stone-700 dark:text-stone-200"><%= t("entries.suggestions.heading") %></h2>
+    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("entries.suggestions.description") %></p>
+
+    <ul class="mt-3 flex flex-wrap gap-2">
+      <% suggestions.each do |type| %>
+        <li>
+          <%= link_to new_person_entry_path(person, type: type),
+                class: "inline-flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-amber-700 dark:hover:bg-amber-900/20 dark:hover:text-amber-300" do %>
+            <span class="material-icons text-stone-400" style="font-size:18px" aria-hidden="true"><%= icon_for(type) %></span>
+            <span><%= label_for(type) %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>

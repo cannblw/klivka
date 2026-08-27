@@ -6,7 +6,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   test "redirects to sign in when unauthenticated" do
     sign_out
 
-    post friend_interactions_url(friends(:ada)), params: {
+    post person_interactions_url(people(:ada)), params: {
       interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
@@ -16,8 +16,8 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   test "creates an interaction with optional details" do
     occurred_on = 1.day.ago.to_date
 
-    assert_difference -> { friends(:ada).interactions.count }, 1 do
-      post friend_interactions_url(friends(:ada)), params: {
+    assert_difference -> { people(:ada).interactions.count }, 1 do
+      post person_interactions_url(people(:ada)), params: {
         interaction: {
           occurred_on: occurred_on.iso8601,
           contact_method: "in_person",
@@ -26,67 +26,67 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_redirected_to friend_url(friends(:ada))
-    interaction = friends(:ada).interactions.last
+    assert_redirected_to person_url(people(:ada))
+    interaction = people(:ada).interactions.last
     assert_equal occurred_on, interaction.occurred_on
     assert_equal "in_person", interaction.contact_method
     assert_equal "Met at the market", interaction.note
   end
 
   test "updates an interaction" do
-    interaction = friends(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
+    interaction = people(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
 
-    patch friend_interaction_url(friends(:ada), interaction), params: {
+    patch person_interaction_url(people(:ada), interaction), params: {
       interaction: { contact_method: "message", note: "Caught up" }
     }
 
-    assert_redirected_to friend_url(friends(:ada))
+    assert_redirected_to person_url(people(:ada))
     assert_equal "message", interaction.reload.contact_method
     assert_equal "Caught up", interaction.note
   end
 
   test "logging contact clears an active reminder snooze" do
-    setting = friends(:ada).create_keep_in_touch_setting!(
+    setting = people(:ada).create_keep_in_touch_setting!(
       cadence: "weekly",
       enabled_on: 1.week.ago.to_date,
       snoozed_until: 1.week.from_now.to_date
     )
     previous_lock_version = setting.lock_version
 
-    post friend_interactions_url(friends(:ada)), params: {
+    post person_interactions_url(people(:ada)), params: {
       interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
-    assert_redirected_to friend_url(friends(:ada))
+    assert_redirected_to person_url(people(:ada))
     assert_nil setting.reload.snoozed_until
     assert_operator setting.lock_version, :>, previous_lock_version
   end
 
   test "logging an interaction from before the contact reminder was enabled keeps its snooze" do
     enabled_on = users(:one).local_date
-    setting = friends(:ada).create_keep_in_touch_setting!(
+    setting = people(:ada).create_keep_in_touch_setting!(
       cadence: "weekly",
       enabled_on: enabled_on,
       snoozed_until: 1.week.from_now.to_date
     )
 
-    post friend_interactions_url(friends(:ada)), params: {
+    post person_interactions_url(people(:ada)), params: {
       interaction: { occurred_on: enabled_on.yesterday.iso8601 }
     }
 
-    assert_redirected_to friend_url(friends(:ada))
+    assert_redirected_to person_url(people(:ada))
     assert_equal 1.week.from_now.to_date, setting.reload.snoozed_until
   end
 
   test "an invalid interaction leaves an active reminder snooze unchanged" do
     snoozed_until = 1.week.from_now.to_date
-    setting = friends(:ada).create_keep_in_touch_setting!(
+    setting = people(:ada).create_keep_in_touch_setting!(
       cadence: "weekly",
       enabled_on: 1.week.ago.to_date,
       snoozed_until: snoozed_until
     )
 
-    post friend_interactions_url(friends(:ada)), params: {
+    post person_interactions_url(people(:ada)), params: {
       interaction: { occurred_on: users(:one).local_date.tomorrow.iso8601 }
     }
 
@@ -95,50 +95,50 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "editing interaction details keeps an active reminder snooze" do
-    interaction = friends(:ada).interactions.create!(occurred_on: Date.current)
-    setting = friends(:ada).create_keep_in_touch_setting!(
+    interaction = people(:ada).interactions.create!(occurred_on: Date.current)
+    setting = people(:ada).create_keep_in_touch_setting!(
       cadence: "weekly",
       enabled_on: 1.week.ago.to_date,
       snoozed_until: 1.week.from_now.to_date
     )
 
-    patch friend_interaction_url(friends(:ada), interaction), params: {
+    patch person_interaction_url(people(:ada), interaction), params: {
       interaction: { note: "Caught up" }
     }
 
-    assert_redirected_to friend_url(friends(:ada))
+    assert_redirected_to person_url(people(:ada))
     assert_equal 1.week.from_now.to_date, setting.reload.snoozed_until
   end
 
   test "changing an interaction date to today clears an active reminder snooze" do
-    interaction = friends(:ada).interactions.create!(occurred_on: 2.weeks.ago.to_date)
-    setting = friends(:ada).create_keep_in_touch_setting!(
+    interaction = people(:ada).interactions.create!(occurred_on: 2.weeks.ago.to_date)
+    setting = people(:ada).create_keep_in_touch_setting!(
       cadence: "weekly",
       enabled_on: 1.week.ago.to_date,
       snoozed_until: 1.week.from_now.to_date
     )
 
-    patch friend_interaction_url(friends(:ada), interaction), params: {
+    patch person_interaction_url(people(:ada), interaction), params: {
       interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
-    assert_redirected_to friend_url(friends(:ada))
+    assert_redirected_to person_url(people(:ada))
     assert_nil setting.reload.snoozed_until
   end
 
   test "a contact makes a previously opened snooze request stale" do
-    setting = friends(:ada).create_keep_in_touch_setting!(
+    setting = people(:ada).create_keep_in_touch_setting!(
       cadence: "weekly",
       enabled_on: 1.week.ago.to_date,
       snoozed_until: 1.week.from_now.to_date
     )
     stale_lock_version = setting.lock_version
 
-    post friend_interactions_url(friends(:ada)), params: {
+    post person_interactions_url(people(:ada)), params: {
       interaction: { occurred_on: users(:one).local_date.iso8601 }
     }
 
-    patch snooze_friend_keep_in_touch_setting_url(friends(:ada)), params: {
+    patch snooze_person_keep_in_touch_setting_url(people(:ada)), params: {
       keep_in_touch_setting: { lock_version: stale_lock_version }
     }
 
@@ -147,27 +147,27 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroys an interaction" do
-    interaction = friends(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
+    interaction = people(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
 
-    assert_difference -> { friends(:ada).interactions.count }, -1 do
-      delete friend_interaction_url(friends(:ada), interaction)
+    assert_difference -> { people(:ada).interactions.count }, -1 do
+      delete person_interaction_url(people(:ada), interaction)
     end
 
-    assert_redirected_to friend_url(friends(:ada))
+    assert_redirected_to person_url(people(:ada))
   end
 
   test "quick log creates an interaction only when the form is saved" do
     occurred_on = 1.day.ago.to_date
 
-    assert_difference -> { friends(:ada).interactions.count }, 1 do
-      post friend_interactions_url(friends(:ada)), params: {
+    assert_difference -> { people(:ada).interactions.count }, 1 do
+      post person_interactions_url(people(:ada)), params: {
         context: "quick_log",
         interaction: { occurred_on: occurred_on.iso8601 }
       }
     end
 
-    assert_redirected_to friend_url(friends(:ada))
-    assert_equal occurred_on, friends(:ada).interactions.recent.first.occurred_on
+    assert_redirected_to person_url(people(:ada))
+    assert_equal occurred_on, people(:ada).interactions.recent.first.occurred_on
     assert_equal "Interaction recorded.", flash[:notice]
   end
 
@@ -178,8 +178,8 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     travel_to Time.utc(2026, 8, 10, 0, 30) do
-      assert_no_difference -> { friends(:ada).interactions.count } do
-        post friend_interactions_url(friends(:ada)), params: {
+      assert_no_difference -> { people(:ada).interactions.count } do
+        post person_interactions_url(people(:ada)), params: {
           context: "quick_log",
           interaction: { occurred_on: Date.new(2026, 8, 10).iso8601 }
         }
@@ -190,8 +190,8 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "invalid quick log reopens the unsaved modal with errors and submitted details" do
-    assert_no_difference -> { friends(:ada).interactions.count } do
-      post friend_interactions_url(friends(:ada)), params: {
+    assert_no_difference -> { people(:ada).interactions.count } do
+      post person_interactions_url(people(:ada)), params: {
         context: "quick_log",
         interaction: { occurred_on: users(:one).local_date.tomorrow.iso8601, contact_method: "call", note: "Keep this note" }
       }
@@ -203,25 +203,25 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".text-red-600", text: /must not be in the future/
   end
 
-  test "does not access another user's friend or interaction" do
-    interaction = friends(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
+  test "does not access another user's person or interaction" do
+    interaction = people(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
 
-    get friend_interactions_url(friends(:bob))
+    get person_interactions_url(people(:bob))
     assert_response :not_found
 
-    patch friend_interaction_url(friends(:bob), interaction), params: { interaction: { note: "Nope" } }
+    patch person_interaction_url(people(:bob), interaction), params: { interaction: { note: "Nope" } }
     assert_response :not_found
 
-    delete friend_interaction_url(friends(:bob), interaction)
+    delete person_interaction_url(people(:bob), interaction)
     assert_response :not_found
   end
 
   test "index shows 25 newest interactions and next-page navigation" do
     27.times do |index|
-      friends(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date, note: "Interaction #{index + 1}")
+      people(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date, note: "Interaction #{index + 1}")
     end
 
-    get friend_interactions_url(friends(:ada))
+    get person_interactions_url(people(:ada))
 
     assert_response :success
     assert_select "#interactions-history li", count: 25
@@ -234,10 +234,10 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
 
   test "index shows the previous page and remaining interactions" do
     27.times do |index|
-      friends(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date, note: "Interaction #{index + 1}")
+      people(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date, note: "Interaction #{index + 1}")
     end
 
-    get friend_interactions_url(friends(:ada), page: 2)
+    get person_interactions_url(people(:ada), page: 2)
 
     assert_response :success
     assert_select "#interactions-history li", count: 2
@@ -249,10 +249,10 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
 
   test "index treats invalid pages as the first page" do
     26.times do |index|
-      friends(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date)
+      people(:ada).interactions.create!(occurred_on: (index + 1).days.ago.to_date)
     end
 
-    get friend_interactions_url(friends(:ada), page: "not-a-number")
+    get person_interactions_url(people(:ada), page: "not-a-number")
 
     assert_response :success
     assert_select "nav", text: /Page 1/

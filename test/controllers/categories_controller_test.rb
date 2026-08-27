@@ -11,8 +11,8 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_url
   end
 
-  test "index shows only the current user's categories and friend counts" do
-    friends(:ada).update!(category: categories(:family))
+  test "index shows only the current user's categories and person counts" do
+    people(:ada).update!(category: categories(:family))
 
     get categories_url
 
@@ -20,41 +20,41 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1"
     assert_select "header a[href='#{categories_path}']"
     assert_select "turbo-frame#category_organizer"
-    assert_select "section[aria-labelledby='category-#{categories(:family).id}-heading'] [data-friend-count='1']"
+    assert_select "section[aria-labelledby='category-#{categories(:family).id}-heading'] [data-person-count='1']"
     assert_select "section[aria-labelledby='category-#{categories(:family_for_user_two).id}-heading']", count: 0
     assert_select "form[action='#{categories_path}'] input[name='category[name]']"
   end
 
-  test "friend suggestions reuse friend search and identify current categories" do
-    friends(:grace).update!(category: categories(:friends))
+  test "person suggestions reuse person search and identify current categories" do
+    people(:grace).update!(category: categories(:friends))
 
-    get friend_suggestions_categories_url, params: { category_id: categories(:family).id, query: "grac" }
+    get person_suggestions_categories_url, params: { category_id: categories(:family).id, query: "grac" }
 
     assert_response :success
     suggestion = response.parsed_body.sole
-    assert_equal friends(:grace).name, suggestion.fetch("name")
+    assert_equal people(:grace).name, suggestion.fetch("name")
     assert_equal categories(:friends).name, suggestion.fetch("category")
-    assert_equal friend_category_assignment_path(friends(:grace)), suggestion.fetch("assignment_url")
+    assert_equal person_category_assignment_path(people(:grace)), suggestion.fetch("assignment_url")
   end
 
-  test "friend suggestions exclude friends already in the destination category" do
-    friends(:ada).update!(category: categories(:family))
+  test "person suggestions exclude people already in the destination category" do
+    people(:ada).update!(category: categories(:family))
 
-    get friend_suggestions_categories_url, params: { category_id: categories(:family).id, query: "ada" }
+    get person_suggestions_categories_url, params: { category_id: categories(:family).id, query: "ada" }
 
     assert_response :success
     assert_empty response.parsed_body
   end
 
-  test "friend suggestions require a query" do
-    get friend_suggestions_categories_url, params: { category_id: categories(:family).id }
+  test "person suggestions require a query" do
+    get person_suggestions_categories_url, params: { category_id: categories(:family).id }
 
     assert_response :success
     assert_empty response.parsed_body
   end
 
-  test "friend suggestions cannot use another user's category" do
-    get friend_suggestions_categories_url, params: { category_id: categories(:family_for_user_two).id, query: "ada" }
+  test "person suggestions cannot use another user's category" do
+    get person_suggestions_categories_url, params: { category_id: categories(:family_for_user_two).id, query: "ada" }
 
     assert_response :not_found
   end
@@ -101,18 +101,18 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Family", categories(:family_for_user_two).reload.name
   end
 
-  test "destroy deletes the category and leaves its friends uncategorized" do
-    friend = friends(:ada)
-    friend.update!(category: categories(:family))
+  test "destroy deletes the category and leaves its people uncategorized" do
+    person = people(:ada)
+    person.update!(category: categories(:family))
 
     assert_difference "Category.count", -1 do
-      assert_no_difference "Friend.count" do
+      assert_no_difference "Person.count" do
         delete category_url(categories(:family))
       end
     end
 
     assert_redirected_to categories_url
-    assert_nil friend.reload.category
+    assert_nil person.reload.category
   end
 
   test "destroy cannot delete another user's category" do

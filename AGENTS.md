@@ -24,7 +24,7 @@
 
 ## Product principles
 
-- Adding a friend requires a name. Nothing else, ever. All other data is optional `Entry` records (typed blocks: phone, note, etc.).
+- Adding a person requires a name. Nothing else, ever. All other data is optional `Entry` records (typed blocks: phone, note, etc.).
 - Don't add required fields or mandatory steps to any flow without explicit discussion.
 
 ## Code conventions

@@ -133,12 +133,12 @@ class VcardImport::ParserTest < ActiveSupport::TestCase
     result = VcardImport::Parser.new(<<~VCARD).call
       BEGIN:VCARD
       VERSION:4.0
-      FN:Leap Friend
+      FN:Leap Person
       BDAY:--02-29
       END:VCARD
       BEGIN:VCARD
       VERSION:4.0
-      FN:Invalid Friend
+      FN:Invalid Person
       BDAY:--02-30
       END:VCARD
     VCARD

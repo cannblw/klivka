@@ -1,12 +1,12 @@
 class EntryCardComponent < ViewComponent::Base
-  def initialize(entry:, friend:)
+  def initialize(entry:, person:)
     @entry = entry
-    @friend = friend
+    @person = person
   end
 
   private
 
-  attr_reader :entry, :friend
+  attr_reader :entry, :person
 
   def kind_key
     entry.type.demodulize.underscore

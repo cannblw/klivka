@@ -9,15 +9,15 @@
 #  snoozed_until :date
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  friend_id     :integer          not null
+#  person_id     :integer          not null
 #
 # Indexes
 #
-#  index_keep_in_touch_settings_on_friend_id  (friend_id) UNIQUE
+#  index_keep_in_touch_settings_on_person_id  (person_id) UNIQUE
 #
 # Foreign Keys
 #
-#  friend_id  (friend_id => friends.id)
+#  person_id  (person_id => people.id)
 #
 class KeepInTouchSetting < ApplicationRecord
   CADENCES = %w[daily weekly biweekly monthly quarterly yearly].freeze
@@ -25,7 +25,7 @@ class KeepInTouchSetting < ApplicationRecord
   SNOOZE_DAYS = 7
   LATEST_INTERACTION_UNSPECIFIED = Object.new.freeze
 
-  belongs_to :friend
+  belongs_to :person
   has_many :reminder_deliveries, as: :source
 
   validates :cadence, inclusion: { in: CADENCES }
@@ -39,7 +39,7 @@ class KeepInTouchSetting < ApplicationRecord
     return unless enabled?
 
     if latest_interaction_on.equal?(LATEST_INTERACTION_UNSPECIFIED)
-      latest_interaction_on = friend.interactions.maximum(:occurred_on)
+      latest_interaction_on = person.interactions.maximum(:occurred_on)
     end
     [ cadence_date(latest_interaction_on:), snoozed_until ].compact.max
   end
@@ -79,14 +79,14 @@ class KeepInTouchSetting < ApplicationRecord
   def clear_snooze_for_latest_interaction!(interaction)
     return unless enabled? && snoozed_until.present?
     return if interaction.occurred_on < enabled_on
-    return unless interaction.occurred_on == friend.interactions.maximum(:occurred_on)
+    return unless interaction.occurred_on == person.interactions.maximum(:occurred_on)
 
     update!(snoozed_until: nil)
   end
 
   private
 
-  def cadence_date(latest_interaction_on: friend.interactions.maximum(:occurred_on))
+  def cadence_date(latest_interaction_on: person.interactions.maximum(:occurred_on))
     case cadence
     when "daily" then base_date(latest_interaction_on:) + 1.day
     when "weekly" then base_date(latest_interaction_on:) + 7.days
@@ -97,7 +97,7 @@ class KeepInTouchSetting < ApplicationRecord
     end
   end
 
-  def base_date(latest_interaction_on: friend.interactions.maximum(:occurred_on))
+  def base_date(latest_interaction_on: person.interactions.maximum(:occurred_on))
     [ enabled_on, latest_interaction_on ].compact.max
   end
 

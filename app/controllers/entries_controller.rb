@@ -1,28 +1,28 @@
 class EntriesController < ApplicationController
   include ActionView::RecordIdentifier
 
-  before_action :set_friend, only: %i[ new edit update destroy ]
+  before_action :set_person, only: %i[ new edit update destroy ]
   before_action :set_entry, only: %i[ edit update destroy ]
 
   def new
-    @entry = Entry.creatable_type(params[:type])&.new(friend: @friend)
+    @entry = Entry.creatable_type(params[:type])&.new(person: @person)
   end
 
   def create
-    @friend = Current.user.friends.friendly.find(params[:friend_id])
+    @person = Current.user.people.friendly.find(params[:person_id])
     klass = Entry.creatable_type(entry_params[:type])
 
     unless klass
-      @entry = Entry.new(friend: @friend)
+      @entry = Entry.new(person: @person)
       @entry.errors.add(:type, entry_params[:type].present? ? :inclusion : :blank)
       return render :new, status: :unprocessable_entity
     end
 
-    @entry = klass.new(friend: @friend)
+    @entry = klass.new(person: @person)
     @entry.assign_attributes(entry_params)
 
     if @entry.save
-      redirect_to @friend, notice: t(".created")
+      redirect_to @person, notice: t(".created")
     else
       render :new, status: :unprocessable_entity
     end
@@ -38,11 +38,11 @@ class EntriesController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.replace(dom_id(@entry), render_to_string(EntryCardComponent.new(entry: @entry, friend: @friend))),
+            turbo_stream.replace(dom_id(@entry), render_to_string(EntryCardComponent.new(entry: @entry, person: @person))),
             contact_actions_stream
           ]
         end
-        format.html { render EntryCardComponent.new(entry: @entry, friend: @friend) }
+        format.html { render EntryCardComponent.new(entry: @entry, person: @person) }
       end
     else
       render :edit, status: :unprocessable_entity
@@ -59,14 +59,14 @@ class EntriesController < ApplicationController
           contact_actions_stream
         ]
       end
-      format.html { redirect_to @entry.friend, notice: t(".deleted") }
+      format.html { redirect_to @entry.person, notice: t(".deleted") }
     end
   end
 
   def reorder
-    @friend = Current.user.friends.friendly.find(params[:friend_id])
+    @person = Current.user.people.friendly.find(params[:person_id])
     requested_ids = params.expect(entry_ids: []).map(&:to_i)
-    entries = @friend.entries.index_by(&:id)
+    entries = @person.entries.index_by(&:id)
 
     unless requested_ids.length == entries.length &&
         requested_ids.uniq.length == entries.length &&
@@ -78,7 +78,7 @@ class EntriesController < ApplicationController
       requested_ids.each_with_index do |entry_id, position|
         entries.fetch(entry_id).update_columns(position: position, updated_at: Time.current)
       end
-      @friend.touch
+      @person.touch
     end
 
     head :no_content
@@ -88,18 +88,18 @@ class EntriesController < ApplicationController
 
   private
 
-  def set_friend
-    @friend = Current.user.friends.friendly.find(params[:friend_id])
+  def set_person
+    @person = Current.user.people.friendly.find(params[:person_id])
   end
 
   def set_entry
-    @entry = @friend.entries.find(params[:id])
+    @entry = @person.entries.find(params[:id])
   end
 
   def contact_actions_stream
     turbo_stream.replace(
-      FriendContactActionsComponent::DOM_ID,
-      render_to_string(FriendContactActionsComponent.new(entries: @friend.entries.ordered))
+      PersonContactActionsComponent::DOM_ID,
+      render_to_string(PersonContactActionsComponent.new(entries: @person.entries.ordered))
     )
   end
 

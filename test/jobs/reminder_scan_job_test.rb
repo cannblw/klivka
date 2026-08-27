@@ -3,7 +3,7 @@ require "test_helper"
 class ReminderScanJobTest < ActiveJob::TestCase
   test "schedules and reconciles one account on the reminders queue" do
     user = users(:one)
-    setting = friends(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
 
     ReminderScanJob.perform_now(user.id, at: Time.utc(2026, 8, 8, 12))
 
@@ -30,7 +30,7 @@ class ReminderScanJobTest < ActiveJob::TestCase
 
   test "a retry reuses ledger work created by the first attempt" do
     user = users(:one)
-    friends(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
     at = Time.utc(2026, 8, 8, 12)
 
     ReminderScanJob.perform_now(user.id, at:)
