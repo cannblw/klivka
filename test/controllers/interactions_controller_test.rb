@@ -3,6 +3,24 @@ require "test_helper"
 class InteractionsControllerTest < ActionDispatch::IntegrationTest
   setup { sign_in_as users(:one) }
 
+  test "archived people expose interaction history but reject new interactions" do
+    person = people(:ada)
+    interaction = person.interactions.create!(occurred_on: Date.current, note: "Saved conversation")
+    person.archive!
+
+    get person_interactions_url(person)
+
+    assert_response :success
+    assert_select "main", /#{interaction.note}/
+    assert_select "a[href='#{new_person_interaction_path(person)}']", count: 0
+    assert_select "a[href='#{edit_person_interaction_path(person, interaction)}']", count: 0
+
+    assert_no_difference "Interaction.count" do
+      post person_interactions_url(person), params: { interaction: { occurred_on: Date.current.iso8601 } }
+    end
+    assert_response :not_found
+  end
+
   test "redirects to sign in when unauthenticated" do
     sign_out
 

@@ -28,6 +28,19 @@ require "test_helper"
 #  index_users_on_reminders_scanned_through_on  (reminders_scanned_through_on)
 #
 class UserTest < ActiveSupport::TestCase
+  test "deleting an account removes its archived people and preserved information" do
+    user = User.create!(email_address: "archive-owner@example.com", password: "password123", time_zone: "Europe/London")
+    person = user.people.create!(name: "Archived Person")
+    person.entries.create!(type: "Entry::Note", content: { body: "Saved note" })
+    person.interactions.create!(occurred_on: Date.current)
+    person.create_keep_in_touch_setting!(cadence: "monthly", enabled_on: Date.current)
+    person.archive!
+
+    assert_difference [ "User.count", "Person.count", "Entry.count", "Interaction.count", "KeepInTouchSetting.count" ], -1 do
+      user.destroy!
+    end
+  end
+
   test "downcases and strips email_address" do
     user = User.new(email_address: " DOWNCASED@EXAMPLE.COM ")
     assert_equal("downcased@example.com", user.email_address)

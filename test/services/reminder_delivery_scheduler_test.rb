@@ -217,6 +217,25 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_empty ReminderDelivery.where(source: birthday)
   end
 
+  test "restoring a person reactivates eligible canceled reminder work" do
+    user = users(:one)
+    person = people(:ada)
+    setting = create_setting(person, enabled_on: Date.new(2026, 8, 1))
+    delivery = ReminderDelivery.create!(
+      user:, source: setting, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8),
+      canceled_at: Time.utc(2026, 8, 8, 10)
+    )
+    person.archive!
+    person.restore!
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    delivery.reload
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.status
+    assert_nil delivery.canceled_at
+  end
+
   test "records work only for enabled account channels" do
     user = users(:one)
     user.update!(reminder_in_app_enabled: false, reminder_email_enabled: true)

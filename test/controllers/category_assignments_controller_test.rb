@@ -65,4 +65,15 @@ class CategoryAssignmentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert_nil people(:bob).reload.category
   end
+
+  test "category assignment cannot change an archived person" do
+    people(:ada).archive!
+
+    patch person_category_assignment_url(people(:ada)), params: {
+      category_assignment: { category_id: categories(:family).id }
+    }
+
+    assert_response :not_found
+    assert_nil people(:ada).reload.category
+  end
 end
