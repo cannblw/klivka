@@ -34,7 +34,7 @@ class KeepInTouchSettingsController < ApplicationController
   private
 
   def set_person
-    @person = Current.user.people.friendly.find(params[:person_id])
+    @person = Current.user.people.active.friendly.find(params[:person_id])
   end
 
   def set_keep_in_touch_setting

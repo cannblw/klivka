@@ -4,7 +4,7 @@ class PeopleController < ApplicationController
     @view = params[:view] == "all" ? "all" : "grouped"
     @people = PersonSearch.call(Current.user, params[:query], sort: @sort)
     ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
-    @grouping_available = Current.user.people.where.not(category_id: nil).exists?
+    @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?
     @grouped_view = @grouping_available && @view == "grouped" && params[:query].blank?
     prepare_person_groups if @grouped_view
     @person = Person.new
@@ -17,12 +17,18 @@ class PeopleController < ApplicationController
     prepare_return_navigation
     @recent_interactions = @person.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
     @interaction_count = @person.interactions.count
-    prepare_quick_interaction
-    prepare_categories
+    unless @person.archived?
+      prepare_quick_interaction
+      prepare_categories
+    end
+  end
+
+  def archived
+    @people = Current.user.people.archived.order(:name, :id)
   end
 
   def update
-    @person = Current.user.people.friendly.find(params[:id])
+    @person = Current.user.people.active.friendly.find(params[:id])
     prepare_return_navigation
 
     if @person.update(person_params)
@@ -36,9 +42,25 @@ class PeopleController < ApplicationController
 
   def destroy
     person = Current.user.people.friendly.find(params[:id])
-    person.destroy
+    redirect_path = person.archived? ? archived_people_path : root_path
+    person.destroy!
 
-    redirect_to root_path, notice: t(".deleted", name: person.name)
+    redirect_to redirect_path, notice: t(".deleted", name: person.name)
+  end
+
+  def archive
+    person = Current.user.people.active.friendly.find(params[:id])
+    person.archive!
+    ReminderDeliveryReconciler.call(user: Current.user)
+
+    redirect_to root_path, notice: t(".archived", name: person.name)
+  end
+
+  def restore
+    person = Current.user.people.archived.friendly.find(params[:id])
+    person.restore!
+
+    redirect_to person_path(person), notice: t(".restored", name: person.name)
   end
 
   def create
@@ -47,7 +69,7 @@ class PeopleController < ApplicationController
     if @person.save
       redirect_to @person, notice: t(".created", name: @person.name)
     else
-      @people = Current.user.people.order(:name)
+      @people = Current.user.people.active.order(:name)
       @batch_creation = BatchPersonCreation.preview(user: Current.user, names: "")
       @batch_mode = false
       render :index, status: :unprocessable_entity
@@ -63,7 +85,11 @@ class PeopleController < ApplicationController
   end
 
   def prepare_return_navigation
-    if params[:from] == "birthdays"
+    if @person.archived?
+      @return_params = {}
+      @back_path = archived_people_path
+      @back_translation_key = "people.show.back_to_archived"
+    elsif params[:from] == "birthdays"
       month = Integer(params[:month], exception: false)
       month = nil unless month&.between?(1, 12)
       @return_params = { from: "birthdays", month: }.compact

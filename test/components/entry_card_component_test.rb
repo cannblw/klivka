@@ -32,6 +32,16 @@ class EntryCardComponentTest < ViewComponent::TestCase
     end
   end
 
+  test "renders saved entry information without mutation controls when read-only" do
+    entry = entries(:phone)
+
+    render_inline EntryCardComponent.new(entry:, person: entry.person, editable: false)
+
+    assert_text "555-1234"
+    assert_no_selector "[data-entry-sortable-target='handle']"
+    assert_no_selector "a[href='#{Rails.application.routes.url_helpers.edit_person_entry_path(entry.person, entry)}']"
+  end
+
   test "shows reminder timing as accessible text when a date reminder is enabled" do
     entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2020, 12, 10))
     entry.create_entry_reminder!(lead_value: 1, lead_unit: "months", recurrence: EntryReminder::YEARLY_RECURRENCE)

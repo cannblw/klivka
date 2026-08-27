@@ -38,7 +38,7 @@ class CategoriesController < ApplicationController
   end
 
   def destroy
-    person_count = @category.people.count
+    person_count = @category.active_people.count
     @category.destroy!
 
     redirect_to categories_path, notice: t(".deleted", name: @category.name, count: person_count)
@@ -51,9 +51,9 @@ class CategoriesController < ApplicationController
   end
 
   def prepare_index
-    @categories = Current.user.categories.includes(:people).order(:normalized_name).to_a
+    @categories = Current.user.categories.includes(:active_people).order(:normalized_name).to_a
     @categories.map! { |category| category.id == @category.id ? @category : category } if @category.persisted?
-    @uncategorized_people = Current.user.people.where(category_id: nil).order(:name, :id).to_a
+    @uncategorized_people = Current.user.people.active.where(category_id: nil).order(:name, :id).to_a
   end
 
   def category_params

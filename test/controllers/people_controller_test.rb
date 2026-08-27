@@ -150,6 +150,16 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "main", { text: /Bob Ross/, count: 0 }
   end
 
+  test "index does not list archived people" do
+    people(:ada).archive!
+
+    get root_url
+
+    assert_response :success
+    assert_select "main", text: /Ada Lovelace/, count: 0
+    assert_select "main", /Grace Hopper/
+  end
+
   test "index searches the current user's people" do
     get root_url, params: { query: "ada" }
 
@@ -234,6 +244,54 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "#contact-reminder-heading", text: "Keep in touch"
     assert_select "form[action='#{person_keep_in_touch_setting_path(people(:ada))}']"
     assert_select "form[action='#{person_category_assignment_path(people(:ada))}'] select[name='category_assignment[category_id]']"
+    assert_select "[data-controller='archive-person'][data-archive-person-url='#{archive_person_path(people(:ada))}']", text: /Archive person/
+    assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(people(:ada))}']", text: /Delete permanently/
+    assert_select "dialog#archive-person-dialog", text: /reminders will stop/
+  end
+
+  test "show renders an archived person and their saved information without mutation controls" do
+    person = people(:ada)
+    interaction = person.interactions.create!(occurred_on: Date.current, note: "Saved conversation")
+    person.archive!
+
+    get person_url(person)
+
+    assert_response :success
+    assert_select "[data-archived-person-notice]", text: /read-only/
+    assert_select "h1", text: person.name
+    assert_select "form[action='#{restore_person_path(person)}']"
+    assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(person)}']"
+    assert_select "a[href='#{archived_people_path}']", text: /Archived people/
+    assert_select "#interactions-history", text: /#{interaction.note}/
+    assert_select "#entries-feed", text: /555-1234/
+    assert_select "form[action='#{person_path(person)}']", count: 0
+    assert_select "a[href='#{new_person_entry_path(person)}']", count: 0
+    assert_select "a[href='#{new_person_interaction_path(person)}']", count: 0
+    assert_select "a[href='#{edit_person_entry_path(person, entries(:phone))}']", count: 0
+    assert_select "#contact-reminder-heading", count: 0
+    assert_select "[data-entry-sortable-target='handle']", count: 0
+  end
+
+  test "archived index lists only the current user's archived people" do
+    people(:ada).archive!
+    people(:bob).archive!
+
+    get archived_people_url
+
+    assert_response :success
+    assert_select "h1", "Archived people"
+    assert_select "a[href='#{person_path(people(:ada))}']", text: people(:ada).name
+    assert_select "form[action='#{restore_person_path(people(:ada))}']"
+    assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(people(:ada))}']"
+    assert_select "main", text: /#{people(:bob).name}/, count: 0
+    assert_select "main", text: /#{people(:grace).name}/, count: 0
+  end
+
+  test "archived index has a focused empty state" do
+    get archived_people_url
+
+    assert_response :success
+    assert_select "[data-archived-people-empty]", text: /No archived people/
   end
 
   test "show links back to the birthday agenda that opened the person" do
@@ -316,6 +374,51 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to person_url(people(:ada))
   end
 
+  test "update rejects an archived person" do
+    people(:ada).archive!
+
+    patch person_url(people(:ada)), params: { person: { name: "Ada King" } }
+
+    assert_response :not_found
+    assert_equal "Ada Lovelace", people(:ada).reload.name
+  end
+
+  test "archive preserves the person and cancels pending reminder work" do
+    person = people(:ada)
+    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    delivery = ReminderDelivery.create!(
+      user: users(:one), source: setting, channel: "in_app",
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
+    )
+
+    assert_no_difference "Person.count" do
+      patch archive_person_url(person)
+    end
+
+    assert_redirected_to root_url
+    assert_predicate person.reload, :archived?
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+  end
+
+  test "restore makes an archived person active again" do
+    person = people(:ada)
+    person.archive!
+
+    patch restore_person_url(person)
+
+    assert_redirected_to person_url(person)
+    assert_not_predicate person.reload, :archived?
+  end
+
+  test "archive and restore reject another user's person" do
+    patch archive_person_url(people(:bob))
+    assert_response :not_found
+
+    people(:bob).archive!
+    patch restore_person_url(people(:bob))
+    assert_response :not_found
+  end
+
   test "update with blank name re-renders with error" do
     patch person_url(people(:ada)), params: { person: { name: "" } }
 
@@ -325,7 +428,17 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-toggle-target='content']:not(.hidden) input[name='person[name]']"
   end
 
-  test "destroy removes the person and redirects to root" do
+  test "destroy permanently removes an archived person" do
+    people(:ada).archive!
+
+    assert_difference "Person.count", -1 do
+      delete person_url(people(:ada))
+    end
+
+    assert_redirected_to archived_people_url
+  end
+
+  test "destroy permanently removes an active person and returns to the people list" do
     assert_difference "Person.count", -1 do
       delete person_url(people(:ada))
     end

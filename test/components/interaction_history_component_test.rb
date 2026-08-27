@@ -36,4 +36,19 @@ class InteractionHistoryComponentTest < ViewComponent::TestCase
 
     assert_no_selector "a", text: /View all/
   end
+
+  test "renders interactions without mutation controls when read-only" do
+    person = people(:ada)
+    interaction = person.interactions.create!(occurred_on: Date.current)
+
+    render_inline InteractionHistoryComponent.new(
+      person:, interactions: [ interaction ], total_count: 2, editable: false
+    )
+
+    assert_selector "time[datetime='#{interaction.occurred_on.iso8601}']"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.person_interactions_path(person)}']"
+    assert_no_selector "a[href='#{Rails.application.routes.url_helpers.new_person_interaction_path(person)}']"
+    assert_no_selector "a[href='#{Rails.application.routes.url_helpers.edit_person_interaction_path(person, interaction)}']"
+    assert_no_selector "#delete-interaction-dialog"
+  end
 end

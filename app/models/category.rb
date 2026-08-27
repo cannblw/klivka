@@ -21,6 +21,7 @@
 class Category < ApplicationRecord
   belongs_to :user
   has_many :people, dependent: :nullify
+  has_many :active_people, -> { active }, class_name: "Person"
 
   before_validation :normalize_name
 

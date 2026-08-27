@@ -5,6 +5,7 @@ require "test_helper"
 # Table name: people
 #
 #  id          :integer          not null, primary key
+#  archived_at :datetime
 #  name        :string           not null
 #  slug        :string           not null
 #  created_at  :datetime         not null
@@ -15,6 +16,7 @@ require "test_helper"
 # Indexes
 #
 #  index_people_on_category_id       (category_id)
+#  index_people_on_user_id_and_archived_at  (user_id,archived_at)
 #  index_people_on_user_id           (user_id)
 #  index_people_on_user_id_and_slug  (user_id,slug) UNIQUE
 #
@@ -53,7 +55,44 @@ class PersonTest < ActiveSupport::TestCase
     end
 
     assert connection.indexes(:people).any? { _1.name == "index_people_on_user_id_and_slug" && _1.unique }
+    assert connection.indexes(:people).any? do |index|
+      index.name == "index_people_on_user_id_and_archived_at" && index.columns == %w[user_id archived_at]
+    end
     assert connection.check_constraints(:people).any? { _1.name == "people_name_is_within_maximum_length" }
+  end
+
+  test "Person can be archived and restored" do
+    person = people(:ada)
+    archived_at = Time.zone.parse("2026-08-27 12:00:00")
+
+    person.archive!(at: archived_at)
+
+    assert_predicate person, :archived?
+    assert_equal archived_at, person.archived_at
+    assert_includes users(:one).people.archived, person
+    assert_not_includes users(:one).people.active, person
+
+    person.restore!
+
+    assert_not_predicate person, :archived?
+    assert_nil person.archived_at
+    assert_includes users(:one).people.active, person
+    assert_not_includes users(:one).people.archived, person
+  end
+
+  test "archiving preserves a person's associated information" do
+    person = users(:one).people.create!(name: "Katherine Johnson")
+    entry = person.entries.create!(type: "Entry::Note", content: { body: "Mathematician" })
+    interaction = person.interactions.create!(occurred_on: Date.current)
+    setting = person.create_keep_in_touch_setting!(cadence: "monthly", enabled_on: Date.current)
+
+    assert_no_difference [ "Entry.count", "Interaction.count", "KeepInTouchSetting.count" ] do
+      person.archive!
+    end
+
+    assert_equal [ entry ], person.entries.reload
+    assert_equal [ interaction ], person.interactions.reload
+    assert_equal setting, person.keep_in_touch_setting.reload
   end
 
   test "person names have a portable maximum length" do

@@ -133,4 +133,16 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "does not create a contact reminder for an archived person" do
+    people(:ada).archive!
+
+    assert_no_difference "KeepInTouchSetting.count" do
+      post person_keep_in_touch_setting_url(people(:ada)), params: {
+        keep_in_touch_setting: { cadence: "weekly" }
+      }
+    end
+
+    assert_response :not_found
+  end
 end

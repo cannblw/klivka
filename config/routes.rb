@@ -17,6 +17,9 @@ Rails.application.routes.draw do
   post "people/batch/preview", to: "batch_person_creations#preview", as: :preview_batch_person_creation
   post "people/batch", to: "batch_person_creations#create", as: :batch_person_creation
   resources :people, only: [ :index, :show, :create, :update, :destroy ] do
+    get :archived, on: :collection
+    patch :archive, on: :member
+    patch :restore, on: :member
     resource :category_assignment, only: :update
     resources :entries, only: %i[ new create edit update destroy ] do
       patch :reorder, on: :collection

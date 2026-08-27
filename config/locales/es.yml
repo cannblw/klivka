@@ -501,6 +501,7 @@ es:
       heading: "Personas"
       add_person: "Añadir a alguien"
       import_contacts: "Importar contactos"
+      archived_people: "Personas archivadas"
       search_label: "Buscar personas"
       search_placeholder: "Buscar personas..."
       sort_label: "Ordenar personas"
@@ -536,16 +537,45 @@ es:
     show:
       back: "← Personas"
       back_to_birthdays: "← Cumpleaños"
-      delete: "Eliminar persona"
+      back_to_archived: "← Personas archivadas"
+      archive: "Archivar persona"
+      restore: "Restaurar"
+      delete_permanently: "Eliminar definitivamente"
+      saved_entries: "Entradas guardadas"
+      archived_notice:
+        heading: "Esta persona está archivada"
+        body: "Su información guardada es de solo lectura y los recordatorios están en pausa. Restáurala para hacer cambios o volver a recibir recordatorios."
       more_actions: "Más acciones"
+    archived:
+      title: "Personas archivadas"
+      heading: "Personas archivadas"
+      description: "Las personas que aparecen aquí ya no están en tus listas habituales. Su información y sus ajustes de recordatorios siguen guardados."
+      back: "← Personas"
+      restore: "Restaurar"
+      delete_permanently: "Eliminar definitivamente"
+      empty:
+        heading: "No hay personas archivadas"
+        hint: "Las personas que archives aparecerán aquí."
     create:
       created: "Se ha añadido a %{name}."
     update:
       updated: "Nombre actualizado."
     destroy:
-      deleted: "%{name} ha sido eliminado."
-    delete_confirm_title: "¿Eliminar persona?"
-    delete_confirm_body: "Todas las entradas también se eliminarán. No se puede deshacer."
+      deleted: "%{name} se ha eliminado definitivamente."
+    archive:
+      archived: "%{name} se ha archivado."
+    restore:
+      restored: "%{name} se ha restaurado."
+    archive_confirm:
+      title: "¿Archivar a esta persona?"
+      body: "Se detendrán los recordatorios de contacto, cumpleaños y fechas importantes. Sus entradas, interacciones y ajustes de recordatorios se conservarán."
+      confirm: "Archivar persona"
+      cancel: "Cancelar"
+    delete_confirm:
+      title: "¿Eliminar definitivamente a esta persona?"
+      body: "Toda la información guardada de esta persona se eliminará. No se puede deshacer."
+      confirm: "Eliminar definitivamente"
+      cancel: "Cancelar"
     rename:
       link: "Renombrar"
       save: "Guardar"

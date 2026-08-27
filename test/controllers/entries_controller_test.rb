@@ -31,6 +31,24 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal entry, people(:ada).entries.ordered.first
   end
 
+  test "archived people reject entry creation and reordering" do
+    person = people(:ada)
+    original_order = person.entries.ordered.pluck(:id)
+    person.archive!
+
+    assert_no_difference "Entry.count" do
+      post person_entries_url(person), params: {
+        entry: { type: "Entry::Phone", content: { number: "555-9876" } }
+      }
+    end
+    assert_response :not_found
+
+    patch reorder_person_entries_url(person), params: { entry_ids: original_order.reverse }, as: :json
+
+    assert_response :not_found
+    assert_equal original_order, person.entries.ordered.pluck(:id)
+  end
+
   test "reorder saves the requested entry order" do
     ordered_ids = [ entries(:ada_birthday).id, entries(:email).id, entries(:phone).id ]
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_27_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_130000) do
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -90,6 +90,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_120000) do
   end
 
   create_table "people", force: :cascade do |t|
+    t.datetime "archived_at"
     t.integer "category_id"
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -97,6 +98,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_120000) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["category_id"], name: "index_people_on_category_id"
+    t.index ["user_id", "archived_at"], name: "index_people_on_user_id_and_archived_at"
     t.index ["user_id", "slug"], name: "index_people_on_user_id_and_slug", unique: true
     t.index ["user_id"], name: "index_people_on_user_id"
     t.check_constraint "length(name) <= 255", name: "people_name_is_within_maximum_length"

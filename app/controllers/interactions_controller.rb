@@ -59,7 +59,8 @@ class InteractionsController < ApplicationController
   private
 
   def set_person
-    @person = Current.user.people.friendly.find(params[:person_id])
+    people = action_name == "index" ? Current.user.people : Current.user.people.active
+    @person = people.friendly.find(params[:person_id])
   end
 
   def set_interaction

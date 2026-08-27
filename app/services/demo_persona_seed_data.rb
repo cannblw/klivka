@@ -317,6 +317,44 @@ class DemoPersonaSeedData
         { date: "2026-04-25", method: "message", note: "He sent a photo of an exceptionally neat bento lunch." }
       ],
       cadence: "quarterly"
+    },
+    {
+      name: "Ruth Mensah",
+      archived_at: "2026-08-10 14:00:00",
+      birthday: "1988-05-24",
+      first_met: { date: "2013-09-07", note: "Ruth and I met while helping at a neighborhood food festival. She calmly reorganized a chaotic volunteer table and made sure everyone ate before cleanup began." },
+      notes: [
+        "Community librarian in Manchester who runs a weekly homework club and a quiet reading hour for adults learning English.",
+        "Ruth enjoys sewing bright tote bags, tending her allotment, and taking her niece Abena to small local museums. She always carries peppermint tea."
+      ],
+      phone: { number: "000 000 3481", label: "Mobile" },
+      email: { email: "ruth.mensah@example.com", label: "Personal" },
+      dates: [ { label: "Allotment anniversary", date: "2019-04-06" } ],
+      gift_list: { title: "For Ruth", items: [ "Peppermint tea tin", "Botanical-print sewing labels", "Pocket guide to northern wildflowers" ] },
+      interactions: [
+        { date: "2025-11-16", method: "call", note: "Ruth called after the library's autumn book sale and told me about Abena's favorite exhibit." },
+        { date: "2025-07-05", method: "in_person", note: "Shared lunch at the allotment while she planned the next homework-club term." }
+      ],
+      cadence: "yearly"
+    },
+    {
+      name: "Daniel Kim",
+      archived_at: "2026-08-14 09:30:00",
+      birthday: "1990-10-11",
+      first_met: { date: "2012-02-18", note: "Daniel and I met in a weekend ceramics class. He repaired my collapsed bowl, then insisted the uneven rim gave it character." },
+      notes: [
+        "Structural engineer who recently moved from London to Vancouver. Daniel specializes in restoring older public buildings and keeps sketches of interesting staircases.",
+        "He plays badminton on Sunday mornings, makes excellent kimchi fried rice, and sends handwritten postcards from every train journey."
+      ],
+      phone: { number: "000 000 7625", label: "Mobile" },
+      email: { email: "daniel.kim@example.com", label: "Personal" },
+      dates: [ { label: "Moved to Vancouver", date: "2025-09-03" } ],
+      gift_list: { title: "Daniel's studio shelf", items: [ "Small trimming tool", "Architecture postcard set", "Cobalt-blue glaze test tiles" ] },
+      interactions: [
+        { date: "2025-12-20", method: "video", note: "Daniel showed me the view from his new apartment and the first bowl from his Vancouver studio." },
+        { date: "2025-09-02", method: "message", note: "Wished him luck before the move and compared notes on packing fragile ceramics." }
+      ],
+      cadence: "yearly"
     }
   ].freeze
 
@@ -363,6 +401,7 @@ class DemoPersonaSeedData
     end
     seed_interaction_history(person, persona.fetch(:interaction_history, {}))
     person.create_keep_in_touch_setting!(cadence: persona.fetch(:cadence), enabled_on: date("2026-01-01")) if persona[:cadence]
+    person.archive!(at: Time.zone.parse(persona.fetch(:archived_at))) if persona[:archived_at]
   end
 
   def create_contact_entry(person, type, attributes)

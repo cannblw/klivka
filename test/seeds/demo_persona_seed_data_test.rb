@@ -6,17 +6,28 @@ class DemoPersonaSeedDataTest < ActiveSupport::TestCase
     DemoPersonaSeedData.call(user: @user)
   end
 
-  test "creates fifteen detailed fictional personas" do
+  test "creates seventeen detailed fictional personas" do
     assert_equal DemoPersonaSeedData::PERSON_COUNT, @user.people.count
+    assert_equal 15, @user.people.active.count
+    assert_equal 2, @user.people.archived.count
     assert_equal DemoPersonaSeedData::PERSONAS.map { |persona| persona.fetch(:name) }, @user.people.order(:id).pluck(:name)
     assert_operator @user.people.joins(:entries).where(entries: { type: "Entry::Note" }).count, :>=, 15
-    assert_equal 15, @user.people.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
-    assert_equal 15, @user.people.joins(:entries).where(entries: { type: "Entry::FirstMet" }).count
-    assert_equal 15, @user.people.joins(:entries).where(entries: { type: "Entry::GiftList" }).count
-    assert_equal 102, @user.people.joins(:interactions).count
+    assert_equal 17, @user.people.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
+    assert_equal 17, @user.people.joins(:entries).where(entries: { type: "Entry::FirstMet" }).count
+    assert_equal 17, @user.people.joins(:entries).where(entries: { type: "Entry::GiftList" }).count
+    assert_equal 106, @user.people.joins(:interactions).count
     assert_equal 22, @user.people.find_by!(name: "Marcus Chen").interactions.count
     assert_equal 30, @user.people.find_by!(name: "Sofía Álvarez").interactions.count
     assert_equal 26, @user.people.find_by!(name: "Claire Dubois").interactions.count
+  end
+
+  test "archives two complete fictional personas" do
+    archived_people = @user.people.archived.includes(:entries, :interactions).order(:name).to_a
+
+    assert_equal [ "Daniel Kim", "Ruth Mensah" ], archived_people.map(&:name)
+    assert archived_people.all? { |person| person.entries.any? }
+    assert archived_people.all? { |person| person.interactions.any? }
+    assert archived_people.all? { |person| person.keep_in_touch_setting.present? }
   end
 
   test "preserves the persona stories and gift ideas as structured entries" do

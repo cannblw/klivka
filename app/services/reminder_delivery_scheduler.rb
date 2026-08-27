@@ -69,17 +69,17 @@ class ReminderDeliveryScheduler
   end
 
   def keep_in_touch_settings
-    KeepInTouchSetting.joins(:person).where(people: { user_id: user.id }).where.not(enabled_on: nil)
+    KeepInTouchSetting.joins(:person).where(people: { user_id: user.id, archived_at: nil }).where.not(enabled_on: nil)
   end
 
   def entry_reminders
     EntryReminder.joins(entry: :person)
-      .where(people: { user_id: user.id })
+      .where(people: { user_id: user.id, archived_at: nil })
       .where.not(entries: { type: "Entry::Birthday" })
   end
 
   def birthdays
-    Entry::Birthday.joins(:person).where(people: { user_id: user.id })
+    Entry::Birthday.joins(:person).where(people: { user_id: user.id, archived_at: nil })
   end
 
   def latest_interactions_for(settings)
