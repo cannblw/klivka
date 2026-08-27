@@ -40,15 +40,15 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   test "category normalizes Unicode and whitespace while preserving capitalization" do
-    category = users(:one).categories.create!(name: "  Close\u00A0\u00A0People  ")
+    category = users(:one).categories.create!(name: "  Close\u00A0\u00A0Friends  ")
 
-    assert_equal "Close People", category.name
-    assert_equal "close people", category.normalized_name
+    assert_equal "Close Friends", category.name
+    assert_equal "close friends", category.normalized_name
   end
 
   test "category names are unique per user after normalization" do
-    users(:one).categories.create!(name: "Close People")
-    duplicate = users(:one).categories.new(name: "  CLOSE   PEOPLE ")
+    users(:one).categories.create!(name: "Close Friends")
+    duplicate = users(:one).categories.new(name: "  CLOSE   FRIENDS ")
 
     assert_not duplicate.valid?
     assert duplicate.errors.added?(:name, :taken)

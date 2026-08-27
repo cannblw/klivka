@@ -31,12 +31,12 @@ class CategoryAssignmentsControllerTest < ActionDispatch::IntegrationTest
     people(:ada).update!(category: categories(:family))
 
     patch person_category_assignment_url(people(:ada)), params: {
-      category_assignment: { category_id: categories(:people).id }
+      category_assignment: { category_id: categories(:friends).id }
     }
 
-    assert_equal categories(:people), people(:ada).reload.category
+    assert_equal categories(:friends), people(:ada).reload.category
     assert_not_includes categories(:family).people.reload, people(:ada)
-    assert_includes categories(:people).people.reload, people(:ada)
+    assert_includes categories(:friends).people.reload, people(:ada)
   end
 
   test "category assignment returns a person to Uncategorized" do

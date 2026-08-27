@@ -100,7 +100,7 @@ class DemoPersonaSeedData
     {
       name: "Claire Dubois",
       birthday: "1997-02-14",
-      first_met: { date: "2021-01-18", note: "Claire was the pastry chef at the tiny café near my old office. We became people after she rescued my disastrous birthday tart with a very stern lesson about butter temperature." },
+      first_met: { date: "2021-01-18", note: "Claire was the pastry chef at the tiny café near my old office. We became friends after she rescued my disastrous birthday tart with a very stern lesson about butter temperature." },
       notes: [
         "Pastry chef and owner of a six-seat bakery in Lyon. She starts work before sunrise and insists that every recipe should include a note about the weather.",
         "Claire is engaged to Mathieu, a bicycle frame builder. They are renovating a yellow townhouse one room at a time and disagree about whether the kitchen needs green or blue tiles.",

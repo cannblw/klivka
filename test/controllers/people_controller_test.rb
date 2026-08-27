@@ -47,7 +47,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
       assert_select "a", text: /Ada Lovelace/
       assert_select "a", { text: /Grace Hopper/, count: 0 }
     end
-    assert_select "section[aria-labelledby='person-category-#{categories(:people).id}-heading']", count: 0
+    assert_select "section[aria-labelledby='person-category-#{categories(:friends).id}-heading']", count: 0
     assert_select "section[aria-labelledby='uncategorized-people-heading']" do
       assert_select "a", text: /Grace Hopper/
     end
@@ -66,7 +66,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
   test "grouped view omits Uncategorized when every person has a category" do
     people(:ada).update!(category: categories(:family))
-    people(:grace).update!(category: categories(:people))
+    people(:grace).update!(category: categories(:friends))
 
     get root_url
 

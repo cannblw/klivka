@@ -26,14 +26,14 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "person suggestions reuse person search and identify current categories" do
-    people(:grace).update!(category: categories(:people))
+    people(:grace).update!(category: categories(:friends))
 
     get person_suggestions_categories_url, params: { category_id: categories(:family).id, query: "grac" }
 
     assert_response :success
     suggestion = response.parsed_body.sole
     assert_equal people(:grace).name, suggestion.fetch("name")
-    assert_equal categories(:people).name, suggestion.fetch("category")
+    assert_equal categories(:friends).name, suggestion.fetch("category")
     assert_equal person_category_assignment_path(people(:grace)), suggestion.fetch("assignment_url")
   end
 
@@ -87,7 +87,7 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update shows validation errors in the category rename form" do
-    patch category_url(categories(:family)), params: { category: { name: "People" } }
+    patch category_url(categories(:family)), params: { category: { name: "Friends" } }
 
     assert_response :unprocessable_entity
     assert_select "form[action='#{category_path(categories(:family))}'] input[name='category[name]']"
