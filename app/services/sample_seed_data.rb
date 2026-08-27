@@ -3,6 +3,7 @@ require "set"
 
 class SampleSeedData
   PERSON_COUNT = 100
+  ARCHIVED_PERSON_COUNT = 2
   RANDOM_SEED = 20_260_802
   ENTRY_PATTERNS = [
     [],
@@ -70,6 +71,10 @@ class SampleSeedData
       person_names.each_with_index do |name, index|
         person = @user.people.create!(name: name)
         seed_entries(person, index, CONTACT_SCENARIOS[index])
+      end
+
+      @user.people.order(:id).last(ARCHIVED_PERSON_COUNT).each_with_index do |person, index|
+        person.archive!(at: (ARCHIVED_PERSON_COUNT - index).days.ago)
       end
     end
   ensure

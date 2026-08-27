@@ -9,12 +9,24 @@ class SampleSeedDataTest < ActiveSupport::TestCase
     SampleSeedData.call(user: @user)
 
     assert_equal 100, @user.people.count
+    assert_equal 98, @user.people.active.count
+    assert_equal 2, @user.people.archived.count
     assert_equal 12, @user.people.left_joins(:entries).where(entries: { id: nil }).count
     assert_equal 50, @user.people.joins(:entries).where(entries: { type: "Entry::Phone" }).count
     assert_equal 40, @user.people.joins(:entries).where(entries: { type: "Entry::Note" }).count
     assert_equal 30, @user.people.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
     assert_equal 32, @user.people.joins(:entries).where(entries: { type: "Entry::Email" }).count
     assert_equal 152, @user.people.joins(:entries).count
+  end
+
+  test "archives two Faker-generated people while preserving their generated entries" do
+    SampleSeedData.call(user: @user)
+
+    archived_people = @user.people.archived.order(:archived_at).to_a
+
+    assert_equal SampleSeedData::ARCHIVED_PERSON_COUNT, archived_people.size
+    assert archived_people.all? { |person| person.entries.any? }
+    assert archived_people.all? { |person| person.archived_at.present? }
   end
 
   test "creates people for contact action scenarios" do
