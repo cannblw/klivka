@@ -108,7 +108,7 @@ class PeopleController < ApplicationController
     @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @person.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = params[:quick_interaction] == "today"
-    @keep_in_touch_setting = @person.keep_in_touch_setting
+    @contact_reminder = ContactReminder.for(@person)
   end
 
   def prepare_categories

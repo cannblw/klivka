@@ -32,6 +32,7 @@ class AddGlobalContactReminders < ActiveRecord::Migration[8.1]
 
     remove_check_constraint :keep_in_touch_settings, name: "keep_in_touch_settings_disabled_cannot_be_snoozed"
     remove_column :keep_in_touch_settings, :snoozed_until, :date
+    remove_column :keep_in_touch_settings, :lock_version, :integer
 
     remove_check_constraint :reminder_deliveries, name: "reminder_deliveries_source_type_is_supported"
 

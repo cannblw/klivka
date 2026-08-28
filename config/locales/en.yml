@@ -304,28 +304,28 @@ en:
     create:
       enabled: "Contact reminder enabled."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
+      already_exists: "This person already has a contact reminder setting."
     update:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
     enable:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
     disable:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
+      already_updated: "This contact reminder was already updated."
     snooze:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
+      unavailable: "This contact reminder is no longer due."
+    destroy:
+      updated: "This person now uses your account contact reminder setting."
 
   contact_reminder:
     heading: "Keep in touch"
     description: "Choose how often you would like a gentle reminder to get in touch."
-    "off": "The contact reminder is off."
+    off_for_person: "Contact reminders are off for this person."
     frequency: "Frequency"
     current_frequency: "Frequency: %{frequency}"
     turn_on: "Turn on reminder"
@@ -337,6 +337,9 @@ en:
     snooze: "Remind me in one week"
     change_frequency: "Change frequency"
     save_frequency: "Save frequency"
+    settings: "Settings"
+    using_account_setting_html: "Using your account setting. Change it in %{settings_link}."
+    use_account_setting: "Use account setting"
     cadences:
       daily: "Daily"
       weekly: "Weekly"
@@ -400,6 +403,13 @@ en:
       email: "Email reminders"
       email_hint: "Allow reminder emails to be sent to your account address."
       no_channels: "Turn on at least one notification channel to receive reminders."
+      contacts:
+        heading: "Contact reminders"
+        description: "Choose one optional frequency for people who use your account setting. You can still change or turn off reminders for each person."
+        enabled: "Remind me to keep in touch"
+        enabled_hint: "This applies to people without their own contact reminder setting."
+        frequency: "How often"
+        frequency_hint: "People who use this account setting will follow this frequency."
       birthdays:
         heading: "Birthday reminders"
         description: "Klivka can remind you before every birthday you save."

@@ -315,28 +315,28 @@ es:
     create:
       enabled: "Recordatorio de contacto activado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+      already_exists: "Esta persona ya tiene un ajuste de recordatorio de contacto."
     update:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
     enable:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
     disable:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+      already_updated: "Este recordatorio de contacto ya se ha actualizado."
     snooze:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+      unavailable: "Este recordatorio de contacto ya no está pendiente."
+    destroy:
+      updated: "Esta persona ahora usa el ajuste de recordatorios de contacto de tu cuenta."
 
   contact_reminder:
     heading: "Mantener el contacto"
     description: "Elige con qué frecuencia quieres recibir un recordatorio amable para ponerte en contacto."
-    "off": "El recordatorio de contacto está desactivado."
+    off_for_person: "Los recordatorios de contacto están desactivados para esta persona."
     frequency: "Frecuencia"
     current_frequency: "Frecuencia: %{frequency}"
     turn_on: "Activar recordatorio"
@@ -348,6 +348,9 @@ es:
     snooze: "Recordármelo en una semana"
     change_frequency: "Cambiar frecuencia"
     save_frequency: "Guardar frecuencia"
+    settings: "Ajustes"
+    using_account_setting_html: "Usa el ajuste de tu cuenta. Cámbialo en %{settings_link}."
+    use_account_setting: "Usar ajuste de la cuenta"
     cadences:
       daily: "Diaria"
       weekly: "Semanal"
@@ -411,6 +414,13 @@ es:
       email: "Recordatorios por correo electrónico"
       email_hint: "Permite que se envíen recordatorios al correo electrónico de tu cuenta."
       no_channels: "Activa al menos un canal de notificación para recibir recordatorios."
+      contacts:
+        heading: "Recordatorios de contacto"
+        description: "Elige una frecuencia opcional para las personas que usan el ajuste de tu cuenta. Puedes cambiar o desactivar el recordatorio de cada persona."
+        enabled: "Recordarme que mantenga el contacto"
+        enabled_hint: "Se aplica a las personas que no tienen su propio ajuste de recordatorio de contacto."
+        frequency: "Con qué frecuencia"
+        frequency_hint: "Las personas que usen este ajuste de la cuenta seguirán esta frecuencia."
       birthdays:
         heading: "Recordatorios de cumpleaños"
         description: "Klivka puede avisarte antes de cada cumpleaños que guardes."

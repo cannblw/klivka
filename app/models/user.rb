@@ -96,6 +96,10 @@ class User < ApplicationRecord
     contact_reminders_enabled_on.present?
   end
 
+  def contact_reminders_enabled
+    contact_reminders_enabled?
+  end
+
   def shared_demo_account?
     Rails.application.config.x.demo_mode && email_address == Rails.application.config.x.demo_user_email_address
   end

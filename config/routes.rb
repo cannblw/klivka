@@ -25,7 +25,7 @@ Rails.application.routes.draw do
       patch :reorder, on: :collection
     end
     resources :interactions, only: %i[ index new create edit update destroy ]
-    resource :keep_in_touch_setting, only: %i[ create update ] do
+    resource :keep_in_touch_setting, only: %i[ create update destroy ] do
       patch :enable
       patch :disable
       patch :snooze

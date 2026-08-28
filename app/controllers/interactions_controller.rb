@@ -28,7 +28,7 @@ class InteractionsController < ApplicationController
       @open_interaction_modal = true
       @recent_interactions = @person.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
       @interaction_count = @person.interactions.count
-      @keep_in_touch_setting = @person.keep_in_touch_setting
+      @contact_reminder = ContactReminder.for(@person)
       @categories = Current.user.categories.order(:normalized_name).to_a
       render "people/show", status: :unprocessable_entity
     else
@@ -73,12 +73,11 @@ class InteractionsController < ApplicationController
 
   def save_interaction_and_update_reminder(clear_snooze:)
     @person.transaction do
-      setting = KeepInTouchSetting.find_by(person: @person)
-      setting&.lock!
+      reminder = ContactReminder.for(@person)
 
       next false unless @interaction.save
 
-      setting&.clear_snooze_for_latest_interaction!(@interaction) if clear_snooze
+      reminder.clear_snooze_for_latest_interaction!(@interaction) if clear_snooze
       true
     end
   end

@@ -5,7 +5,6 @@
 #  id           :integer          not null, primary key
 #  cadence      :string           not null
 #  enabled_on   :date
-#  lock_version :integer          default(0), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  person_id    :integer          not null
@@ -61,10 +60,7 @@ class KeepInTouchSetting < ApplicationRecord
   end
 
   def snooze!(on:)
-    transaction do
-      person.update!(contact_reminder_snoozed_until: on + SNOOZE_DAYS.days)
-      touch
-    end
+    transaction { contact_reminder.snooze!(on:) }
   end
 
   def disable!
@@ -76,14 +72,7 @@ class KeepInTouchSetting < ApplicationRecord
   end
 
   def clear_snooze_for_latest_interaction!(interaction)
-    return unless enabled? && person.contact_reminder_snoozed_until.present?
-    return if interaction.occurred_on < enabled_on
-    return unless interaction.occurred_on == person.interactions.maximum(:occurred_on)
-
-    transaction do
-      person.update!(contact_reminder_snoozed_until: nil)
-      touch
-    end
+    transaction { contact_reminder.clear_snooze_for_latest_interaction!(interaction) }
   end
 
   def contact_reminder

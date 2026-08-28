@@ -71,6 +71,20 @@ class ContactReminder
     person.contact_reminder_snoozed_until > cadence_date(latest_interaction_on:)
   end
 
+  def snooze!(on:)
+    person.update!(contact_reminder_snoozed_until: on + SNOOZE_DAYS.days)
+    setting&.touch
+  end
+
+  def clear_snooze_for_latest_interaction!(interaction)
+    return unless enabled? && person.contact_reminder_snoozed_until.present?
+    return if interaction.occurred_on < enabled_on
+    return unless interaction.occurred_on == person.interactions.maximum(:occurred_on)
+
+    person.update!(contact_reminder_snoozed_until: nil)
+    setting&.touch
+  end
+
   private
 
   def cadence_date(latest_interaction_on:)

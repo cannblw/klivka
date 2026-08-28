@@ -7,7 +7,6 @@ require "test_helper"
 #  id           :integer          not null, primary key
 #  cadence      :string           not null
 #  enabled_on   :date
-#  lock_version :integer          default(0), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  person_id    :integer          not null

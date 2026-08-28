@@ -80,7 +80,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
     t.string "cadence", null: false
     t.datetime "created_at", null: false
     t.date "enabled_on"
-    t.integer "lock_version", default: 0, null: false
     t.integer "person_id", null: false
     t.datetime "updated_at", null: false
     t.index ["person_id"], name: "index_keep_in_touch_settings_on_person_id", unique: true

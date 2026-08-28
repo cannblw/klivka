@@ -66,7 +66,6 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   test "logging contact clears an active reminder snooze" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: 1.week.ago.to_date)
     setting.person.update!(contact_reminder_snoozed_until: 1.week.from_now.to_date)
-    previous_lock_version = setting.lock_version
 
     post person_interactions_url(people(:ada)), params: {
       interaction: { occurred_on: users(:one).local_date.iso8601 }
@@ -74,8 +73,6 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to person_url(people(:ada))
     assert_nil setting.person.reload.contact_reminder_snoozed_until
-    setting.reload
-    assert_operator setting.lock_version, :>, previous_lock_version
   end
 
   test "logging an interaction from before the contact reminder was enabled keeps its snooze" do
@@ -128,23 +125,6 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to person_url(people(:ada))
     assert_nil setting.person.reload.contact_reminder_snoozed_until
-  end
-
-  test "a contact makes a previously opened snooze request stale" do
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: 1.week.ago.to_date)
-    setting.person.update!(contact_reminder_snoozed_until: 1.week.from_now.to_date)
-    stale_lock_version = setting.lock_version
-
-    post person_interactions_url(people(:ada)), params: {
-      interaction: { occurred_on: users(:one).local_date.iso8601 }
-    }
-
-    patch snooze_person_keep_in_touch_setting_url(people(:ada)), params: {
-      keep_in_touch_setting: { lock_version: stale_lock_version }
-    }
-
-    assert_nil setting.person.reload.contact_reminder_snoozed_until
-    assert_equal "This contact reminder changed. Please review the latest details.", flash[:alert]
   end
 
   test "destroys an interaction" do
