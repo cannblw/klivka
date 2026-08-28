@@ -1,0 +1,43 @@
+<% content_for :title, t(".title") %>
+
+<%= link_to t(".back"), root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
+
+<h1 class="mt-4 text-2xl font-bold"><%= t(".heading") %></h1>
+<p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
+
+<div class="mt-6 space-y-6">
+  <%= render SectionComponent.new(title: t(".default.heading"), description: t(".default.description")) do %>
+    <p class="text-sm font-medium text-stone-700 dark:text-stone-200" data-contact-reminder-default="<%= Current.user.contact_reminders_enabled? ? "enabled" : "disabled" %>">
+      <% if Current.user.contact_reminders_enabled? %>
+        <%= t(".default.enabled", cadence: t("contact_reminder.cadences.#{Current.user.contact_reminder_cadence}")) %>
+      <% else %>
+        <%= t(".default.disabled") %>
+      <% end %>
+    </p>
+    <%= link_to t(".default.settings"), settings_path, class: "mt-3 inline-block text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+  <% end %>
+
+  <%= turbo_frame_tag "contact_reminder_organizer" do %>
+    <%= render SectionComponent.new(title: t(".people.heading"), description: t(".people.description")) do %>
+      <% if @people.any? %>
+        <div data-controller="filter-list">
+          <div class="max-w-xl">
+            <%= render FilterSearchFieldComponent.new(
+                  id: "contact-reminder-person-search",
+                  label: t(".people.search_label"),
+                  placeholder: t(".people.search_placeholder")
+                ) %>
+          </div>
+
+          <ul class="mt-4 divide-y divide-stone-200 dark:divide-stone-700">
+            <%= render ContactReminderOrganizerPersonComponent.with_collection(@people) %>
+          </ul>
+
+          <p class="mt-4 text-sm text-stone-500 dark:text-stone-400" data-filter-list-target="empty" hidden><%= t(".people.no_results") %></p>
+        </div>
+      <% else %>
+        <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".people.empty") %></p>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

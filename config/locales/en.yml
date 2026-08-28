@@ -83,6 +83,8 @@ en:
   nav:
     birthdays: "Birthdays"
     categories: "Categories"
+    contact_reminders: "Contact reminders"
+    primary: "Main navigation"
     sign_out: "Sign out"
     settings: "Settings"
 
@@ -348,6 +350,40 @@ en:
       monthly: "Monthly"
       quarterly: "Every three months"
       yearly: "Yearly"
+
+  contact_reminders:
+    update:
+      updated: "%{name}'s contact reminder updated."
+      invalid: "This contact reminder wasn't saved: %{reason}"
+    organizer:
+      default_with_cadence: "Use default (%{cadence})"
+      default_off: "Use default (off)"
+      "off": "Off"
+      save: "Save"
+      setting_for: "Contact reminder setting for %{name}"
+      states:
+        default: "Default: %{cadence}"
+        custom: "Custom: %{cadence}"
+        default_off: "Default is off"
+        "off": "Off for this person"
+    index:
+      title: "Contact reminders"
+      back: "← People"
+      heading: "Contact reminders"
+      description: "Choose who follows your default and who needs a different reminder."
+      default:
+        heading: "Default reminder"
+        description: "This applies to active people without a custom setting."
+        enabled: "On: %{cadence}"
+        disabled: "The default reminder is off."
+        settings: "Change the default in Settings"
+      people:
+        heading: "People"
+        description: "A custom choice applies only to that person."
+        search_label: "Search people"
+        search_placeholder: "Search people..."
+        no_results: "No matching people"
+        empty: "Add someone before setting up contact reminders."
 
   birthday_reminder_status:
     enabled: "You'll be reminded about every birthday %{timing}."

@@ -10,6 +10,8 @@ class ContactReminder
   CADENCES = CADENCE_INTERVALS.keys.freeze
   DEFAULT_CADENCE = "weekly"
   GLOBAL_DEFAULT_CADENCE = "monthly"
+  DEFAULT_SELECTION = "default"
+  OFF_SELECTION = "off"
   SNOOZE_DAYS = 7
   LATEST_INTERACTION_UNSPECIFIED = Object.new.freeze
 
@@ -74,6 +76,34 @@ class ContactReminder
   def snooze!(on:)
     person.update!(contact_reminder_snoozed_until: on + SNOOZE_DAYS.days)
     setting&.touch
+  end
+
+  def use_default!
+    person.transaction do
+      setting&.destroy!
+      person.update!(contact_reminder_snoozed_until: nil)
+      @setting = nil
+    end
+  end
+
+  def override!(cadence:, on:)
+    person.transaction do
+      @setting ||= person.build_keep_in_touch_setting
+      setting.cadence = cadence
+      setting.enabled_on ||= on
+      setting.save!
+      person.update!(contact_reminder_snoozed_until: nil)
+    end
+  end
+
+  def opt_out!
+    effective_cadence = cadence || setting&.cadence || DEFAULT_CADENCE
+
+    person.transaction do
+      @setting ||= person.build_keep_in_touch_setting
+      setting.update!(cadence: effective_cadence, enabled_on: nil)
+      person.update!(contact_reminder_snoozed_until: nil)
+    end
   end
 
   def clear_snooze_for_latest_interaction!(interaction)

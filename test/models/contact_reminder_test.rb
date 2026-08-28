@@ -67,4 +67,42 @@ class ContactReminderTest < ActiveSupport::TestCase
 
     assert_equal Date.new(2026, 8, 24), reminder.next_suggestion_on(latest_interaction_on: Date.new(2026, 8, 10))
   end
+
+  test "using the default removes an individual setting and snooze" do
+    person = people(:ada)
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current)
+    person.update!(contact_reminder_snoozed_until: Date.current + 7.days)
+    reminder = ContactReminder.for(person)
+
+    reminder.use_default!
+
+    assert_nil person.reload.keep_in_touch_setting
+    assert_nil person.contact_reminder_snoozed_until
+    assert_nil reminder.setting
+  end
+
+  test "a cadence choice creates an enabled individual override and clears the snooze" do
+    person = people(:ada)
+    person.update!(contact_reminder_snoozed_until: Date.current + 7.days)
+    reminder = ContactReminder.for(person)
+
+    reminder.override!(cadence: "monthly", on: Date.new(2026, 8, 28))
+
+    assert_equal "monthly", reminder.setting.cadence
+    assert_equal Date.new(2026, 8, 28), reminder.setting.enabled_on
+    assert_nil person.reload.contact_reminder_snoozed_until
+  end
+
+  test "opting out preserves the effective cadence for later use" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "quarterly", contact_reminders_enabled_on: Date.current)
+    person = people(:ada)
+    reminder = ContactReminder.for(person, user:)
+
+    reminder.opt_out!
+
+    assert_equal "quarterly", reminder.setting.cadence
+    assert_nil reminder.setting.enabled_on
+    assert_predicate reminder, :opted_out?
+  end
 end

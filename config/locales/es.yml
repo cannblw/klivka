@@ -94,6 +94,8 @@ es:
   nav:
     birthdays: "Cumpleaños"
     categories: "Categorías"
+    contact_reminders: "Recordatorios de contacto"
+    primary: "Navegación principal"
     sign_out: "Cerrar sesión"
     settings: "Ajustes"
 
@@ -359,6 +361,40 @@ es:
       monthly: "Mensual"
       quarterly: "Cada tres meses"
       yearly: "Anual"
+
+  contact_reminders:
+    update:
+      updated: "Recordatorio de contacto de %{name} actualizado."
+      invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
+    organizer:
+      default_with_cadence: "Usar predeterminado (%{cadence})"
+      default_off: "Usar predeterminado (desactivado)"
+      "off": "Desactivado"
+      save: "Guardar"
+      setting_for: "Ajuste del recordatorio de contacto para %{name}"
+      states:
+        default: "Predeterminado: %{cadence}"
+        custom: "Personalizado: %{cadence}"
+        default_off: "El predeterminado está desactivado"
+        "off": "Desactivado para esta persona"
+    index:
+      title: "Recordatorios de contacto"
+      back: "← Personas"
+      heading: "Recordatorios de contacto"
+      description: "Elige quién usa el ajuste predeterminado y quién necesita otro recordatorio."
+      default:
+        heading: "Recordatorio predeterminado"
+        description: "Se aplica a las personas activas que no tengan un ajuste personalizado."
+        enabled: "Activado: %{cadence}"
+        disabled: "El recordatorio predeterminado está desactivado."
+        settings: "Cambiar el predeterminado en Ajustes"
+      people:
+        heading: "Personas"
+        description: "Un ajuste personalizado solo se aplica a esa persona."
+        search_label: "Buscar personas"
+        search_placeholder: "Buscar personas..."
+        no_results: "No hay personas que coincidan"
+        empty: "Añade a alguien antes de configurar los recordatorios de contacto."
 
   birthday_reminder_status:
     enabled: "Te recordaremos todos los cumpleaños %{timing}."
