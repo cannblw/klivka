@@ -13,10 +13,25 @@ class QuickInteractionComponentTest < ViewComponent::TestCase
     assert_selector "[data-interaction-date-time-zone-value='Europe/Madrid']"
     assert_selector "form[action='#{path}']"
     assert_selector "input[name='context'][value='quick_log']", visible: :all
-    assert_selector "input#interaction_occurred_on[type='date'][required]"
-    assert_selector "input#interaction_occurred_on[max='#{Date.current}']"
+    assert_selector "input#quick-interaction-dialog_interaction_occurred_on[type='date'][required]"
+    assert_selector "input#quick-interaction-dialog_interaction_occurred_on[max='#{Date.current}']"
     assert_selector "select[name='interaction[contact_method]'] option", text: "In person"
     assert_selector "textarea[name='interaction[note]']"
+  end
+
+  test "supports a unique dialog and reminders return context" do
+    person = people(:ada)
+    interaction = person.interactions.new(occurred_on: Date.current)
+
+    render_inline QuickInteractionComponent.new(
+      person:, interaction:, time_zone: "Europe/Madrid",
+      dom_id: "contact-dialog-123", button_label: "Contact now", return_to: "reminders"
+    )
+
+    assert_selector "button[aria-controls='contact-dialog-123']", text: "Contact now"
+    assert_selector "dialog#contact-dialog-123[aria-labelledby='contact-dialog-123-heading']"
+    assert_selector "input#contact-dialog-123_interaction_occurred_on"
+    assert_selector "input[name='return_to'][value='reminders']", visible: :hidden
   end
 
   test "reopens an invalid interaction with errors and submitted details" do

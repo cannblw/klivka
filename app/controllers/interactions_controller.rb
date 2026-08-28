@@ -22,7 +22,12 @@ class InteractionsController < ApplicationController
     @interaction.validation_date = Current.user.local_date
 
     if save_interaction_and_update_reminder(clear_snooze: true)
-      redirect_to @person, notice: t("interactions.create.created")
+      redirect_to interaction_create_redirect_path, notice: t("interactions.create.created")
+    elsif quick_log_from_reminders?
+      @due_contact_reminders = DueContactRemindersQuery.call(user: Current.user)
+      @interactions_by_person_id = { @person.id => @interaction }
+      @open_interaction_person_id = @person.id
+      render "reminders/index", status: :unprocessable_entity
     elsif params[:context] == "quick_log"
       @interaction_to_enrich = @interaction
       @open_interaction_modal = true
@@ -80,6 +85,14 @@ class InteractionsController < ApplicationController
       reminder.clear_snooze_for_latest_interaction!(@interaction) if clear_snooze
       true
     end
+  end
+
+  def interaction_create_redirect_path
+    quick_log_from_reminders? ? reminders_path : @person
+  end
+
+  def quick_log_from_reminders?
+    params[:context] == "quick_log" && params[:return_to] == "reminders"
   end
 
   def page_number

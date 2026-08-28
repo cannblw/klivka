@@ -67,6 +67,15 @@ class ContactReminderDigestBuilderTest < ActiveSupport::TestCase
     assert_equal [ late ], next_digest.reminder_deliveries.to_a
   end
 
+  test "includes failed individual contact work in the next digest" do
+    delivery = create_delivery(people(:ada), reminder_on: @delivery_on)
+    delivery.update!(status: ReminderDelivery::FAILED_STATUS, failed_at: local_time(7))
+
+    digest = ContactReminderDigestBuilder.call(user: @user, at: local_time(8))
+
+    assert_equal [ delivery ], digest.reminder_deliveries.to_a
+  end
+
   private
 
   def create_delivery(source, reminder_on:, user: @user, channel: "email")

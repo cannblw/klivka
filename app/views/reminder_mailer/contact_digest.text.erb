@@ -1,0 +1,13 @@
+<%= t(".heading", count: @contact_count, name: @preview_people.first.name) %>
+
+<%= t(".body", count: @contact_count, name: @preview_people.first.name) %>
+
+<% @preview_people.each do |person| %>
+- <%= person.name %>: <%= person_url(person) %>
+<% end %>
+<% if @remaining_count.positive? %>
+<%= t(".more", count: @remaining_count) %>
+<% end %>
+
+<%= t(".view_all") %>: <%= @reminders_url %>
+<%= t(".settings") %>: <%= @settings_url %>

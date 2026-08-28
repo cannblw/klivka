@@ -95,6 +95,10 @@ class PeopleController < ApplicationController
       @return_params = { from: "birthdays", month: }.compact
       @back_path = birthdays_path(month:)
       @back_translation_key = "people.show.back_to_birthdays"
+    elsif params[:from] == "reminders"
+      @return_params = { from: "reminders" }
+      @back_path = reminders_path
+      @back_translation_key = "people.show.back_to_reminders"
     else
       @return_params = {}
       @back_path = root_path

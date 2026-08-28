@@ -8,8 +8,11 @@ class DueContactReminderComponentTest < ViewComponent::TestCase
 
     render_inline DueContactReminderComponent.new(due_reminder:)
 
-    assert_link person.name, href: routes.person_path(person)
-    assert_link href: routes.person_path(person, quick_interaction: "today")
+    dialog_id = "#{QuickInteractionComponent::DOM_ID}-#{person.id}"
+    assert_link person.name, href: routes.person_path(person, from: "reminders")
+    assert_selector "button[aria-controls='#{dialog_id}'][aria-haspopup='dialog']"
+    assert_selector "dialog##{dialog_id}"
+    assert_selector "form[action='#{routes.person_interactions_path(person)}'] input[name='return_to'][value='reminders']", visible: :all
     assert_selector "form[action='#{routes.snooze_person_keep_in_touch_setting_path(person)}']"
     assert_selector "input[name='return_to'][value='reminders']", visible: :hidden
     assert_selector "button[type='submit']"

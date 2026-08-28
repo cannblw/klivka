@@ -1,58 +1,8 @@
 require "test_helper"
 
 class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
-  test "delivers an inherited contact reminder email" do
-    user = users(:one)
-    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
-    person = user.people.create!(name: "Inherited Person")
-    delivery = create_delivery(person)
-    transport = RecordingTransport.new
-
-    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
-
-    assert_equal ReminderDelivery::DELIVERED_STATUS, delivery.reload.status
-    assert_equal "A reminder to keep in touch with Inherited Person", transport.message.subject
-    assert_nil person.keep_in_touch_setting
-  end
-
-  test "cancels inherited email work when the global contact reminder is turned off" do
-    user = users(:one)
-    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
-    person = user.people.create!(name: "Inherited Person")
-    delivery = create_delivery(person)
-    user.update!(contact_reminders_enabled_on: nil)
-    transport = RecordingTransport.new
-
-    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
-
-    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
-    assert_empty transport.messages
-  end
-
-  test "delivers a keep-in-touch email and records the provider result" do
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting.person)
-    transport = RecordingTransport.new
-
-    result = ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
-
-    assert_equal({ identifier: "provider-id" }, result)
-
-    delivery.reload
-    assert_equal "delivered", delivery.status
-    assert_equal 1, delivery.attempts
-    assert_equal delivery_time, delivery.delivered_at
-    assert_nil delivery.claimed_at
-    assert_equal "reminder-delivery/#{delivery.id}", transport.delivery_id
-    assert_equal "A reminder to keep in touch with Ada Lovelace", transport.message.subject
-  end
-
   test "selects birthday and significant-date mailers from their entry source" do
-    birthday_delivery = create_delivery(
-      entries(:ada_birthday),
-      reminder_on: Date.new(2026, 11, 10),
-      occurrence_on: Date.new(2026, 12, 10)
-    )
+    birthday_delivery = birthday_delivery()
     date_entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2026, 9, 7), content: { "label" => "Moving day" })
     date_reminder = date_entry.create_entry_reminder!(lead_value: 1, lead_unit: "days", recurrence: "one_time")
     date_delivery = create_delivery(date_reminder, reminder_on: Date.new(2026, 9, 6), occurrence_on: Date.new(2026, 9, 7))
@@ -65,72 +15,40 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
     assert_equal "Ada Lovelace: Moving day is coming up", transport.messages.fetch(1).subject
   end
 
-  test "records a failed attempt and allows a later retry" do
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting.person)
-    transport = FailingTransport.new
+  test "records a failed individual date attempt and allows a later retry" do
+    delivery = birthday_delivery
 
     assert_raises MailTransports::DeliveryError do
-      ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
+      ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport: FailingTransport.new)
     end
 
-    delivery.reload
-    assert_equal "failed", delivery.status
+    assert_equal ReminderDelivery::FAILED_STATUS, delivery.reload.status
     assert_equal 1, delivery.attempts
     assert_equal delivery_time, delivery.failed_at
     assert_nil delivery.claimed_at
 
-    delivery.update!(failed_at: delivery_time - 1.minute)
-    successful_transport = RecordingTransport.new
     ReminderDeliveryEmailDelivery.call(
-      delivery_id: delivery.id, at: delivery_time + 1.minute, transport: successful_transport
+      delivery_id: delivery.id, at: delivery_time + 1.minute, transport: RecordingTransport.new
     )
 
-    assert_equal "delivered", delivery.reload.status
+    assert_equal ReminderDelivery::DELIVERED_STATUS, delivery.reload.status
     assert_equal 2, delivery.attempts
   end
 
-  test "cancels a claimed delivery when its reminder is no longer current" do
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting.person)
-    setting.disable!
-    transport = RecordingTransport.new
-
-    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
-
-    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
-    assert_empty transport.messages
-  end
-
-  test "cancels a claimed delivery when its person was archived" do
+  test "does not deliver person email work through the individual path" do
     person = people(:ada)
-    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting.person)
-    person.archive!
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    delivery = create_delivery(person, reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8))
     transport = RecordingTransport.new
 
-    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
+    assert_nil ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
 
-    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
     assert_empty transport.messages
   end
 
-  test "does not overwrite a newer outcome after its claim expires" do
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting.person)
-    transport = ReplacingTransport.new(delivery:, replaced_at: delivery_time + 1.minute)
-
-    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
-
-    delivery.reload
-    assert_equal "delivered", delivery.status
-    assert_equal delivery_time + 1.minute, delivery.delivered_at
-    assert_nil delivery.claim_token
-  end
-
-  test "marks an exhausted abandoned claim as failed" do
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting.person)
+  test "marks an exhausted abandoned individual claim as failed" do
+    delivery = birthday_delivery
     delivery.update!(
       attempts: Rails.application.config.x.reminder_delivery_retry_attempts,
       claimed_at: delivery_time - Rails.application.config.x.reminder_delivery_claim_timeout - 1.minute,
@@ -139,8 +57,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
     ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time)
 
-    delivery.reload
-    assert_equal "failed", delivery.status
+    assert_equal ReminderDelivery::FAILED_STATUS, delivery.reload.status
     assert_equal delivery_time, delivery.failed_at
     assert_nil delivery.claimed_at
     assert_nil delivery.claim_token
@@ -148,52 +65,40 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
   private
 
-  def create_delivery(source, reminder_on: Date.new(2026, 8, 8), occurrence_on: reminder_on)
+  def birthday_delivery
+    create_delivery(
+      entries(:ada_birthday),
+      reminder_on: Date.new(2026, 11, 10),
+      occurrence_on: Date.new(2026, 12, 10)
+    )
+  end
+
+  def create_delivery(source, reminder_on:, occurrence_on:)
     ReminderDelivery.create!(
       user: users(:one), source:, channel: "email", reminder_on:, occurrence_on:
     )
   end
 
   def delivery_time
-    Time.utc(2026, 8, 8, 12)
+    Time.utc(2026, 11, 10, 12)
   end
 
   class RecordingTransport
-    attr_reader :message, :messages, :delivery_id
+    attr_reader :messages
 
     def initialize
       @messages = []
     end
 
     def deliver(message:, delivery_id:)
-      @message = message
       @messages << message
-      @delivery_id = delivery_id
-      { identifier: "provider-id" }
+      { identifier: delivery_id }
     end
   end
 
   class FailingTransport
     def deliver(message:, delivery_id:)
       raise MailTransports::DeliveryError, "provider unavailable"
-    end
-  end
-
-  class ReplacingTransport
-    def initialize(delivery:, replaced_at:)
-      @delivery = delivery
-      @replaced_at = replaced_at
-    end
-
-    def deliver(message:, delivery_id:)
-      @delivery.update_columns(
-        status: "delivered",
-        delivered_at: @replaced_at,
-        claimed_at: nil,
-        claim_token: nil,
-        updated_at: @replaced_at
-      )
-      { identifier: "newer-delivery" }
     end
   end
 end

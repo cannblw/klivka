@@ -600,6 +600,7 @@ es:
     show:
       back: "← Personas"
       back_to_birthdays: "← Cumpleaños"
+      back_to_reminders: "← Recordatorios"
       back_to_archived: "← Personas archivadas"
       archive: "Archivar persona"
       restore: "Restaurar"
@@ -755,13 +756,24 @@ es:
     footer: "Un mensaje de Klivka, tu cuaderno privado para cuidar tus relaciones."
 
   reminder_mailer:
-    keep_in_touch:
-      subject: "Un recordatorio para mantener el contacto con %{name}"
-      eyebrow: "Mantén el contacto"
-      heading: "Mantén el contacto con %{name}"
-      body: "Pediste a Klivka que te recordara mantener el contacto con %{name}."
-      open_person: "Ver a %{name}"
-      record_contact: "Registrar contacto"
+    contact_digest:
+      subject:
+        one: "Un recordatorio para contactar con %{name}"
+        other: "%{count} personas con las que querías contactar"
+      preheader:
+        one: "Es un buen momento para contactar con %{name}."
+        other: "Es un buen momento para contactar con %{count} personas."
+      eyebrow: "Recordatorios de contacto"
+      heading:
+        one: "Contacta con %{name}"
+        other: "%{count} personas con las que contactar"
+      body:
+        one: "Pediste a Klivka que te recordara contactar con %{name}."
+        other: "Estas son las personas que pediste a Klivka que te recordara."
+      more:
+        one: "Y una persona más"
+        other: "Y %{count} personas más"
+      view_all: "Ver todos los recordatorios"
       settings: "Gestionar ajustes de recordatorios"
 
     birthday:

@@ -8,13 +8,16 @@ class ReminderMailerPreviewTest < ActionMailer::TestCase
       time_zone: "UTC"
     )
     person = user.people.create!(name: "Preview Person")
+    5.times { |index| user.people.create!(name: "Preview Person #{index + 2}") }
     Entry::Birthday.create!(person:, entry_date: Date.new(1990, 9, 14))
     record_counts = reminder_record_counts
 
     preview = ReminderMailerPreview.new
     messages = [
-      preview.keep_in_touch,
-      preview.keep_in_touch_spanish,
+      preview.contact_digest,
+      preview.contact_digest_single,
+      preview.contact_digest_spanish,
+      preview.contact_digest_single_spanish,
       preview.birthday,
       preview.birthday_spanish,
       preview.significant_date,
@@ -28,6 +31,6 @@ class ReminderMailerPreviewTest < ActionMailer::TestCase
   private
 
   def reminder_record_counts
-    [ KeepInTouchSetting.count, EntryReminder.count, ReminderDelivery.count ]
+    [ KeepInTouchSetting.count, EntryReminder.count, ReminderDelivery.count, ContactReminderDigest.count ]
   end
 end

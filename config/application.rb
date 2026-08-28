@@ -111,6 +111,13 @@ module Klivka
       raise ArgumentError, "CONTACT_REMINDER_DIGEST_HOUR must be between 0 and 23"
     end
 
+    config.x.contact_reminder_digest_preview_limit = Integer(
+      ENV.fetch("CONTACT_REMINDER_DIGEST_PREVIEW_LIMIT", "5"), 10
+    )
+    unless config.x.contact_reminder_digest_preview_limit.positive?
+      raise ArgumentError, "CONTACT_REMINDER_DIGEST_PREVIEW_LIMIT must be positive"
+    end
+
     config.x.application_url = ENV.fetch("APPLICATION_URL", "http://localhost:3000").strip.chomp("/")
     application_uri = URI.parse(config.x.application_url)
     unless application_uri.is_a?(URI::HTTP) && application_uri.host.present? && application_uri.userinfo.nil? &&

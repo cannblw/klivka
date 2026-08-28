@@ -1,5 +1,32 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: contact_reminder_digests
+#
+#  id           :integer          not null, primary key
+#  attempts     :integer          default(0), not null
+#  canceled_at  :datetime
+#  claim_token  :string
+#  claimed_at   :datetime
+#  delivered_at :datetime
+#  delivery_on  :date             not null
+#  failed_at    :datetime
+#  status       :string           default("pending"), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  user_id      :integer          not null
+#
+# Indexes
+#
+#  index_contact_reminder_digests_on_status_and_delivery_on   (status,delivery_on)
+#  index_contact_reminder_digests_on_user_id                  (user_id)
+#  index_contact_reminder_digests_on_user_id_and_delivery_on  (user_id,delivery_on) UNIQUE
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id) ON DELETE => cascade
+#
 class ContactReminderDigestTest < ActiveSupport::TestCase
   test "allows one digest for an account on each local delivery date" do
     digest = ContactReminderDigest.create!(user: users(:one), delivery_on: Date.new(2026, 8, 28))

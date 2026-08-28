@@ -9,7 +9,12 @@
   <%= render SectionComponent.new(title: t(".contacts.heading"), description: t(".contacts.description"), heading_id: "due-contact-reminders-heading") do %>
     <% if @due_contact_reminders.any? %>
       <ul class="divide-y divide-stone-200 dark:divide-stone-700">
-        <%= render DueContactReminderComponent.with_collection(@due_contact_reminders) %>
+        <%= render DueContactReminderComponent.with_collection(
+              @due_contact_reminders,
+              time_zone: Current.user.time_zone,
+              interactions_by_person_id: @interactions_by_person_id,
+              open_person_id: @open_interaction_person_id
+            ) %>
       </ul>
     <% else %>
       <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".contacts.empty") %></p>

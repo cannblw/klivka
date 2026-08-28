@@ -21,9 +21,13 @@ class RemindersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", text: "Reminders"
-    assert_select "a[href='#{person_path(people(:ada), quick_interaction: "today")}']"
-    assert_select "a[href='#{person_path(people(:grace), quick_interaction: "today")}']"
-    assert_select "a[href='#{person_path(future_person, quick_interaction: "today")}']", count: 0
+    assert_select "a[href='#{person_path(people(:ada), from: "reminders")}']"
+    assert_select "a[href='#{person_path(people(:grace), from: "reminders")}']"
+    assert_select "a[href='#{person_path(future_person, from: "reminders")}']", count: 0
+    assert_select "dialog##{QuickInteractionComponent::DOM_ID}-#{people(:ada).id}"
+    assert_select "dialog##{QuickInteractionComponent::DOM_ID}-#{people(:grace).id}"
+    assert_select "dialog##{QuickInteractionComponent::DOM_ID}-#{future_person.id}", count: 0
+    assert_select "form[action='#{person_interactions_path(people(:ada))}'] input[name='return_to'][value='reminders']"
     assert_select "form[action='#{snooze_person_keep_in_touch_setting_path(people(:ada))}'] input[name='return_to'][value='reminders']"
   end
 

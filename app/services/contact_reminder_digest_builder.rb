@@ -33,7 +33,7 @@ class ContactReminderDigestBuilder
       contact_reminder_digest_id: nil,
       source_type: Person.polymorphic_name,
       channel: ReminderDelivery::EMAIL_CHANNEL,
-      status: ReminderDelivery::PENDING_STATUS,
+      status: [ ReminderDelivery::PENDING_STATUS, ReminderDelivery::FAILED_STATUS ],
       reminder_on: ..local_date
     )
   end

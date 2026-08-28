@@ -589,6 +589,7 @@ en:
     show:
       back: "← People"
       back_to_birthdays: "← Birthdays"
+      back_to_reminders: "← Reminders"
       back_to_archived: "← Archived people"
       archive: "Archive person"
       restore: "Restore"
@@ -744,13 +745,24 @@ en:
     footer: "A message from Klivka, your private relationship notebook."
 
   reminder_mailer:
-    keep_in_touch:
-      subject: "A reminder to keep in touch with %{name}"
-      eyebrow: "Keep in touch"
-      heading: "Keep in touch with %{name}"
-      body: "You asked Klivka to remind you to keep in touch with %{name}."
-      open_person: "Open %{name}"
-      record_contact: "Record contact"
+    contact_digest:
+      subject:
+        one: "A reminder to contact %{name}"
+        other: "%{count} people you planned to contact"
+      preheader:
+        one: "%{name} is ready to hear from you."
+        other: "%{count} people are ready to hear from you."
+      eyebrow: "Contact reminders"
+      heading:
+        one: "Contact %{name}"
+        other: "%{count} people to contact"
+      body:
+        one: "You asked Klivka to remind you about %{name}."
+        other: "Here are the people you asked Klivka to remind you about."
+      more:
+        one: "And one more person"
+        other: "And %{count} more people"
+      view_all: "View all reminders"
       settings: "Manage reminder settings"
 
     birthday:

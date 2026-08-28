@@ -318,6 +318,14 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='hidden'][name='month']", count: 0
   end
 
+  test "show links back to reminders when opened from the due list" do
+    get person_url(people(:ada)), params: { from: "reminders" }
+
+    assert_response :success
+    assert_select "a[href='#{reminders_path}']", text: /Reminders/
+    assert_select "form[action='#{person_path(people(:ada))}'] input[type='hidden'][name='from'][value='reminders']"
+  end
+
   test "show opens the quick interaction dialog when requested by a reminder link" do
     get person_url(people(:ada)), params: { quick_interaction: "today" }
 

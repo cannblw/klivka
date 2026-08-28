@@ -21,6 +21,7 @@ class ApplicationConfigurationTest < ActiveSupport::TestCase
     assert_equal 5, configuration.reminder_job_threads
     assert_equal 60.minutes, configuration.reminder_dispatch_interval
     assert_equal 8, configuration.contact_reminder_digest_hour
+    assert_equal 5, configuration.contact_reminder_digest_preview_limit
     assert_equal 1, configuration.job_processes
     assert_equal 7, configuration.queue_database_pool
     assert_equal 5.megabytes, configuration.vcard_import_max_file_size_bytes

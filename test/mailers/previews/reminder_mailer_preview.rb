@@ -1,10 +1,18 @@
 class ReminderMailerPreview < ActionMailer::Preview
-  def keep_in_touch
-    reminder(:keep_in_touch, keep_in_touch_source, :en)
+  def contact_digest
+    contact_digest_for(:en, count: 6)
   end
 
-  def keep_in_touch_spanish
-    reminder(:keep_in_touch, keep_in_touch_source, :es)
+  def contact_digest_single
+    contact_digest_for(:en, count: 1)
+  end
+
+  def contact_digest_spanish
+    contact_digest_for(:es, count: 6)
+  end
+
+  def contact_digest_single_spanish
+    contact_digest_for(:es, count: 1)
   end
 
   def birthday
@@ -24,6 +32,20 @@ class ReminderMailerPreview < ActionMailer::Preview
   end
 
   private
+
+  def contact_digest_for(locale, count:)
+    user = preview_user(locale)
+    people = user.people.active.order(:id).limit(count).to_a
+    digest = ContactReminderDigest.new(user:, delivery_on: Date.current)
+    deliveries = people.map do |person|
+      ReminderDelivery.new(
+        user:, source: person, channel: ReminderDelivery::EMAIL_CHANNEL,
+        reminder_on: Date.current, occurrence_on: Date.current
+      )
+    end
+    preview_people = deliveries.first(Rails.application.config.x.contact_reminder_digest_preview_limit).map(&:source)
+    ReminderMailer.with(digest:, people: preview_people, count: deliveries.size).contact_digest
+  end
 
   def reminder(action, source, locale)
     ReminderMailer.with(delivery: delivery_for(source, locale:)).public_send(action)
@@ -48,10 +70,6 @@ class ReminderMailerPreview < ActionMailer::Preview
 
   def preview_person
     @preview_person ||= preview_user.people.order(:id).first!
-  end
-
-  def keep_in_touch_source
-    preview_person
   end
 
   def birthday_source

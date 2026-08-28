@@ -1,20 +1,39 @@
 require "test_helper"
 
 class ReminderMailerTest < ActionMailer::TestCase
-  test "keep-in-touch email includes localized copy and direct contact links" do
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting.person, reminder_on: Date.new(2026, 8, 8))
+  test "contact digest links to every previewed person and the complete reminder list" do
+    digest = ContactReminderDigest.create!(user: users(:one), delivery_on: Date.new(2026, 8, 8))
+    deliveries = [ people(:ada), people(:grace) ].map do |person|
+      create_delivery(person, reminder_on: digest.delivery_on, contact_reminder_digest: digest)
+    end
 
-    mail = ReminderMailer.with(delivery:).keep_in_touch
+    mail = ReminderMailer.with(digest:, people: deliveries.map(&:source), count: deliveries.size).contact_digest
 
     assert_equal [ "one@example.com" ], mail.to
     assert_equal [ "from@example.com" ], mail.from
-    assert_equal "A reminder to keep in touch with Ada Lovelace", mail.subject
+    assert_predicate mail.subject, :present?
     assert_includes mail.html_part.body.to_s, 'src="http://localhost:3000/brand/klivka-logo.svg"'
-    assert_includes mail.html_part.body.to_s, "Keep in touch with Ada Lovelace"
-    assert_includes mail.text_part.body.to_s,
-      "http://localhost:3000/people/ada-lovelace?quick_interaction=today#quick-interaction-dialog"
+    assert_includes mail.text_part.body.to_s, "http://localhost:3000/people/ada-lovelace"
+    assert_includes mail.text_part.body.to_s, "http://localhost:3000/people/grace-hopper"
+    assert_includes mail.text_part.body.to_s, "http://localhost:3000/reminders"
     assert_includes mail.text_part.body.to_s, "http://localhost:3000/settings"
+  end
+
+  test "contact digest limits its email preview while retaining the complete count" do
+    user = users(:one)
+    digest = ContactReminderDigest.create!(user:, delivery_on: Date.new(2026, 8, 8))
+    people = 6.times.map { |index| user.people.create!(name: "Digest person #{index}") }
+    deliveries = people.map do |person|
+      create_delivery(person, reminder_on: digest.delivery_on, contact_reminder_digest: digest)
+    end
+
+    preview_limit = Rails.application.config.x.contact_reminder_digest_preview_limit
+    preview_people = deliveries.first(preview_limit).map(&:source)
+    body = ReminderMailer.with(digest:, people: preview_people, count: deliveries.size).contact_digest.text_part.body.to_s
+
+    people.first(preview_limit).each { |person| assert_includes body, person.name }
+    assert_not_includes body, people.last.name
+    assert_includes body, "6"
   end
 
   test "birthday email uses the account locale and links to the person" do
@@ -54,9 +73,9 @@ class ReminderMailerTest < ActionMailer::TestCase
 
   private
 
-  def create_delivery(source, reminder_on:, occurrence_on: reminder_on)
+  def create_delivery(source, reminder_on:, occurrence_on: reminder_on, contact_reminder_digest: nil)
     ReminderDelivery.create!(
-      user: users(:one), source:, channel: "email", reminder_on:, occurrence_on:
+      user: users(:one), source:, channel: "email", reminder_on:, occurrence_on:, contact_reminder_digest:
     )
   end
 end

@@ -170,6 +170,44 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "quick log from reminders returns to the due reminder list" do
+    person = people(:ada)
+    person.create_keep_in_touch_setting!(cadence: "daily", enabled_on: users(:one).local_date.yesterday)
+
+    assert_difference -> { person.interactions.count }, 1 do
+      post person_interactions_url(person), params: {
+        context: "quick_log",
+        return_to: "reminders",
+        interaction: { occurred_on: users(:one).local_date.iso8601 }
+      }
+    end
+
+    assert_redirected_to reminders_url
+  end
+
+  test "invalid quick log from reminders reopens that person's dialog on the due list" do
+    person = people(:ada)
+    person.create_keep_in_touch_setting!(cadence: "daily", enabled_on: users(:one).local_date.yesterday)
+
+    assert_no_difference -> { person.interactions.count } do
+      post person_interactions_url(person), params: {
+        context: "quick_log",
+        return_to: "reminders",
+        interaction: {
+          occurred_on: users(:one).local_date.tomorrow.iso8601,
+          contact_method: "call",
+          note: "Keep this reminder note"
+        }
+      }
+    end
+
+    dialog_id = "#{QuickInteractionComponent::DOM_ID}-#{person.id}"
+    assert_response :unprocessable_entity
+    assert_select "[data-dialog-open-value='true'] dialog##{dialog_id}"
+    assert_select "dialog##{dialog_id} textarea", text: "Keep this reminder note"
+    assert_select "dialog##{dialog_id} .text-red-600", text: /must not be in the future/
+  end
+
   test "invalid quick log reopens the unsaved modal with errors and submitted details" do
     assert_no_difference -> { people(:ada).interactions.count } do
       post person_interactions_url(people(:ada)), params: {
