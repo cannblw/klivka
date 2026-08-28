@@ -1,6 +1,85 @@
 require "test_helper"
 
 class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
+  test "keeps pending inherited contact reminder work that matches the global policy" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Inherited reminder")
+    delivery = create_delivery(person)
+
+    assert_equal 0, reconcile
+
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
+  end
+
+  test "cancels inherited contact reminder work when the global policy changes" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    disabled_person = user.people.create!(name: "Globally disabled")
+    disabled_delivery = create_delivery(disabled_person, channel: "email")
+    user.update!(contact_reminders_enabled_on: nil)
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, disabled_delivery.reload.status
+
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    changed_person = user.people.create!(name: "Global cadence changed")
+    changed_delivery = create_delivery(changed_person, channel: "in_app")
+    user.update!(contact_reminder_cadence: "monthly")
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, changed_delivery.reload.status
+  end
+
+  test "cancels inherited contact reminder work after an individual opt-out or snooze" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    opted_out_person = user.people.create!(name: "Opted out")
+    opted_out_delivery = create_delivery(opted_out_person, channel: "email")
+    ContactReminder.for(opted_out_person, user:).opt_out!
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, opted_out_delivery.reload.status
+
+    snoozed_person = user.people.create!(name: "Snoozed")
+    snoozed_delivery = create_delivery(snoozed_person, channel: "in_app")
+    ContactReminder.for(snoozed_person, user:).snooze!(on: Date.new(2026, 8, 8))
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, snoozed_delivery.reload.status
+  end
+
+  test "cancels inherited contact reminder work after contact or deletion" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    contacted_person = user.people.create!(name: "Contacted person")
+    contacted_delivery = create_delivery(contacted_person, channel: "email")
+    contacted_person.interactions.create!(occurred_on: Date.new(2026, 8, 8))
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, contacted_delivery.reload.status
+
+    deleted_person = user.people.create!(name: "Deleted person")
+    deleted_delivery = create_delivery(deleted_person, channel: "in_app")
+    deleted_person.destroy!
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, deleted_delivery.reload.status
+  end
+
+  test "cancels custom work when removing the override changes the effective cadence" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "monthly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Removed override")
+    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    delivery = create_delivery(person)
+
+    ContactReminder.new(person:, setting:, user:).use_default!
+
+    assert_equal 1, reconcile
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+  end
+
   test "keeps pending work that still matches its current source" do
     setting = create_setting
     delivery = create_delivery(setting.person)

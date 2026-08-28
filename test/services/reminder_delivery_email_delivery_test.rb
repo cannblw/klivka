@@ -1,6 +1,34 @@
 require "test_helper"
 
 class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
+  test "delivers an inherited contact reminder email" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Inherited Person")
+    delivery = create_delivery(person)
+    transport = RecordingTransport.new
+
+    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
+
+    assert_equal ReminderDelivery::DELIVERED_STATUS, delivery.reload.status
+    assert_equal "A reminder to keep in touch with Inherited Person", transport.message.subject
+    assert_nil person.keep_in_touch_setting
+  end
+
+  test "cancels inherited email work when the global contact reminder is turned off" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Inherited Person")
+    delivery = create_delivery(person)
+    user.update!(contact_reminders_enabled_on: nil)
+    transport = RecordingTransport.new
+
+    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
+
+    assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
+    assert_empty transport.messages
+  end
+
   test "delivers a keep-in-touch email and records the provider result" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
     delivery = create_delivery(setting.person)

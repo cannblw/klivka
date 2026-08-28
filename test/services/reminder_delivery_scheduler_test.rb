@@ -1,6 +1,41 @@
 require "test_helper"
 
 class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
+  test "records each enabled channel for a due inherited contact reminder" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Inherited reminder")
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal %w[email in_app], person.reminder_deliveries.order(:channel).pluck(:channel)
+    assert_equal [ Date.new(2026, 8, 8) ], person.reminder_deliveries.distinct.pluck(:reminder_on)
+    assert_nil person.keep_in_touch_setting
+  end
+
+  test "an individual opt-out is excluded from global contact reminder discovery" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Opted out")
+    person.create_keep_in_touch_setting!(cadence: "weekly")
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_empty person.reminder_deliveries
+  end
+
+  test "an individual override is discovered while the global reminder is off" do
+    user = users(:one)
+    person = user.people.create!(name: "Individual reminder")
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    inherited_person = user.people.create!(name: "No reminder")
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal 2, person.reminder_deliveries.count
+    assert_empty inherited_person.reminder_deliveries
+  end
+
   test "records each enabled channel for a due keep-in-touch reminder" do
     setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
 
@@ -234,6 +269,74 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     delivery.reload
     assert_equal ReminderDelivery::PENDING_STATUS, delivery.status
     assert_nil delivery.canceled_at
+  end
+
+  test "restoring a person reactivates eligible inherited reminder work" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Restored inherited reminder")
+    delivery = ReminderDelivery.create!(
+      user:, source: person, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8),
+      canceled_at: Time.utc(2026, 8, 8, 10)
+    )
+    person.archive!
+    person.restore!
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
+    assert_nil delivery.canceled_at
+    assert_nil person.keep_in_touch_setting
+  end
+
+  test "returning to the global policy reactivates matching inherited work" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Returned to default")
+    reminder = ContactReminder.for(person, user:)
+    reminder.opt_out!
+    delivery = ReminderDelivery.create!(
+      user:, source: person, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8),
+      canceled_at: Time.utc(2026, 8, 8, 10)
+    )
+    reminder.use_default!
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
+    assert_nil delivery.canceled_at
+  end
+
+  test "loads latest interactions once for each contact reminder batch" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    user.people.create!(name: "Another inherited reminder")
+    scheduler_class = Class.new(ReminderDeliveryScheduler) do
+      attr_reader :interaction_batch_count
+
+      def initialize(...)
+        super
+        @interaction_batch_count = 0
+      end
+
+      private
+
+      def latest_interactions_for(people)
+        @interaction_batch_count += 1
+        super
+      end
+
+      def batch_size
+        2
+      end
+    end
+    scheduler = scheduler_class.new(user:, at: Time.utc(2026, 8, 8, 12))
+
+    scheduler.call
+
+    assert_equal (user.people.active.count / 2.0).ceil, scheduler.interaction_batch_count
   end
 
   test "records work only for enabled account channels" do
