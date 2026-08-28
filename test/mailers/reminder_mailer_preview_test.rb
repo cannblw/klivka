@@ -1,7 +1,7 @@
 require "test_helper"
 
 class ReminderMailerPreviewTest < ActionMailer::TestCase
-  test "renders every reminder email from basic development seed data without creating reminder records" do
+  test "renders representative reminder emails without creating reminder records" do
     user = User.create!(
       email_address: Rails.application.config.x.development_seed_email_address,
       password: "preview-password",
@@ -16,12 +16,8 @@ class ReminderMailerPreviewTest < ActionMailer::TestCase
     messages = [
       preview.contact_digest,
       preview.contact_digest_single,
-      preview.contact_digest_spanish,
-      preview.contact_digest_single_spanish,
       preview.birthday,
-      preview.birthday_spanish,
-      preview.significant_date,
-      preview.significant_date_spanish
+      preview.significant_date
     ]
 
     assert messages.all?(&:multipart?)

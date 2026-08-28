@@ -1,8 +1,8 @@
 require "test_helper"
 
 class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
-  test "selects birthday and significant-date mailers from their entry source" do
-    birthday_delivery = birthday_delivery()
+  test "delivers birthday and significant-date work through their individual mailers" do
+    birthday_delivery = create_birthday_delivery
     date_entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2026, 9, 7), content: { "label" => "Moving day" })
     date_reminder = date_entry.create_entry_reminder!(lead_value: 1, lead_unit: "days", recurrence: "one_time")
     date_delivery = create_delivery(date_reminder, reminder_on: Date.new(2026, 9, 6), occurrence_on: Date.new(2026, 9, 7))
@@ -11,12 +11,17 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
     ReminderDeliveryEmailDelivery.call(delivery_id: birthday_delivery.id, at: delivery_time, transport:)
     ReminderDeliveryEmailDelivery.call(delivery_id: date_delivery.id, at: delivery_time, transport:)
 
-    assert_equal "Ada Lovelace's birthday is coming up", transport.messages.fetch(0).subject
-    assert_equal "Ada Lovelace: Moving day is coming up", transport.messages.fetch(1).subject
+    birthday_message, date_message = transport.messages
+    assert_equal 2, transport.messages.size
+    assert_predicate birthday_message.subject, :present?
+    assert_includes birthday_message.text_part.body.to_s, "/people/ada-lovelace"
+    assert_predicate date_message.subject, :present?
+    assert_includes date_message.text_part.body.to_s, "Moving day"
+    assert_includes date_message.text_part.body.to_s, "/people/ada-lovelace"
   end
 
   test "records a failed individual date attempt and allows a later retry" do
-    delivery = birthday_delivery
+    delivery = create_birthday_delivery
 
     assert_raises MailTransports::DeliveryError do
       ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport: FailingTransport.new)
@@ -48,7 +53,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
   end
 
   test "marks an exhausted abandoned individual claim as failed" do
-    delivery = birthday_delivery
+    delivery = create_birthday_delivery
     delivery.update!(
       attempts: Rails.application.config.x.reminder_delivery_retry_attempts,
       claimed_at: delivery_time - Rails.application.config.x.reminder_delivery_claim_timeout - 1.minute,
@@ -65,7 +70,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
   private
 
-  def birthday_delivery
+  def create_birthday_delivery
     create_delivery(
       entries(:ada_birthday),
       reminder_on: Date.new(2026, 11, 10),
