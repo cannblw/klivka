@@ -4,12 +4,12 @@ require "test_helper"
 #
 # Table name: keep_in_touch_settings
 #
-#  id           :integer          not null, primary key
-#  cadence      :string           not null
-#  enabled_on   :date
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  person_id    :integer          not null
+#  id         :integer          not null, primary key
+#  cadence    :string           not null
+#  enabled_on :date
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  person_id  :integer          not null
 #
 # Indexes
 #
