@@ -7,6 +7,8 @@
 #  birthday_reminder_lead_value :integer          default(1), not null
 #  birthday_reminders_enabled   :boolean          default(TRUE), not null
 #  confirmed_at                 :datetime
+#  contact_reminder_cadence     :string           default("monthly"), not null
+#  contact_reminders_enabled_on :date
 #  default_reminder_lead_unit   :string           default("months"), not null
 #  default_reminder_lead_value  :integer          default(1), not null
 #  email_address                :string           not null
@@ -55,6 +57,7 @@ class User < ApplicationRecord
   validates :default_reminder_lead_value, :birthday_reminder_lead_value,
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: Klivka::MAX_INT32 }
   validates :default_reminder_lead_unit, :birthday_reminder_lead_unit, inclusion: { in: REMINDER_LEAD_UNITS.keys }
+  validates :contact_reminder_cadence, inclusion: { in: ContactReminder::CADENCES }
 
   # The seeded development account deliberately uses a short, local-only password.
   validates :password, length: { minimum: 8 }, allow_nil: true, unless: -> { Rails.env.development? }
@@ -87,6 +90,10 @@ class User < ApplicationRecord
 
   def birthday_reminder_lead_days
     birthday_reminder_lead_value * REMINDER_LEAD_UNITS.fetch(birthday_reminder_lead_unit)
+  end
+
+  def contact_reminders_enabled?
+    contact_reminders_enabled_on.present?
   end
 
   def shared_demo_account?

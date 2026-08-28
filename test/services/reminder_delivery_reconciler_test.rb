@@ -3,7 +3,7 @@ require "test_helper"
 class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
   test "keeps pending work that still matches its current source" do
     setting = create_setting
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
 
     assert_equal 0, reconcile
 
@@ -13,7 +13,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
   test "cancels pending work after contact moves the keep-in-touch suggestion" do
     setting = create_setting
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     setting.person.interactions.create!(occurred_on: Date.new(2026, 8, 8))
 
     assert_equal 1, reconcile
@@ -24,14 +24,14 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
   test "cancels pending work after a cadence is snoozed or disabled" do
     setting = create_setting
-    snoozed_delivery = create_delivery(setting, channel: "email")
+    snoozed_delivery = create_delivery(setting.person, channel: "email")
     setting.snooze!(on: Date.new(2026, 8, 8))
 
     assert_equal 1, reconcile
     assert_equal ReminderDelivery::CANCELED_STATUS, snoozed_delivery.reload.status
 
-    setting.update!(snoozed_until: nil)
-    disabled_delivery = create_delivery(setting, channel: "in_app")
+    setting.person.update!(contact_reminder_snoozed_until: nil)
+    disabled_delivery = create_delivery(setting.person, channel: "in_app")
     setting.disable!
 
     assert_equal 1, reconcile
@@ -40,13 +40,13 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
   test "cancels pending work after a cadence changes or its source is deleted" do
     setting = create_setting
-    changed_delivery = create_delivery(setting, channel: "email")
+    changed_delivery = create_delivery(setting.person, channel: "email")
     setting.change_cadence!(cadence: "monthly")
 
     assert_equal 1, reconcile
     assert_equal ReminderDelivery::CANCELED_STATUS, changed_delivery.reload.status
 
-    deleted_delivery = create_delivery(setting, channel: "in_app", reminder_on: Date.new(2026, 9, 1))
+    deleted_delivery = create_delivery(setting.person, channel: "in_app", reminder_on: Date.new(2026, 9, 1))
     setting.destroy!
 
     assert_equal 1, reconcile
@@ -55,7 +55,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
   test "cancels pending work when its channel is disabled" do
     setting = create_setting
-    delivery = create_delivery(setting, channel: "email")
+    delivery = create_delivery(setting.person, channel: "email")
     users(:one).update!(reminder_email_enabled: false)
 
     assert_equal 1, reconcile
@@ -65,7 +65,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
   test "cancels pending work for every reminder source belonging to an archived person" do
     person = people(:ada)
     setting = create_setting
-    keep_in_touch_delivery = create_delivery(setting)
+    keep_in_touch_delivery = create_delivery(setting.person)
     entry = Entry::Date.create!(person:, entry_date: Date.new(2026, 9, 7))
     reminder = entry.create_entry_reminder!(lead_value: 30, lead_unit: "days", recurrence: "one_time")
     entry_delivery = create_delivery(reminder, channel: "email", occurrence_on: Date.new(2026, 9, 7))
@@ -83,7 +83,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
   test "does not revoke a pending delivery while an email worker owns its claim" do
     setting = create_setting
-    delivery = create_delivery(setting, channel: ReminderDelivery::EMAIL_CHANNEL)
+    delivery = create_delivery(setting.person, channel: ReminderDelivery::EMAIL_CHANNEL)
     delivery.update!(claimed_at: Time.utc(2026, 8, 8, 11, 59), claim_token: "email-worker-claim")
     users(:one).update!(reminder_email_enabled: false)
 
@@ -96,8 +96,8 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
   test "cancels demo email work while keeping demo in-app work pending" do
     setting = create_setting
-    email_delivery = create_delivery(setting, channel: "email")
-    in_app_delivery = create_delivery(setting, channel: "in_app")
+    email_delivery = create_delivery(setting.person, channel: "email")
+    in_app_delivery = create_delivery(setting.person, channel: "in_app")
 
     with_demo_mode(user: users(:one)) do
       assert_equal 1, reconcile
@@ -180,7 +180,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
 
   test "does not alter completed delivery history" do
     setting = create_setting
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     delivery.update!(status: "delivered", delivered_at: Time.utc(2026, 8, 8, 10))
     setting.disable!
 

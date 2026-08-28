@@ -41,7 +41,7 @@ class ReminderDelivery < ApplicationRecord
   STATUSES = [ PENDING_STATUS, DELIVERED_STATUS, FAILED_STATUS, CANCELED_STATUS ].freeze
 
   BIRTHDAY_SOURCE_TYPE = Entry.polymorphic_name.freeze
-  SOURCE_TYPES = [ "KeepInTouchSetting", "EntryReminder", BIRTHDAY_SOURCE_TYPE ].freeze
+  SOURCE_TYPES = [ "Person", "EntryReminder", BIRTHDAY_SOURCE_TYPE ].freeze
 
   belongs_to :user
   belongs_to :source, polymorphic: true
@@ -59,7 +59,7 @@ class ReminderDelivery < ApplicationRecord
   private
 
   def source_is_supported
-    return if source.blank? || source.is_a?(KeepInTouchSetting) || source.is_a?(EntryReminder) || source.is_a?(Entry::Birthday)
+    return if source.blank? || source.is_a?(Person) || source.is_a?(EntryReminder) || source.is_a?(Entry::Birthday)
 
     errors.add(:source, :invalid)
   end
@@ -67,7 +67,11 @@ class ReminderDelivery < ApplicationRecord
   def source_belongs_to_user
     return if source.blank? || user.blank?
 
-    source_user = source.is_a?(EntryReminder) ? source.entry.person.user : source.person.user
+    source_user = case source
+    when Person then source.user
+    when EntryReminder then source.entry.person.user
+    else source.person.user
+    end
     errors.add(:source, :invalid) unless source_user == user
   end
 end

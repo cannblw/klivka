@@ -2,14 +2,13 @@
 #
 # Table name: keep_in_touch_settings
 #
-#  id            :integer          not null, primary key
-#  cadence       :string           not null
-#  enabled_on    :date
-#  lock_version  :integer          default(0), not null
-#  snoozed_until :date
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  person_id     :integer          not null
+#  id           :integer          not null, primary key
+#  cadence      :string           not null
+#  enabled_on   :date
+#  lock_version :integer          default(0), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  person_id    :integer          not null
 #
 # Indexes
 #
@@ -20,90 +19,74 @@
 #  person_id  (person_id => people.id)
 #
 class KeepInTouchSetting < ApplicationRecord
-  CADENCES = %w[daily weekly biweekly monthly quarterly yearly].freeze
-  DEFAULT_CADENCE = "weekly"
-  SNOOZE_DAYS = 7
-  LATEST_INTERACTION_UNSPECIFIED = Object.new.freeze
+  CADENCES = ContactReminder::CADENCES
+  DEFAULT_CADENCE = ContactReminder::DEFAULT_CADENCE
+  SNOOZE_DAYS = ContactReminder::SNOOZE_DAYS
+  LATEST_INTERACTION_UNSPECIFIED = ContactReminder::LATEST_INTERACTION_UNSPECIFIED
 
   belongs_to :person
-  has_many :reminder_deliveries, as: :source
-
   validates :cadence, inclusion: { in: CADENCES }
-  validate :snooze_requires_enabled_setting
 
   def enabled?
     enabled_on.present?
   end
 
   def next_suggestion_on(latest_interaction_on: LATEST_INTERACTION_UNSPECIFIED)
-    return unless enabled?
-
-    if latest_interaction_on.equal?(LATEST_INTERACTION_UNSPECIFIED)
-      latest_interaction_on = person.interactions.maximum(:occurred_on)
-    end
-    [ cadence_date(latest_interaction_on:), snoozed_until ].compact.max
+    contact_reminder.next_suggestion_on(latest_interaction_on:)
   end
 
   def due?(on:, latest_interaction_on: LATEST_INTERACTION_UNSPECIFIED)
-    next_suggestion_on(latest_interaction_on:)&.<= on
+    contact_reminder.due?(on:, latest_interaction_on:)
   end
 
   def snoozed?
-    enabled? && snoozed_until.present? && snoozed_until > cadence_date
+    contact_reminder.snoozed?
   end
 
   def enable!(on:, cadence: self.cadence)
-    self.cadence = cadence
-    self.enabled_on = on
-    self.snoozed_until = nil
-    save!
-  end
-
-  def change_cadence!(cadence:)
-    self.cadence = cadence
-    self.snoozed_until = nil
-    save!
-  end
-
-  def snooze!(on:)
-    self.snoozed_until = on + SNOOZE_DAYS.days
-    save!
-  end
-
-  def disable!
-    self.enabled_on = nil
-    self.snoozed_until = nil
-    save!
-  end
-
-  def clear_snooze_for_latest_interaction!(interaction)
-    return unless enabled? && snoozed_until.present?
-    return if interaction.occurred_on < enabled_on
-    return unless interaction.occurred_on == person.interactions.maximum(:occurred_on)
-
-    update!(snoozed_until: nil)
-  end
-
-  private
-
-  def cadence_date(latest_interaction_on: person.interactions.maximum(:occurred_on))
-    case cadence
-    when "daily" then base_date(latest_interaction_on:) + 1.day
-    when "weekly" then base_date(latest_interaction_on:) + 7.days
-    when "biweekly" then base_date(latest_interaction_on:) + 14.days
-    when "monthly" then base_date(latest_interaction_on:).advance(months: 1)
-    when "quarterly" then base_date(latest_interaction_on:).advance(months: 3)
-    when "yearly" then base_date(latest_interaction_on:).advance(years: 1)
+    transaction do
+      self.cadence = cadence
+      self.enabled_on = on
+      save!
+      person.update!(contact_reminder_snoozed_until: nil)
     end
   end
 
-  def base_date(latest_interaction_on: person.interactions.maximum(:occurred_on))
-    [ enabled_on, latest_interaction_on ].compact.max
+  def change_cadence!(cadence:)
+    transaction do
+      self.cadence = cadence
+      save!
+      person.update!(contact_reminder_snoozed_until: nil)
+    end
   end
 
-  def snooze_requires_enabled_setting
-    return if snoozed_until.blank? || enabled?
+  def snooze!(on:)
+    transaction do
+      person.update!(contact_reminder_snoozed_until: on + SNOOZE_DAYS.days)
+      touch
+    end
+  end
 
-    errors.add(:base, :snooze_requires_enabled_cadence)
+  def disable!
+    transaction do
+      self.enabled_on = nil
+      save!
+      person.update!(contact_reminder_snoozed_until: nil)
+    end
+  end
+
+  def clear_snooze_for_latest_interaction!(interaction)
+    return unless enabled? && person.contact_reminder_snoozed_until.present?
+    return if interaction.occurred_on < enabled_on
+    return unless interaction.occurred_on == person.interactions.maximum(:occurred_on)
+
+    transaction do
+      person.update!(contact_reminder_snoozed_until: nil)
+      touch
+    end
+  end
+
+  def contact_reminder
+    ContactReminder.new(person:, setting: self)
   end
 end

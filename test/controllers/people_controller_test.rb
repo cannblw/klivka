@@ -385,9 +385,9 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
   test "archive preserves the person and cancels pending reminder work" do
     person = people(:ada)
-    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
     delivery = ReminderDelivery.create!(
-      user: users(:one), source: setting, channel: "in_app",
+      user: users(:one), source: person, channel: "in_app",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 

@@ -65,7 +65,7 @@ class ReminderDeliveryEmailDelivery
   def message_for(delivery)
     source = delivery.source
     case source
-    when KeepInTouchSetting
+    when Person
       ReminderMailer.with(delivery:).keep_in_touch
     when Entry::Birthday
       ReminderMailer.with(delivery:).birthday

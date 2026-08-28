@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_27_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -82,16 +82,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_130000) do
     t.date "enabled_on"
     t.integer "lock_version", default: 0, null: false
     t.integer "person_id", null: false
-    t.date "snoozed_until"
     t.datetime "updated_at", null: false
     t.index ["person_id"], name: "index_keep_in_touch_settings_on_person_id", unique: true
     t.check_constraint "cadence IN ('daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly')", name: "keep_in_touch_settings_cadence_is_supported"
-    t.check_constraint "enabled_on IS NOT NULL OR snoozed_until IS NULL", name: "keep_in_touch_settings_disabled_cannot_be_snoozed"
   end
 
   create_table "people", force: :cascade do |t|
     t.datetime "archived_at"
     t.integer "category_id"
+    t.date "contact_reminder_snoozed_until"
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "slug", null: false
@@ -126,7 +125,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_130000) do
     t.check_constraint "(claimed_at IS NULL AND claim_token IS NULL) OR (claimed_at IS NOT NULL AND claim_token IS NOT NULL)", name: "reminder_deliveries_claim_is_complete"
     t.check_constraint "attempts >= 0", name: "reminder_deliveries_attempts_are_nonnegative"
     t.check_constraint "channel IN ('in_app', 'email')", name: "reminder_deliveries_channel_is_supported"
-    t.check_constraint "source_type IN ('KeepInTouchSetting', 'EntryReminder', 'Entry')", name: "reminder_deliveries_source_type_is_supported"
+    t.check_constraint "source_type IN ('Person', 'EntryReminder', 'Entry')", name: "reminder_deliveries_source_type_is_supported"
     t.check_constraint "status IN ('pending', 'delivered', 'failed', 'canceled')", name: "reminder_deliveries_status_is_supported"
   end
 
@@ -144,6 +143,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_130000) do
     t.integer "birthday_reminder_lead_value", default: 1, null: false
     t.boolean "birthday_reminders_enabled", default: true, null: false
     t.datetime "confirmed_at"
+    t.string "contact_reminder_cadence", default: "monthly", null: false
+    t.date "contact_reminders_enabled_on"
     t.datetime "created_at", null: false
     t.string "default_reminder_lead_unit", default: "months", null: false
     t.integer "default_reminder_lead_value", default: 1, null: false
@@ -160,6 +161,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_130000) do
     t.index ["reminders_scanned_through_on"], name: "index_users_on_reminders_scanned_through_on"
     t.check_constraint "birthday_reminder_lead_value BETWEEN 0 AND 2147483647 AND birthday_reminder_lead_unit IN ('days', 'months', 'years')", name: "users_birthday_reminder_lead_is_supported"
     t.check_constraint "birthday_reminders_enabled IN (TRUE, FALSE)", name: "users_birthday_reminders_enabled_is_boolean"
+    t.check_constraint "contact_reminder_cadence IN ('daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly')", name: "users_contact_reminder_cadence_is_supported"
     t.check_constraint "default_reminder_lead_value BETWEEN 0 AND 2147483647 AND default_reminder_lead_unit IN ('days', 'months', 'years')", name: "users_default_reminder_lead_is_supported"
     t.check_constraint "reminder_email_enabled IN (TRUE, FALSE)", name: "users_reminder_email_enabled_is_boolean"
     t.check_constraint "reminder_in_app_enabled IN (TRUE, FALSE)", name: "users_reminder_in_app_enabled_is_boolean"

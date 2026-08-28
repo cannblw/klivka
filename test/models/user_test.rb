@@ -9,6 +9,8 @@ require "test_helper"
 #  birthday_reminder_lead_value :integer          default(1), not null
 #  birthday_reminders_enabled   :boolean          default(TRUE), not null
 #  confirmed_at                 :datetime
+#  contact_reminder_cadence     :string           default("monthly"), not null
+#  contact_reminders_enabled_on :date
 #  default_reminder_lead_unit   :string           default("months"), not null
 #  default_reminder_lead_value  :integer          default(1), not null
 #  email_address                :string           not null
@@ -28,6 +30,38 @@ require "test_helper"
 #  index_users_on_reminders_scanned_through_on  (reminders_scanned_through_on)
 #
 class UserTest < ActiveSupport::TestCase
+  test "defaults the global contact reminder cadence to monthly" do
+    user = User.new
+
+    assert_equal ContactReminder::GLOBAL_DEFAULT_CADENCE, user.contact_reminder_cadence
+  end
+
+  test "global contact reminders are enabled by an enable date" do
+    user = users(:one)
+
+    assert_not_predicate user, :contact_reminders_enabled?
+
+    user.contact_reminders_enabled_on = Date.current
+
+    assert_predicate user, :contact_reminders_enabled?
+  end
+
+  test "validates the global contact reminder cadence" do
+    user = users(:one)
+    user.contact_reminder_cadence = "hourly"
+
+    assert_not_predicate user, :valid?
+    assert user.errors.of_kind?(:contact_reminder_cadence, :inclusion)
+  end
+
+  test "the database rejects an unsupported global contact reminder cadence" do
+    user = users(:one)
+
+    assert_raises(ActiveRecord::StatementInvalid) do
+      user.update_column(:contact_reminder_cadence, "hourly")
+    end
+  end
+
   test "deleting an account removes its archived people and preserved information" do
     user = User.create!(email_address: "archive-owner@example.com", password: "password123", time_zone: "Europe/London")
     person = user.people.create!(name: "Archived Person")

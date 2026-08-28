@@ -6,7 +6,7 @@ class ReminderDeliveryEmailJobTest < ActiveJob::TestCase
     local_date = user.local_date
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: local_date - 7.days)
     delivery = ReminderDelivery.create!(
-      user:, source: setting, channel: "email", reminder_on: local_date, occurrence_on: local_date
+      user:, source: setting.person, channel: "email", reminder_on: local_date, occurrence_on: local_date
     )
 
     with_failing_transport do

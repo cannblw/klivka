@@ -28,7 +28,7 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
     setting = people(:ada).reload.keep_in_touch_setting
     assert_equal "monthly", setting.cadence
     assert_equal Date.new(2026, 8, 9), setting.enabled_on
-    assert_nil setting.snoozed_until
+    assert_nil setting.person.contact_reminder_snoozed_until
     assert_redirected_to person_url(people(:ada))
   end
 
@@ -57,11 +57,8 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "changes cadence and clears an existing snooze" do
-    setting = people(:ada).create_keep_in_touch_setting!(
-      cadence: "weekly",
-      enabled_on: Date.current,
-      snoozed_until: Date.current + 7.days
-    )
+    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current)
+    setting.person.update!(contact_reminder_snoozed_until: Date.current + 7.days)
 
     patch person_keep_in_touch_setting_url(people(:ada)), params: {
       keep_in_touch_setting: { cadence: "yearly", lock_version: setting.lock_version }
@@ -69,7 +66,7 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
 
     setting.reload
     assert_equal "yearly", setting.cadence
-    assert_nil setting.snoozed_until
+    assert_nil setting.person.reload.contact_reminder_snoozed_until
   end
 
   test "re-enables a contact reminder on the user's current date" do
@@ -85,11 +82,8 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "disables a setting while preserving its cadence" do
-    setting = people(:ada).create_keep_in_touch_setting!(
-      cadence: "monthly",
-      enabled_on: Date.current,
-      snoozed_until: Date.current + 7.days
-    )
+    setting = people(:ada).create_keep_in_touch_setting!(cadence: "monthly", enabled_on: Date.current)
+    setting.person.update!(contact_reminder_snoozed_until: Date.current + 7.days)
 
     patch disable_person_keep_in_touch_setting_url(people(:ada)), params: {
       keep_in_touch_setting: { lock_version: setting.lock_version }
@@ -98,7 +92,7 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
     setting.reload
     assert_equal "monthly", setting.cadence
     assert_nil setting.enabled_on
-    assert_nil setting.snoozed_until
+    assert_nil setting.person.reload.contact_reminder_snoozed_until
   end
 
   test "snoozes a contact reminder for one week from the user's current date" do
@@ -108,7 +102,8 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
       keep_in_touch_setting: { lock_version: setting.lock_version }
     }
 
-    assert_equal users(:one).local_date + KeepInTouchSetting::SNOOZE_DAYS.days, setting.reload.snoozed_until
+    assert_equal users(:one).local_date + KeepInTouchSetting::SNOOZE_DAYS.days,
+      setting.person.reload.contact_reminder_snoozed_until
   end
 
   test "rejects a stale update" do

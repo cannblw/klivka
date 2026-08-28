@@ -8,7 +8,7 @@ class ReminderScanJobTest < ActiveJob::TestCase
     ReminderScanJob.perform_now(user.id, at: Time.utc(2026, 8, 8, 12))
 
     assert_equal "reminders", ReminderScanJob.queue_name
-    assert_equal 2, setting.reminder_deliveries.count
+    assert_equal 2, setting.person.reminder_deliveries.count
     assert_equal Date.new(2026, 8, 8), user.reload.reminders_scanned_through_on
   end
 

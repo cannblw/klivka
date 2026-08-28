@@ -4,21 +4,22 @@ require "test_helper"
 #
 # Table name: people
 #
-#  id          :integer          not null, primary key
-#  archived_at :datetime
-#  name        :string           not null
-#  slug        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  category_id :integer
-#  user_id     :integer          not null
+#  id                             :integer          not null, primary key
+#  archived_at                    :datetime
+#  contact_reminder_snoozed_until :date
+#  name                           :string           not null
+#  slug                           :string           not null
+#  created_at                     :datetime         not null
+#  updated_at                     :datetime         not null
+#  category_id                    :integer
+#  user_id                        :integer          not null
 #
 # Indexes
 #
-#  index_people_on_category_id       (category_id)
+#  index_people_on_category_id              (category_id)
+#  index_people_on_user_id                  (user_id)
 #  index_people_on_user_id_and_archived_at  (user_id,archived_at)
-#  index_people_on_user_id           (user_id)
-#  index_people_on_user_id_and_slug  (user_id,slug) UNIQUE
+#  index_people_on_user_id_and_slug         (user_id,slug) UNIQUE
 #
 # Foreign Keys
 #

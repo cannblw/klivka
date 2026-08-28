@@ -37,7 +37,7 @@ class ReminderDeliveryScheduler
         next [] unless setting.due?(on: through, latest_interaction_on:)
 
         reminder_on = setting.next_suggestion_on(latest_interaction_on:)
-        delivery_attributes_for(setting, [ [ reminder_on, reminder_on ] ])
+        delivery_attributes_for(setting.person, [ [ reminder_on, reminder_on ] ])
       end
 
       record_deliveries(deliveries)

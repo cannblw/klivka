@@ -34,12 +34,16 @@ class ReminderMailer < ApplicationMailer
       person,
       quick_interaction: "today",
       anchor: QuickInteractionComponent::DOM_ID
-    ) if delivery.source.is_a?(KeepInTouchSetting)
+    ) if delivery.source.is_a?(Person)
   end
 
   def source_person
     source = delivery.source
-    source.is_a?(EntryReminder) ? source.entry.person : source.person
+    case source
+    when Person then source
+    when EntryReminder then source.entry.person
+    else source.person
+    end
   end
 
   def mail_for_delivery

@@ -58,11 +58,8 @@ class ContactReminderComponentTest < ViewComponent::TestCase
   test "renders the snoozed state" do
     person = users(:one).people.create!(name: "Name Only")
     snoozed_until = Date.current + 7.days
-    setting = person.create_keep_in_touch_setting!(
-      cadence: "weekly",
-      enabled_on: Date.current - 7.days,
-      snoozed_until: snoozed_until
-    )
+    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current - 7.days)
+    person.update!(contact_reminder_snoozed_until: snoozed_until)
 
     render_inline ContactReminderComponent.new(person: person, setting: setting)
 

@@ -3,7 +3,7 @@ require "test_helper"
 class ReminderMailerTest < ActionMailer::TestCase
   test "keep-in-touch email includes localized copy and direct contact links" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting, reminder_on: Date.new(2026, 8, 8))
+    delivery = create_delivery(setting.person, reminder_on: Date.new(2026, 8, 8))
 
     mail = ReminderMailer.with(delivery:).keep_in_touch
 

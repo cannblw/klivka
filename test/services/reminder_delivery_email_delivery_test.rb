@@ -3,7 +3,7 @@ require "test_helper"
 class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
   test "delivers a keep-in-touch email and records the provider result" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     transport = RecordingTransport.new
 
     result = ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
@@ -39,7 +39,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
   test "records a failed attempt and allows a later retry" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     transport = FailingTransport.new
 
     assert_raises MailTransports::DeliveryError do
@@ -64,7 +64,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
   test "cancels a claimed delivery when its reminder is no longer current" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     setting.disable!
     transport = RecordingTransport.new
 
@@ -77,7 +77,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
   test "cancels a claimed delivery when its person was archived" do
     person = people(:ada)
     setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     person.archive!
     transport = RecordingTransport.new
 
@@ -89,7 +89,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
   test "does not overwrite a newer outcome after its claim expires" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     transport = ReplacingTransport.new(delivery:, replaced_at: delivery_time + 1.minute)
 
     ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
@@ -102,7 +102,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
 
   test "marks an exhausted abandoned claim as failed" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
-    delivery = create_delivery(setting)
+    delivery = create_delivery(setting.person)
     delivery.update!(
       attempts: Rails.application.config.x.reminder_delivery_retry_attempts,
       claimed_at: delivery_time - Rails.application.config.x.reminder_delivery_claim_timeout - 1.minute,

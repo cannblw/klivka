@@ -51,7 +51,7 @@ class ReminderMailerPreview < ActionMailer::Preview
   end
 
   def keep_in_touch_source
-    KeepInTouchSetting.new(person: preview_person, cadence: KeepInTouchSetting::DEFAULT_CADENCE, enabled_on: Date.current)
+    preview_person
   end
 
   def birthday_source

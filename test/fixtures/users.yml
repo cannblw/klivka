@@ -9,6 +9,8 @@
 #  birthday_reminder_lead_value :integer          default(1), not null
 #  birthday_reminders_enabled   :boolean          default(TRUE), not null
 #  confirmed_at                 :datetime
+#  contact_reminder_cadence     :string           default("monthly"), not null
+#  contact_reminders_enabled_on :date
 #  default_reminder_lead_unit   :string           default("months"), not null
 #  default_reminder_lead_value  :integer          default(1), not null
 #  email_address                :string           not null
