@@ -387,6 +387,7 @@ es:
         description: "Se aplica a las personas activas que no tengan un ajuste personalizado."
         enabled: "Activado: %{cadence}"
         disabled: "El recordatorio predeterminado está desactivado."
+        due: "Ver recordatorios pendientes"
         settings: "Cambiar el predeterminado en Ajustes"
       people:
         heading: "Personas"
@@ -395,6 +396,21 @@ es:
         search_placeholder: "Buscar personas..."
         no_results: "No hay personas que coincidan"
         empty: "Añade a alguien antes de configurar los recordatorios de contacto."
+
+  reminders:
+    index:
+      title: "Recordatorios"
+      back: "← Recordatorios de contacto"
+      heading: "Recordatorios"
+      description: "Consulta con quién querías contactar y elige qué hacer ahora."
+      contacts:
+        heading: "Personas con las que contactar"
+        description: "Al registrar un contacto o posponer un recordatorio, esta lista se actualizará."
+        empty: "No hay recordatorios de contacto pendientes ahora mismo."
+    contact:
+      due_since: "Pendiente desde el %{date}"
+      contact_today: "Contactar hoy"
+      snooze: "Recordármelo en una semana"
 
   birthday_reminder_status:
     enabled: "Te recordaremos todos los cumpleaños %{timing}."

@@ -23,6 +23,7 @@ class ContactRemindersControllerTest < ActionDispatch::IntegrationTest
     assert_select "header a[href='#{contact_reminders_path}']", text: "Contact reminders"
     assert_select "[data-contact-reminder-default='enabled']", text: /Monthly/
     assert_select "a[href='#{settings_path}']", text: "Change the default in Settings"
+    assert_select "a[href='#{reminders_path}']", text: "View due reminders"
     assert_select "turbo-frame#contact_reminder_organizer"
     assert_select "input#contact-reminder-person-search[data-action='input->filter-list#filter']"
     assert_equal user.people.active.order(:name).pluck(:name).sort_by { PersonNameNormalizer.call(_1) },

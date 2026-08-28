@@ -118,6 +118,19 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
       people(:ada).reload.contact_reminder_snoozed_until
   end
 
+  test "returns to the due reminders page after snoozing from its list" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: user.local_date - 7.days)
+
+    patch snooze_person_keep_in_touch_setting_url(people(:ada)), params: {
+      keep_in_touch_setting: {}, return_to: "reminders"
+    }
+
+    assert_redirected_to reminders_url
+    assert_equal user.local_date + ContactReminder::SNOOZE_DAYS.days,
+      people(:ada).reload.contact_reminder_snoozed_until
+  end
+
   test "does not snooze a reminder that is no longer due" do
     setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current)
 

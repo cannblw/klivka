@@ -29,16 +29,12 @@ class ReminderDeliveryScheduler
   end
 
   def schedule_keep_in_touch_reminders(through:)
-    contact_reminder_people.in_batches(of: batch_size).sum do |batch|
-      people = batch.preload(:keep_in_touch_setting).to_a
-      latest_interactions = latest_interactions_for(people)
-      deliveries = people.flat_map do |person|
-        reminder = ContactReminder.for(person, user:)
-        latest_interaction_on = latest_interactions[person.id]
-        next [] unless reminder.due?(on: through, latest_interaction_on:)
-
-        reminder_on = reminder.next_suggestion_on(latest_interaction_on:)
-        delivery_attributes_for(person, [ [ reminder_on, reminder_on ] ])
+    DueContactRemindersQuery.new(user:, on: through, batch_size:).each_batch.sum do |due_reminders|
+      deliveries = due_reminders.flat_map do |due_reminder|
+        delivery_attributes_for(
+          due_reminder.person,
+          [ [ due_reminder.reminder_on, due_reminder.reminder_on ] ]
+        )
       end
 
       record_deliveries(deliveries)
@@ -69,13 +65,6 @@ class ReminderDeliveryScheduler
     end
   end
 
-  def contact_reminder_people
-    people = user.people.active
-    return people if user.contact_reminders_enabled?
-
-    people.joins(:keep_in_touch_setting).where.not(keep_in_touch_settings: { enabled_on: nil })
-  end
-
   def entry_reminders
     EntryReminder.joins(entry: :person)
       .where(people: { user_id: user.id, archived_at: nil })
@@ -84,10 +73,6 @@ class ReminderDeliveryScheduler
 
   def birthdays
     Entry::Birthday.joins(:person).where(people: { user_id: user.id, archived_at: nil })
-  end
-
-  def latest_interactions_for(people)
-    Interaction.where(person_id: people.map(&:id)).group(:person_id).maximum(:occurred_on)
   end
 
   def reminder_dates_during(reminder, during:)

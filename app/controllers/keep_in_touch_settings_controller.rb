@@ -57,9 +57,9 @@ class KeepInTouchSettingsController < ApplicationController
     end
 
     if snoozed
-      redirect_to @person, notice: t(".updated")
+      redirect_to snooze_redirect_path, notice: t(".updated")
     else
-      redirect_to @person, alert: t(".unavailable")
+      redirect_to snooze_redirect_path, alert: t(".unavailable")
     end
   rescue ActiveRecord::RecordInvalid
     redirect_to @person, alert: invalid_setting_message
@@ -90,6 +90,10 @@ class KeepInTouchSettingsController < ApplicationController
 
   def local_date
     Current.user.local_date
+  end
+
+  def snooze_redirect_path
+    params[:return_to] == "reminders" ? reminders_path : @person
   end
 
   def update_setting

@@ -376,6 +376,7 @@ en:
         description: "This applies to active people without a custom setting."
         enabled: "On: %{cadence}"
         disabled: "The default reminder is off."
+        due: "View due reminders"
         settings: "Change the default in Settings"
       people:
         heading: "People"
@@ -384,6 +385,21 @@ en:
         search_placeholder: "Search people..."
         no_results: "No matching people"
         empty: "Add someone before setting up contact reminders."
+
+  reminders:
+    index:
+      title: "Reminders"
+      back: "← Contact reminders"
+      heading: "Reminders"
+      description: "See who you planned to contact and choose what to do next."
+      contacts:
+        heading: "Ready to contact"
+        description: "Logging contact or choosing remind me later will update this list."
+        empty: "No contact reminders need your attention right now."
+    contact:
+      due_since: "Ready since %{date}"
+      contact_today: "Contact today"
+      snooze: "Remind me in one week"
 
   birthday_reminder_status:
     enabled: "You'll be reminded about every birthday %{timing}."

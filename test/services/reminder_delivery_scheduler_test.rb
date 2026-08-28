@@ -309,36 +309,6 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_nil delivery.canceled_at
   end
 
-  test "loads latest interactions once for each contact reminder batch" do
-    user = users(:one)
-    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
-    user.people.create!(name: "Another inherited reminder")
-    scheduler_class = Class.new(ReminderDeliveryScheduler) do
-      attr_reader :interaction_batch_count
-
-      def initialize(...)
-        super
-        @interaction_batch_count = 0
-      end
-
-      private
-
-      def latest_interactions_for(people)
-        @interaction_batch_count += 1
-        super
-      end
-
-      def batch_size
-        2
-      end
-    end
-    scheduler = scheduler_class.new(user:, at: Time.utc(2026, 8, 8, 12))
-
-    scheduler.call
-
-    assert_equal (user.people.active.count / 2.0).ceil, scheduler.interaction_batch_count
-  end
-
   test "records work only for enabled account channels" do
     user = users(:one)
     user.update!(reminder_in_app_enabled: false, reminder_email_enabled: true)
