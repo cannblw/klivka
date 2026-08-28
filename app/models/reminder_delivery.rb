@@ -2,32 +2,35 @@
 #
 # Table name: reminder_deliveries
 #
-#  id            :integer          not null, primary key
-#  attempts      :integer          default(0), not null
-#  canceled_at   :datetime
-#  channel       :string           not null
-#  claim_token   :string
-#  claimed_at    :datetime
-#  delivered_at  :datetime
-#  failed_at     :datetime
-#  occurrence_on :date             not null
-#  reminder_on   :date             not null
-#  source_type   :string           not null
-#  status        :string           default("pending"), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  source_id     :integer          not null
-#  user_id       :integer          not null
+#  id                         :integer          not null, primary key
+#  attempts                   :integer          default(0), not null
+#  canceled_at                :datetime
+#  channel                    :string           not null
+#  claim_token                :string
+#  claimed_at                 :datetime
+#  delivered_at               :datetime
+#  failed_at                  :datetime
+#  occurrence_on              :date             not null
+#  reminder_on                :date             not null
+#  source_type                :string           not null
+#  status                     :string           default("pending"), not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  contact_reminder_digest_id :integer
+#  source_id                  :integer          not null
+#  user_id                    :integer          not null
 #
 # Indexes
 #
-#  idx_on_status_channel_reminder_on_f9dde1d6e2          (status,channel,reminder_on)
-#  index_reminder_deliveries_on_source_date_and_channel  (source_type,source_id,reminder_on,channel) UNIQUE
-#  index_reminder_deliveries_on_user_id                  (user_id)
+#  idx_on_status_channel_reminder_on_f9dde1d6e2             (status,channel,reminder_on)
+#  index_reminder_deliveries_on_contact_reminder_digest_id  (contact_reminder_digest_id)
+#  index_reminder_deliveries_on_source_date_and_channel     (source_type,source_id,reminder_on,channel) UNIQUE
+#  index_reminder_deliveries_on_user_id                     (user_id)
 #
 # Foreign Keys
 #
-#  user_id  (user_id => users.id) ON DELETE => cascade
+#  contact_reminder_digest_id  (contact_reminder_digest_id => contact_reminder_digests.id)
+#  user_id                     (user_id => users.id) ON DELETE => cascade
 #
 class ReminderDelivery < ApplicationRecord
   IN_APP_CHANNEL = "in_app".freeze
@@ -45,6 +48,7 @@ class ReminderDelivery < ApplicationRecord
 
   belongs_to :user
   belongs_to :source, polymorphic: true
+  belongs_to :contact_reminder_digest, optional: true
 
   validates :channel, inclusion: { in: CHANNELS }
   validates :status, inclusion: { in: STATUSES }
@@ -54,7 +58,7 @@ class ReminderDelivery < ApplicationRecord
   validates :claim_token, presence: true, if: :claimed_at?
   validates :claimed_at, presence: true, if: :claim_token?
   validates :channel, uniqueness: { scope: %i[source_type source_id reminder_on] }
-  validate :source_is_supported, :source_belongs_to_user
+  validate :source_is_supported, :source_belongs_to_user, :digest_membership_is_supported
 
   private
 
@@ -73,5 +77,12 @@ class ReminderDelivery < ApplicationRecord
     else source.person.user
     end
     errors.add(:source, :invalid) unless source_user == user
+  end
+
+  def digest_membership_is_supported
+    return unless contact_reminder_digest
+    return if contact_reminder_digest.user == user && source.is_a?(Person) && channel == EMAIL_CHANNEL
+
+    errors.add(:contact_reminder_digest, :invalid)
   end
 end

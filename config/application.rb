@@ -106,6 +106,11 @@ module Klivka
     config.x.reminder_dispatch_interval = Integer(ENV.fetch("REMINDER_DISPATCH_INTERVAL_MINUTES", "60"), 10).minutes
     raise ArgumentError, "REMINDER_DISPATCH_INTERVAL_MINUTES must be positive" unless config.x.reminder_dispatch_interval.positive?
 
+    config.x.contact_reminder_digest_hour = Integer(ENV.fetch("CONTACT_REMINDER_DIGEST_HOUR", "8"), 10)
+    unless (0..23).cover?(config.x.contact_reminder_digest_hour)
+      raise ArgumentError, "CONTACT_REMINDER_DIGEST_HOUR must be between 0 and 23"
+    end
+
     config.x.application_url = ENV.fetch("APPLICATION_URL", "http://localhost:3000").strip.chomp("/")
     application_uri = URI.parse(config.x.application_url)
     unless application_uri.is_a?(URI::HTTP) && application_uri.host.present? && application_uri.userinfo.nil? &&

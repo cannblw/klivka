@@ -4,32 +4,35 @@ require "test_helper"
 #
 # Table name: reminder_deliveries
 #
-#  id            :integer          not null, primary key
-#  attempts      :integer          default(0), not null
-#  canceled_at   :datetime
-#  channel       :string           not null
-#  claim_token   :string
-#  claimed_at    :datetime
-#  delivered_at  :datetime
-#  failed_at     :datetime
-#  occurrence_on :date             not null
-#  reminder_on   :date             not null
-#  source_type   :string           not null
-#  status        :string           default("pending"), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  source_id     :integer          not null
-#  user_id       :integer          not null
+#  id                         :integer          not null, primary key
+#  attempts                   :integer          default(0), not null
+#  canceled_at                :datetime
+#  channel                    :string           not null
+#  claim_token                :string
+#  claimed_at                 :datetime
+#  delivered_at               :datetime
+#  failed_at                  :datetime
+#  occurrence_on              :date             not null
+#  reminder_on                :date             not null
+#  source_type                :string           not null
+#  status                     :string           default("pending"), not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  contact_reminder_digest_id :integer
+#  source_id                  :integer          not null
+#  user_id                    :integer          not null
 #
 # Indexes
 #
-#  idx_on_status_channel_reminder_on_f9dde1d6e2          (status,channel,reminder_on)
-#  index_reminder_deliveries_on_source_date_and_channel  (source_type,source_id,reminder_on,channel) UNIQUE
-#  index_reminder_deliveries_on_user_id                  (user_id)
+#  idx_on_status_channel_reminder_on_f9dde1d6e2             (status,channel,reminder_on)
+#  index_reminder_deliveries_on_contact_reminder_digest_id  (contact_reminder_digest_id)
+#  index_reminder_deliveries_on_source_date_and_channel     (source_type,source_id,reminder_on,channel) UNIQUE
+#  index_reminder_deliveries_on_user_id                     (user_id)
 #
 # Foreign Keys
 #
-#  user_id  (user_id => users.id) ON DELETE => cascade
+#  contact_reminder_digest_id  (contact_reminder_digest_id => contact_reminder_digests.id)
+#  user_id                     (user_id => users.id) ON DELETE => cascade
 #
 class ReminderDeliveryTest < ActiveSupport::TestCase
   setup do
@@ -154,6 +157,26 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
     assert_predicate birthday_delivery, :valid?
     assert_not_predicate date_delivery, :valid?
     assert date_delivery.errors.of_kind?(:source, :invalid)
+  end
+
+  test "allows only same-account contact email work to belong to a contact digest" do
+    digest = ContactReminderDigest.create!(user: users(:one), delivery_on: Date.new(2026, 8, 8))
+    valid_delivery = ReminderDelivery.new(
+      user: users(:one), source: @source, channel: "email", contact_reminder_digest: digest,
+      reminder_on: digest.delivery_on, occurrence_on: digest.delivery_on
+    )
+    in_app_delivery = valid_delivery.dup
+    in_app_delivery.channel = "in_app"
+    other_account_delivery = valid_delivery.dup
+    other_account_delivery.contact_reminder_digest = ContactReminderDigest.create!(
+      user: users(:two), delivery_on: digest.delivery_on
+    )
+
+    assert_predicate valid_delivery, :valid?
+    assert_not_predicate in_app_delivery, :valid?
+    assert in_app_delivery.errors.of_kind?(:contact_reminder_digest, :invalid)
+    assert_not_predicate other_account_delivery, :valid?
+    assert other_account_delivery.errors.of_kind?(:contact_reminder_digest, :invalid)
   end
 
   test "keeps the audit record when its reminder source is deleted" do

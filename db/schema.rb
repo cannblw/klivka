@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_28_130000) do
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -20,6 +20,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
     t.index ["user_id", "normalized_name"], name: "index_categories_on_user_id_and_normalized_name", unique: true
     t.index ["user_id"], name: "index_categories_on_user_id"
     t.check_constraint "length(name) <= 255", name: "categories_name_is_within_maximum_length"
+  end
+
+  create_table "contact_reminder_digests", force: :cascade do |t|
+    t.integer "attempts", default: 0, null: false
+    t.datetime "canceled_at"
+    t.string "claim_token"
+    t.datetime "claimed_at"
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.date "delivery_on", null: false
+    t.datetime "failed_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["status", "delivery_on"], name: "index_contact_reminder_digests_on_status_and_delivery_on"
+    t.index ["user_id", "delivery_on"], name: "index_contact_reminder_digests_on_user_id_and_delivery_on", unique: true
+    t.index ["user_id"], name: "index_contact_reminder_digests_on_user_id"
+    t.check_constraint "(claimed_at IS NULL AND claim_token IS NULL) OR (claimed_at IS NOT NULL AND claim_token IS NOT NULL)", name: "contact_reminder_digests_claim_is_complete"
+    t.check_constraint "attempts >= 0", name: "contact_reminder_digests_attempts_are_nonnegative"
+    t.check_constraint "status IN ('pending', 'delivered', 'failed', 'canceled')", name: "contact_reminder_digests_status_is_supported"
   end
 
   create_table "demo_states", force: :cascade do |t|
@@ -108,6 +128,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
     t.string "channel", null: false
     t.string "claim_token"
     t.datetime "claimed_at"
+    t.integer "contact_reminder_digest_id"
     t.datetime "created_at", null: false
     t.datetime "delivered_at"
     t.datetime "failed_at"
@@ -118,6 +139,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["contact_reminder_digest_id"], name: "index_reminder_deliveries_on_contact_reminder_digest_id"
     t.index ["source_type", "source_id", "reminder_on", "channel"], name: "index_reminder_deliveries_on_source_date_and_channel", unique: true
     t.index ["status", "channel", "reminder_on"], name: "idx_on_status_channel_reminder_on_f9dde1d6e2"
     t.index ["user_id"], name: "index_reminder_deliveries_on_user_id"
@@ -180,12 +202,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_120000) do
   end
 
   add_foreign_key "categories", "users", on_delete: :cascade
+  add_foreign_key "contact_reminder_digests", "users", on_delete: :cascade
   add_foreign_key "entries", "people"
   add_foreign_key "entry_reminders", "entries", on_delete: :cascade
   add_foreign_key "interactions", "people"
   add_foreign_key "keep_in_touch_settings", "people"
   add_foreign_key "people", "categories", on_delete: :nullify
   add_foreign_key "people", "users"
+  add_foreign_key "reminder_deliveries", "contact_reminder_digests"
   add_foreign_key "reminder_deliveries", "users", on_delete: :cascade
   add_foreign_key "sessions", "users"
   add_foreign_key "vcard_imports", "users", on_delete: :cascade

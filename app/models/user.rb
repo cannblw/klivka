@@ -35,6 +35,7 @@ class User < ApplicationRecord
   has_many :categories, dependent: :destroy
   has_many :people, dependent: :destroy
   has_many :reminder_deliveries, dependent: :destroy
+  has_many :contact_reminder_digests, dependent: :destroy
   has_many :vcard_imports, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
