@@ -350,7 +350,8 @@ es:
     save_frequency: "Guardar frecuencia"
     settings: "Ajustes"
     using_account_setting_html: "Usa el ajuste de tu cuenta. Cámbialo en %{settings_link}."
-    use_account_setting: "Usar ajuste de la cuenta"
+    use_default_setting: "Usar ajuste predeterminado"
+    use_default_setting_hint: "Elimina el ajuste personalizado de esta persona y usa el valor predeterminado de los recordatorios de contacto en Ajustes."
     cadences:
       daily: "Diaria"
       weekly: "Semanal"

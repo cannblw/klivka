@@ -61,8 +61,8 @@
 
       <% if setting %>
         <%= form_with url: person_keep_in_touch_setting_path(person), method: :delete, scope: :keep_in_touch_setting do |form| %>
-          <%= render ButtonComponent.new(variant: :ghost, size: :sm, type: :submit) do %>
-            <%= t("contact_reminder.use_account_setting") %>
+          <%= render ButtonComponent.new(variant: :ghost, size: :sm, type: :submit, title: t("contact_reminder.use_default_setting_hint")) do %>
+            <%= t("contact_reminder.use_default_setting") %>
           <% end %>
         <% end %>
       <% end %>
@@ -84,8 +84,8 @@
 
     <% if opted_out? %>
       <%= form_with url: person_keep_in_touch_setting_path(person), method: :delete, scope: :keep_in_touch_setting, class: "mt-3" do |form| %>
-        <%= render ButtonComponent.new(variant: :ghost, size: :sm, type: :submit) do %>
-          <%= t("contact_reminder.use_account_setting") %>
+        <%= render ButtonComponent.new(variant: :ghost, size: :sm, type: :submit, title: t("contact_reminder.use_default_setting_hint")) do %>
+          <%= t("contact_reminder.use_default_setting") %>
         <% end %>
       <% end %>
     <% end %>

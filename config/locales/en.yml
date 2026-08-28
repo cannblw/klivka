@@ -339,7 +339,8 @@ en:
     save_frequency: "Save frequency"
     settings: "Settings"
     using_account_setting_html: "Using your account setting. Change it in %{settings_link}."
-    use_account_setting: "Use account setting"
+    use_default_setting: "Use default setting"
+    use_default_setting_hint: "Remove this person's custom setting and follow the contact reminder default from Settings."
     cadences:
       daily: "Daily"
       weekly: "Weekly"

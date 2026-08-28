@@ -74,7 +74,7 @@ class ContactReminderComponentTest < ViewComponent::TestCase
     assert_text "Contact reminders are off for this person."
     assert_selector "form[action='#{enable_person_keep_in_touch_setting_path(person)}'][method='post']"
     assert_selector "option[selected][value='monthly']", text: "Monthly"
-    assert_selector "button", text: "Use account setting"
+    assert_selector %(button[title="Remove this person's custom setting and follow the contact reminder default from Settings."]), text: "Use default setting"
   end
 
   test "renders an inherited reminder with account settings and per-person actions" do
@@ -98,6 +98,6 @@ class ContactReminderComponentTest < ViewComponent::TestCase
     render_inline ContactReminderComponent.new(person:, reminder: ContactReminder.for(person))
 
     assert_selector "form[action='#{person_keep_in_touch_setting_path(person)}'][method='post'] input[name='_method'][value='delete']", visible: :all
-    assert_selector "button", text: "Use account setting"
+    assert_selector %(button[title="Remove this person's custom setting and follow the contact reminder default from Settings."]), text: "Use default setting"
   end
 end
