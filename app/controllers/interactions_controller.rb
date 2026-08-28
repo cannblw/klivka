@@ -22,13 +22,18 @@ class InteractionsController < ApplicationController
     @interaction.validation_date = Current.user.local_date
 
     if save_interaction_and_update_reminder(clear_snooze: true)
-      redirect_to @person, notice: t("interactions.create.created")
+      redirect_to interaction_create_redirect_path, notice: t("interactions.create.created")
+    elsif quick_log_from_reminders?
+      @due_contact_reminders = DueContactRemindersQuery.call(user: Current.user)
+      @interactions_by_person_id = { @person.id => @interaction }
+      @open_interaction_person_id = @person.id
+      render "reminders/index", status: :unprocessable_entity
     elsif params[:context] == "quick_log"
       @interaction_to_enrich = @interaction
       @open_interaction_modal = true
       @recent_interactions = @person.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
       @interaction_count = @person.interactions.count
-      @keep_in_touch_setting = @person.keep_in_touch_setting
+      @contact_reminder = ContactReminder.for(@person)
       @categories = Current.user.categories.order(:normalized_name).to_a
       render "people/show", status: :unprocessable_entity
     else
@@ -73,14 +78,21 @@ class InteractionsController < ApplicationController
 
   def save_interaction_and_update_reminder(clear_snooze:)
     @person.transaction do
-      setting = KeepInTouchSetting.find_by(person: @person)
-      setting&.lock!
+      reminder = ContactReminder.for(@person)
 
       next false unless @interaction.save
 
-      setting&.clear_snooze_for_latest_interaction!(@interaction) if clear_snooze
+      reminder.clear_snooze_for_latest_interaction!(@interaction) if clear_snooze
       true
     end
+  end
+
+  def interaction_create_redirect_path
+    quick_log_from_reminders? ? reminders_path : @person
+  end
+
+  def quick_log_from_reminders?
+    params[:context] == "quick_log" && params[:return_to] == "reminders"
   end
 
   def page_number

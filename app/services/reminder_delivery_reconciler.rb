@@ -3,6 +3,10 @@ class ReminderDeliveryReconciler
     new(user: delivery.user, at:).current_delivery?(delivery)
   end
 
+  def self.current(deliveries:, user:, at: Time.current)
+    new(user:, at:).current_deliveries(deliveries)
+  end
+
   def self.call(user:, at: Time.current)
     new(user:, at:).call
   end
@@ -40,12 +44,15 @@ class ReminderDeliveryReconciler
   end
 
   def current_delivery?(delivery)
-    source = delivery.source
-    return false unless source
+    current_deliveries([ delivery ]).any?
+  end
 
-    preload_entries([ source ])
-    preload_people([ source ])
-    current?(delivery, latest_interactions: latest_interactions_for([ source ]))
+  def current_deliveries(deliveries)
+    sources = deliveries.filter_map(&:source)
+    preload_entries(sources)
+    preload_people(sources)
+    latest_interactions = latest_interactions_for(sources)
+    deliveries.select { |delivery| delivery.source && current?(delivery, latest_interactions:) }
   end
 
   private
@@ -69,8 +76,8 @@ class ReminderDeliveryReconciler
     return false if source_person(source)&.archived?
 
     case source
-    when KeepInTouchSetting
-      keep_in_touch_current?(source, delivery, latest_interaction_on: latest_interactions[source.person_id])
+    when Person
+      keep_in_touch_current?(source, delivery, latest_interaction_on: latest_interactions[source.id])
     when EntryReminder
       entry_reminder_current?(source, delivery)
     when Entry::Birthday
@@ -80,10 +87,11 @@ class ReminderDeliveryReconciler
     end
   end
 
-  def keep_in_touch_current?(setting, delivery, latest_interaction_on:)
+  def keep_in_touch_current?(person, delivery, latest_interaction_on:)
     local_date = user.local_date(at:)
-    setting.enabled? && setting.due?(on: local_date, latest_interaction_on:) &&
-      setting.next_suggestion_on(latest_interaction_on:) == delivery.reminder_on &&
+    reminder = ContactReminder.for(person, user:)
+    reminder.enabled? && reminder.due?(on: local_date, latest_interaction_on:) &&
+      reminder.next_suggestion_on(latest_interaction_on:) == delivery.reminder_on &&
       delivery.occurrence_on == delivery.reminder_on
   end
 
@@ -108,7 +116,10 @@ class ReminderDeliveryReconciler
   end
 
   def preload_people(sources)
-    sources_with_people = sources.grep(KeepInTouchSetting) + sources.grep(Entry::Birthday)
+    people = sources.grep(Person)
+    ActiveRecord::Associations::Preloader.new(records: people, associations: :keep_in_touch_setting).call if people.any?
+
+    sources_with_people = sources.grep(Entry::Birthday)
     return if sources_with_people.empty?
 
     ActiveRecord::Associations::Preloader.new(records: sources_with_people, associations: :person).call
@@ -116,13 +127,14 @@ class ReminderDeliveryReconciler
 
   def source_person(source)
     case source
-    when KeepInTouchSetting, Entry::Birthday then source.person
+    when Person then source
+    when Entry::Birthday then source.person
     when EntryReminder then source.entry.person
     end
   end
 
   def latest_interactions_for(sources)
-    person_ids = sources.grep(KeepInTouchSetting).map(&:person_id)
+    person_ids = sources.grep(Person).map(&:id)
     return {} if person_ids.empty?
 
     Interaction.where(person_id: person_ids).group(:person_id).maximum(:occurred_on)

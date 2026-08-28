@@ -1,0 +1,23 @@
+<% content_for :title, t(".title") %>
+
+<%= link_to t(".back"), contact_reminders_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
+
+<h1 class="mt-4 text-2xl font-bold"><%= t(".heading") %></h1>
+<p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
+
+<div class="mt-6">
+  <%= render SectionComponent.new(title: t(".contacts.heading"), description: t(".contacts.description"), heading_id: "due-contact-reminders-heading") do %>
+    <% if @due_contact_reminders.any? %>
+      <ul class="divide-y divide-stone-200 dark:divide-stone-700">
+        <%= render DueContactReminderComponent.with_collection(
+              @due_contact_reminders,
+              time_zone: Current.user.time_zone,
+              interactions_by_person_id: @interactions_by_person_id,
+              open_person_id: @open_interaction_person_id
+            ) %>
+      </ul>
+    <% else %>
+      <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".contacts.empty") %></p>
+    <% end %>
+  <% end %>
+</div>

@@ -5,6 +5,8 @@ Rails.application.routes.draw do
   post "signup", to: "registrations#create"
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resource :settings, only: %i[ show update ]
+  resources :reminders, only: :index
+  resources :contact_reminders, only: %i[ index update ], param: :person_id
   resource :time_zone, only: :update
   resources :categories, only: %i[ index create update destroy ] do
     get :person_suggestions, on: :collection
@@ -25,7 +27,7 @@ Rails.application.routes.draw do
       patch :reorder, on: :collection
     end
     resources :interactions, only: %i[ index new create edit update destroy ]
-    resource :keep_in_touch_setting, only: %i[ create update ] do
+    resource :keep_in_touch_setting, only: %i[ create update destroy ] do
       patch :enable
       patch :disable
       patch :snooze

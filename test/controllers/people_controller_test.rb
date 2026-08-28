@@ -318,6 +318,14 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='hidden'][name='month']", count: 0
   end
 
+  test "show links back to reminders when opened from the due list" do
+    get person_url(people(:ada)), params: { from: "reminders" }
+
+    assert_response :success
+    assert_select "a[href='#{reminders_path}']", text: /Reminders/
+    assert_select "form[action='#{person_path(people(:ada))}'] input[type='hidden'][name='from'][value='reminders']"
+  end
+
   test "show opens the quick interaction dialog when requested by a reminder link" do
     get person_url(people(:ada)), params: { quick_interaction: "today" }
 
@@ -385,9 +393,9 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
   test "archive preserves the person and cancels pending reminder work" do
     person = people(:ada)
-    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
     delivery = ReminderDelivery.create!(
-      user: users(:one), source: setting, channel: "in_app",
+      user: users(:one), source: person, channel: "in_app",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 

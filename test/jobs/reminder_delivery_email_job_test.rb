@@ -1,12 +1,10 @@
 require "test_helper"
 
 class ReminderDeliveryEmailJobTest < ActiveJob::TestCase
-  test "retries a failed transport attempt with only the stable ledger identifier" do
-    user = users(:one)
-    local_date = user.local_date
-    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: local_date - 7.days)
+  test "retries a failed individual date email with only its ledger identifier" do
     delivery = ReminderDelivery.create!(
-      user:, source: setting, channel: "email", reminder_on: local_date, occurrence_on: local_date
+      user: users(:one), source: entries(:ada_birthday), channel: "email",
+      reminder_on: Date.new(2026, 11, 10), occurrence_on: Date.new(2026, 12, 10)
     )
 
     with_failing_transport do
@@ -15,7 +13,7 @@ class ReminderDeliveryEmailJobTest < ActiveJob::TestCase
       end
     end
 
-    assert_equal "failed", delivery.reload.status
+    assert_equal ReminderDelivery::FAILED_STATUS, delivery.reload.status
     assert_equal 1, delivery.attempts
   end
 

@@ -1,12 +1,47 @@
 require "test_helper"
 
 class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
+  test "records each enabled channel for a due inherited contact reminder" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Inherited reminder")
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal %w[email in_app], person.reminder_deliveries.order(:channel).pluck(:channel)
+    assert_equal [ Date.new(2026, 8, 8) ], person.reminder_deliveries.distinct.pluck(:reminder_on)
+    assert_nil person.keep_in_touch_setting
+  end
+
+  test "an individual opt-out is excluded from global contact reminder discovery" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Opted out")
+    person.create_keep_in_touch_setting!(cadence: "weekly")
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_empty person.reminder_deliveries
+  end
+
+  test "an individual override is discovered while the global reminder is off" do
+    user = users(:one)
+    person = user.people.create!(name: "Individual reminder")
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    inherited_person = user.people.create!(name: "No reminder")
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal 2, person.reminder_deliveries.count
+    assert_empty inherited_person.reminder_deliveries
+  end
+
   test "records each enabled channel for a due keep-in-touch reminder" do
     setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
 
     assert_equal 2, schedule(users(:one), at: Time.utc(2026, 8, 8, 12))
 
-    deliveries = setting.reminder_deliveries
+    deliveries = setting.person.reminder_deliveries
     assert_equal %w[email in_app], deliveries.order(:channel).pluck(:channel)
     assert_equal [ Date.new(2026, 8, 8) ], deliveries.distinct.pluck(:reminder_on)
   end
@@ -16,7 +51,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
     schedule(users(:one), at: Time.utc(2026, 8, 10, 12))
 
-    assert_equal [ Date.new(2026, 8, 8) ], setting.reminder_deliveries.distinct.pluck(:reminder_on)
+    assert_equal [ Date.new(2026, 8, 8) ], setting.person.reminder_deliveries.distinct.pluck(:reminder_on)
   end
 
   test "records only the latest yearly occurrence missed since the previous successful scan" do
@@ -196,8 +231,8 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
     schedule(users(:one), at: Time.utc(2026, 8, 8, 12))
 
-    assert_equal 2, own_setting.reminder_deliveries.count
-    assert_empty other_setting.reminder_deliveries
+    assert_equal 2, own_setting.person.reminder_deliveries.count
+    assert_empty other_setting.person.reminder_deliveries
   end
 
   test "does not schedule any reminder source belonging to an archived person" do
@@ -212,7 +247,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
     schedule(user, at: Time.utc(2026, 8, 8, 12))
 
-    assert_empty setting.reminder_deliveries
+    assert_empty setting.person.reminder_deliveries
     assert_empty date_reminder.reminder_deliveries
     assert_empty ReminderDelivery.where(source: birthday)
   end
@@ -222,7 +257,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     person = people(:ada)
     setting = create_setting(person, enabled_on: Date.new(2026, 8, 1))
     delivery = ReminderDelivery.create!(
-      user:, source: setting, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
+      user:, source: person, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8),
       canceled_at: Time.utc(2026, 8, 8, 10)
     )
@@ -236,6 +271,44 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_nil delivery.canceled_at
   end
 
+  test "restoring a person reactivates eligible inherited reminder work" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Restored inherited reminder")
+    delivery = ReminderDelivery.create!(
+      user:, source: person, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8),
+      canceled_at: Time.utc(2026, 8, 8, 10)
+    )
+    person.archive!
+    person.restore!
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
+    assert_nil delivery.canceled_at
+    assert_nil person.keep_in_touch_setting
+  end
+
+  test "returning to the global policy reactivates matching inherited work" do
+    user = users(:one)
+    user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
+    person = user.people.create!(name: "Returned to default")
+    reminder = ContactReminder.for(person, user:)
+    reminder.opt_out!
+    delivery = ReminderDelivery.create!(
+      user:, source: person, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8),
+      canceled_at: Time.utc(2026, 8, 8, 10)
+    )
+    reminder.use_default!
+
+    schedule(user, at: Time.utc(2026, 8, 8, 12))
+
+    assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
+    assert_nil delivery.canceled_at
+  end
+
   test "records work only for enabled account channels" do
     user = users(:one)
     user.update!(reminder_in_app_enabled: false, reminder_email_enabled: true)
@@ -243,7 +316,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
 
     schedule(user, at: Time.utc(2026, 8, 8, 12))
 
-    assert_equal [ "email" ], setting.reminder_deliveries.pluck(:channel)
+    assert_equal [ "email" ], setting.person.reminder_deliveries.pluck(:channel)
   end
 
   test "records only in-app work for the shared demo account" do
@@ -254,7 +327,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
       assert_equal 1, schedule(user, at: Time.utc(2026, 8, 8, 12))
     end
 
-    assert_equal [ "in_app" ], setting.reminder_deliveries.pluck(:channel)
+    assert_equal [ "in_app" ], setting.person.reminder_deliveries.pluck(:channel)
   end
 
   test "same-day rescans reuse existing ledger rows" do
@@ -266,7 +339,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_no_difference "ReminderDelivery.count" do
       assert_equal 0, schedule(user, at:)
     end
-    assert_equal 2, setting.reminder_deliveries.count
+    assert_equal 2, setting.person.reminder_deliveries.count
   end
 
   test "a valid reminder can become pending again after its channel is re-enabled" do
@@ -274,7 +347,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     user.update!(reminder_email_enabled: false)
     setting = create_setting(people(:ada), enabled_on: Date.new(2026, 8, 1))
     delivery = ReminderDelivery.create!(
-      user:, source: setting, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
+      user:, source: setting.person, channel: "email", status: ReminderDelivery::CANCELED_STATUS,
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 7),
       canceled_at: Time.utc(2026, 8, 8, 10)
     )
@@ -286,7 +359,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     assert_equal "pending", delivery.status
     assert_equal Date.new(2026, 8, 8), delivery.occurrence_on
     assert_nil delivery.canceled_at
-    assert_equal 2, setting.reminder_deliveries.count
+    assert_equal 2, setting.person.reminder_deliveries.count
   end
 
   test "does not advance the checkpoint when scheduling fails" do

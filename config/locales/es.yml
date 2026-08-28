@@ -94,6 +94,8 @@ es:
   nav:
     birthdays: "Cumpleaños"
     categories: "Categorías"
+    contact_reminders: "Recordatorios de contacto"
+    primary: "Navegación principal"
     sign_out: "Cerrar sesión"
     settings: "Ajustes"
 
@@ -315,28 +317,28 @@ es:
     create:
       enabled: "Recordatorio de contacto activado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+      already_exists: "Esta persona ya tiene un ajuste de recordatorio de contacto."
     update:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
     enable:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
     disable:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+      already_updated: "Este recordatorio de contacto ya se ha actualizado."
     snooze:
       updated: "Recordatorio de contacto actualizado."
       invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
-      stale: "Este recordatorio de contacto ha cambiado. Revisa la información más reciente."
+      unavailable: "Este recordatorio de contacto ya no está pendiente."
+    destroy:
+      updated: "Esta persona ahora usa el ajuste de recordatorios de contacto de tu cuenta."
 
   contact_reminder:
     heading: "Mantener el contacto"
     description: "Elige con qué frecuencia quieres recibir un recordatorio amable para ponerte en contacto."
-    "off": "El recordatorio de contacto está desactivado."
+    off_for_person: "Los recordatorios de contacto están desactivados para esta persona."
     frequency: "Frecuencia"
     current_frequency: "Frecuencia: %{frequency}"
     turn_on: "Activar recordatorio"
@@ -348,6 +350,10 @@ es:
     snooze: "Recordármelo en una semana"
     change_frequency: "Cambiar frecuencia"
     save_frequency: "Guardar frecuencia"
+    settings: "Ajustes"
+    using_account_setting_html: "Usa el ajuste de tu cuenta. Cámbialo en %{settings_link}."
+    use_default_setting: "Usar ajuste predeterminado"
+    use_default_setting_hint: "Elimina el ajuste personalizado de esta persona y usa el valor predeterminado de los recordatorios de contacto en Ajustes."
     cadences:
       daily: "Diaria"
       weekly: "Semanal"
@@ -355,6 +361,56 @@ es:
       monthly: "Mensual"
       quarterly: "Cada tres meses"
       yearly: "Anual"
+
+  contact_reminders:
+    update:
+      updated: "Recordatorio de contacto de %{name} actualizado."
+      invalid: "No se ha guardado el recordatorio de contacto: %{reason}"
+    organizer:
+      default_with_cadence: "Usar predeterminado (%{cadence})"
+      default_off: "Usar predeterminado (desactivado)"
+      "off": "Desactivado"
+      save: "Guardar"
+      setting_for: "Ajuste del recordatorio de contacto para %{name}"
+      states:
+        default: "Predeterminado: %{cadence}"
+        custom: "Personalizado: %{cadence}"
+        default_off: "El predeterminado está desactivado"
+        "off": "Desactivado para esta persona"
+    index:
+      title: "Recordatorios de contacto"
+      back: "← Personas"
+      heading: "Recordatorios de contacto"
+      description: "Elige quién usa el ajuste predeterminado y quién necesita otro recordatorio."
+      default:
+        heading: "Recordatorio predeterminado"
+        description: "Se aplica a las personas activas que no tengan un ajuste personalizado."
+        enabled: "Activado: %{cadence}"
+        disabled: "El recordatorio predeterminado está desactivado."
+        due: "Ver recordatorios pendientes"
+        settings: "Cambiar el predeterminado en Ajustes"
+      people:
+        heading: "Personas"
+        description: "Un ajuste personalizado solo se aplica a esa persona."
+        search_label: "Buscar personas"
+        search_placeholder: "Buscar personas..."
+        no_results: "No hay personas que coincidan"
+        empty: "Añade a alguien antes de configurar los recordatorios de contacto."
+
+  reminders:
+    index:
+      title: "Recordatorios"
+      back: "← Recordatorios de contacto"
+      heading: "Recordatorios"
+      description: "Consulta con quién querías contactar y elige qué hacer ahora."
+      contacts:
+        heading: "Personas con las que contactar"
+        description: "Al registrar un contacto o posponer un recordatorio, esta lista se actualizará."
+        empty: "No hay recordatorios de contacto pendientes ahora mismo."
+    contact:
+      due_since: "Pendiente desde el %{date}"
+      contact_today: "Contactar hoy"
+      snooze: "Recordármelo en una semana"
 
   birthday_reminder_status:
     enabled: "Te recordaremos todos los cumpleaños %{timing}."
@@ -411,6 +467,13 @@ es:
       email: "Recordatorios por correo electrónico"
       email_hint: "Permite que se envíen recordatorios al correo electrónico de tu cuenta."
       no_channels: "Activa al menos un canal de notificación para recibir recordatorios."
+      contacts:
+        heading: "Recordatorios de contacto"
+        description: "Elige una frecuencia opcional para las personas que usan el ajuste de tu cuenta. Puedes cambiar o desactivar el recordatorio de cada persona."
+        enabled: "Recordarme que mantenga el contacto"
+        enabled_hint: "Se aplica a las personas que no tienen su propio ajuste de recordatorio de contacto."
+        frequency: "Con qué frecuencia"
+        frequency_hint: "Las personas que usen este ajuste de la cuenta seguirán esta frecuencia."
       birthdays:
         heading: "Recordatorios de cumpleaños"
         description: "Klivka puede avisarte antes de cada cumpleaños que guardes."
@@ -537,6 +600,7 @@ es:
     show:
       back: "← Personas"
       back_to_birthdays: "← Cumpleaños"
+      back_to_reminders: "← Recordatorios"
       back_to_archived: "← Personas archivadas"
       archive: "Archivar persona"
       restore: "Restaurar"
@@ -692,13 +756,24 @@ es:
     footer: "Un mensaje de Klivka, tu cuaderno privado para cuidar tus relaciones."
 
   reminder_mailer:
-    keep_in_touch:
-      subject: "Un recordatorio para mantener el contacto con %{name}"
-      eyebrow: "Mantén el contacto"
-      heading: "Mantén el contacto con %{name}"
-      body: "Pediste a Klivka que te recordara mantener el contacto con %{name}."
-      open_person: "Ver a %{name}"
-      record_contact: "Registrar contacto"
+    contact_digest:
+      subject:
+        one: "Un recordatorio para contactar con %{name}"
+        other: "%{count} personas con las que querías contactar"
+      preheader:
+        one: "Es un buen momento para contactar con %{name}."
+        other: "Es un buen momento para contactar con %{count} personas."
+      eyebrow: "Recordatorios de contacto"
+      heading:
+        one: "Contacta con %{name}"
+        other: "%{count} personas con las que contactar"
+      body:
+        one: "Pediste a Klivka que te recordara contactar con %{name}."
+        other: "Estas son las personas que pediste a Klivka que te recordara."
+      more:
+        one: "Y una persona más"
+        other: "Y %{count} personas más"
+      view_all: "Ver todos los recordatorios"
       settings: "Gestionar ajustes de recordatorios"
 
     birthday:

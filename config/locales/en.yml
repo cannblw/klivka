@@ -83,6 +83,8 @@ en:
   nav:
     birthdays: "Birthdays"
     categories: "Categories"
+    contact_reminders: "Contact reminders"
+    primary: "Main navigation"
     sign_out: "Sign out"
     settings: "Settings"
 
@@ -304,28 +306,28 @@ en:
     create:
       enabled: "Contact reminder enabled."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
+      already_exists: "This person already has a contact reminder setting."
     update:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
     enable:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
     disable:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
+      already_updated: "This contact reminder was already updated."
     snooze:
       updated: "Contact reminder updated."
       invalid: "This contact reminder wasn't saved: %{reason}"
-      stale: "This contact reminder changed. Please review the latest details."
+      unavailable: "This contact reminder is no longer due."
+    destroy:
+      updated: "This person now uses your account contact reminder setting."
 
   contact_reminder:
     heading: "Keep in touch"
     description: "Choose how often you would like a gentle reminder to get in touch."
-    "off": "The contact reminder is off."
+    off_for_person: "Contact reminders are off for this person."
     frequency: "Frequency"
     current_frequency: "Frequency: %{frequency}"
     turn_on: "Turn on reminder"
@@ -337,6 +339,10 @@ en:
     snooze: "Remind me in one week"
     change_frequency: "Change frequency"
     save_frequency: "Save frequency"
+    settings: "Settings"
+    using_account_setting_html: "Using your account setting. Change it in %{settings_link}."
+    use_default_setting: "Use default setting"
+    use_default_setting_hint: "Remove this person's custom setting and follow the contact reminder default from Settings."
     cadences:
       daily: "Daily"
       weekly: "Weekly"
@@ -344,6 +350,56 @@ en:
       monthly: "Monthly"
       quarterly: "Every three months"
       yearly: "Yearly"
+
+  contact_reminders:
+    update:
+      updated: "%{name}'s contact reminder updated."
+      invalid: "This contact reminder wasn't saved: %{reason}"
+    organizer:
+      default_with_cadence: "Use default (%{cadence})"
+      default_off: "Use default (off)"
+      "off": "Off"
+      save: "Save"
+      setting_for: "Contact reminder setting for %{name}"
+      states:
+        default: "Default: %{cadence}"
+        custom: "Custom: %{cadence}"
+        default_off: "Default is off"
+        "off": "Off for this person"
+    index:
+      title: "Contact reminders"
+      back: "← People"
+      heading: "Contact reminders"
+      description: "Choose who follows your default and who needs a different reminder."
+      default:
+        heading: "Default reminder"
+        description: "This applies to active people without a custom setting."
+        enabled: "On: %{cadence}"
+        disabled: "The default reminder is off."
+        due: "View due reminders"
+        settings: "Change the default in Settings"
+      people:
+        heading: "People"
+        description: "A custom choice applies only to that person."
+        search_label: "Search people"
+        search_placeholder: "Search people..."
+        no_results: "No matching people"
+        empty: "Add someone before setting up contact reminders."
+
+  reminders:
+    index:
+      title: "Reminders"
+      back: "← Contact reminders"
+      heading: "Reminders"
+      description: "See who you planned to contact and choose what to do next."
+      contacts:
+        heading: "Ready to contact"
+        description: "Logging contact or choosing remind me later will update this list."
+        empty: "No contact reminders need your attention right now."
+    contact:
+      due_since: "Ready since %{date}"
+      contact_today: "Contact today"
+      snooze: "Remind me in one week"
 
   birthday_reminder_status:
     enabled: "You'll be reminded about every birthday %{timing}."
@@ -400,6 +456,13 @@ en:
       email: "Email reminders"
       email_hint: "Allow reminder emails to be sent to your account address."
       no_channels: "Turn on at least one notification channel to receive reminders."
+      contacts:
+        heading: "Contact reminders"
+        description: "Choose one optional frequency for people who use your account setting. You can still change or turn off reminders for each person."
+        enabled: "Remind me to keep in touch"
+        enabled_hint: "This applies to people without their own contact reminder setting."
+        frequency: "How often"
+        frequency_hint: "People who use this account setting will follow this frequency."
       birthdays:
         heading: "Birthday reminders"
         description: "Klivka can remind you before every birthday you save."
@@ -526,6 +589,7 @@ en:
     show:
       back: "← People"
       back_to_birthdays: "← Birthdays"
+      back_to_reminders: "← Reminders"
       back_to_archived: "← Archived people"
       archive: "Archive person"
       restore: "Restore"
@@ -681,13 +745,24 @@ en:
     footer: "A message from Klivka, your private relationship notebook."
 
   reminder_mailer:
-    keep_in_touch:
-      subject: "A reminder to keep in touch with %{name}"
-      eyebrow: "Keep in touch"
-      heading: "Keep in touch with %{name}"
-      body: "You asked Klivka to remind you to keep in touch with %{name}."
-      open_person: "Open %{name}"
-      record_contact: "Record contact"
+    contact_digest:
+      subject:
+        one: "A reminder to contact %{name}"
+        other: "%{count} people you planned to contact"
+      preheader:
+        one: "%{name} is ready to hear from you."
+        other: "%{count} people are ready to hear from you."
+      eyebrow: "Contact reminders"
+      heading:
+        one: "Contact %{name}"
+        other: "%{count} people to contact"
+      body:
+        one: "You asked Klivka to remind you about %{name}."
+        other: "Here are the people you asked Klivka to remind you about."
+      more:
+        one: "And one more person"
+        other: "And %{count} more people"
+      view_all: "View all reminders"
       settings: "Manage reminder settings"
 
     birthday:

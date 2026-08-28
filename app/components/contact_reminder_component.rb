@@ -1,14 +1,16 @@
 class ContactReminderComponent < ViewComponent::Base
-  def initialize(person:, setting:, **options)
+  def initialize(person:, reminder:, **options)
     @person = person
-    @setting = setting
+    @reminder = reminder
     @extra_classes = options.delete(:class)
     @options = options
   end
 
   private
 
-  attr_reader :person, :setting, :options
+  attr_reader :person, :reminder, :options
+
+  delegate :setting, to: :reminder
 
   def classes
     [
@@ -18,15 +20,15 @@ class ContactReminderComponent < ViewComponent::Base
   end
 
   def enabled?
-    setting&.enabled?
+    reminder.enabled?
   end
 
   def due?
-    enabled? && setting.due?(on: Date.current)
+    reminder.due?(on: Date.current)
   end
 
   def snoozed?
-    enabled? && setting.snoozed?
+    reminder.snoozed?
   end
 
   def cadence_options
@@ -34,15 +36,15 @@ class ContactReminderComponent < ViewComponent::Base
   end
 
   def selected_cadence
-    setting&.cadence || KeepInTouchSetting::DEFAULT_CADENCE
+    reminder.cadence || setting&.cadence || ContactReminder::DEFAULT_CADENCE
   end
 
   def next_suggestion_on
-    setting.next_suggestion_on
+    reminder.next_suggestion_on
   end
 
   def cadence_label
-    t("contact_reminder.cadences.#{setting.cadence}")
+    t("contact_reminder.cadences.#{reminder.cadence}")
   end
 
   def activation_form_action
@@ -51,5 +53,17 @@ class ContactReminderComponent < ViewComponent::Base
 
   def activation_form_method
     setting ? :patch : :post
+  end
+
+  def frequency_form_method
+    setting ? :patch : :post
+  end
+
+  def inherited?
+    reminder.inherited?
+  end
+
+  def opted_out?
+    reminder.opted_out?
   end
 end

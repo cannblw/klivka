@@ -10,19 +10,24 @@ class ReminderSettingsComponentTest < ViewComponent::TestCase
       default_reminder_lead_unit: "years",
       birthday_reminders_enabled: false,
       birthday_reminder_lead_value: 3,
-      birthday_reminder_lead_unit: "days"
+      birthday_reminder_lead_unit: "days",
+      contact_reminder_cadence: "quarterly",
+      contact_reminders_enabled_on: Date.current
     )
 
     render_inline ReminderSettingsComponent.new(user: user)
 
     assert_selector "#reminder-settings-heading", text: "Reminders"
     assert_selector "[data-reminder-settings-section='channels']"
+    assert_selector "[data-reminder-settings-section='contacts']"
     assert_selector "[data-reminder-settings-section='birthdays']"
     assert_selector "[data-reminder-settings-section='other-dates']"
     assert_selector "form[action='#{Rails.application.routes.url_helpers.settings_path}'][method='post']", visible: :all
     assert_selector "input[name='user[reminder_in_app_enabled]'][type='checkbox']", count: 1
     assert_selector "input[name='user[reminder_in_app_enabled]'][type='checkbox']:not([checked])", count: 1
     assert_selector "input[name='user[reminder_email_enabled]'][type='checkbox'][checked]", count: 1
+    assert_selector "input[name='user[contact_reminders_enabled]'][type='checkbox'][checked]", count: 1
+    assert_selector "select[name='user[contact_reminder_cadence]'] option[selected][value='quarterly']", count: 1
     assert_selector "input[name='user[default_reminder_lead_value]'][type='number'][value='2'][min='0'][max='#{Klivka::MAX_INT32}'][step='1']", count: 1
     assert_selector "select[name='user[default_reminder_lead_unit]'] option[selected][value='years']", count: 1
     assert_selector "input[name='user[birthday_reminders_enabled]'][type='checkbox']:not([checked])", count: 1
@@ -45,6 +50,8 @@ class ReminderSettingsComponentTest < ViewComponent::TestCase
       render_inline ReminderSettingsComponent.new(user: users(:one))
 
       assert_selector "#reminder-settings-heading", text: "Recordatorios"
+      assert_selector "[data-reminder-settings-section='contacts']", text: "Recordatorios de contacto"
+      assert_selector "select[name='user[contact_reminder_cadence]'] option[value='monthly']", text: "Mensual"
       assert_selector "option[value='months']", text: "Meses"
       assert_selector "button[type='submit']", text: "Guardar ajustes de recordatorios"
     end

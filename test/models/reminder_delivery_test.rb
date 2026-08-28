@@ -4,41 +4,45 @@ require "test_helper"
 #
 # Table name: reminder_deliveries
 #
-#  id            :integer          not null, primary key
-#  attempts      :integer          default(0), not null
-#  canceled_at   :datetime
-#  channel       :string           not null
-#  claim_token   :string
-#  claimed_at    :datetime
-#  delivered_at  :datetime
-#  failed_at     :datetime
-#  occurrence_on :date             not null
-#  reminder_on   :date             not null
-#  source_type   :string           not null
-#  status        :string           default("pending"), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  source_id     :integer          not null
-#  user_id       :integer          not null
+#  id                         :integer          not null, primary key
+#  attempts                   :integer          default(0), not null
+#  canceled_at                :datetime
+#  channel                    :string           not null
+#  claim_token                :string
+#  claimed_at                 :datetime
+#  delivered_at               :datetime
+#  failed_at                  :datetime
+#  occurrence_on              :date             not null
+#  reminder_on                :date             not null
+#  source_type                :string           not null
+#  status                     :string           default("pending"), not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  contact_reminder_digest_id :integer
+#  source_id                  :integer          not null
+#  user_id                    :integer          not null
 #
 # Indexes
 #
-#  idx_on_status_channel_reminder_on_f9dde1d6e2          (status,channel,reminder_on)
-#  index_reminder_deliveries_on_source_date_and_channel  (source_type,source_id,reminder_on,channel) UNIQUE
-#  index_reminder_deliveries_on_user_id                  (user_id)
+#  idx_on_status_channel_reminder_on_f9dde1d6e2             (status,channel,reminder_on)
+#  index_reminder_deliveries_on_contact_reminder_digest_id  (contact_reminder_digest_id)
+#  index_reminder_deliveries_on_source_date_and_channel     (source_type,source_id,reminder_on,channel) UNIQUE
+#  index_reminder_deliveries_on_user_id                     (user_id)
 #
 # Foreign Keys
 #
-#  user_id  (user_id => users.id) ON DELETE => cascade
+#  contact_reminder_digest_id  (contact_reminder_digest_id => contact_reminder_digests.id)
+#  user_id                     (user_id => users.id) ON DELETE => cascade
 #
 class ReminderDeliveryTest < ActiveSupport::TestCase
   setup do
     @setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    @source = @setting.person
   end
 
   test "records separate in-app and email work for one reminder occurrence" do
     attributes = {
-      user: users(:one), source: @setting,
+      user: users(:one), source: @source,
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     }
 
@@ -51,13 +55,13 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
 
   test "allows different reminder dates for a recurring source" do
     ReminderDelivery.create!(
-      user: users(:one), source: @setting, channel: "email",
+      user: users(:one), source: @source, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 
     assert_difference "ReminderDelivery.count", 1 do
       ReminderDelivery.create!(
-        user: users(:one), source: @setting, channel: "email",
+        user: users(:one), source: @source, channel: "email",
         reminder_on: Date.new(2026, 8, 15), occurrence_on: Date.new(2026, 8, 15)
       )
     end
@@ -65,7 +69,7 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
 
   test "rejects duplicate work for one source date and channel" do
     attributes = {
-      user: users(:one), source: @setting, channel: "email",
+      user: users(:one), source: @source, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     }
     ReminderDelivery.create!(attributes)
@@ -78,7 +82,7 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
   end
 
   test "requires supported sources channels statuses and dates" do
-    delivery = ReminderDelivery.new(user: users(:one), source: @setting, channel: "push", status: "queued")
+    delivery = ReminderDelivery.new(user: users(:one), source: @source, channel: "push", status: "queued")
 
     assert_not_predicate delivery, :valid?
     assert delivery.errors.of_kind?(:channel, :inclusion)
@@ -87,20 +91,30 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
     assert delivery.errors.of_kind?(:occurrence_on, :blank)
   end
 
+  test "requires new contact work to use the person source" do
+    delivery = ReminderDelivery.new(
+      user: users(:one), source: @setting, channel: "email",
+      reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
+    )
+
+    assert_not_predicate delivery, :valid?
+    assert delivery.errors.of_kind?(:source, :invalid)
+  end
+
   test "the database rejects unsupported scheduling values" do
     delivery = ReminderDelivery.create!(
-      user: users(:one), source: @setting, channel: "email",
+      user: users(:one), source: @source, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 
     assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:channel, "push") }
     assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:status, "queued") }
-    assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:source_type, "Person") }
+    assert_raises(ActiveRecord::StatementInvalid) { delivery.update_column(:source_type, "Category") }
   end
 
   test "requires complete claim metadata at the model and database boundaries" do
     delivery = ReminderDelivery.create!(
-      user: users(:one), source: @setting, channel: "email",
+      user: users(:one), source: @source, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 
@@ -121,7 +135,7 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
 
   test "requires the source and ledger record to belong to the same user" do
     delivery = ReminderDelivery.new(
-      user: users(:two), source: @setting, channel: "email",
+      user: users(:two), source: @source, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 
@@ -145,14 +159,34 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
     assert date_delivery.errors.of_kind?(:source, :invalid)
   end
 
+  test "allows only same-account contact email work to belong to a contact digest" do
+    digest = ContactReminderDigest.create!(user: users(:one), delivery_on: Date.new(2026, 8, 8))
+    valid_delivery = ReminderDelivery.new(
+      user: users(:one), source: @source, channel: "email", contact_reminder_digest: digest,
+      reminder_on: digest.delivery_on, occurrence_on: digest.delivery_on
+    )
+    in_app_delivery = valid_delivery.dup
+    in_app_delivery.channel = "in_app"
+    other_account_delivery = valid_delivery.dup
+    other_account_delivery.contact_reminder_digest = ContactReminderDigest.create!(
+      user: users(:two), delivery_on: digest.delivery_on
+    )
+
+    assert_predicate valid_delivery, :valid?
+    assert_not_predicate in_app_delivery, :valid?
+    assert in_app_delivery.errors.of_kind?(:contact_reminder_digest, :invalid)
+    assert_not_predicate other_account_delivery, :valid?
+    assert other_account_delivery.errors.of_kind?(:contact_reminder_digest, :invalid)
+  end
+
   test "keeps the audit record when its reminder source is deleted" do
     delivery = ReminderDelivery.create!(
-      user: users(:one), source: @setting, channel: "email",
+      user: users(:one), source: @source, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 
     assert_no_difference "ReminderDelivery.count" do
-      @setting.destroy!
+      @source.destroy!
     end
 
     assert_nil delivery.reload.source
@@ -161,9 +195,9 @@ class ReminderDeliveryTest < ActiveSupport::TestCase
   test "deleting the owning account deletes its delivery history" do
     user = User.create!(email_address: "ledger-owner@example.com", password: "password", time_zone: "UTC")
     person = user.people.create!(name: "Ledger source")
-    setting = person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+    person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
     ReminderDelivery.create!(
-      user:, source: setting, channel: "email",
+      user:, source: person, channel: "email",
       reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8)
     )
 

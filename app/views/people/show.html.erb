@@ -139,7 +139,7 @@
 
   <%= render PersonCategoryComponent.new(person: @person, categories: @categories) %>
 
-  <%= render ContactReminderComponent.new(person: @person, setting: @keep_in_touch_setting, class: "mt-6") %>
+  <%= render ContactReminderComponent.new(person: @person, reminder: @contact_reminder, class: "mt-6") %>
 
   <%= render PersonContactActionsComponent.new(entries: ordered_entries) %>
 

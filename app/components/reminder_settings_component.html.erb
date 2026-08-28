@@ -31,6 +31,34 @@
       <% end %>
     <% end %>
 
+    <fieldset class="space-y-3 border-t border-stone-200 pt-5 dark:border-stone-700" data-reminder-settings-section="contacts">
+      <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.contacts.heading") %></legend>
+      <p class="text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.contacts.description") %></p>
+
+      <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
+        <%= form.check_box :contact_reminders_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
+        <span>
+          <span class="block text-sm font-medium"><%= t("settings.reminders.contacts.enabled") %></span>
+          <span class="mt-0.5 block text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.contacts.enabled_hint") %></span>
+        </span>
+      </label>
+
+      <div class="max-w-xs">
+        <%= form.label :contact_reminder_cadence, t("settings.reminders.contacts.frequency"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.contacts.frequency_hint") %></p>
+        <%= render SelectFieldComponent.new(
+              form,
+              :contact_reminder_cadence,
+              choices: contact_cadence_options,
+              selected: user.contact_reminder_cadence,
+              wrapper_class: "mt-2"
+            ) %>
+        <% user.errors.full_messages_for(:contact_reminder_cadence).each do |message| %>
+          <p class="mt-1 text-sm text-red-600 dark:text-red-400"><%= message %></p>
+        <% end %>
+      </div>
+    </fieldset>
+
     <fieldset class="space-y-3 border-t border-stone-200 pt-5 dark:border-stone-700" data-reminder-settings-section="birthdays">
       <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.birthdays.heading") %></legend>
       <p class="text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.birthdays.description") %></p>

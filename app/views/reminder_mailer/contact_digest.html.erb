@@ -1,0 +1,21 @@
+<% content_for :preheader, t(".preheader", count: @contact_count, name: @preview_people.first.name) %>
+
+<p style="margin: 0 0 18px; color: #b45309; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;"><%= t(".eyebrow") %></p>
+
+<h1 style="margin: 0; color: #29201d; font-size: 30px; line-height: 38px; font-weight: 700; letter-spacing: -0.6px;"><%= t(".heading", count: @contact_count, name: @preview_people.first.name) %></h1>
+
+<p style="margin: 14px 0 0; color: #57534e; font-size: 16px; line-height: 26px;"><%= t(".body", count: @contact_count, name: @preview_people.first.name) %></p>
+
+<ul style="margin: 22px 0 0; padding-left: 22px; color: #44403c; font-size: 15px; line-height: 24px;">
+  <% @preview_people.each do |person| %>
+    <li><%= link_to person.name, person_url(person), style: "color: #a16207; font-weight: 600; text-decoration: underline; text-underline-offset: 3px;" %></li>
+  <% end %>
+</ul>
+
+<% if @remaining_count.positive? %>
+  <p style="margin: 10px 0 0; color: #78716c; font-size: 13px; line-height: 19px;"><%= t(".more", count: @remaining_count) %></p>
+<% end %>
+
+<div style="margin-top: 30px;"><%= render MailerButtonComponent.new(label: t(".view_all"), url: @reminders_url) %></div>
+
+<div style="margin-top: 34px; padding-top: 22px; border-top: 1px solid #e7e5e4; font-size: 13px; line-height: 19px;"><%= link_to t(".settings"), @settings_url, style: "color: #78716c; text-decoration: underline;" %></div>

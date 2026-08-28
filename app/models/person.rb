@@ -2,21 +2,22 @@
 #
 # Table name: people
 #
-#  id          :integer          not null, primary key
-#  archived_at :datetime
-#  name        :string           not null
-#  slug        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  category_id :integer
-#  user_id     :integer          not null
+#  id                             :integer          not null, primary key
+#  archived_at                    :datetime
+#  contact_reminder_snoozed_until :date
+#  name                           :string           not null
+#  slug                           :string           not null
+#  created_at                     :datetime         not null
+#  updated_at                     :datetime         not null
+#  category_id                    :integer
+#  user_id                        :integer          not null
 #
 # Indexes
 #
-#  index_people_on_category_id       (category_id)
+#  index_people_on_category_id              (category_id)
+#  index_people_on_user_id                  (user_id)
 #  index_people_on_user_id_and_archived_at  (user_id,archived_at)
-#  index_people_on_user_id           (user_id)
-#  index_people_on_user_id_and_slug  (user_id,slug) UNIQUE
+#  index_people_on_user_id_and_slug         (user_id,slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -32,6 +33,7 @@ class Person < ApplicationRecord
   has_many :entries, dependent: :destroy
   has_many :interactions, dependent: :destroy
   has_one :keep_in_touch_setting, dependent: :destroy
+  has_many :reminder_deliveries, as: :source
 
   validates :name, presence: true, length: { maximum: Klivka::STRING_MAX_LENGTH }
   validate :category_belongs_to_user

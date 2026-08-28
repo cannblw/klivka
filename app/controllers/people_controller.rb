@@ -95,6 +95,10 @@ class PeopleController < ApplicationController
       @return_params = { from: "birthdays", month: }.compact
       @back_path = birthdays_path(month:)
       @back_translation_key = "people.show.back_to_birthdays"
+    elsif params[:from] == "reminders"
+      @return_params = { from: "reminders" }
+      @back_path = reminders_path
+      @back_translation_key = "people.show.back_to_reminders"
     else
       @return_params = {}
       @back_path = root_path
@@ -108,7 +112,7 @@ class PeopleController < ApplicationController
     @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @person.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = params[:quick_interaction] == "today"
-    @keep_in_touch_setting = @person.keep_in_touch_setting
+    @contact_reminder = ContactReminder.for(@person)
   end
 
   def prepare_categories

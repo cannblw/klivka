@@ -48,7 +48,7 @@ class ReminderDeliveryEmailDelivery
         id: delivery_id,
         channel: ReminderDelivery::EMAIL_CHANNEL,
         status: [ ReminderDelivery::PENDING_STATUS, ReminderDelivery::FAILED_STATUS ]
-      ).lock.first
+      ).where.not(source_type: Person.polymorphic_name).lock.first
       next unless delivery
       next if delivery.claimed_at && delivery.claimed_at >= at - claim_timeout
 
@@ -65,8 +65,6 @@ class ReminderDeliveryEmailDelivery
   def message_for(delivery)
     source = delivery.source
     case source
-    when KeepInTouchSetting
-      ReminderMailer.with(delivery:).keep_in_touch
     when Entry::Birthday
       ReminderMailer.with(delivery:).birthday
     when EntryReminder
