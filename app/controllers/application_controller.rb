@@ -15,10 +15,18 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  helper_method :actionable_in_app_reminders?
+
   around_action :switch_locale
   around_action :switch_time_zone
 
   private
+
+  def actionable_in_app_reminders?
+    return @in_app_reminders.any? if defined?(@in_app_reminders)
+
+    @actionable_in_app_reminders ||= InAppRemindersQuery.actionable?(user: Current.user)
+  end
 
   def switch_locale(&action)
     I18n.with_locale(preferred_locale, &action)

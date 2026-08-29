@@ -471,7 +471,7 @@ en:
   reminders:
     index:
       title: "Reminders"
-      back: "← Contact reminders"
+      back: "← People"
       heading: "Reminders"
       description: "See the reminders that are ready for your attention."
       contacts:
@@ -501,6 +501,10 @@ en:
       default_label: "Important date"
       occurs_on: "Date on %{date}"
       view: "View date"
+
+  reminder_bell:
+    actionable: "Reminders are ready."
+    quiet: "No reminders are ready."
 
   birthday_reminder_status:
     enabled: "You'll be reminded about every birthday %{timing}."

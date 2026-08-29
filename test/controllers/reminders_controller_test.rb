@@ -77,6 +77,7 @@ class RemindersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "ul", count: 0
+    assert_select "main > a[href='#{root_path}']"
     assert_select "section[aria-labelledby='no-due-reminders-heading']", text: /Nothing needs your attention/
   end
 

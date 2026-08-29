@@ -1,0 +1,11 @@
+<%= link_to helpers.reminders_path,
+      aria: { label: label },
+      data: { reminder_bell: true, actionable: actionable? },
+      class: "relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-stone-600 hover:bg-stone-200 hover:text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-100" do %>
+  <span class="material-icons" style="font-size: 22px" aria-hidden="true"><%= icon %></span>
+  <% if actionable? %>
+    <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-600 ring-2 ring-stone-50 dark:bg-amber-400 dark:ring-stone-800"
+          data-reminder-indicator
+          aria-hidden="true"></span>
+  <% end %>
+<% end %>

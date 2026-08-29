@@ -482,7 +482,7 @@ es:
   reminders:
     index:
       title: "Recordatorios"
-      back: "← Recordatorios de contacto"
+      back: "← Personas"
       heading: "Recordatorios"
       description: "Consulta los recordatorios que ya están listos."
       contacts:
@@ -512,6 +512,10 @@ es:
       default_label: "Fecha importante"
       occurs_on: "Fecha: %{date}"
       view: "Ver fecha"
+
+  reminder_bell:
+    actionable: "Hay recordatorios listos."
+    quiet: "No hay recordatorios listos."
 
   birthday_reminder_status:
     enabled: "Te recordaremos todos los cumpleaños %{timing}."
