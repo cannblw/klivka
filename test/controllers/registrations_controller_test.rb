@@ -17,6 +17,10 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert cookies[:session_id]
     assert User.find_by!(email_address: "new@example.com").confirmed?
     assert_equal "Asia/Kolkata", User.find_by!(email_address: "new@example.com").time_zone
+    user = User.find_by!(email_address: "new@example.com")
+    assert_equal [ "Call", "Text message", "WhatsApp", "Facebook Messenger", "Video call", "In person", "Other" ],
+      user.contact_methods.enabled.ordered.pluck(:name)
+    assert_equal ContactMethod::PROVIDED_METHODS.size - 7, user.contact_methods.disabled.count
     follow_redirect!
     assert_select "h1", "People"
   end

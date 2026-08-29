@@ -4,13 +4,15 @@ require "test_helper"
 #
 # Table name: interactions
 #
-#  id             :integer          not null, primary key
-#  contact_method :string
-#  note           :text
-#  occurred_on    :date             not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  person_id      :integer          not null
+#  id                          :integer          not null, primary key
+#  contact_method_icon_library :string
+#  contact_method_icon_name    :string
+#  contact_method_name         :string
+#  note                        :text
+#  occurred_on                 :date             not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  person_id                   :integer          not null
 #
 # Indexes
 #
@@ -35,32 +37,39 @@ class InteractionTest < ActiveSupport::TestCase
     assert_predicate interaction, :valid?
   end
 
-  test "normalizes optional method and note" do
+  test "normalizes an optional contact method snapshot and note" do
     interaction = Interaction.new(
       person: people(:ada),
       occurred_on: Date.current,
-      contact_method: "  call ",
+      contact_method_name: "  Signal  chat ",
+      contact_method_icon_library: "simple_icons",
+      contact_method_icon_name: "signal",
       note: "  Discussed the trip  "
     )
 
     assert_predicate interaction, :valid?
-    assert_equal "call", interaction.contact_method
+    assert_equal "Signal chat", interaction.contact_method_name
     assert_equal "Discussed the trip", interaction.note
   end
 
-  test "allows the supported contact methods and no method" do
-    Interaction::CONTACT_METHODS.each do |contact_method|
-      assert_predicate Interaction.new(person: people(:ada), occurred_on: Date.current, contact_method: contact_method), :valid?
-    end
-
-    assert_predicate Interaction.new(person: people(:ada), occurred_on: Date.current, contact_method: nil), :valid?
-  end
-
-  test "rejects an unsupported contact method" do
-    interaction = Interaction.new(person: people(:ada), occurred_on: Date.current, contact_method: "sales")
+  test "requires a complete icon snapshot" do
+    interaction = Interaction.new(
+      person: people(:ada), occurred_on: Date.current,
+      contact_method_name: "Signal", contact_method_icon_library: "simple_icons"
+    )
 
     assert_not interaction.valid?
-    assert interaction.errors.of_kind?(:contact_method, :inclusion)
+    assert interaction.errors.of_kind?(:contact_method_icon_name, :invalid)
+  end
+
+  test "snapshots a contact method without retaining a relationship" do
+    interaction = Interaction.new(person: people(:ada), occurred_on: Date.current)
+
+    interaction.snapshot_contact_method(contact_methods(:one_whatsapp))
+
+    assert_equal "WhatsApp", interaction.contact_method_name
+    assert_equal "simple_icons", interaction.contact_method_icon_library
+    assert_equal "whatsapp", interaction.contact_method_icon_name
   end
 
   test "rejects a future occurrence date" do
@@ -93,14 +102,15 @@ class InteractionTest < ActiveSupport::TestCase
     end
   end
 
-  test "database rejects an unsupported contact method" do
+  test "database rejects an incomplete contact method icon snapshot" do
     timestamp = Time.current
 
     assert_raises ActiveRecord::StatementInvalid do
       Interaction.insert_all!([ {
         person_id: people(:ada).id,
         occurred_on: Date.current,
-        contact_method: "sales",
+        contact_method_name: "Signal",
+        contact_method_icon_library: "simple_icons",
         created_at: timestamp,
         updated_at: timestamp
       } ])

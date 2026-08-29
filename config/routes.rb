@@ -5,6 +5,11 @@ Rails.application.routes.draw do
   post "signup", to: "registrations#create"
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
   resource :settings, only: %i[ show update ]
+  resources :contact_methods, only: %i[ index create update destroy ] do
+    patch :enable, on: :member
+    patch :disable, on: :member
+    patch :reorder, on: :collection
+  end
   resources :reminders, only: :index
   resources :contact_reminders, only: %i[ index update ], param: :person_id
   resource :time_zone, only: :update

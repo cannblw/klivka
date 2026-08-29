@@ -15,7 +15,11 @@ class QuickInteractionComponentTest < ViewComponent::TestCase
     assert_selector "input[name='context'][value='quick_log']", visible: :all
     assert_selector "input#quick-interaction-dialog_interaction_occurred_on[type='date'][required]"
     assert_selector "input#quick-interaction-dialog_interaction_occurred_on[max='#{Date.current}']"
-    assert_selector "select[name='interaction[contact_method]'] option", text: "In person"
+    assert_selector "fieldset legend", text: "How you connected"
+    assert_selector "input[type='radio'][name='interaction[contact_method_id]'][value='#{contact_methods(:one_in_person).id}']"
+    assert_no_selector "input[type='radio'][name='interaction[contact_method_id]'][value='#{contact_methods(:one_wechat).id}']"
+    option_values = page.all("input[type='radio'][name='interaction[contact_method_id]']").map { |option| option["value"] }
+    assert_equal [ "", *users(:one).contact_methods.enabled.ordered.ids.map(&:to_s) ], option_values
     assert_selector "textarea[name='interaction[note]']"
   end
 
@@ -38,7 +42,9 @@ class QuickInteractionComponentTest < ViewComponent::TestCase
     interaction = Interaction.new(
       person: people(:ada),
       occurred_on: Date.tomorrow,
-      contact_method: "call",
+      contact_method_name: "Call",
+      contact_method_icon_library: "material_icons",
+      contact_method_icon_name: "call",
       note: "Keep this note"
     )
     interaction.validate
@@ -52,7 +58,7 @@ class QuickInteractionComponentTest < ViewComponent::TestCase
 
     assert_selector "[data-controller~='dialog'][data-dialog-open-value='true'] dialog"
     assert_text "Date must not be in the future"
-    assert_selector "select[name='interaction[contact_method]'] option[selected][value='call']"
+    assert_selector "input[type='radio'][name='interaction[contact_method_id]'][checked][value='#{contact_methods(:one_call).id}']"
     assert_selector "textarea", text: "Keep this note"
   end
 end

@@ -95,6 +95,21 @@ class Sortable {
     return this.notifyReorder(item, previousOrder)
   }
 
+  moveWithKeyboard(event) {
+    if (!["ArrowUp", "ArrowDown"].includes(event.key) || !this.canDrag()) return
+
+    const item = this.items.find((candidate) => candidate.contains(event.currentTarget))
+    if (!item) return
+
+    const offset = event.key === "ArrowUp" ? -1 : 1
+    const result = this.move(item, offset)
+    if (!result) return
+
+    event.preventDefault()
+    event.currentTarget.focus()
+    return result
+  }
+
   bindDraggable(item) {
     return draggable({
       element: item,

@@ -1,0 +1,77 @@
+<li data-contact-method-sortable-target="item"
+    data-contact-method-id="<%= contact_method.id %>"
+    class="relative rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800">
+  <div data-contact-method-sortable-target="dropTarget" data-controller="toggle">
+    <div data-toggle-target="content" class="flex items-center gap-2 <%= "hidden" if contact_method.errors.any? %>">
+      <button type="button"
+              data-contact-method-sortable-target="handle"
+              data-action="keydown->contact-method-sortable#moveWithKeyboard"
+              aria-label="<%= t("contact_methods.actions.reorder", name: contact_method.name) %>"
+              class="cursor-grab touch-none rounded p-1 text-stone-400 hover:text-stone-600 focus:outline-2 focus:outline-offset-2 focus:outline-amber-500 active:cursor-grabbing dark:text-stone-500 dark:hover:text-stone-300">
+        <span class="material-icons leading-none" style="font-size: 20px" aria-hidden="true">drag_indicator</span>
+      </button>
+
+      <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-stone-200 text-stone-600 dark:bg-stone-700 dark:text-stone-300">
+        <%= render ContactMethodIconComponent.new(
+              icon_library: contact_method.icon_library,
+              icon_name: contact_method.icon_name,
+              size: 18
+            ) %>
+      </span>
+      <p id="<%= heading_id %>" class="min-w-0 flex-1 break-words text-sm font-medium"><%= contact_method.name %></p>
+
+      <%= render ButtonComponent.new(
+            variant: :ghost,
+            size: :sm,
+            data: { action: "toggle#toggle" },
+            aria: { label: t("contact_methods.actions.edit", name: contact_method.name) }
+          ) do %>
+        <span class="material-icons" style="font-size: 16px" aria-hidden="true">edit</span>
+      <% end %>
+
+      <% if contact_method.provided? %>
+        <%= form_with url: disable_contact_method_path(contact_method), method: :patch do %>
+          <%= render ButtonComponent.new(type: :submit, variant: :ghost, size: :sm) do %>
+            <%= t("contact_methods.actions.remove") %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <%= render ButtonComponent.new(
+              variant: :ghost,
+              size: :sm,
+              class: "text-red-600 hover:text-red-500 dark:text-red-400",
+              data: {
+                controller: "delete-contact-method",
+                action: "click->delete-contact-method#click",
+                delete_contact_method_url: contact_method_path(contact_method),
+                delete_contact_method_message: t("contact_methods.delete.body", name: contact_method.name)
+              }
+            ) do %>
+          <%= t("contact_methods.actions.delete") %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div data-toggle-target="content" class="<%= "hidden" unless contact_method.errors.any? %>">
+      <%= form_with model: contact_method, namespace: "contact-method-#{contact_method.id}", class: "space-y-4" do |form| %>
+        <div class="max-w-xl">
+          <%= form.label :name, t("contact_methods.form.name"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+          <%= render InputFieldComponent.new(form, :name,
+                type: :text,
+                maxlength: Klivka::STRING_MAX_LENGTH,
+                autocomplete: "off",
+                class: "mt-1 w-full") %>
+        </div>
+        <%= render ContactMethodIconPickerComponent.new(form:, selected: contact_method.icon) %>
+        <div class="flex gap-2">
+          <%= render ButtonComponent.new(type: :submit, size: :sm) do %>
+            <%= t("contact_methods.actions.save") %>
+          <% end %>
+          <%= render ButtonComponent.new(variant: :ghost, size: :sm, data: { action: "toggle#toggle" }) do %>
+            <%= t("contact_methods.actions.cancel") %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</li>

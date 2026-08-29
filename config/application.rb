@@ -36,6 +36,11 @@ module Klivka
     config.x.person_search_debounce_milliseconds = Integer(ENV.fetch("PERSON_SEARCH_DEBOUNCE_MILLISECONDS", "100"), 10)
     raise ArgumentError, "PERSON_SEARCH_DEBOUNCE_MILLISECONDS must be positive" unless config.x.person_search_debounce_milliseconds.positive?
 
+    config.x.interaction_profile_preview_limit = Integer(ENV.fetch("INTERACTION_PROFILE_PREVIEW_LIMIT", "3"), 10)
+    unless config.x.interaction_profile_preview_limit.positive?
+      raise ArgumentError, "INTERACTION_PROFILE_PREVIEW_LIMIT must be positive"
+    end
+
     config.x.vcard_import_max_file_size_bytes = Integer(ENV.fetch("VCARD_IMPORT_MAX_FILE_SIZE_BYTES", 5.megabytes.to_s), 10)
     unless config.x.vcard_import_max_file_size_bytes.positive?
       raise ArgumentError, "VCARD_IMPORT_MAX_FILE_SIZE_BYTES must be positive"

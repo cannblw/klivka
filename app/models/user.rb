@@ -33,6 +33,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :categories, dependent: :destroy
+  has_many :contact_methods, dependent: :destroy
   has_many :people, dependent: :destroy
   has_many :reminder_deliveries, dependent: :destroy
   has_many :contact_reminder_digests, dependent: :destroy
@@ -68,6 +69,7 @@ class User < ApplicationRecord
   end
 
   before_create :autoconfirm, unless: -> { Rails.application.config.x.require_email_confirmation }
+  after_create :create_provided_contact_methods
 
   def confirmed?
     confirmed_at.present?
@@ -121,5 +123,9 @@ class User < ApplicationRecord
 
   def autoconfirm
     self.confirmed_at = Time.current
+  end
+
+  def create_provided_contact_methods
+    ContactMethod.create_provided_for!(self, locale: locale.presence || I18n.locale)
   end
 end

@@ -27,7 +27,7 @@ class QuickInteractionComponent < ViewComponent::Base
     "#{dom_id}-heading"
   end
 
-  def contact_method_options
-    Interaction::CONTACT_METHODS.map { |method| [ t("interactions.methods.#{method}"), method ] }
+  def enabled_contact_methods
+    @enabled_contact_methods ||= person.user.contact_methods.enabled.ordered.to_a
   end
 end

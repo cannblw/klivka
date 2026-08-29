@@ -243,6 +243,88 @@ en:
     copy_phone: "Copy phone number %{value}"
     copy_email: "Copy email %{value}"
 
+  contact_methods:
+    actions:
+      cancel: "Cancel"
+      delete: "Delete"
+      edit: "Edit %{name}"
+      remove: "Remove"
+      reorder: "Reorder %{name}. Use the arrow keys or drag."
+      save: "Save"
+    create:
+      created: "%{name} added."
+    update:
+      updated: "%{name} updated."
+    enable:
+      enabled: "%{name} added."
+    disable:
+      disabled: "%{name} removed from your contact methods."
+    destroy:
+      destroyed: "%{name} deleted."
+    reorder:
+      invalid_order: "The contact method order could not be saved."
+    delete:
+      title: "Delete this contact method?"
+      body: "%{name} will be permanently deleted. Past interactions will keep the method that was recorded."
+    form:
+      name: "Name"
+    icons:
+      legend: "Icon"
+      none: "No icon"
+      material_icons:
+        alternate_email: "At sign"
+        chat: "Chat"
+        forum: "Conversation"
+        language: "Web"
+    index:
+      title: "Contact methods"
+      heading: "Contact methods"
+      description: "Keep the ways you usually connect close at hand when you record an interaction."
+      back: "Back to settings"
+      enabled:
+        heading: "Your contact methods"
+        description: "Rename, reorder, or remove methods to match how you stay in touch."
+        empty: "You have no contact methods yet. Add one below whenever it is useful."
+        reorder_error: "The new order could not be saved. Try again."
+        moved: "Contact method moved to position %{position}."
+      available:
+        heading: "Add a contact method"
+        description: "Choose any other services or ways you use to connect."
+        add: "Add %{name}"
+        empty: "You have added every available method."
+      custom:
+        heading: "Create your own"
+        description: "Add another way you connect. An icon is optional."
+        placeholder: "Contact method name"
+        submit: "Add contact method"
+    provided:
+      call: "Call"
+      text_message: "Text message"
+      whatsapp: "WhatsApp"
+      messenger: "Facebook Messenger"
+      video_call: "Video call"
+      in_person: "In person"
+      other: "Other"
+      email: "Email"
+      imessage: "iMessage"
+      facetime: "FaceTime"
+      instagram: "Instagram"
+      signal: "Signal"
+      telegram: "Telegram"
+      wechat: "WeChat"
+      snapchat: "Snapchat"
+      discord: "Discord"
+      line: "LINE"
+      viber: "Viber"
+      vk: "VK"
+      kakaotalk: "KakaoTalk"
+      threema: "Threema"
+      matrix: "Matrix"
+      mastodon: "Mastodon"
+      google_chat: "Google Chat"
+      google_meet: "Google Meet"
+      zoom: "Zoom"
+
   interactions:
     methods:
       call: "Call"
@@ -438,6 +520,9 @@ en:
       language: "Language"
       language_switch_disabled: "Language switching is disabled in demo mode."
       theme: "Theme"
+      contact_methods: "Contact methods"
+      contact_methods_description: "Choose the methods available when you record an interaction."
+      manage_contact_methods: "Manage contact methods"
       locales:
         en: "English"
         es: "Spanish"

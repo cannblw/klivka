@@ -42,6 +42,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='user[birthday_reminder_lead_unit]'] option[selected][value='days']", count: 1
     assert_select "input[name='user[contact_reminders_enabled]'][type='checkbox'][checked]", count: 1
     assert_select "select[name='user[contact_reminder_cadence]'] option[selected][value='quarterly']", count: 1
+    assert_select "a[href='#{contact_methods_path}']"
   end
 
   test "update persists the locale and re-renders in that language" do

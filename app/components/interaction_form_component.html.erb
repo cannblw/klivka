@@ -19,14 +19,9 @@
     <% end %>
   </div>
 
-  <div>
-    <%= form.label :contact_method, t("interactions.follow_up.contact_method"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-    <%= render SelectFieldComponent.new(form, :contact_method,
-          choices: contact_method_options,
-          selected: interaction.contact_method,
-          select_options: { include_blank: t("interactions.follow_up.method_blank") },
-          wrapper_class: "mt-1") %>
-  </div>
+  <%= render InteractionContactMethodPickerComponent.new(
+        form:, interaction:, contact_methods: enabled_contact_methods
+      ) %>
 
   <div>
     <%= form.label :note, t("interactions.follow_up.note"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>

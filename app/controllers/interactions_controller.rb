@@ -18,7 +18,8 @@ class InteractionsController < ApplicationController
   end
 
   def create
-    @interaction = @person.interactions.new(interaction_params)
+    @interaction = @person.interactions.new
+    assign_interaction_attributes
     @interaction.validation_date = Current.user.local_date
 
     if save_interaction_and_update_reminder(clear_snooze: true)
@@ -31,7 +32,7 @@ class InteractionsController < ApplicationController
     elsif params[:context] == "quick_log"
       @interaction_to_enrich = @interaction
       @open_interaction_modal = true
-      @recent_interactions = @person.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
+      @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
       @interaction_count = @person.interactions.count
       @contact_reminder = ContactReminder.for(@person)
       @categories = Current.user.categories.order(:normalized_name).to_a
@@ -46,7 +47,7 @@ class InteractionsController < ApplicationController
 
   def update
     @interaction.validation_date = Current.user.local_date
-    @interaction.assign_attributes(interaction_params)
+    assign_interaction_attributes
 
     if save_interaction_and_update_reminder(clear_snooze: @interaction.will_save_change_to_occurred_on?)
       redirect_to @person, notice: t("interactions.update.updated")
@@ -73,7 +74,21 @@ class InteractionsController < ApplicationController
   end
 
   def interaction_params
-    params.expect(interaction: [ :occurred_on, :contact_method, :note ])
+    params.expect(interaction: [ :occurred_on, :contact_method_id, :note ])
+  end
+
+  def assign_interaction_attributes
+    attributes = interaction_params
+    contact_method_submitted = attributes.key?(:contact_method_id)
+    contact_method_id = attributes.delete(:contact_method_id)
+    @interaction.assign_attributes(attributes)
+    return unless contact_method_submitted
+
+    @interaction.contact_method_id = contact_method_id
+    return if contact_method_id == Interaction::PRESERVE_CONTACT_METHOD_VALUE && @interaction.persisted?
+
+    contact_method = Current.user.contact_methods.enabled.find(contact_method_id) if contact_method_id.present?
+    @interaction.snapshot_contact_method(contact_method)
   end
 
   def save_interaction_and_update_reminder(clear_snooze:)
@@ -98,5 +113,9 @@ class InteractionsController < ApplicationController
   def page_number
     value = Integer(params[:page], exception: false)
     value&.positive? ? value : 1
+  end
+
+  def interaction_profile_preview_limit
+    Rails.application.config.x.interaction_profile_preview_limit
   end
 end

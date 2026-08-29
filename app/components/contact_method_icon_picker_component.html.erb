@@ -1,0 +1,21 @@
+<fieldset>
+  <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("contact_methods.icons.legend") %></legend>
+  <div class="mt-2 grid grid-cols-5 gap-2 sm:grid-cols-8" role="radiogroup">
+    <% icon_options.each do |library, name| %>
+      <% value = option_value(library, name) %>
+      <label title="<%= option_label(library, name) %>" class="cursor-pointer">
+        <%= form.radio_button :icon, value,
+              checked: selected.to_s == value,
+              class: "peer sr-only" %>
+        <span class="flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-stone-50 px-2 text-stone-600 hover:border-amber-500 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:peer-checked:border-amber-400 dark:peer-checked:bg-amber-900/30 dark:peer-checked:text-amber-400">
+          <% if library %>
+            <%= render ContactMethodIconComponent.new(icon_library: library, icon_name: name, size: 20) %>
+          <% else %>
+            <span class="material-icons leading-none" style="font-size: 20px" aria-hidden="true">block</span>
+          <% end %>
+          <span class="sr-only"><%= option_label(library, name) %></span>
+        </span>
+      </label>
+    <% end %>
+  </div>
+</fieldset>

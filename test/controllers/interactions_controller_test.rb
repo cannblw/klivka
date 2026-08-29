@@ -38,7 +38,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
       post person_interactions_url(people(:ada)), params: {
         interaction: {
           occurred_on: occurred_on.iso8601,
-          contact_method: "in_person",
+          contact_method_id: contact_methods(:one_in_person).id,
           note: "Met at the market"
         }
       }
@@ -47,7 +47,9 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to person_url(people(:ada))
     interaction = people(:ada).interactions.last
     assert_equal occurred_on, interaction.occurred_on
-    assert_equal "in_person", interaction.contact_method
+    assert_equal "In person", interaction.contact_method_name
+    assert_equal "material_icons", interaction.contact_method_icon_library
+    assert_equal "groups", interaction.contact_method_icon_name
     assert_equal "Met at the market", interaction.note
   end
 
@@ -55,12 +57,43 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     interaction = people(:ada).interactions.create!(occurred_on: 1.day.ago.to_date)
 
     patch person_interaction_url(people(:ada), interaction), params: {
-      interaction: { contact_method: "message", note: "Caught up" }
+      interaction: { contact_method_id: contact_methods(:one_text_message).id, note: "Caught up" }
     }
 
     assert_redirected_to person_url(people(:ada))
-    assert_equal "message", interaction.reload.contact_method
+    assert_equal "Text message", interaction.reload.contact_method_name
     assert_equal "Caught up", interaction.note
+  end
+
+  test "keeps the recorded method snapshot when its contact method is renamed and retired" do
+    contact_method = contact_methods(:one_call)
+    interaction = people(:ada).interactions.new(occurred_on: 1.day.ago.to_date)
+    interaction.snapshot_contact_method(contact_method)
+    interaction.save!
+
+    contact_method.update!(name: "Phone")
+    contact_method.update!(enabled: false, position: nil)
+
+    patch person_interaction_url(people(:ada), interaction), params: {
+      interaction: { contact_method_id: Interaction::PRESERVE_CONTACT_METHOD_VALUE, note: "Still understandable" }
+    }
+
+    assert_redirected_to person_url(people(:ada))
+    assert_equal "Call", interaction.reload.contact_method_name
+    assert_equal "material_icons", interaction.contact_method_icon_library
+    assert_equal "call", interaction.contact_method_icon_name
+  end
+
+  test "rejects a disabled or another account's contact method" do
+    [ contact_methods(:one_wechat), contact_methods(:two_call) ].each do |contact_method|
+      assert_no_difference "Interaction.count" do
+        post person_interactions_url(people(:ada)), params: {
+          interaction: { occurred_on: Date.current.iso8601, contact_method_id: contact_method.id }
+        }
+      end
+
+      assert_response :not_found
+    end
   end
 
   test "logging contact clears an active reminder snooze" do
@@ -195,7 +228,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
         return_to: "reminders",
         interaction: {
           occurred_on: users(:one).local_date.tomorrow.iso8601,
-          contact_method: "call",
+          contact_method_id: contact_methods(:one_call).id,
           note: "Keep this reminder note"
         }
       }
@@ -212,7 +245,7 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference -> { people(:ada).interactions.count } do
       post person_interactions_url(people(:ada)), params: {
         context: "quick_log",
-        interaction: { occurred_on: users(:one).local_date.tomorrow.iso8601, contact_method: "call", note: "Keep this note" }
+        interaction: { occurred_on: users(:one).local_date.tomorrow.iso8601, contact_method_id: contact_methods(:one_call).id, note: "Keep this note" }
       }
     end
 

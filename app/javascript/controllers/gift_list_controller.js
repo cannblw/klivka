@@ -75,15 +75,7 @@ export default class extends Controller {
   }
 
   moveWithKeyboard(event) {
-    if (!["ArrowUp", "ArrowDown"].includes(event.key)) return
-
-    const item = event.currentTarget.closest('[data-gift-list-target="item"]')
-    const offset = event.key === "ArrowUp" ? -1 : 1
-    const result = this.sortable.move(item, offset)
-    if (!result) return
-
-    event.preventDefault()
-    event.currentTarget.focus()
+    this.sortable.moveWithKeyboard(event)
   }
 
   handleReorder(currentIndex) {
