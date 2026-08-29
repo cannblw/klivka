@@ -243,6 +243,35 @@ en:
     copy_phone: "Copy phone number %{value}"
     copy_email: "Copy email %{value}"
 
+  contact_methods:
+    provided:
+      call: "Call"
+      text_message: "Text message"
+      whatsapp: "WhatsApp"
+      messenger: "Facebook Messenger"
+      video_call: "Video call"
+      in_person: "In person"
+      other: "Other"
+      email: "Email"
+      imessage: "iMessage"
+      facetime: "FaceTime"
+      instagram: "Instagram"
+      signal: "Signal"
+      telegram: "Telegram"
+      wechat: "WeChat"
+      snapchat: "Snapchat"
+      discord: "Discord"
+      line: "LINE"
+      viber: "Viber"
+      vk: "VK"
+      kakaotalk: "KakaoTalk"
+      threema: "Threema"
+      matrix: "Matrix"
+      mastodon: "Mastodon"
+      google_chat: "Google Chat"
+      google_meet: "Google Meet"
+      zoom: "Zoom"
+
   interactions:
     methods:
       call: "Call"

@@ -1,0 +1,71 @@
+# == Schema Information
+#
+# Table name: contact_methods
+#
+#  id              :integer          not null, primary key
+#  enabled         :boolean          default(FALSE), not null
+#  icon_library    :string
+#  icon_name       :string
+#  name            :string           not null
+#  normalized_name :string           not null
+#  position        :integer
+#  provided        :boolean          default(FALSE), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  user_id         :integer          not null
+#
+# Indexes
+#
+#  index_contact_methods_on_user_id                           (user_id)
+#  index_contact_methods_on_user_id_and_enabled_and_position  (user_id,enabled,position)
+#  index_contact_methods_on_user_id_and_normalized_name       (user_id,normalized_name) UNIQUE
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id) ON DELETE => cascade
+#
+<%
+  methods = [
+    [ "call", "Call", "material_icons", "call", true ],
+    [ "text_message", "Text message", "material_icons", "sms", true ],
+    [ "whatsapp", "WhatsApp", "simple_icons", "whatsapp", true ],
+    [ "messenger", "Facebook Messenger", "simple_icons", "messenger", true ],
+    [ "video_call", "Video call", "material_icons", "videocam", true ],
+    [ "in_person", "In person", "material_icons", "groups", true ],
+    [ "other", "Other", "material_icons", "more_horiz", true ],
+    [ "email", "Email", "material_icons", "email", false ],
+    [ "imessage", "iMessage", "simple_icons", "imessage", false ],
+    [ "facetime", "FaceTime", "material_icons", "videocam", false ],
+    [ "instagram", "Instagram", "simple_icons", "instagram", false ],
+    [ "signal", "Signal", "simple_icons", "signal", false ],
+    [ "telegram", "Telegram", "simple_icons", "telegram", false ],
+    [ "wechat", "WeChat", "simple_icons", "wechat", false ],
+    [ "snapchat", "Snapchat", "simple_icons", "snapchat", false ],
+    [ "discord", "Discord", "simple_icons", "discord", false ],
+    [ "line", "LINE", "simple_icons", "line", false ],
+    [ "viber", "Viber", "simple_icons", "viber", false ],
+    [ "vk", "VK", "simple_icons", "vk", false ],
+    [ "kakaotalk", "KakaoTalk", "simple_icons", "kakaotalk", false ],
+    [ "threema", "Threema", "simple_icons", "threema", false ],
+    [ "matrix", "Matrix", "simple_icons", "matrix", false ],
+    [ "mastodon", "Mastodon", "simple_icons", "mastodon", false ],
+    [ "google_chat", "Google Chat", "simple_icons", "googlechat", false ],
+    [ "google_meet", "Google Meet", "simple_icons", "googlemeet", false ],
+    [ "zoom", "Zoom", "simple_icons", "zoom", false ]
+  ]
+%>
+<% %w[one two].each do |user| %>
+<% enabled_position = 0 %>
+<% methods.each do |key, name, icon_library, icon_name, enabled| %>
+<%= user %>_<%= key %>:
+  user: <%= user %>
+  name: <%= name %>
+  normalized_name: <%= name.downcase %>
+  icon_library: <%= icon_library %>
+  icon_name: <%= icon_name %>
+  enabled: <%= enabled %>
+  provided: true
+  position: <%= enabled ? enabled_position : nil %>
+<% enabled_position += 1 if enabled %>
+<% end %>
+<% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_28_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_29_120000) do
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -20,6 +20,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_130000) do
     t.index ["user_id", "normalized_name"], name: "index_categories_on_user_id_and_normalized_name", unique: true
     t.index ["user_id"], name: "index_categories_on_user_id"
     t.check_constraint "length(name) <= 255", name: "categories_name_is_within_maximum_length"
+  end
+
+  create_table "contact_methods", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "enabled", default: false, null: false
+    t.string "icon_library"
+    t.string "icon_name"
+    t.string "name", null: false
+    t.string "normalized_name", null: false
+    t.integer "position"
+    t.boolean "provided", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "enabled", "position"], name: "index_contact_methods_on_user_id_and_enabled_and_position"
+    t.index ["user_id", "normalized_name"], name: "index_contact_methods_on_user_id_and_normalized_name", unique: true
+    t.index ["user_id"], name: "index_contact_methods_on_user_id"
+    t.check_constraint "(enabled = TRUE AND position IS NOT NULL AND position >= 0) OR (enabled = FALSE AND position IS NULL)", name: "contact_methods_position_matches_enabled_state"
+    t.check_constraint "(icon_library IS NULL AND icon_name IS NULL) OR (icon_library IS NOT NULL AND icon_name IS NOT NULL)", name: "contact_methods_icon_is_complete"
+    t.check_constraint "enabled IN (TRUE, FALSE) AND provided IN (TRUE, FALSE)", name: "contact_methods_boolean_states"
+    t.check_constraint "icon_library IS NULL OR length(icon_library) <= 255", name: "contact_methods_icon_library_length"
+    t.check_constraint "icon_name IS NULL OR length(icon_name) <= 255", name: "contact_methods_icon_name_length"
+    t.check_constraint "length(name) <= 255", name: "contact_methods_name_length"
+    t.check_constraint "length(normalized_name) <= 255", name: "contact_methods_normalized_name_length"
   end
 
   create_table "contact_reminder_digests", force: :cascade do |t|
@@ -202,6 +225,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_130000) do
   end
 
   add_foreign_key "categories", "users", on_delete: :cascade
+  add_foreign_key "contact_methods", "users", on_delete: :cascade
   add_foreign_key "contact_reminder_digests", "users", on_delete: :cascade
   add_foreign_key "entries", "people"
   add_foreign_key "entry_reminders", "entries", on_delete: :cascade
