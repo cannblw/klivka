@@ -43,12 +43,9 @@
           <% end %>
         </div>
         <div>
-          <%= form.label :contact_method_id, t("interactions.follow_up.contact_method"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-          <%= render SelectFieldComponent.new(form, :contact_method_id,
-                choices: contact_method_options,
-                selected: selected_contact_method,
-                select_options: { include_blank: t("interactions.follow_up.method_blank") },
-                wrapper_class: "mt-1") %>
+          <%= render InteractionContactMethodPickerComponent.new(
+                form:, interaction:, contact_methods: enabled_contact_methods
+              ) %>
           <% interaction.errors.full_messages_for(:contact_method_name).each do |message| %>
             <p class="mt-1 text-sm text-red-600"><%= message %></p>
           <% end %>

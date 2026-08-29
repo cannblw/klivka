@@ -1,6 +1,4 @@
 class QuickInteractionComponent < ViewComponent::Base
-  include ContactMethodSelectable
-
   DOM_ID = "quick-interaction-dialog"
 
   def initialize(person:, interaction:, time_zone:, open: false, dom_id: DOM_ID, button_label: nil, return_to: nil)
@@ -27,5 +25,9 @@ class QuickInteractionComponent < ViewComponent::Base
 
   def heading_id
     "#{dom_id}-heading"
+  end
+
+  def enabled_contact_methods
+    @enabled_contact_methods ||= person.user.contact_methods.enabled.ordered.to_a
   end
 end

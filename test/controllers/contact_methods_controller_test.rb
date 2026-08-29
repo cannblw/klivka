@@ -125,6 +125,21 @@ class ContactMethodsControllerTest < ActionDispatch::IntegrationTest
     assert_equal (0..6).to_a, users(:one).contact_methods.enabled.ordered.pluck(:position)
   end
 
+  test "destroying a custom method preserves its interaction snapshots" do
+    contact_method = users(:one).contact_methods.create!(
+      name: "Letters", icon_library: "material_icons", icon_name: "email", enabled: true, position: 7
+    )
+    interaction = people(:ada).interactions.new(occurred_on: Date.current)
+    interaction.snapshot_contact_method(contact_method)
+    interaction.save!
+
+    delete contact_method_url(contact_method)
+
+    assert_equal "Letters", interaction.reload.contact_method_name
+    assert_equal "material_icons", interaction.contact_method_icon_library
+    assert_equal "email", interaction.contact_method_icon_name
+  end
+
   test "destroy does not delete a provided method" do
     contact_method = contact_methods(:one_call)
 
