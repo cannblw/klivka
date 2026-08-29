@@ -12,6 +12,7 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
 
     assert_selector "section[aria-label='Search and sort people']"
     assert_selector "form[data-controller='search'][data-turbo-frame='people_grid'][data-turbo-action='advance']"
+    assert_selector "input[name='view'][value='']", visible: false
     assert_selector "input[type='search'][name='query']"
     assert_selector "select[name='sort']"
     %w[birthday last_contact category state contact_reminder date_reminder].each do |filter|

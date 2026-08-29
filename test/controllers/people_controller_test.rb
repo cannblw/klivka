@@ -93,7 +93,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "section[aria-labelledby='person-category-#{categories(:family).id}-heading']"
-    assert_select "input[type='hidden'][name='view']", count: 0
+    assert_select "input[type='hidden'][name='view'][value='']"
   end
 
   test "search results stay flat and preserve the selected person view" do

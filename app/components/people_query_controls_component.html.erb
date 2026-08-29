@@ -8,7 +8,7 @@
           search_delay_value: Rails.application.config.x.person_search_debounce_milliseconds
         },
         class: "w-full" do |form| %>
-    <%= form.hidden_field :view, value: "all" if view == "all" %>
+    <%= form.hidden_field :view, value: (view == "all" ? "all" : "") %>
 
     <div class="grid gap-3 sm:grid-cols-3 sm:items-end">
       <div class="min-w-0 sm:col-span-2">

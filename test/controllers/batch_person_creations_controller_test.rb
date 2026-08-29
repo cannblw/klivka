@@ -68,6 +68,8 @@ class BatchPersonCreationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_select "[data-dialog-open-value='true']"
     assert_select "textarea[aria-invalid='true']"
+    assert_select "form[data-controller='search']"
+    assert_select "details:not([open]) summary", text: /Advanced search/
   end
 
   test "create adds edited selected people and reports skipped names" do

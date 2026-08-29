@@ -30,6 +30,7 @@ class PeopleFiltersTest < ApplicationSystemTestCase
     assert_equal [ "email" ], current_query.fetch("missing_blocks")
 
     page.go_back
+    assert_no_current_path(/has_blocks/)
     assert_checked_field "missing-blocks-email"
     assert_unchecked_field "has-blocks-note"
     assert_text "Grace Hopper"

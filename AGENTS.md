@@ -28,6 +28,7 @@
 
 - Adding a person requires a name. Nothing else, ever. All other data is optional `Entry` records (typed blocks: phone, note, etc.).
 - Don't add required fields or mandatory steps to any flow without explicit discussion.
+- When adding or changing a product feature, revisit people search and advanced filters to decide whether the new information or state should be searchable or filterable. Add search or filter behavior only when it helps users retrieve people; otherwise explicitly keep the feature out of search and filters.
 
 ## Code conventions
 

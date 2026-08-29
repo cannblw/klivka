@@ -6,11 +6,14 @@ export default class extends Controller {
 
   connect() {
     this.timeout = null
+    this.restoreFromLocation = this.restoreFromLocation.bind(this)
+    window.addEventListener("popstate", this.restoreFromLocation)
     this.updateClearButton()
   }
 
   disconnect() {
     this.clearPendingSearch()
+    window.removeEventListener("popstate", this.restoreFromLocation)
   }
 
   debounce() {
@@ -33,6 +36,21 @@ export default class extends Controller {
       }
     })
     this.submit()
+  }
+
+  restoreFromLocation() {
+    const parameters = new URL(window.location.href).searchParams
+
+    Array.from(this.element.elements).forEach((control) => {
+      if (!control.name) return
+
+      if (control.type === "checkbox") {
+        control.checked = parameters.getAll(control.name).includes(control.value)
+      } else if ([ "query", "sort", "view", "birthday", "last_contact", "category", "state", "contact_reminder", "date_reminder" ].includes(control.name)) {
+        control.value = parameters.get(control.name) || (control.name === "state" ? "active" : "")
+      }
+    })
+    this.updateClearButton()
   }
 
   prepareFormData(event) {
