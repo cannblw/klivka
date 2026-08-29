@@ -47,8 +47,19 @@ class BatchPersonCreationsController < ApplicationController
   end
 
   def prepare_people_index
-    @sort = PersonSearch::DEFAULT_SORT
-    @people = PersonSearch.call(Current.user, nil, sort: @sort)
+    @person_search = PersonSearch.new(Current.user, nil)
+    @sort = @person_search.sort
+    @view = "grouped"
+    @people = @person_search.call
+    @filter_categories = Current.user.categories.order(:normalized_name).to_a
+    ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
+    @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?
+    @grouped_view = @grouping_available
+    if @grouped_view
+      people_by_category = @people.group_by(&:category)
+      @categorized_person_groups = people_by_category.except(nil).sort_by { |category, _people| category.normalized_name }
+      @uncategorized_people = people_by_category.fetch(nil, [])
+    end
     @person = Person.new
     @batch_creation = @creation
     @batch_mode = true

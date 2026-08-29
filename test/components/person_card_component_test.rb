@@ -31,4 +31,13 @@ class PersonCardComponentTest < ViewComponent::TestCase
 
     assert_no_text categories(:family).name
   end
+
+  test "marks an archived person without changing the profile link" do
+    person = Person.create!(name: "Ada Lovelace", user: users(:one), archived_at: Time.current)
+
+    render_inline PersonCardComponent.new(person:)
+
+    assert_selector "[data-archived-person]", text: "Archived"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.person_path(person)}']"
+  end
 end

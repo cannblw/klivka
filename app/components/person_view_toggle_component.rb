@@ -1,17 +1,16 @@
 class PersonViewToggleComponent < ViewComponent::Base
-  def initialize(view:, sort:)
+  def initialize(view:, query_params: {})
     @view = view
-    @sort = sort
+    @query_params = query_params
   end
 
   private
 
-  attr_reader :view, :sort
+  attr_reader :view, :query_params
 
   def path_for(selected_view)
-    params = {}
+    params = query_params.dup
     params[:view] = "all" if selected_view == "all"
-    params[:sort] = sort unless sort == PersonSearch::DEFAULT_SORT
     helpers.root_path(**params)
   end
 
