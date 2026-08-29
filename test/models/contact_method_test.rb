@@ -73,6 +73,21 @@ class ContactMethodTest < ActiveSupport::TestCase
     assert_predicate users(:one).contact_methods.new(name: "Radio", enabled: true, position: 7), :valid?
   end
 
+  test "form icon values populate separate library and name fields" do
+    contact_method = users(:one).contact_methods.new(
+      name: "Radio", icon: "simple_icons:signal", enabled: true, position: 7
+    )
+
+    assert_equal "simple_icons", contact_method.icon_library
+    assert_equal "signal", contact_method.icon_name
+    assert_equal "simple_icons:signal", contact_method.icon
+
+    contact_method.icon = ""
+
+    assert_nil contact_method.icon_library
+    assert_nil contact_method.icon_name
+  end
+
   test "contact method icon library and name must identify a supported pair" do
     contact_method = users(:one).contact_methods.new(
       name: "Radio", icon_library: "simple_icons", icon_name: "unknown", enabled: true, position: 7

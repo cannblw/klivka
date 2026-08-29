@@ -51,4 +51,9 @@
   <% end %>
 
   <%= render ReminderSettingsComponent.new(user: @user) %>
+
+  <%= render SectionComponent.new(title: t(".contact_methods"), description: t(".contact_methods_description")) do %>
+    <%= link_to t(".manage_contact_methods"), contact_methods_path,
+          class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+  <% end %>
 </div>

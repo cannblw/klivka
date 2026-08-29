@@ -60,6 +60,7 @@ class ContactMethod < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: Klivka::STRING_MAX_LENGTH }
   validates :normalized_name, presence: true, length: { maximum: Klivka::STRING_MAX_LENGTH }
+  validates :icon_library, :icon_name, length: { maximum: Klivka::STRING_MAX_LENGTH }, allow_nil: true
   validates :enabled, :provided, inclusion: { in: [ true, false ] }
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, if: :enabled?
   validates :position, absence: true, unless: :enabled?
@@ -70,6 +71,18 @@ class ContactMethod < ApplicationRecord
   scope :disabled, -> { where(enabled: false) }
   scope :provided, -> { where(provided: true) }
   scope :ordered, -> { order(:position, :id) }
+
+  def icon
+    return if icon_library.blank? || icon_name.blank?
+
+    "#{icon_library}:#{icon_name}"
+  end
+
+  def icon=(value)
+    library, name = value.to_s.split(":", 2)
+    self.icon_library = library.presence
+    self.icon_name = name.presence
+  end
 
   def self.create_provided_for!(user, locale: I18n.locale)
     enabled_position = 0

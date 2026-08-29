@@ -1,0 +1,15 @@
+<% if material_icon? %>
+  <%= tag.span icon_name,
+        class: [ "material-icons leading-none", options.delete(:class) ],
+        style: "font-size: #{size}px",
+        aria: { hidden: true },
+        **options %>
+<% else %>
+  <%= tag.img src: simple_icon_url,
+        width: size,
+        height: size,
+        alt: "",
+        aria: { hidden: true },
+        class: [ "dark:invert", options.delete(:class) ],
+        **options %>
+<% end %>

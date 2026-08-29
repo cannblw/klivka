@@ -1,0 +1,84 @@
+<% content_for :title, t(".title") %>
+
+<%= link_to t(".back"), settings_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
+
+<h1 class="mt-4 text-2xl font-bold"><%= t(".heading") %></h1>
+<p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
+
+<div class="mt-6 space-y-6">
+  <%= render SectionComponent.new(title: t(".enabled.heading"), description: t(".enabled.description"), heading_id: "enabled-contact-methods-heading") do %>
+    <% if @enabled_contact_methods.any? %>
+      <div data-controller="contact-method-sortable"
+           data-contact-method-sortable-reorder-url-value="<%= reorder_contact_methods_path %>"
+           data-contact-method-sortable-error-message-value="<%= t(".enabled.reorder_error") %>"
+           data-contact-method-sortable-moved-message-value="<%= t(".enabled.moved", position: "__POSITION__") %>">
+        <p class="sr-only" aria-live="polite" data-contact-method-sortable-target="status"></p>
+        <ul class="space-y-2" aria-labelledby="enabled-contact-methods-heading">
+          <%= render ContactMethodManagementComponent.with_collection(@enabled_contact_methods) %>
+        </ul>
+      </div>
+    <% else %>
+      <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".enabled.empty") %></p>
+    <% end %>
+  <% end %>
+
+  <%= render SectionComponent.new(title: t(".available.heading"), description: t(".available.description")) do %>
+    <% if @available_contact_methods.any? %>
+      <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <% @available_contact_methods.each do |contact_method| %>
+          <li class="flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800">
+            <span class="flex size-8 shrink-0 items-center justify-center text-stone-500 dark:text-stone-400">
+              <%= render ContactMethodIconComponent.new(
+                    icon_library: contact_method.icon_library,
+                    icon_name: contact_method.icon_name,
+                    size: 18
+                  ) %>
+            </span>
+            <span class="min-w-0 flex-1 break-words text-sm"><%= contact_method.name %></span>
+            <%= form_with url: enable_contact_method_path(contact_method), method: :patch do %>
+              <%= render ButtonComponent.new(
+                    type: :submit,
+                    variant: :ghost,
+                    size: :sm,
+                    aria: { label: t(".available.add", name: contact_method.name) }
+                  ) do %>
+                <span class="material-icons" style="font-size: 18px" aria-hidden="true">add</span>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".available.empty") %></p>
+    <% end %>
+  <% end %>
+
+  <%= render SectionComponent.new(title: t(".custom.heading"), description: t(".custom.description")) do %>
+    <%= form_with model: @contact_method.persisted? ? (@new_contact_method || ContactMethod.new) : @contact_method,
+          class: "max-w-xl space-y-4" do |form| %>
+      <div>
+        <%= form.label :name, t("contact_methods.form.name"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= render InputFieldComponent.new(form, :name,
+              type: :text,
+              maxlength: Klivka::STRING_MAX_LENGTH,
+              placeholder: t(".custom.placeholder"),
+              autocomplete: "off",
+              class: "mt-1 w-full") %>
+      </div>
+      <%= render ContactMethodIconPickerComponent.new(form:, selected: form.object.icon) %>
+      <%= render ButtonComponent.new(type: :submit) do %>
+        <%= t(".custom.submit") %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<%= render ConfirmDialogComponent.new(
+      id: "delete-contact-method-dialog",
+      title: t("contact_methods.delete.title"),
+      body: t("contact_methods.delete.body", name: ""),
+      confirm_label: t("contact_methods.actions.delete"),
+      cancel_label: t("contact_methods.actions.cancel"),
+      confirm_link_id: "delete-contact-method-confirm-link",
+      turbo_method: :delete
+    ) %>
