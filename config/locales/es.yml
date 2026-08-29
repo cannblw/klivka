@@ -99,6 +99,9 @@ es:
     sign_out: "Cerrar sesión"
     settings: "Ajustes"
 
+  navigation:
+    back: "Volver"
+
   flash:
     dismiss: "Descartar"
 
@@ -753,10 +756,6 @@ es:
         heading: "Aún no has añadido a nadie"
         hint: "Añade a alguien para empezar. Solo necesitas un nombre."
     show:
-      back: "← Personas"
-      back_to_birthdays: "← Cumpleaños"
-      back_to_reminders: "← Recordatorios"
-      back_to_archived: "← Personas archivadas"
       archive: "Archivar persona"
       restore: "Restaurar"
       delete_permanently: "Eliminar definitivamente"

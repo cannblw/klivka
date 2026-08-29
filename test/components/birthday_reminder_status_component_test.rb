@@ -8,7 +8,7 @@ class BirthdayReminderStatusComponentTest < ViewComponent::TestCase
     render_inline BirthdayReminderStatusComponent.new(user:, enable_reminders_link: true)
 
     assert_selector "[data-birthday-reminder-status='enabled']"
-    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}']"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_reminders_path(anchor: "birthday-reminders")}']"
   end
 
   test "explains when birthday reminders are disabled" do
@@ -18,7 +18,7 @@ class BirthdayReminderStatusComponentTest < ViewComponent::TestCase
     render_inline BirthdayReminderStatusComponent.new(user:)
 
     assert_selector "[data-birthday-reminder-status='disabled']" do
-      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}']"
+      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_reminders_path(anchor: "birthday-reminders")}']"
     end
   end
 
@@ -29,7 +29,7 @@ class BirthdayReminderStatusComponentTest < ViewComponent::TestCase
     render_inline BirthdayReminderStatusComponent.new(user:)
 
     assert_selector "[data-birthday-reminder-status='no_channels']" do
-      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}']"
+      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_reminders_path(anchor: "birthday-reminders")}']"
     end
   end
 end

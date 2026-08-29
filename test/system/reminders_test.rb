@@ -47,10 +47,10 @@ class RemindersTest < ApplicationSystemTestCase
       click_link "View person"
     end
     assert_selector "h1", text: "Birthday Reminder Person"
-    click_link "Reminders"
+    click_link "Back"
     assert_current_path reminders_path
 
-    click_link "People"
+    click_link "Back"
     assert_current_path root_path
   end
 

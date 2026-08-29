@@ -325,7 +325,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: person.name
     assert_select "form[action='#{restore_person_path(person)}']"
     assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(person)}']"
-    assert_select "a[href='#{archived_people_path}']", text: /Archived people/
+    assert_select "a[href='#{archived_people_path}'][data-controller='history-back']", text: /Back/
     assert_select "#interactions-history", text: /#{interaction.note}/
     assert_select "#entries-feed", text: /555-1234/
     assert_select "form[action='#{person_path(person)}']", count: 0
@@ -358,36 +358,13 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-archived-people-empty]", text: /No archived people/
   end
 
-  test "show links back to the birthday agenda that opened the person" do
-    get person_url(people(:ada)), params: { from: "birthdays" }
+  test "show uses people as the stable back destination without origin parameters" do
+    get person_url(people(:ada)), params: { from: "reminders", month: 12 }
 
     assert_response :success
-    assert_select "a[href='#{birthdays_path}']", text: /Birthdays/
-  end
-
-  test "show links back to a focused birthday month" do
-    get person_url(people(:ada)), params: { from: "birthdays", month: 12 }
-
-    assert_response :success
-    assert_select "a[href='#{birthdays_path(month: 12)}']", text: /Birthdays/
-    assert_select "form[action='#{person_path(people(:ada))}'] input[type='hidden'][name='from'][value='birthdays']"
-    assert_select "form[action='#{person_path(people(:ada))}'] input[type='hidden'][name='month'][value='12']"
-  end
-
-  test "show does not accept an arbitrary birthday return month" do
-    get person_url(people(:ada)), params: { from: "birthdays", month: "outside" }
-
-    assert_response :success
-    assert_select "a[href='#{birthdays_path}']", text: /Birthdays/
-    assert_select "input[type='hidden'][name='month']", count: 0
-  end
-
-  test "show links back to reminders when opened from the due list" do
-    get person_url(people(:ada)), params: { from: "reminders" }
-
-    assert_response :success
-    assert_select "a[href='#{reminders_path}']", text: /Reminders/
-    assert_select "form[action='#{person_path(people(:ada))}'] input[type='hidden'][name='from'][value='reminders']"
+    assert_select "a[href='#{root_path}'][data-controller='history-back']", text: /Back/
+    assert_select "form[action='#{person_path(people(:ada))}'] input[type='hidden'][name='from']", count: 0
+    assert_select "form[action='#{person_path(people(:ada))}'] input[type='hidden'][name='month']", count: 0
   end
 
   test "show opens the quick interaction dialog when requested by a reminder link" do

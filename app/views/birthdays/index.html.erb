@@ -15,8 +15,7 @@
       <%= render BirthdayMonthSectionComponent.new(
             month: @selected_month,
             birthdays: @birthdays_by_month.fetch(@selected_month),
-            year: @today.year,
-            return_month: @selected_month
+            year: @today.year
           ) %>
     <% else %>
       <div class="py-12 text-center text-stone-500 dark:text-stone-400" data-birthdays-empty="month">

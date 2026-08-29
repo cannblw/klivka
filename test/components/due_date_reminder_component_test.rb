@@ -14,7 +14,7 @@ class DueDateReminderComponentTest < ViewComponent::TestCase
 
     render_inline DueDateReminderComponent.new(delivery:)
 
-    person_path = routes.person_path(entry.person, from: "reminders", anchor: dom_id(entry))
+    person_path = routes.person_path(entry.person, anchor: dom_id(entry))
     assert_text "Anniversary"
     assert_text I18n.l(entry.entry_date, format: :long)
     assert_link entry.person.name, href: person_path

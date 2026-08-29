@@ -88,6 +88,9 @@ en:
     sign_out: "Sign out"
     settings: "Settings"
 
+  navigation:
+    back: "Back"
+
   flash:
     dismiss: "Dismiss"
 
@@ -742,10 +745,6 @@ en:
         heading: "No one here yet"
         hint: "Add someone to get started. All you need is a name."
     show:
-      back: "← People"
-      back_to_birthdays: "← Birthdays"
-      back_to_reminders: "← Reminders"
-      back_to_archived: "← Archived people"
       archive: "Archive person"
       restore: "Restore"
       delete_permanently: "Delete permanently"

@@ -1,7 +1,7 @@
 <p class="max-w-xl text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.description") %></p>
 
 <%= form_with model: user, url: helpers.settings_reminders_path, method: :patch, class: "mt-6 space-y-6" do |form| %>
-  <%= render SectionComponent.new(title: t("settings.reminders.delivery_channels"), description: t("settings.reminders.delivery_channels_hint"), heading_id: "reminder-settings-heading") do %>
+  <%= render SectionComponent.new(title: t("settings.reminders.delivery_channels"), description: t("settings.reminders.delivery_channels_hint"), heading_id: "reminder-settings-heading", id: "reminder-channels") do %>
     <div class="max-w-xl space-y-3" data-reminder-settings-section="channels">
       <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
         <%= form.check_box :reminder_in_app_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
@@ -27,7 +27,7 @@
     </div>
   <% end %>
 
-  <%= render SectionComponent.new(title: t("settings.reminders.contacts.heading"), description: t("settings.reminders.contacts.description")) do %>
+  <%= render SectionComponent.new(title: t("settings.reminders.contacts.heading"), description: t("settings.reminders.contacts.description"), id: "contact-reminders") do %>
     <div class="max-w-xl space-y-4" data-reminder-settings-section="contacts">
       <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
         <%= form.check_box :contact_reminders_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
@@ -48,7 +48,7 @@
     </div>
   <% end %>
 
-  <%= render SectionComponent.new(title: t("settings.reminders.birthdays.heading"), description: t("settings.reminders.birthdays.description")) do %>
+  <%= render SectionComponent.new(title: t("settings.reminders.birthdays.heading"), description: t("settings.reminders.birthdays.description"), id: "birthday-reminders") do %>
     <div class="max-w-xl space-y-4" data-reminder-settings-section="birthdays">
       <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
         <%= form.check_box :birthday_reminders_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
@@ -78,7 +78,7 @@
     </div>
   <% end %>
 
-  <%= render SectionComponent.new(title: t("settings.reminders.other_dates.heading"), description: t("settings.reminders.other_dates.description")) do %>
+  <%= render SectionComponent.new(title: t("settings.reminders.other_dates.heading"), description: t("settings.reminders.other_dates.description"), id: "date-reminders") do %>
     <div class="max-w-xl" data-reminder-settings-section="other-dates">
       <p class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.other_dates.timing") %></p>
       <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.other_dates.timing_hint") %></p>

@@ -1,15 +1,14 @@
 class BirthdayMonthSectionComponent < ViewComponent::Base
-  def initialize(month:, birthdays:, year:, heading_level: 2, return_month: nil)
+  def initialize(month:, birthdays:, year:, heading_level: 2)
     @month = month
     @birthdays = birthdays
     @year = year
     @heading_level = heading_level
-    @return_month = return_month
   end
 
   private
 
-  attr_reader :month, :birthdays, :year, :heading_level, :return_month
+  attr_reader :month, :birthdays, :year, :heading_level
 
   def month_name
     I18n.t("date.month_names").fetch(month)

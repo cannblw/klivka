@@ -86,7 +86,7 @@ class ContactReminderComponentTest < ViewComponent::TestCase
 
     assert_text "Frequency: Monthly"
     assert_text "Using your account setting. Change it in Settings."
-    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}']", text: "Settings"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_reminders_path(anchor: "contact-reminders")}']", text: "Settings"
     assert_selector "form[action='#{person_keep_in_touch_setting_path(person)}'][method='post']", visible: :all
     assert_selector "form[action='#{disable_person_keep_in_touch_setting_path(person)}'][method='post']", visible: :all
   end

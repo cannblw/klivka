@@ -109,24 +109,12 @@ class PeopleController < ApplicationController
   end
 
   def prepare_return_navigation
+    @return_params = {}
+
     if @person.archived?
-      @return_params = {}
       @back_path = archived_people_path
-      @back_translation_key = "people.show.back_to_archived"
-    elsif params[:from] == "birthdays"
-      month = Integer(params[:month], exception: false)
-      month = nil unless month&.between?(1, 12)
-      @return_params = { from: "birthdays", month: }.compact
-      @back_path = birthdays_path(month:)
-      @back_translation_key = "people.show.back_to_birthdays"
-    elsif params[:from] == "reminders"
-      @return_params = { from: "reminders" }
-      @back_path = reminders_path
-      @back_translation_key = "people.show.back_to_reminders"
     else
-      @return_params = {}
       @back_path = root_path
-      @back_translation_key = "people.show.back"
     end
   end
 

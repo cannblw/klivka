@@ -60,6 +60,10 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "section h2", text: "Contact reminders"
     assert_select "section h2", text: "Birthday reminders"
     assert_select "section h2", text: "Other date reminders"
+    assert_select "section#reminder-channels"
+    assert_select "section#contact-reminders"
+    assert_select "section#birthday-reminders"
+    assert_select "section#date-reminders"
     assert_select "input[name='user[reminder_in_app_enabled]'][type='checkbox']:not([checked])", count: 1
     assert_select "input[name='user[reminder_email_enabled]'][type='checkbox'][checked]", count: 1
     assert_select "input[name='user[default_reminder_lead_value]'][type='number'][value='2']", count: 1
