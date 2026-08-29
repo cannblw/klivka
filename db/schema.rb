@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_29_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_29_121000) do
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -108,7 +108,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_120000) do
   end
 
   create_table "interactions", force: :cascade do |t|
-    t.string "contact_method"
+    t.string "contact_method_icon_library"
+    t.string "contact_method_icon_name"
+    t.string "contact_method_name"
     t.datetime "created_at", null: false
     t.text "note"
     t.date "occurred_on", null: false
@@ -116,7 +118,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_120000) do
     t.datetime "updated_at", null: false
     t.index ["person_id", "occurred_on"], name: "index_interactions_on_person_id_and_occurred_on"
     t.index ["person_id"], name: "index_interactions_on_person_id"
-    t.check_constraint "contact_method IS NULL OR contact_method IN ('call', 'message', 'video', 'in_person', 'other')", name: "interactions_contact_method_is_supported"
+    t.check_constraint "(contact_method_icon_library IS NULL AND contact_method_icon_name IS NULL) OR (contact_method_name IS NOT NULL AND contact_method_icon_library IS NOT NULL AND contact_method_icon_name IS NOT NULL)", name: "interactions_contact_method_icon_is_complete"
+    t.check_constraint "contact_method_icon_library IS NULL OR length(contact_method_icon_library) BETWEEN 1 AND 255", name: "interactions_contact_method_icon_library_length"
+    t.check_constraint "contact_method_icon_name IS NULL OR length(contact_method_icon_name) BETWEEN 1 AND 255", name: "interactions_contact_method_icon_name_length"
+    t.check_constraint "contact_method_name IS NULL OR length(contact_method_name) BETWEEN 1 AND 255", name: "interactions_contact_method_name_length"
   end
 
   create_table "keep_in_touch_settings", force: :cascade do |t|

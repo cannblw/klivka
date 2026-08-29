@@ -9,7 +9,7 @@ class PeopleController < ApplicationController
   def show
     @person = Current.user.people.friendly.find(params[:id])
     prepare_return_navigation
-    @recent_interactions = @person.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
+    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
     @interaction_count = @person.interactions.count
     unless @person.archived?
       prepare_quick_interaction
@@ -131,7 +131,7 @@ class PeopleController < ApplicationController
   end
 
   def prepare_quick_interaction
-    @recent_interactions = @person.interactions.recent.limit(InteractionHistoryComponent::PROFILE_PREVIEW_LIMIT).to_a
+    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
     @interaction_count = @person.interactions.count
     @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @person.interactions.new(occurred_on: Date.current)
@@ -141,6 +141,10 @@ class PeopleController < ApplicationController
 
   def prepare_categories
     @categories = Current.user.categories.order(:normalized_name).to_a
+  end
+
+  def interaction_profile_preview_limit
+    Rails.application.config.x.interaction_profile_preview_limit
   end
 
   def person_params

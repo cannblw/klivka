@@ -15,8 +15,8 @@ class DemoPersonaSeedData
       dates: [ { label: "Wedding anniversary", date: "2024-06-22" } ],
       gift_list: { title: "Anna's baking shelf", items: [ "Stainless-steel dough scraper", "Red digital kitchen scale", "Baking steel for the oven" ] },
       interactions: [
-        { date: "2026-07-18", method: "video", note: "Anna showed me the first croissant batch that actually had distinct layers." },
-        { date: "2026-05-09", method: "message", note: "Sent photos from her windy weekend on the Bohuslän coast." }
+        { date: "2026-07-18", method: "video_call", note: "Anna showed me the first croissant batch that actually had distinct layers." },
+        { date: "2026-05-09", method: "text_message", note: "Sent photos from her windy weekend on the Bohuslän coast." }
       ],
       cadence: "monthly"
     },
@@ -39,7 +39,7 @@ class DemoPersonaSeedData
       interaction_history: {
         count: 20,
         start_date: "2025-12-20",
-        methods: %w[message call in_person],
+        methods: %w[text_message call in_person],
         notes: [
           "Shared a new transit map and asked for my opinion.",
           "Sent a photo from Mina's walk.",
@@ -63,13 +63,13 @@ class DemoPersonaSeedData
       dates: [ { label: "Mother's birthday", date: "1963-10-08" } ],
       gift_list: { title: "Sofia's little comforts", items: [ "Waterproof swim bag", "Illustrated cookbook from Bogotá", "Window-box herb markers" ] },
       interactions: [
-        { date: "2026-07-27", method: "message", note: "She sent a picture of the basil finally surviving the heat." },
+        { date: "2026-07-27", method: "text_message", note: "She sent a picture of the basil finally surviving the heat." },
         { date: "2026-04-19", method: "in_person", note: "Coffee after her Sunday swim. She was planning a trip to Bogotá." }
       ],
       interaction_history: {
         count: 28,
         start_date: "2025-12-15",
-        methods: %w[message call video in_person],
+        methods: %w[text_message call video_call in_person],
         notes: [
           "Checked in after a long hospital shift.",
           "Shared a new recipe and asked whether I had tried it.",
@@ -93,7 +93,7 @@ class DemoPersonaSeedData
       gift_list: { title: "For Idris's darkroom", items: [ "Archival negative sleeves", "Brass lens brush", "A small thermos that will not leak" ] },
       interactions: [
         { date: "2026-07-05", method: "call", note: "He called from a cinema in Leeds between screenings." },
-        { date: "2026-03-21", method: "message", note: "Shared a beautiful contact sheet from his latest interview." }
+        { date: "2026-03-21", method: "text_message", note: "Shared a beautiful contact sheet from his latest interview." }
       ],
       cadence: "quarterly"
     },
@@ -113,12 +113,12 @@ class DemoPersonaSeedData
       gift_list: { title: "Claire's bakery wishlist", items: [ "Antique French pastry book", "Blue-and-white cake stand", "Small offset spatula" ] },
       interactions: [
         { date: "2026-07-09", method: "in_person", note: "Stopped by the bakery for her engagement anniversary. She sent me home with madeleines." },
-        { date: "2026-02-14", method: "message", note: "Her bakery sold out before noon. She sounded exhausted and delighted." }
+        { date: "2026-02-14", method: "text_message", note: "Her bakery sold out before noon. She sounded exhausted and delighted." }
       ],
       interaction_history: {
         count: 24,
         start_date: "2025-12-01",
-        methods: %w[message call in_person],
+        methods: %w[text_message call in_person],
         notes: [
           "Asked for feedback on a new tart.",
           "Sent a photo of the morning bake.",
@@ -141,8 +141,8 @@ class DemoPersonaSeedData
       dates: [ { label: "Twins' birthday", date: "2020-03-11" } ],
       gift_list: { title: "Jonas's workshop", items: [ "Low-profile keycap set", "Cardamom tea", "Dinosaur puzzle for the twins" ] },
       interactions: [
-        { date: "2026-07-30", method: "video", note: "He gave me a tour of the keyboard repair bench while the twins argued in the background." },
-        { date: "2026-05-02", method: "message", note: "Sent a link to an excellent accessibility conference talk." }
+        { date: "2026-07-30", method: "video_call", note: "He gave me a tour of the keyboard repair bench while the twins argued in the background." },
+        { date: "2026-05-02", method: "text_message", note: "Sent a link to an excellent accessibility conference talk." }
       ],
       cadence: "quarterly"
     },
@@ -162,8 +162,8 @@ class DemoPersonaSeedData
       dates: [ { label: "Wedding date", date: "2026-12-12" } ],
       gift_list: { title: "Priya's balcony garden", items: [ "Terracotta self-watering pot", "Heat-resistant gardening gloves", "A notebook with graph paper" ] },
       interactions: [
-        { date: "2026-08-08", method: "video", note: "Priya showed me the tomato plants and the spreadsheet tracking each leaf." },
-        { date: "2026-06-20", method: "message", note: "She sent three possible wedding invitations and asked for a vote." }
+        { date: "2026-08-08", method: "video_call", note: "Priya showed me the tomato plants and the spreadsheet tracking each leaf." },
+        { date: "2026-06-20", method: "text_message", note: "She sent three possible wedding invitations and asked for a vote." }
       ],
       cadence: "monthly"
     },
@@ -200,7 +200,7 @@ class DemoPersonaSeedData
       dates: [ { label: "Wedding anniversary", date: "2019-08-31" } ],
       gift_list: { title: "Elżbieta's careful things", items: [ "Archival watercolor paper", "Replacement nib for a fountain pen", "Soft linen swimming towel" ] },
       interactions: [
-        { date: "2026-07-23", method: "message", note: "She sent a photo of Goethe sitting inside an empty archival box." },
+        { date: "2026-07-23", method: "text_message", note: "She sent a photo of Goethe sitting inside an empty archival box." },
         { date: "2026-05-16", method: "in_person", note: "Visited the museum exhibit Hannah helped restore." }
       ],
       cadence: "quarterly"
@@ -220,7 +220,7 @@ class DemoPersonaSeedData
       gift_list: { title: "For Leila's garden", items: [ "Yellow ceramic plant labels", "Compact pruning shears", "A waterproof picnic blanket" ] },
       interactions: [
         { date: "2026-08-02", method: "in_person", note: "Helped paint the garden gate. Leila brought mint tea and a basket of tomatoes." },
-        { date: "2026-06-07", method: "message", note: "She sent the first draft of the wedding menu." }
+        { date: "2026-06-07", method: "text_message", note: "She sent the first draft of the wedding menu." }
       ],
       cadence: "monthly"
     },
@@ -239,7 +239,7 @@ class DemoPersonaSeedData
       gift_list: { title: "Tomás's tool wall", items: [ "Bright orange tire levers", "Magnetic parts tray", "Enamel mountain-bike pin" ] },
       interactions: [
         { date: "2026-07-26", method: "in_person", note: "Dropped off my bike for its annual tune-up and stayed for coffee." },
-        { date: "2026-05-24", method: "message", note: "He sent a picture of Nube asleep in a basket of inner tubes." }
+        { date: "2026-05-24", method: "text_message", note: "He sent a picture of Nube asleep in a basket of inner tubes." }
       ],
       cadence: "quarterly"
     },
@@ -257,8 +257,8 @@ class DemoPersonaSeedData
       dates: [ { label: "Kelp survey season", date: "2025-06-15" } ],
       gift_list: { title: "Nora's next expedition", items: [ "Waterproof field notebook", "Replacement dive-watch strap", "Blue graphite pencils" ] },
       interactions: [
-        { date: "2026-07-02", method: "video", note: "Nora called from the research vessel and introduced me to the crew's smallest octopus fan." },
-        { date: "2026-03-08", method: "message", note: "Shared a sketch of a kelp forest made during a storm delay." }
+        { date: "2026-07-02", method: "video_call", note: "Nora called from the research vessel and introduced me to the crew's smallest octopus fan." },
+        { date: "2026-03-08", method: "text_message", note: "Shared a sketch of a kelp forest made during a storm delay." }
       ],
       cadence: "quarterly"
     },
@@ -313,8 +313,8 @@ class DemoPersonaSeedData
       dates: [ { label: "First game release", date: "2024-03-25" } ],
       gift_list: { title: "Łukasz's desk", items: [ "Moss-green notebook", "Fine-tip refill for his favorite pen", "Tiny cat-shaped cable clips" ] },
       interactions: [
-        { date: "2026-07-20", method: "video", note: "Kenji showed me the new game prototype and Mochi walked across the keyboard." },
-        { date: "2026-04-25", method: "message", note: "He sent a photo of an exceptionally neat bento lunch." }
+        { date: "2026-07-20", method: "video_call", note: "Kenji showed me the new game prototype and Mochi walked across the keyboard." },
+        { date: "2026-04-25", method: "text_message", note: "He sent a photo of an exceptionally neat bento lunch." }
       ],
       cadence: "quarterly"
     },
@@ -351,8 +351,8 @@ class DemoPersonaSeedData
       dates: [ { label: "Moved to Vancouver", date: "2025-09-03" } ],
       gift_list: { title: "Daniel's studio shelf", items: [ "Small trimming tool", "Architecture postcard set", "Cobalt-blue glaze test tiles" ] },
       interactions: [
-        { date: "2025-12-20", method: "video", note: "Daniel showed me the view from his new apartment and the first bowl from his Vancouver studio." },
-        { date: "2025-09-02", method: "message", note: "Wished him luck before the move and compared notes on packing fragile ceramics." }
+        { date: "2025-12-20", method: "video_call", note: "Daniel showed me the view from his new apartment and the first bowl from his Vancouver studio." },
+        { date: "2025-09-02", method: "text_message", note: "Wished him luck before the move and compared notes on packing fragile ceramics." }
       ],
       cadence: "yearly"
     }
@@ -393,9 +393,9 @@ class DemoPersonaSeedData
     end
     create_gift_list(person, persona[:gift_list]) if persona[:gift_list]
     persona.fetch(:interactions).each do |interaction|
-      person.interactions.create!(
+      create_interaction(person,
         occurred_on: date(interaction.fetch(:date)),
-        contact_method: interaction.fetch(:method),
+        method: interaction.fetch(:method),
         note: interaction.fetch(:note)
       )
     end
@@ -419,12 +419,23 @@ class DemoPersonaSeedData
     return if history.blank?
 
     history.fetch(:count).times do |index|
-      person.interactions.create!(
+      create_interaction(person,
         occurred_on: date(history.fetch(:start_date)) - (index * 14).days,
-        contact_method: history.fetch(:methods).fetch(index % history.fetch(:methods).length),
+        method: history.fetch(:methods).fetch(index % history.fetch(:methods).length),
         note: history.fetch(:notes).fetch(index % history.fetch(:notes).length)
       )
     end
+  end
+
+  def create_interaction(person, occurred_on:, method:, note:)
+    contact_method = user.contact_methods.find_by!(
+      normalized_name: StringNormalizer.call(
+        I18n.t("contact_methods.provided.#{method}", locale: user.locale.presence || I18n.default_locale)
+      ).downcase
+    )
+    interaction = person.interactions.new(occurred_on:, note:)
+    interaction.snapshot_contact_method(contact_method)
+    interaction.save!
   end
 
   def create_entry(person, type, entry_date: nil, content: {})

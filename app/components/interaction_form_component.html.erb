@@ -20,10 +20,10 @@
   </div>
 
   <div>
-    <%= form.label :contact_method, t("interactions.follow_up.contact_method"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-    <%= render SelectFieldComponent.new(form, :contact_method,
+    <%= form.label :contact_method_id, t("interactions.follow_up.contact_method"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
+    <%= render SelectFieldComponent.new(form, :contact_method_id,
           choices: contact_method_options,
-          selected: interaction.contact_method,
+          selected: selected_contact_method,
           select_options: { include_blank: t("interactions.follow_up.method_blank") },
           wrapper_class: "mt-1") %>
   </div>

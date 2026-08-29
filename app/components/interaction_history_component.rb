@@ -1,6 +1,4 @@
 class InteractionHistoryComponent < ViewComponent::Base
-  PROFILE_PREVIEW_LIMIT = 3
-
   def initialize(person:, interactions:, total_count:, show_view_all: true, heading_key: "interactions.history.heading", editable: true)
     @person = person
     @interactions = interactions || []
@@ -20,11 +18,5 @@ class InteractionHistoryComponent < ViewComponent::Base
 
   def editable?
     @editable
-  end
-
-  def method_label(interaction)
-    return if interaction.contact_method.blank?
-
-    t("interactions.methods.#{interaction.contact_method}")
   end
 end

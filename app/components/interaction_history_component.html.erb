@@ -27,9 +27,14 @@
             <time datetime="<%= interaction.occurred_on.iso8601 %>" class="text-sm font-medium">
               <%= l(interaction.occurred_on, format: :long) %>
             </time>
-            <% if method_label(interaction) %>
-              <span class="rounded-full bg-stone-200 px-2 py-0.5 text-xs text-stone-600 dark:bg-stone-700 dark:text-stone-300">
-                <%= method_label(interaction) %>
+            <% if interaction.contact_method_name.present? %>
+              <span class="inline-flex items-center gap-1 rounded-full bg-stone-200 px-2 py-0.5 text-xs text-stone-600 dark:bg-stone-700 dark:text-stone-300">
+                <%= render ContactMethodIconComponent.new(
+                      icon_library: interaction.contact_method_icon_library,
+                      icon_name: interaction.contact_method_icon_name,
+                      size: 12
+                    ) %>
+                <%= interaction.contact_method_name %>
               </span>
             <% end %>
           </div>

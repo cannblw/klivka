@@ -1,4 +1,6 @@
 class QuickInteractionComponent < ViewComponent::Base
+  include ContactMethodSelectable
+
   DOM_ID = "quick-interaction-dialog"
 
   def initialize(person:, interaction:, time_zone:, open: false, dom_id: DOM_ID, button_label: nil, return_to: nil)
@@ -25,9 +27,5 @@ class QuickInteractionComponent < ViewComponent::Base
 
   def heading_id
     "#{dom_id}-heading"
-  end
-
-  def contact_method_options
-    Interaction::CONTACT_METHODS.map { |method| [ t("interactions.methods.#{method}"), method ] }
   end
 end

@@ -4,7 +4,13 @@ class InteractionHistoryComponentTest < ViewComponent::TestCase
   test "renders the compact newest-first history and view-all link" do
     person = people(:ada)
     older = person.interactions.create!(occurred_on: 2.days.ago.to_date, note: "Older")
-    newer = person.interactions.create!(occurred_on: 1.day.ago.to_date, contact_method: "call", note: "Newer")
+    newer = person.interactions.create!(
+      occurred_on: 1.day.ago.to_date,
+      contact_method_name: "Call",
+      contact_method_icon_library: "material_icons",
+      contact_method_icon_name: "call",
+      note: "Newer"
+    )
 
     rendered = render_inline InteractionHistoryComponent.new(person: person, interactions: [ newer, older ], total_count: 3)
 
@@ -13,6 +19,7 @@ class InteractionHistoryComponentTest < ViewComponent::TestCase
     assert_selector "time[datetime='#{newer.occurred_on.iso8601}']", text: /#{Regexp.escape(I18n.l(newer.occurred_on, format: :long))}/
     assert_selector "li", text: /Newer/
     assert_selector "li", text: /Call/
+    assert_selector "li span.material-icons", text: "call"
     path = Rails.application.routes.url_helpers.person_interactions_path(person)
     assert_selector "a[href='#{path}']", text: "View all (3)"
     assert_operator rendered.to_s.index("Newer"), :<, rendered.to_s.index("Older")
