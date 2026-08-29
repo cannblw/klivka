@@ -1,8 +1,8 @@
 class DueContactReminderComponent < ViewComponent::Base
-  with_collection_parameter :due_reminder
+  with_collection_parameter :delivery
 
-  def initialize(due_reminder:, time_zone: due_reminder.person.user.time_zone, interactions_by_person_id: {}, open_person_id: nil)
-    @due_reminder = due_reminder
+  def initialize(delivery:, time_zone: delivery.user.time_zone, interactions_by_person_id: {}, open_person_id: nil)
+    @delivery = delivery
     @time_zone = time_zone
     @interactions_by_person_id = interactions_by_person_id
     @open_person_id = open_person_id
@@ -10,9 +10,13 @@ class DueContactReminderComponent < ViewComponent::Base
 
   private
 
-  attr_reader :due_reminder, :time_zone
+  attr_reader :delivery, :time_zone
 
-  delegate :person, :reminder_on, to: :due_reminder
+  delegate :reminder_on, to: :delivery
+
+  def person
+    delivery.source
+  end
 
   def interaction
     @interactions_by_person_id[person.id] || person.interactions.new(occurred_on: Date.current)

@@ -370,14 +370,54 @@ class DemoPersonaSeedData
 
   def call
     Person.transaction do
-      @user.people.destroy_all
+      clear_reminder_work
+      user.people.destroy_all
       PERSONAS.each { |persona| seed_persona(persona) }
+      seed_reminders
     end
   end
 
   private
 
   attr_reader :user
+
+  def clear_reminder_work
+    user.reminder_deliveries.delete_all
+    user.contact_reminder_digests.delete_all
+  end
+
+  def seed_reminders
+    today = user.local_date
+    seed_birthday_reminder(on: today)
+    seed_date_reminder(on: today)
+    user.update!(reminder_in_app_enabled: true, reminders_scanned_through_on: nil)
+    ReminderDeliveryScheduler.call(user:)
+  end
+
+  def seed_birthday_reminder(on:)
+    birthday, occurrence = upcoming_source(Entry::Birthday, on:)
+    user.update!(
+      birthday_reminders_enabled: true,
+      birthday_reminder_lead_value: (occurrence - on).to_i,
+      birthday_reminder_lead_unit: "days"
+    )
+  end
+
+  def seed_date_reminder(on:)
+    entry, occurrence = upcoming_source(Entry::Date.where(type: "Entry::Date"), on:)
+    entry.create_entry_reminder!(
+      lead_value: (occurrence - on).to_i,
+      lead_unit: "days",
+      recurrence: "yearly"
+    )
+  end
+
+  def upcoming_source(scope, on:)
+    scope.joins(:person)
+      .where(people: { user_id: user.id, archived_at: nil })
+      .map { |entry| [ entry, entry.next_occurrence_on(on:) ] }
+      .min_by { |_, occurrence| occurrence }
+  end
 
   def seed_persona(persona)
     person = user.people.create!(name: persona.fetch(:name))

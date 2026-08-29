@@ -473,15 +473,34 @@ en:
       title: "Reminders"
       back: "← Contact reminders"
       heading: "Reminders"
-      description: "See who you planned to contact and choose what to do next."
+      description: "See the reminders that are ready for your attention."
       contacts:
         heading: "Ready to contact"
         description: "Logging contact or choosing remind me later will update this list."
-        empty: "No contact reminders need your attention right now."
+        empty: "No contact reminders are ready right now."
+      birthdays:
+        heading: "Birthdays"
+        description: "Upcoming birthdays with reminders."
+        empty: "No birthday reminders are ready right now."
+      dates:
+        heading: "Important dates"
+        description: "Meaningful dates with reminders."
+        empty: "No date reminders are ready right now."
+      empty:
+        heading: "Nothing needs your attention"
+        description: "Your contact, birthday, and date reminders will appear here when they are ready."
+    ready_since: "Ready since %{date}"
+    view_person: "View person"
     contact:
-      due_since: "Ready since %{date}"
       contact_today: "Contact today"
       snooze: "Remind me in one week"
+    birthday:
+      occurs_on: "Birthday on %{date}"
+      settings: "Birthday settings"
+    date:
+      default_label: "Important date"
+      occurs_on: "Date on %{date}"
+      view: "View date"
 
   birthday_reminder_status:
     enabled: "You'll be reminded about every birthday %{timing}."

@@ -35,8 +35,9 @@ class DemoResetJobTest < ActiveJob::TestCase
       assert_equal Rails.application.config.x.reminder_default_lead_value, demo_user.default_reminder_lead_value
       assert_equal Rails.application.config.x.reminder_default_lead_unit, demo_user.default_reminder_lead_unit
       assert_equal Rails.application.config.x.birthday_reminder_default_enabled, demo_user.birthday_reminders_enabled
-      assert_equal Rails.application.config.x.reminder_default_lead_value, demo_user.birthday_reminder_lead_value
-      assert_equal Rails.application.config.x.reminder_default_lead_unit, demo_user.birthday_reminder_lead_unit
+      birthday_delivery = InAppRemindersQuery.call(user: demo_user).birthdays.first
+      assert_equal (birthday_delivery.occurrence_on - demo_user.local_date).to_i, demo_user.birthday_reminder_lead_value
+      assert_equal "days", demo_user.birthday_reminder_lead_unit
       assert_equal now, state.reload.started_at
       assert_equal now, state.last_activity_at
     end

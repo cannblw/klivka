@@ -25,7 +25,7 @@ class InteractionsController < ApplicationController
     if save_interaction_and_update_reminder(clear_snooze: true)
       redirect_to interaction_create_redirect_path, notice: t("interactions.create.created")
     elsif quick_log_from_reminders?
-      @due_contact_reminders = DueContactRemindersQuery.call(user: Current.user)
+      @in_app_reminders = InAppRemindersQuery.call(user: Current.user)
       @interactions_by_person_id = { @person.id => @interaction }
       @open_interaction_person_id = @person.id
       render "reminders/index", status: :unprocessable_entity

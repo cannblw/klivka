@@ -484,15 +484,34 @@ es:
       title: "Recordatorios"
       back: "← Recordatorios de contacto"
       heading: "Recordatorios"
-      description: "Consulta con quién querías contactar y elige qué hacer ahora."
+      description: "Consulta los recordatorios que ya están listos."
       contacts:
         heading: "Personas con las que contactar"
         description: "Al registrar un contacto o posponer un recordatorio, esta lista se actualizará."
-        empty: "No hay recordatorios de contacto pendientes ahora mismo."
+        empty: "No hay recordatorios de contacto listos ahora mismo."
+      birthdays:
+        heading: "Cumpleaños"
+        description: "Próximos cumpleaños con recordatorios."
+        empty: "No hay recordatorios de cumpleaños listos ahora mismo."
+      dates:
+        heading: "Fechas importantes"
+        description: "Fechas importantes con recordatorios."
+        empty: "No hay recordatorios de fechas listos ahora mismo."
+      empty:
+        heading: "Nada requiere tu atención"
+        description: "Tus recordatorios de contacto, cumpleaños y fechas aparecerán aquí cuando estén listos."
+    ready_since: "Listo desde el %{date}"
+    view_person: "Ver persona"
     contact:
-      due_since: "Pendiente desde el %{date}"
       contact_today: "Contactar hoy"
       snooze: "Recordármelo en una semana"
+    birthday:
+      occurs_on: "Cumpleaños el %{date}"
+      settings: "Ajustes de cumpleaños"
+    date:
+      default_label: "Fecha importante"
+      occurs_on: "Fecha: %{date}"
+      view: "Ver fecha"
 
   birthday_reminder_status:
     enabled: "Te recordaremos todos los cumpleaños %{timing}."
