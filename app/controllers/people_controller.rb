@@ -1,12 +1,6 @@
 class PeopleController < ApplicationController
   def index
-    @sort = params[:sort].presence_in(PersonSearch::SORTS.keys) || PersonSearch::DEFAULT_SORT
-    @view = params[:view] == "all" ? "all" : "grouped"
-    @people = PersonSearch.call(Current.user, params[:query], sort: @sort)
-    ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
-    @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?
-    @grouped_view = @grouping_available && @view == "grouped" && params[:query].blank?
-    prepare_person_groups if @grouped_view
+    prepare_people_index
     @person = Person.new
     @batch_creation = BatchPersonCreation.preview(user: Current.user, names: "")
     @batch_mode = params[:batch] == "true"
@@ -69,7 +63,7 @@ class PeopleController < ApplicationController
     if @person.save
       redirect_to @person, notice: t(".created", name: @person.name)
     else
-      @people = Current.user.people.active.order(:name)
+      prepare_people_index
       @batch_creation = BatchPersonCreation.preview(user: Current.user, names: "")
       @batch_mode = false
       render :index, status: :unprocessable_entity
@@ -77,6 +71,36 @@ class PeopleController < ApplicationController
   end
 
   private
+
+  def prepare_people_index
+    @person_search = PersonSearch.new(
+      Current.user,
+      params[:query],
+      sort: params[:sort],
+      filters: person_search_filter_params
+    )
+    @sort = @person_search.sort
+    @view = params[:view] == "all" ? "all" : "grouped"
+    @people = @person_search.call
+    @filter_categories = Current.user.categories.order(:normalized_name).to_a
+    ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
+    @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?
+    @grouped_view = @grouping_available && @view == "grouped" && @person_search.query.blank? && !@person_search.filtered?
+    prepare_person_groups if @grouped_view
+  end
+
+  def person_search_filter_params
+    params.permit(
+      :birthday,
+      :last_contact,
+      :category,
+      :state,
+      :contact_reminder,
+      :date_reminder,
+      has_blocks: [],
+      missing_blocks: []
+    ).to_h
+  end
 
   def prepare_person_groups
     people_by_category = @people.group_by(&:category)

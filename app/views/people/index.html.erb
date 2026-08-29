@@ -95,50 +95,17 @@
   </dialog>
 </div>
 
-<div class="mt-8 rounded-2xl border border-stone-200 bg-stone-50 p-4 shadow-sm dark:border-stone-700 dark:bg-stone-800/80 sm:p-6">
-  <%= form_with url: root_path, method: :get,
-        data: {
-          controller: "search",
-          action: "formdata->search#prepareFormData",
-          turbo_action: "advance",
-          turbo_frame: "people_grid",
-          search_delay_value: Rails.application.config.x.person_search_debounce_milliseconds
-        },
-        class: "w-full" do |form| %>
-    <%= form.hidden_field :view, value: "all" if @view == "all" %>
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
-      <div class="min-w-0 flex-1">
-        <%= render InputFieldComponent.new(form, :query, type: :search,
-              value: params[:query],
-              placeholder: t(".search_placeholder"),
-              autocomplete: "off",
-              aria: { label: t(".search_label") },
-              data: { action: "input->search#debounce" },
-              class: "w-full rounded-xl !border-amber-300 px-4 py-3 text-base shadow-inner focus:!border-amber-500 dark:!border-amber-700 dark:focus:!border-amber-500") %>
-      </div>
-      <div class="sm:w-56">
-        <label for="sort" class="mb-1 block text-sm font-medium text-stone-500 dark:text-stone-400">
-          <%= t(".sort_label") %>
-        </label>
-        <%= render SelectFieldComponent.new(form, :sort,
-              choices: [
-                [ t(".sort_options.name"), "" ],
-                [ t(".sort_options.recently_added"), "recently_added" ],
-                [ t(".sort_options.recently_updated"), "recently_updated" ]
-              ],
-              selected: @sort == PersonSearch::DEFAULT_SORT ? "" : @sort,
-              aria: { label: t(".sort_label") },
-              data: { search_target: "sort", action: "change->search#submit" }) %>
-      </div>
-    </div>
-  <% end %>
-</div>
+<%= render PeopleQueryControlsComponent.new(
+      search: @person_search,
+      categories: @filter_categories,
+      view: @view
+    ) %>
 
 <%= turbo_frame_tag "people_grid" do %>
   <% if @people.any? %>
-    <% if @grouping_available && params[:query].blank? %>
+    <% if @grouping_available && @person_search.query.blank? && !@person_search.filtered? %>
       <div class="mt-6 flex justify-end">
-        <%= render PersonViewToggleComponent.new(view: @view, sort: @sort) %>
+        <%= render PersonViewToggleComponent.new(view: @view, query_params: @person_search.url_params) %>
       </div>
     <% end %>
 
@@ -167,9 +134,14 @@
         <%= render PersonCardComponent.with_collection(@people, show_category: true) %>
       </div>
     <% end %>
-  <% elsif params[:query].present? %>
+  <% elsif @person_search.filtered? %>
+    <div class="mt-16 text-center text-stone-500 dark:text-stone-400" data-filtered-people-empty>
+      <p class="text-lg font-medium"><%= t(".filters.no_results") %></p>
+      <p class="mt-1 text-sm"><%= t(".filters.no_results_hint") %></p>
+    </div>
+  <% elsif @person_search.query.present? %>
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
-      <p class="text-lg font-medium"><%= t(".no_results", query: params[:query]) %></p>
+      <p class="text-lg font-medium"><%= t(".no_results", query: @person_search.query) %></p>
     </div>
   <% else %>
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400">

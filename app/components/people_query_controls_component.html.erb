@@ -1,0 +1,92 @@
+<%= render SectionComponent.new(class: "mt-6", aria: { label: t("people.index.filters.search_and_sort") }) do %>
+  <%= form_with url: helpers.root_path, method: :get,
+        data: {
+          controller: "search",
+          action: "formdata->search#prepareFormData",
+          turbo_action: "advance",
+          turbo_frame: "people_grid",
+          search_delay_value: Rails.application.config.x.person_search_debounce_milliseconds
+        },
+        class: "w-full" do |form| %>
+    <%= form.hidden_field :view, value: "all" if view == "all" %>
+
+    <div class="grid gap-3 sm:grid-cols-3 sm:items-end">
+      <div class="min-w-0 sm:col-span-2">
+        <%= form.label :query, t("people.index.search_label"), class: "mb-1 block text-sm font-medium text-stone-500 dark:text-stone-400" %>
+        <%= render InputFieldComponent.new(form, :query, type: :search,
+              value: search.query,
+              placeholder: t("people.index.search_placeholder"),
+              autocomplete: "off",
+              data: { action: "input->search#debounce" },
+              class: "w-full rounded-xl !border-amber-300 px-4 py-3 text-base shadow-inner focus:!border-amber-500 dark:!border-amber-700 dark:focus:!border-amber-500") %>
+      </div>
+      <div>
+        <%= form.label :sort, t("people.index.sort_label"), class: "mb-1 block text-sm font-medium text-stone-500 dark:text-stone-400" %>
+        <%= render SelectFieldComponent.new(form, :sort,
+              choices: sort_choices,
+              selected: search.sort == PersonSearch::DEFAULT_SORT ? "" : search.sort,
+              data: { action: "change->search#submit" }) %>
+      </div>
+    </div>
+
+    <details class="mt-3 border-t border-stone-200 pt-3 dark:border-stone-700" <%= "open" if search.filtered? %>>
+      <summary class="inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-stone-500 hover:text-amber-700 dark:text-stone-400 dark:hover:text-amber-400">
+        <span class="material-icons" style="font-size: 16px" aria-hidden="true">tune</span>
+        <span><%= t("people.index.filters.advanced") %></span>
+        <% if search.filtered? %>
+          <span class="text-amber-700 dark:text-amber-400"><%= t("people.index.filters.active") %></span>
+        <% end %>
+      </summary>
+
+      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <% {
+          birthday: birthday_choices,
+          last_contact: last_contact_choices,
+          category: category_choices,
+          state: state_choices,
+          contact_reminder: contact_reminder_choices,
+          date_reminder: date_reminder_choices
+        }.each do |filter, choices| %>
+          <div>
+            <%= form.label filter, t("people.index.filters.#{filter}.label"), class: "mb-1 block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+            <%= render SelectFieldComponent.new(form, filter,
+                  choices:,
+                  selected: filters[filter] || "",
+                  data: { search_target: "filter", action: "change->search#submit" }) %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mt-5 grid gap-5 border-t border-stone-200 pt-5 dark:border-stone-700 md:grid-cols-2">
+        <% { has_blocks: :has, missing_blocks: :missing }.each do |filter, translation_key| %>
+          <fieldset>
+            <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("people.index.filters.blocks.#{translation_key}") %></legend>
+            <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3">
+              <% block_types.each do |block| %>
+                <% id = "#{filter.to_s.dasherize}-#{block.dasherize}" %>
+                <label for="<%= id %>" class="flex min-w-0 items-center gap-2 text-sm text-stone-700 dark:text-stone-200">
+                  <%= check_box_tag "#{filter}[]", block, filters[filter].include?(block),
+                        id:,
+                        class: "h-4 w-4 shrink-0 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-900",
+                        data: { search_target: "filter", action: "change->search#submit" } %>
+                  <span class="truncate"><%= block_label(block) %></span>
+                </label>
+              <% end %>
+            </div>
+          </fieldset>
+        <% end %>
+      </div>
+
+      <div class="mt-5 flex justify-end">
+        <%= render ButtonComponent.new(
+              variant: :ghost,
+              size: :sm,
+              hidden: !search.filtered?,
+              data: { search_target: "clear", action: "search#clearFilters" }
+            ) do %>
+          <%= t("people.index.filters.clear") %>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+<% end %>

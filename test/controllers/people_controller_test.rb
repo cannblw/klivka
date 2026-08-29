@@ -199,6 +199,70 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "main", { text: /Grace Hopper/, count: 0 }
   end
 
+  test "index filters people by block presence and restores the controls" do
+    get root_url, params: { has_blocks: [ "email", "birthday" ], missing_blocks: [ "note", "gift_list" ] }
+
+    assert_response :success
+    assert_select "input[name='has_blocks[]'][value='email'][checked]"
+    assert_select "input[name='has_blocks[]'][value='birthday'][checked]"
+    assert_select "input[name='missing_blocks[]'][value='note'][checked]"
+    assert_select "input[name='missing_blocks[]'][value='gift_list'][checked]"
+    assert_select "main", /Ada Lovelace/
+    assert_select "main", { text: /Grace Hopper/, count: 0 }
+    assert_select "nav[aria-label='People view']", count: 0
+  end
+
+  test "index filters people by inherited contact reminders and explicit opt-outs" do
+    user = users(:one)
+    user.update!(contact_reminders_enabled_on: user.local_date)
+    ContactReminder.for(people(:grace)).opt_out!
+
+    get root_url, params: { contact_reminder: "off" }
+
+    assert_response :success
+    assert_select "select[name='contact_reminder'] option[selected][value='off']"
+    assert_select "main", /Grace Hopper/
+    assert_select "main", { text: /Ada Lovelace/, count: 0 }
+  end
+
+  test "index can show archived people in the unified list" do
+    people(:ada).archive!
+
+    get root_url, params: { state: "archived" }
+
+    assert_response :success
+    assert_select "select[name='state'] option[selected][value='archived']"
+    assert_select "[data-archived-person]", text: "Archived"
+    assert_select "a[href='#{person_path(people(:ada))}']", text: /Ada Lovelace/
+    assert_select "main", { text: /Grace Hopper/, count: 0 }
+  end
+
+  test "index shows a neutral no-results state for filters" do
+    get root_url, params: { has_blocks: [ "email" ], missing_blocks: [ "email" ] }
+
+    assert_response :success
+    assert_select "[data-filtered-people-empty]", text: /No people match these filters/
+    assert_select "main", { text: /No people matching/, count: 0 }
+  end
+
+  test "index safely defaults invalid filter parameters" do
+    get root_url, params: {
+      birthday: "partial",
+      state: "deleted",
+      category: categories(:family_for_user_two).id,
+      has_blocks: [ "social_security_number" ],
+      contact_reminder: "overdue"
+    }
+
+    assert_response :success
+    assert_select "select[name='birthday'] option[selected][value='']"
+    assert_select "select[name='state'] option[selected][value='active']"
+    assert_select "select[name='category'] option[selected][value='']"
+    assert_select "input[type='checkbox'][checked]", count: 0
+    assert_select "main", /Ada Lovelace/
+    assert_select "main", /Grace Hopper/
+  end
+
   test "show returns 404 for another user's person" do
     get person_url(people(:bob))
 

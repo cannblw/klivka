@@ -572,6 +572,45 @@ es:
         name: "Nombre"
         recently_added: "Añadidos recientemente"
         recently_updated: "Actualizados recientemente"
+      filters:
+        search_and_sort: "Buscar y ordenar personas"
+        advanced: "Búsqueda avanzada"
+        active: "Filtros activados"
+        any: "Cualquiera"
+        birthday:
+          label: "Cumpleaños"
+          missing: "No tiene cumpleaños"
+          year_unknown: "Cumpleaños sin año"
+        last_contact:
+          label: "Último contacto"
+          never: "Sin contactos registrados"
+          within_30_days: "En los últimos 30 días"
+          31_to_90_days: "Hace entre 31 y 90 días"
+          91_to_180_days: "Hace entre 91 y 180 días"
+          over_180_days: "Hace más de 180 días"
+        category:
+          label: "Categoría"
+          uncategorized: "Sin categoría"
+        state:
+          label: "Personas que mostrar"
+          active: "Activas"
+          archived: "Archivadas"
+          all: "Activas y archivadas"
+        contact_reminder:
+          label: "Recordatorio de contacto"
+          "on": "Activado"
+          "off": "Desactivado"
+        date_reminder:
+          label: "Recordatorios de fechas"
+          present: "Tiene una fecha con recordatorio"
+          missing: "Tiene una fecha sin recordatorio"
+        blocks:
+          has: "Tiene"
+          missing: "No tiene"
+        clear: "Borrar filtros"
+        no_results: "Nadie coincide con estos filtros"
+        no_results_hint: "Prueba a cambiar o borrar alguno de los filtros."
+      archived_status: "Archivada"
       uncategorized: "Sin categoría"
       view_toggle:
         label: "Vista de personas"

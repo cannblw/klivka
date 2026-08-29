@@ -561,6 +561,45 @@ en:
         name: "Name"
         recently_added: "Recently added"
         recently_updated: "Recently updated"
+      filters:
+        search_and_sort: "Search and sort people"
+        advanced: "Advanced search"
+        active: "Filters on"
+        any: "Any"
+        birthday:
+          label: "Birthday"
+          missing: "Doesn't have a birthday"
+          year_unknown: "Birthday without a year"
+        last_contact:
+          label: "Last contact"
+          never: "No contact recorded"
+          within_30_days: "Within 30 days"
+          31_to_90_days: "31 to 90 days ago"
+          91_to_180_days: "91 to 180 days ago"
+          over_180_days: "More than 180 days ago"
+        category:
+          label: "Category"
+          uncategorized: "Uncategorized"
+        state:
+          label: "People to show"
+          active: "Active"
+          archived: "Archived"
+          all: "Active and archived"
+        contact_reminder:
+          label: "Contact reminder"
+          "on": "On"
+          "off": "Off"
+        date_reminder:
+          label: "Date reminders"
+          present: "Has a date with a reminder"
+          missing: "Has a date without a reminder"
+        blocks:
+          has: "Has"
+          missing: "Doesn't have"
+        clear: "Clear filters"
+        no_results: "No people match these filters"
+        no_results_hint: "Try changing or clearing one of the filters."
+      archived_status: "Archived"
       uncategorized: "Uncategorized"
       view_toggle:
         label: "People view"
