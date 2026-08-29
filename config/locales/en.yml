@@ -530,28 +530,34 @@ en:
       empty_all_hint: "Birthdays appear here when you add them to people's profiles."
 
   settings:
+    navigation:
+      label: "Settings sections"
+      account: "Account"
+      preferences: "Appearance and language"
+      reminders: "Reminders"
+      contact_methods: "Contact methods"
     show:
       title: "Settings"
-      heading: "Settings"
       account: "Account"
       account_description: "Your login email and password."
-      preferences: "Preferences"
-      preferences_description: "Language and theme."
       email: "Email"
       password_note: "To change your password, click"
       password_link: "here"
+    preferences:
+      title: "Appearance and language | Settings"
+      heading: "Appearance and language"
+      description: "Choose how Klivka looks and which language it uses."
       language: "Language"
       language_switch_disabled: "Language switching is disabled in demo mode."
       theme: "Theme"
-      contact_methods: "Contact methods"
-      contact_methods_description: "Choose the methods available when you record an interaction."
-      manage_contact_methods: "Manage contact methods"
       locales:
         en: "English"
         es: "Spanish"
       themes:
         light: "Light"
         dark: "Dark"
+    reminders_page:
+      title: "Reminders | Settings"
     update:
       updated: "Settings saved."
     reminders:
@@ -653,6 +659,8 @@ en:
       cancel: "Cancel"
       edit: "Change category"
       label: "Category for this person"
+      manage: "Create or manage categories"
+      manage_hint: "Need another category?"
       save: "Save"
       uncategorized: "Uncategorized"
       value: "Category: %{category}"

@@ -76,21 +76,21 @@ class DemoModeTest < ActionDispatch::IntegrationTest
     with_demo_mode do |demo_user|
       demo_user.update!(locale: "es")
 
-      get settings_path, headers: { "Accept-Language" => "es-ES,es;q=0.9" }
+      get settings_preferences_path, headers: { "Accept-Language" => "es-ES,es;q=0.9" }
 
       assert_response :success
       assert_select "html[lang=en]"
       assert_select "input[name='user[locale]'][value='en'][disabled]", count: 1
       assert_select "input[name='user[locale]'][value='es'][disabled]", count: 1
-      assert_select "#language-switch-disabled", text: I18n.t("settings.show.language_switch_disabled"), count: 1
+      assert_select "#language-switch-disabled", text: I18n.t("settings.preferences.language_switch_disabled"), count: 1
     end
   end
 
   test "ignores locale changes submitted to shared demo settings" do
     with_demo_mode do |demo_user|
-      patch settings_path, params: { user: { locale: "es" } }
+      patch settings_preferences_path, params: { user: { locale: "es" } }
 
-      assert_redirected_to settings_url
+      assert_redirected_to settings_preferences_url
       assert_nil demo_user.reload.locale
       follow_redirect!
       assert_select "html[lang=en]"

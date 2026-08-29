@@ -1,13 +1,8 @@
-<%= render SectionComponent.new(
-      title: t("settings.reminders.heading"),
-      description: t("settings.reminders.description"),
-      heading_id: "reminder-settings-heading"
-    ) do %>
-  <%= form_with model: user, url: helpers.settings_path, method: :patch, class: "mt-1 max-w-xl space-y-5" do |form| %>
-    <fieldset class="space-y-3" data-reminder-settings-section="channels">
-      <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.delivery_channels") %></legend>
-      <p class="text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.delivery_channels_hint") %></p>
+<p class="max-w-xl text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.description") %></p>
 
+<%= form_with model: user, url: helpers.settings_reminders_path, method: :patch, class: "mt-6 space-y-6" do |form| %>
+  <%= render SectionComponent.new(title: t("settings.reminders.delivery_channels"), description: t("settings.reminders.delivery_channels_hint"), heading_id: "reminder-settings-heading") do %>
+    <div class="max-w-xl space-y-3" data-reminder-settings-section="channels">
       <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
         <%= form.check_box :reminder_in_app_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
         <span>
@@ -23,18 +18,17 @@
           <span class="mt-0.5 block text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.email_hint") %></span>
         </span>
       </label>
-    </fieldset>
 
-    <% unless delivery_channel_enabled? %>
-      <%= render InlineNoticeComponent.new(data: { reminder_channels_notice: true }) do %>
-        <%= t("settings.reminders.no_channels") %>
+      <% unless delivery_channel_enabled? %>
+        <%= render InlineNoticeComponent.new(data: { reminder_channels_notice: true }) do %>
+          <%= t("settings.reminders.no_channels") %>
+        <% end %>
       <% end %>
-    <% end %>
+    </div>
+  <% end %>
 
-    <fieldset class="space-y-3 border-t border-stone-200 pt-5 dark:border-stone-700" data-reminder-settings-section="contacts">
-      <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.contacts.heading") %></legend>
-      <p class="text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.contacts.description") %></p>
-
+  <%= render SectionComponent.new(title: t("settings.reminders.contacts.heading"), description: t("settings.reminders.contacts.description")) do %>
+    <div class="max-w-xl space-y-4" data-reminder-settings-section="contacts">
       <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
         <%= form.check_box :contact_reminders_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
         <span>
@@ -46,23 +40,16 @@
       <div class="max-w-xs">
         <%= form.label :contact_reminder_cadence, t("settings.reminders.contacts.frequency"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
         <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.contacts.frequency_hint") %></p>
-        <%= render SelectFieldComponent.new(
-              form,
-              :contact_reminder_cadence,
-              choices: contact_cadence_options,
-              selected: user.contact_reminder_cadence,
-              wrapper_class: "mt-2"
-            ) %>
+        <%= render SelectFieldComponent.new(form, :contact_reminder_cadence, choices: contact_cadence_options, selected: user.contact_reminder_cadence, wrapper_class: "mt-2") %>
         <% user.errors.full_messages_for(:contact_reminder_cadence).each do |message| %>
           <p class="mt-1 text-sm text-red-600 dark:text-red-400"><%= message %></p>
         <% end %>
       </div>
-    </fieldset>
+    </div>
+  <% end %>
 
-    <fieldset class="space-y-3 border-t border-stone-200 pt-5 dark:border-stone-700" data-reminder-settings-section="birthdays">
-      <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.birthdays.heading") %></legend>
-      <p class="text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.birthdays.description") %></p>
-
+  <%= render SectionComponent.new(title: t("settings.reminders.birthdays.heading"), description: t("settings.reminders.birthdays.description")) do %>
+    <div class="max-w-xl space-y-4" data-reminder-settings-section="birthdays">
       <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
         <%= form.check_box :birthday_reminders_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
         <span>
@@ -84,16 +71,16 @@
           <%= form.label :birthday_reminder_lead_unit, t("settings.reminders.lead_unit"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
           <%= render SelectFieldComponent.new(form, :birthday_reminder_lead_unit, choices: lead_unit_options, selected: user.birthday_reminder_lead_unit) %>
           <% user.errors.full_messages_for(:birthday_reminder_lead_unit).each do |message| %>
-            <p class="mt-1 text-sm text-red-600"><%= message %></p>
+            <p class="mt-1 text-sm text-red-600 dark:text-red-400"><%= message %></p>
           <% end %>
         </div>
       </div>
-    </fieldset>
+    </div>
+  <% end %>
 
-    <fieldset class="border-t border-stone-200 pt-5 dark:border-stone-700" data-reminder-settings-section="other-dates">
-      <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.other_dates.heading") %></legend>
-      <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.other_dates.description") %></p>
-      <p class="mt-3 text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.other_dates.timing") %></p>
+  <%= render SectionComponent.new(title: t("settings.reminders.other_dates.heading"), description: t("settings.reminders.other_dates.description")) do %>
+    <div class="max-w-xl" data-reminder-settings-section="other-dates">
+      <p class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("settings.reminders.other_dates.timing") %></p>
       <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.other_dates.timing_hint") %></p>
       <div class="mt-3 grid gap-3 sm:grid-cols-2">
         <div>
@@ -104,14 +91,14 @@
           <%= form.label :default_reminder_lead_unit, t("settings.reminders.lead_unit"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
           <%= render SelectFieldComponent.new(form, :default_reminder_lead_unit, choices: lead_unit_options, selected: user.default_reminder_lead_unit, wrapper_class: "mt-1") %>
           <% user.errors.full_messages_for(:default_reminder_lead_unit).each do |message| %>
-            <p class="mt-1 text-sm text-red-600"><%= message %></p>
+            <p class="mt-1 text-sm text-red-600 dark:text-red-400"><%= message %></p>
           <% end %>
         </div>
       </div>
-    </fieldset>
+    </div>
+  <% end %>
 
-    <%= render ButtonComponent.new(type: :submit) do %>
-      <%= t("settings.reminders.save") %>
-    <% end %>
+  <%= render ButtonComponent.new(type: :submit) do %>
+    <%= t("settings.reminders.save") %>
   <% end %>
 <% end %>

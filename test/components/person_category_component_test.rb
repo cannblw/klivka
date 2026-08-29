@@ -13,5 +13,15 @@ class PersonCategoryComponentTest < ViewComponent::TestCase
     assert_selector "form[action='#{path}']", visible: :all
     assert_selector "select[name='category_assignment[category_id]'] option[selected][value='#{categories(:family).id}']"
     assert_selector "select[name='category_assignment[category_id]'] option[value='']"
+    assert_link "Create or manage categories", href: Rails.application.routes.url_helpers.categories_path
+  end
+
+  test "person without available categories can reach category creation" do
+    person = users(:one).people.create!(name: "No category yet")
+
+    render_inline PersonCategoryComponent.new(person:, categories: [])
+
+    assert_selector "select[name='category_assignment[category_id]'] option", count: 1
+    assert_link "Create or manage categories", href: Rails.application.routes.url_helpers.categories_path
   end
 end

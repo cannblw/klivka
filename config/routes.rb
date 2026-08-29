@@ -4,8 +4,12 @@ Rails.application.routes.draw do
   get "signup", to: "registrations#new"
   post "signup", to: "registrations#create"
   get "confirmation/:token", to: "confirmations#show", as: :confirmation
-  resource :settings, only: %i[ show update ]
-  resources :contact_methods, only: %i[ index create update destroy ] do
+  resource :settings, only: :show
+  get "settings/preferences", to: "settings#preferences", as: :settings_preferences
+  patch "settings/preferences", to: "settings#update_preferences"
+  get "settings/reminders", to: "settings#reminders", as: :settings_reminders
+  patch "settings/reminders", to: "settings#update_reminders"
+  resources :contact_methods, path: "settings/contact-methods", only: %i[ index create update destroy ] do
     patch :enable, on: :member
     patch :disable, on: :member
     patch :reorder, on: :collection

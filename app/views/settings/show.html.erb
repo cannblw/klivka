@@ -1,8 +1,6 @@
 <% content_for :title, t(".title") %>
 
-<h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
-
-<div class="mt-6 space-y-6">
+<%= render SettingsPageComponent.new(active: :account) do %>
   <%= render SectionComponent.new(title: t(".account"), description: t(".account_description")) do %>
     <div class="max-w-xl">
       <p class="text-sm font-medium text-stone-500 dark:text-stone-400"><%= t(".email") %></p>
@@ -15,45 +13,4 @@
       <% end %>
     </div>
   <% end %>
-
-  <%= render SectionComponent.new(title: t(".preferences"), description: t(".preferences_description")) do %>
-    <%= form_with model: @user, url: settings_path, method: :patch,
-          data: { controller: "settings-form theme" }, class: "max-w-xl space-y-5" do |form| %>
-      <fieldset>
-        <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t(".language") %></legend>
-        <div class="mt-2">
-          <%= render TogglePillGroupComponent.new(
-                form: form,
-                field: :locale,
-                choices: [ [ :en, t(".locales.en") ], [ :es, t(".locales.es") ] ],
-                selected: demo_mode? ? :en : @user.locale,
-                disabled: demo_mode?,
-                disabled_tooltip: demo_mode? ? t(".language_switch_disabled") : nil,
-                disabled_tooltip_id: "language-switch-disabled",
-                data: { action: "change->settings-form#submit" }
-              ) %>
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t(".theme") %></legend>
-        <div class="mt-2">
-          <%= render TogglePillGroupComponent.new(
-                form: form,
-                field: :theme,
-                choices: [ [ :light, t(".themes.light") ], [ :dark, t(".themes.dark") ] ],
-                selected: @user.theme,
-                data: { action: "change->theme#toggle change->settings-form#submit" }
-              ) %>
-        </div>
-      </fieldset>
-    <% end %>
-  <% end %>
-
-  <%= render ReminderSettingsComponent.new(user: @user) %>
-
-  <%= render SectionComponent.new(title: t(".contact_methods"), description: t(".contact_methods_description")) do %>
-    <%= link_to t(".manage_contact_methods"), contact_methods_path,
-          class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
-  <% end %>
-</div>
+<% end %>

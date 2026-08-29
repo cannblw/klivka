@@ -541,28 +541,34 @@ es:
       empty_all_hint: "Los cumpleaños aparecerán aquí cuando los añadas a los perfiles de las personas."
 
   settings:
+    navigation:
+      label: "Secciones de ajustes"
+      account: "Cuenta"
+      preferences: "Apariencia e idioma"
+      reminders: "Recordatorios"
+      contact_methods: "Métodos de contacto"
     show:
       title: "Ajustes"
-      heading: "Ajustes"
       account: "Cuenta"
       account_description: "Tu correo electrónico y contraseña."
-      preferences: "Preferencias"
-      preferences_description: "Idioma y tema."
       email: "Correo electrónico"
       password_note: "Para cambiar tu contraseña, haz clic"
       password_link: "aquí"
+    preferences:
+      title: "Apariencia e idioma | Ajustes"
+      heading: "Apariencia e idioma"
+      description: "Elige el aspecto de Klivka y el idioma que usa."
       language: "Idioma"
       language_switch_disabled: "El cambio de idioma está desactivado en la demo."
       theme: "Tema"
-      contact_methods: "Métodos de contacto"
-      contact_methods_description: "Elige los métodos disponibles al registrar una interacción."
-      manage_contact_methods: "Gestionar métodos de contacto"
       locales:
         en: "English"
         es: "Español"
       themes:
         light: "Claro"
         dark: "Oscuro"
+    reminders_page:
+      title: "Recordatorios | Ajustes"
     update:
       updated: "Ajustes guardados."
     reminders:
@@ -664,6 +670,8 @@ es:
       cancel: "Cancelar"
       edit: "Cambiar categoría"
       label: "Categoría de esta persona"
+      manage: "Crear o gestionar categorías"
+      manage_hint: "¿Necesitas otra categoría?"
       save: "Guardar"
       uncategorized: "Sin categoría"
       value: "Categoría: %{category}"

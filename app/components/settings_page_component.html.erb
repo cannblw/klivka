@@ -1,0 +1,19 @@
+<h1 class="text-2xl font-bold"><%= t("settings.navigation.#{active}") %></h1>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-start">
+  <nav aria-label="<%= t("settings.navigation.label") %>" class="overflow-x-auto rounded-xl border border-stone-200 bg-stone-50 p-2 dark:border-stone-700 dark:bg-stone-800">
+    <ul class="flex min-w-max gap-1 lg:min-w-0 lg:flex-col">
+      <% destinations.each do |destination, path| %>
+        <li>
+          <%= link_to t("settings.navigation.#{destination}"), path,
+                class: link_classes(destination),
+                aria: { current: ("page" if destination == active) } %>
+        </li>
+      <% end %>
+    </ul>
+  </nav>
+
+  <div class="min-w-0">
+    <%= content %>
+  </div>
+</div>
