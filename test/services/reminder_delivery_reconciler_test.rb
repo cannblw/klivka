@@ -141,6 +141,22 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     assert_equal ReminderDelivery::CANCELED_STATUS, delivery.reload.status
   end
 
+  test "limits reconciliation to the requested channel" do
+    setting = create_setting
+    email_delivery = create_delivery(setting.person, channel: ReminderDelivery::EMAIL_CHANNEL)
+    in_app_delivery = create_delivery(setting.person, channel: ReminderDelivery::IN_APP_CHANNEL)
+    users(:one).update!(reminder_email_enabled: false, reminder_in_app_enabled: false)
+
+    ReminderDeliveryReconciler.call(
+      user: users(:one),
+      at: Time.utc(2026, 8, 8, 12),
+      channel: ReminderDelivery::IN_APP_CHANNEL
+    )
+
+    assert_equal ReminderDelivery::PENDING_STATUS, email_delivery.reload.status
+    assert_equal ReminderDelivery::CANCELED_STATUS, in_app_delivery.reload.status
+  end
+
   test "cancels pending work for every reminder source belonging to an archived person" do
     person = people(:ada)
     setting = create_setting

@@ -1,23 +1,47 @@
 <% content_for :title, t(".title") %>
 
-<%= link_to t(".back"), contact_reminders_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
+<%= link_to t(".back"), root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
 
 <h1 class="mt-4 text-2xl font-bold"><%= t(".heading") %></h1>
 <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
 
-<div class="mt-6">
-  <%= render SectionComponent.new(title: t(".contacts.heading"), description: t(".contacts.description"), heading_id: "due-contact-reminders-heading") do %>
-    <% if @due_contact_reminders.any? %>
-      <ul class="divide-y divide-stone-200 dark:divide-stone-700">
-        <%= render DueContactReminderComponent.with_collection(
-              @due_contact_reminders,
-              time_zone: Current.user.time_zone,
-              interactions_by_person_id: @interactions_by_person_id,
-              open_person_id: @open_interaction_person_id
-            ) %>
-      </ul>
-    <% else %>
-      <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".contacts.empty") %></p>
+<div class="mt-6 space-y-6">
+  <% if @in_app_reminders.any? %>
+    <%= render SectionComponent.new(title: t(".contacts.heading"), description: t(".contacts.description"), heading_id: "due-contact-reminders-heading") do %>
+      <% if @in_app_reminders.contacts.any? %>
+        <ul class="divide-y divide-stone-200 dark:divide-stone-700">
+          <%= render DueContactReminderComponent.with_collection(
+                @in_app_reminders.contacts,
+                time_zone: Current.user.time_zone,
+                interactions_by_person_id: @interactions_by_person_id,
+                open_person_id: @open_interaction_person_id
+              ) %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".contacts.empty") %></p>
+      <% end %>
     <% end %>
+
+    <%= render SectionComponent.new(title: t(".birthdays.heading"), description: t(".birthdays.description"), heading_id: "due-birthday-reminders-heading") do %>
+      <% if @in_app_reminders.birthdays.any? %>
+        <ul class="divide-y divide-stone-200 dark:divide-stone-700">
+          <%= render DueBirthdayReminderComponent.with_collection(@in_app_reminders.birthdays) %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".birthdays.empty") %></p>
+      <% end %>
+    <% end %>
+
+    <%= render SectionComponent.new(title: t(".dates.heading"), description: t(".dates.description"), heading_id: "due-date-reminders-heading") do %>
+      <% if @in_app_reminders.dates.any? %>
+        <ul class="divide-y divide-stone-200 dark:divide-stone-700">
+          <%= render DueDateReminderComponent.with_collection(@in_app_reminders.dates) %>
+        </ul>
+      <% else %>
+        <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".dates.empty") %></p>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= render SectionComponent.new(title: t(".empty.heading"), description: t(".empty.description"), heading_id: "no-due-reminders-heading") %>
   <% end %>
 </div>

@@ -16,7 +16,7 @@ class SampleSeedDataTest < ActiveSupport::TestCase
     assert_equal 40, @user.people.joins(:entries).where(entries: { type: "Entry::Note" }).count
     assert_equal 30, @user.people.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
     assert_equal 32, @user.people.joins(:entries).where(entries: { type: "Entry::Email" }).count
-    assert_equal 152, @user.people.joins(:entries).count
+    assert_equal 153, @user.people.joins(:entries).count
   end
 
   test "archives two Faker-generated people while preserving their generated entries" do
@@ -43,6 +43,17 @@ class SampleSeedDataTest < ActiveSupport::TestCase
     assert_equal "Work", email.label
   end
 
+  test "creates mock contact, birthday, and date reminders for interface development" do
+    SampleSeedData.call(user: @user)
+
+    reminders = InAppRemindersQuery.call(user: @user)
+
+    assert_equal 3, reminders.contacts.size
+    assert_equal 1, reminders.birthdays.size
+    assert_equal 1, reminders.dates.size
+    assert_equal "Sample date reminder", reminders.dates.first.source.entry.label
+  end
+
   test "replaces the seed user's people without changing other accounts" do
     other_user = User.create!(email_address: "other-seed-data@example.com", password: "password")
     other_person = other_user.people.create!(name: "Other Person")
@@ -56,7 +67,7 @@ class SampleSeedDataTest < ActiveSupport::TestCase
     SampleSeedData.call(user: @user)
 
     assert_equal 100, @user.people.count
-    assert_equal 152, Entry.joins(:person).where(people: { user_id: @user.id }).count
+    assert_equal 153, Entry.joins(:person).where(people: { user_id: @user.id }).count
     assert_not @user.people.exists?(name: "Changed Seed Person")
     assert_not @user.people.exists?(name: "Temporary Person")
     assert_equal 3, @user.people.order(:id).third.entries.where(type: "Entry::Email").count

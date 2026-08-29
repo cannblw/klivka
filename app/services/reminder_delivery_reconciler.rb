@@ -7,13 +7,14 @@ class ReminderDeliveryReconciler
     new(user:, at:).current_deliveries(deliveries)
   end
 
-  def self.call(user:, at: Time.current)
-    new(user:, at:).call
+  def self.call(user:, at: Time.current, channel: nil)
+    new(user:, at:, channel:).call
   end
 
-  def initialize(user:, at:)
+  def initialize(user:, at:, channel: nil)
     @user = user
     @at = at
+    @channel = channel
   end
 
   def call
@@ -57,10 +58,11 @@ class ReminderDeliveryReconciler
 
   private
 
-  attr_reader :user, :at
+  attr_reader :user, :at, :channel
 
   def unclaimed_pending_deliveries
-    user.reminder_deliveries.where(status: ReminderDelivery::PENDING_STATUS, claimed_at: nil)
+    deliveries = user.reminder_deliveries.where(status: ReminderDelivery::PENDING_STATUS, claimed_at: nil)
+    channel ? deliveries.where(channel:) : deliveries
   end
 
   def current?(delivery, latest_interactions:)

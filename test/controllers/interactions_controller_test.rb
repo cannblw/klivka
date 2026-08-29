@@ -221,6 +221,13 @@ class InteractionsControllerTest < ActionDispatch::IntegrationTest
   test "invalid quick log from reminders reopens that person's dialog on the due list" do
     person = people(:ada)
     person.create_keep_in_touch_setting!(cadence: "daily", enabled_on: users(:one).local_date.yesterday)
+    ReminderDelivery.create!(
+      user: users(:one),
+      source: person,
+      channel: ReminderDelivery::IN_APP_CHANNEL,
+      reminder_on: users(:one).local_date,
+      occurrence_on: users(:one).local_date
+    )
 
     assert_no_difference -> { person.interactions.count } do
       post person_interactions_url(person), params: {

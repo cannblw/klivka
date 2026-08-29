@@ -66,6 +66,7 @@ class SampleSeedData
     Faker::Config.random = Random.new(RANDOM_SEED)
 
     Person.transaction do
+      clear_reminder_work
       @user.people.destroy_all
 
       person_names.each_with_index do |name, index|
@@ -76,12 +77,56 @@ class SampleSeedData
       @user.people.order(:id).last(ARCHIVED_PERSON_COUNT).each_with_index do |person, index|
         person.archive!(at: (ARCHIVED_PERSON_COUNT - index).days.ago)
       end
+
+      seed_reminders
     end
   ensure
     Faker::Config.random = previous_random
   end
 
   private
+
+  attr_reader :user
+
+  def clear_reminder_work
+    user.reminder_deliveries.delete_all
+    user.contact_reminder_digests.delete_all
+  end
+
+  def seed_reminders
+    today = user.local_date
+    user.people.active.order(:id).first(3).each do |person|
+      person.create_keep_in_touch_setting!(cadence: "daily", enabled_on: today.yesterday)
+    end
+
+    seed_birthday_reminder(on: today)
+    seed_date_reminder(on: today)
+    ReminderDeliveryScheduler.call(user:)
+  end
+
+  def seed_birthday_reminder(on:)
+    birthday, occurrence = Entry::Birthday.joins(:person)
+      .where(people: { user_id: user.id, archived_at: nil })
+      .map { |entry| [ entry, entry.next_occurrence_on(on:) ] }
+      .min_by { |_, next_occurrence| next_occurrence }
+
+    user.update!(
+      birthday_reminders_enabled: true,
+      birthday_reminder_lead_value: (occurrence - on).to_i,
+      birthday_reminder_lead_unit: "days",
+      reminder_in_app_enabled: true,
+      reminders_scanned_through_on: nil
+    )
+  end
+
+  def seed_date_reminder(on:)
+    entry = user.people.active.order(:id).first.entries.create!(
+      type: "Entry::Date",
+      entry_date: on + 7.days,
+      content: { "label" => "Sample date reminder" }
+    )
+    entry.create_entry_reminder!(lead_value: 7, lead_unit: "days", recurrence: "yearly")
+  end
 
   def person_names
     names = Set.new

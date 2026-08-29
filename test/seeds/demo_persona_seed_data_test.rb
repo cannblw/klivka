@@ -58,6 +58,17 @@ class DemoPersonaSeedDataTest < ActiveSupport::TestCase
     assert @user.people.exists?(name: "Łukasz Zieliński")
   end
 
+  test "creates realistic contact, birthday, and meaningful date reminders" do
+    reminders = InAppRemindersQuery.call(user: @user)
+
+    assert reminders.contacts.any?
+    assert_equal 1, reminders.birthdays.size
+    assert_equal 1, reminders.dates.size
+    assert reminders.contacts.all? { _1.source.interactions.any? }
+    assert_not_predicate reminders.birthdays.first.source.person, :archived?
+    assert reminders.dates.first.source.entry.label.present?
+  end
+
   test "replaces only the demo user's existing records" do
     other_user = User.create!(email_address: "other-demo-personas@example.com", password: "password")
     other_person = other_user.people.create!(name: "Unaffected person")
