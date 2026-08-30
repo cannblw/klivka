@@ -6,7 +6,7 @@ class PersonCardComponentTest < ViewComponent::TestCase
     render_inline PersonCardComponent.new(person: person)
 
     assert_text "Ada Lovelace"
-    assert_text "AL"
+    assert_selector "[aria-hidden='true']", text: "AL"
     assert_selector "a[href='#{Rails.application.routes.url_helpers.person_path(person)}'][data-turbo-frame='_top']"
   end
 

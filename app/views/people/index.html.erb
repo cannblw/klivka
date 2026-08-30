@@ -101,7 +101,7 @@
         <% @categorized_person_groups.each do |category, people| %>
           <section aria-labelledby="person-category-<%= category.id %>-heading">
             <h2 id="person-category-<%= category.id %>-heading" class="text-lg font-semibold"><%= category.name %></h2>
-            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+            <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
               <%= render PersonCardComponent.with_collection(people) %>
             </div>
           </section>
@@ -110,14 +110,14 @@
         <% if @uncategorized_people.any? %>
           <section aria-labelledby="uncategorized-people-heading">
             <h2 id="uncategorized-people-heading" class="text-lg font-semibold"><%= t(".uncategorized") %></h2>
-            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+            <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
               <%= render PersonCardComponent.with_collection(@uncategorized_people) %>
             </div>
           </section>
         <% end %>
       </div>
     <% else %>
-      <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+      <div class="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         <%= render PersonCardComponent.with_collection(@people, show_category: true) %>
       </div>
     <% end %>
