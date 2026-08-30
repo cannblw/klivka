@@ -1,0 +1,37 @@
+<% content_for :title, t(".title") %>
+
+<%= render SettingsPageComponent.new(active: :preferences) do %>
+  <%= render SectionComponent.new(title: t(".heading"), description: t(".description")) do %>
+    <%= form_with model: @user, url: settings_preferences_path, method: :patch,
+          data: { controller: "settings-form theme" }, class: "max-w-xl space-y-5" do |form| %>
+      <fieldset>
+        <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t(".language") %></legend>
+        <div class="mt-2">
+          <%= render TogglePillGroupComponent.new(
+                form: form,
+                field: :locale,
+                choices: [ [ :en, t(".locales.en") ], [ :es, t(".locales.es") ] ],
+                selected: demo_mode? ? :en : @user.locale,
+                disabled: demo_mode?,
+                disabled_tooltip: demo_mode? ? t(".language_switch_disabled") : nil,
+                disabled_tooltip_id: "language-switch-disabled",
+                data: { action: "change->settings-form#submit" }
+              ) %>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t(".theme") %></legend>
+        <div class="mt-2">
+          <%= render TogglePillGroupComponent.new(
+                form: form,
+                field: :theme,
+                choices: [ [ :light, t(".themes.light") ], [ :dark, t(".themes.dark") ] ],
+                selected: @user.theme,
+                data: { action: "change->theme#toggle change->settings-form#submit" }
+              ) %>
+        </div>
+      </fieldset>
+    <% end %>
+  <% end %>
+<% end %>

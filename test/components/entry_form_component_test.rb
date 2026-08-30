@@ -71,7 +71,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
     render_inline(EntryFormComponent.new(entry: entry, person: entry.person))
 
     assert_selector "[data-birthday-reminder-status='enabled']"
-    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
+    assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_reminders_path(anchor: "birthday-reminders")}'][data-turbo-frame='_top']"
     assert_selector "input[name^='entry[entry_reminder_attributes]']", count: 0
     assert_selector "form[data-controller~='reminder-date']", count: 0
   end
@@ -97,7 +97,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
     render_inline EntryFormComponent.new(entry:, person: entry.person)
 
     assert_selector "#birthday-fields [data-birthday-reminder-status='disabled']" do
-      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_path}'][data-turbo-frame='_top']"
+      assert_selector "a[href='#{Rails.application.routes.url_helpers.settings_reminders_path(anchor: "birthday-reminders")}'][data-turbo-frame='_top']"
     end
   end
 

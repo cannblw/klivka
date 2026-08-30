@@ -6,7 +6,7 @@ class ReminderMailer < ApplicationMailer
     @contact_count = params.fetch(:count)
     @remaining_count = @contact_count - @preview_people.size
     @reminders_url = reminders_url
-    @settings_url = settings_url
+    @settings_url = settings_reminders_url(anchor: "contact-reminders")
 
     I18n.with_locale(user.locale.presence || I18n.default_locale) do
       mail to: user.email_address,
@@ -39,7 +39,7 @@ class ReminderMailer < ApplicationMailer
     @entry = delivery.source if delivery.source.is_a?(Entry::Birthday)
     @occurrence_on = delivery.occurrence_on
     @person_url = person_url(person)
-    @settings_url = settings_url
+    @settings_url = reminder_settings_url
   end
 
   def source_person
@@ -48,6 +48,11 @@ class ReminderMailer < ApplicationMailer
     when EntryReminder then source.entry.person
     else source.person
     end
+  end
+
+  def reminder_settings_url
+    anchor = delivery.source.is_a?(Entry::Birthday) ? "birthday-reminders" : "date-reminders"
+    settings_reminders_url(anchor:)
   end
 
   def mail_for_delivery

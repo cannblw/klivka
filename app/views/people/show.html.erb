@@ -1,6 +1,6 @@
 <% content_for :title, @person.name %>
 
-<%= link_to t(@back_translation_key || "people.show.back"), @back_path || root_path, class: "text-sm text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200" %>
+<%= render BackLinkComponent.new(fallback_path: @back_path || root_path) %>
 
 <% ordered_entries = @person.entries.includes(:entry_reminder).ordered.to_a %>
 

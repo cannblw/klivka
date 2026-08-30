@@ -1,20 +1,12 @@
 <% content_for :title, t(".title") %>
 
-<div data-controller="dialog toggle" data-dialog-open-value="<%= @person.errors.any? || @batch_mode %>">
-  <div class="flex flex-wrap items-center justify-between gap-4">
+<div data-controller="dialog toggle"
+     data-dialog-open-value="<%= @person.errors.any? || @batch_mode %>"
+     data-dialog-clear-param-value="batch">
+  <div class="flex flex-wrap items-start justify-between gap-4">
     <h1 class="text-2xl font-bold"><%= t(".heading") %></h1>
 
-    <div class="flex flex-wrap items-center gap-3">
-      <%= link_to t(".archived_people"), archived_people_path,
-            class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
-      <% unless demo_mode? %>
-        <%= link_to t(".import_contacts"), new_vcard_import_path,
-              class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
-      <% end %>
-      <%= render ButtonComponent.new(data: { action: "dialog#open" }) do %>
-        <%= t(".add_person") %>
-      <% end %>
-    </div>
+    <%= render PeopleCollectionActionsComponent.new(demo_mode: demo_mode?) %>
   </div>
 
   <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
@@ -25,28 +17,28 @@
         <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".modal.hint") %></p>
 
         <%= form_with model: @person, class: "mt-4" do |form| %>
-          <%= render InputFieldComponent.new(form, :name, type: :text,
-                placeholder: t(".modal.name_placeholder"),
-                autofocus: !@batch_mode,
-                autocomplete: "off",
-                class: "w-full") %>
-          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div class="space-y-2">
+            <%= render InputFieldComponent.new(form, :name, type: :text,
+                  placeholder: t(".modal.name_placeholder"),
+                  autofocus: !@batch_mode,
+                  autocomplete: "off",
+                  class: "w-full") %>
             <%= render ButtonComponent.new(
                   variant: :ghost,
                   size: :sm,
-                  class: "!p-0 text-xs text-amber-700 underline decoration-amber-300 underline-offset-4 hover:!bg-transparent hover:text-amber-600 dark:text-amber-400 dark:decoration-amber-700 dark:hover:text-amber-300",
+                  class: "border border-stone-300 dark:border-stone-600",
                   data: { action: "toggle#toggle" }
                 ) do %>
               <%= t(".modal.add_multiple") %>
             <% end %>
-            <div class="flex gap-2">
-              <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
-                <%= t(".modal.cancel") %>
-              <% end %>
-              <%= render ButtonComponent.new(type: :submit) do %>
-                <%= t(".modal.submit") %>
-              <% end %>
-            </div>
+          </div>
+          <div class="mt-4 flex justify-end gap-2">
+            <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
+              <%= t(".modal.cancel") %>
+            <% end %>
+            <%= render ButtonComponent.new(type: :submit) do %>
+              <%= t(".modal.submit") %>
+            <% end %>
           </div>
         <% end %>
       </div>
@@ -59,62 +51,57 @@
               scope: :batch_person_creation,
               class: "mt-4",
               data: { turbo: false } do |form| %>
-          <label for="batch-person-names" class="sr-only"><%= t(".batch_modal.names_label") %></label>
-          <%= form.text_area :names,
-                value: @batch_creation.names,
-                id: "batch-person-names",
-                rows: 8,
-                autofocus: @batch_mode,
-                class: FormStyling::TEXTAREA_CLASSES,
-                placeholder: t(".batch_modal.placeholder"),
-                aria: { describedby: ("batch-person-errors" if @batch_creation.errors.any?), invalid: @batch_creation.errors.any? } %>
-          <% if @batch_creation.errors.any? %>
-            <p id="batch-person-errors" class="mt-2 text-sm text-red-600 dark:text-red-400"><%= t(".batch_modal.names_required") %></p>
-          <% end %>
-          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div class="space-y-2">
+            <div>
+              <label for="batch-person-names" class="sr-only"><%= t(".batch_modal.names_label") %></label>
+              <%= form.text_area :names,
+                    value: @batch_creation.names,
+                    id: "batch-person-names",
+                    rows: 8,
+                    autofocus: @batch_mode,
+                    class: "block #{FormStyling::TEXTAREA_CLASSES}",
+                    placeholder: t(".batch_modal.placeholder"),
+                    aria: { describedby: ("batch-person-errors" if @batch_creation.errors.any?), invalid: @batch_creation.errors.any? } %>
+              <% if @batch_creation.errors.any? %>
+                <p id="batch-person-errors" class="mt-2 text-sm text-red-600 dark:text-red-400"><%= t(".batch_modal.names_required") %></p>
+              <% end %>
+            </div>
             <%= render ButtonComponent.new(
                   variant: :ghost,
                   size: :sm,
-                  class: "!p-0 text-xs text-amber-700 underline decoration-amber-300 underline-offset-4 hover:!bg-transparent hover:text-amber-600 dark:text-amber-400 dark:decoration-amber-700 dark:hover:text-amber-300",
+                  class: "border border-stone-300 dark:border-stone-600",
                   data: { action: "toggle#toggle" }
                 ) do %>
               <%= t(".batch_modal.add_one") %>
             <% end %>
-            <div class="flex gap-2">
-              <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
-                <%= t(".batch_modal.cancel") %>
-              <% end %>
-              <%= render ButtonComponent.new(type: :submit) do %>
-                <%= t(".batch_modal.submit") %>
-              <% end %>
-            </div>
+          </div>
+          <div class="mt-4 flex justify-end gap-2">
+            <%= render ButtonComponent.new(variant: :ghost, data: { action: "dialog#close" }) do %>
+              <%= t(".batch_modal.cancel") %>
+            <% end %>
+            <%= render ButtonComponent.new(type: :submit) do %>
+              <%= t(".batch_modal.submit") %>
+            <% end %>
           </div>
         <% end %>
       </div>
     </div>
   </dialog>
-</div>
-
-<%= render PeopleQueryControlsComponent.new(
-      search: @person_search,
-      categories: @filter_categories,
-      view: @view
-    ) %>
-
 <%= turbo_frame_tag "people_grid" do %>
-  <% if @people.any? %>
-    <% if @grouping_available && @person_search.query.blank? && !@person_search.filtered? %>
-      <div class="mt-6 flex justify-end">
-        <%= render PersonViewToggleComponent.new(view: @view, query_params: @person_search.url_params) %>
-      </div>
-    <% end %>
+  <%= render PeopleQueryControlsComponent.new(
+        search: @person_search,
+        categories: @filter_categories,
+        view: @view,
+        grouping_available: @grouping_available
+      ) %>
 
+  <% if @people.any? %>
     <% if @grouped_view %>
       <div class="mt-6 space-y-6">
         <% @categorized_person_groups.each do |category, people| %>
           <section aria-labelledby="person-category-<%= category.id %>-heading">
             <h2 id="person-category-<%= category.id %>-heading" class="text-lg font-semibold"><%= category.name %></h2>
-            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+            <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
               <%= render PersonCardComponent.with_collection(people) %>
             </div>
           </section>
@@ -123,14 +110,14 @@
         <% if @uncategorized_people.any? %>
           <section aria-labelledby="uncategorized-people-heading">
             <h2 id="uncategorized-people-heading" class="text-lg font-semibold"><%= t(".uncategorized") %></h2>
-            <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+            <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
               <%= render PersonCardComponent.with_collection(@uncategorized_people) %>
             </div>
           </section>
         <% end %>
       </div>
     <% else %>
-      <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] sm:gap-4">
+      <div class="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         <%= render PersonCardComponent.with_collection(@people, show_category: true) %>
       </div>
     <% end %>
@@ -147,6 +134,8 @@
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
       <p class="text-lg font-medium"><%= t(".empty.heading") %></p>
       <p class="mt-1 text-sm"><%= t(".empty.hint") %></p>
+      <%= render PeopleCollectionActionsComponent.new(demo_mode: demo_mode?, class: "mt-4 justify-center") %>
     </div>
   <% end %>
 <% end %>
+</div>

@@ -90,10 +90,7 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
     travel_to Date.new(2026, 12, 31) do
       get birthdays_url(month: 12)
 
-      profile_path = Rails.application.routes.url_helpers.person_path(
-        people(:ada),
-        { from: "birthdays", month: 12 }
-      )
+      profile_path = Rails.application.routes.url_helpers.person_path(people(:ada))
       profile_link = css_select("a").find { _1["href"] == profile_path }
       assert_not_nil profile_link
       assert_match(/Ada Lovelace/, profile_link.text)
@@ -137,6 +134,6 @@ class BirthdaysControllerTest < ActionDispatch::IntegrationTest
     get birthdays_url
 
     assert_select "[data-birthday-reminder-status='enabled']"
-    assert_select "[data-birthday-reminder-status] a[href='#{settings_path}']"
+    assert_select "[data-birthday-reminder-status] a[href='#{settings_reminders_path(anchor: "birthday-reminders")}']"
   end
 end

@@ -23,9 +23,9 @@ class RemindersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", text: "Reminders"
-    assert_select "a[href='#{person_path(people(:ada), from: "reminders")}']"
-    assert_select "a[href='#{person_path(people(:grace), from: "reminders")}']"
-    assert_select "a[href='#{person_path(future_person, from: "reminders")}']", count: 0
+    assert_select "a[href='#{person_path(people(:ada))}']"
+    assert_select "a[href='#{person_path(people(:grace))}']"
+    assert_select "a[href='#{person_path(future_person)}']", count: 0
     assert_select "dialog##{QuickInteractionComponent::DOM_ID}-#{people(:ada).id}"
     assert_select "dialog##{QuickInteractionComponent::DOM_ID}-#{people(:grace).id}"
     assert_select "dialog##{QuickInteractionComponent::DOM_ID}-#{future_person.id}", count: 0
@@ -58,8 +58,8 @@ class RemindersControllerTest < ActionDispatch::IntegrationTest
     assert_select "section[aria-labelledby='due-contact-reminders-heading']", text: /Ada/
     assert_select "section[aria-labelledby='due-birthday-reminders-heading']", text: /Birthday Person/
     assert_select "section[aria-labelledby='due-date-reminders-heading']", text: /Community dinner/
-    assert_select "a[href='#{person_path(birthday_person, from: "reminders")}']"
-    assert_select "a[href='#{person_path(people(:grace), from: "reminders", anchor: dom_id(date_entry))}']"
+    assert_select "a[href='#{person_path(birthday_person)}']"
+    assert_select "a[href='#{person_path(people(:grace), anchor: dom_id(date_entry))}']"
   end
 
   test "does not show another account's due reminders" do
@@ -77,7 +77,7 @@ class RemindersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "ul", count: 0
-    assert_select "main > a[href='#{root_path}']"
+    assert_select "main > a[href='#{root_path}'][data-controller='history-back']"
     assert_select "section[aria-labelledby='no-due-reminders-heading']", text: /Nothing needs your attention/
   end
 

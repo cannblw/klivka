@@ -1,8 +1,9 @@
 class PeopleQueryControlsComponent < ViewComponent::Base
-  def initialize(search:, categories:, view:)
+  def initialize(search:, categories:, view:, grouping_available:)
     @search = search
     @categories = categories
     @view = view
+    @grouping_available = grouping_available
   end
 
   private
@@ -10,6 +11,14 @@ class PeopleQueryControlsComponent < ViewComponent::Base
   attr_reader :search, :categories, :view
 
   delegate :filters, to: :search
+
+  def show_view_toggle?
+    @grouping_available && search.query.blank? && !search.filtered?
+  end
+
+  def options_active?
+    search.filtered? || search.sort != PersonSearch::DEFAULT_SORT
+  end
 
   def sort_choices
     PersonSearch::SORTS.keys.map do |sort|

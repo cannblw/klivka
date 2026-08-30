@@ -15,7 +15,7 @@ class DueBirthdayReminderComponentTest < ViewComponent::TestCase
 
     assert_text birthday.person.name
     assert_text I18n.l(delivery.occurrence_on, format: :long)
-    assert_link "View person", href: routes.person_path(birthday.person, from: "reminders")
-    assert_link "Birthday settings", href: routes.settings_path
+    assert_link "View person", href: routes.person_path(birthday.person)
+    assert_link "Birthday settings", href: routes.settings_reminders_path(anchor: "birthday-reminders")
   end
 end

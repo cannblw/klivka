@@ -28,6 +28,6 @@ class DueDateReminderComponent < ViewComponent::Base
   end
 
   def person_path
-    helpers.person_path(person, from: "reminders", anchor: helpers.dom_id(entry))
+    helpers.person_path(person, anchor: helpers.dom_id(entry))
   end
 end

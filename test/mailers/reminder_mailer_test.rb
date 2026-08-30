@@ -16,7 +16,7 @@ class ReminderMailerTest < ActionMailer::TestCase
     assert_includes mail.text_part.body.to_s, "http://localhost:3000/people/ada-lovelace"
     assert_includes mail.text_part.body.to_s, "http://localhost:3000/people/grace-hopper"
     assert_includes mail.text_part.body.to_s, "http://localhost:3000/reminders"
-    assert_includes mail.text_part.body.to_s, "http://localhost:3000/settings"
+    assert_includes mail.text_part.body.to_s, "http://localhost:3000/settings/reminders#contact-reminders"
   end
 
   test "contact digest limits its email preview while retaining the complete count" do
@@ -45,6 +45,7 @@ class ReminderMailerTest < ActionMailer::TestCase
     assert_predicate mail.subject, :present?
     assert_includes body, "/people/ada-lovelace"
     assert_includes body, I18n.l(delivery.occurrence_on, format: :long)
+    assert_includes body, "/settings/reminders#birthday-reminders"
   end
 
   test "significant-date email includes its label and localized date" do
@@ -59,6 +60,7 @@ class ReminderMailerTest < ActionMailer::TestCase
     assert_includes body, "Moving day"
     assert_includes body, "/people/ada-lovelace"
     assert_includes body, I18n.l(delivery.occurrence_on, format: :long)
+    assert_includes body, "/settings/reminders#date-reminders"
   end
 
   test "significant-date email renders without a label" do

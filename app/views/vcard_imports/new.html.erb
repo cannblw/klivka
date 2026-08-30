@@ -1,8 +1,7 @@
 <% content_for :title, t(".title") %>
 
 <div class="mx-auto max-w-2xl">
-  <%= link_to t(".back"), root_path,
-        class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+  <%= render BackLinkComponent.new(fallback_path: root_path) %>
   <h1 class="mt-4 text-2xl font-bold"><%= t(".heading") %></h1>
   <p class="mt-2 text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
 

@@ -1,15 +1,14 @@
 class BirthdayCardComponent < ViewComponent::Base
   with_collection_parameter :birthday
 
-  def initialize(birthday:, year: Date.current.year, return_month: nil)
+  def initialize(birthday:, year: Date.current.year)
     @birthday = birthday
     @year = year
-    @return_month = return_month
   end
 
   private
 
-  attr_reader :birthday, :year, :return_month
+  attr_reader :birthday, :year
 
   def person
     birthday.person
@@ -24,6 +23,6 @@ class BirthdayCardComponent < ViewComponent::Base
   end
 
   def person_path
-    helpers.person_path(person, from: "birthdays", month: return_month)
+    helpers.person_path(person)
   end
 end

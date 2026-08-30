@@ -17,12 +17,13 @@ class ReminderSettingsComponentTest < ViewComponent::TestCase
 
     render_inline ReminderSettingsComponent.new(user: user)
 
-    assert_selector "#reminder-settings-heading", text: "Reminders"
+    assert_selector "#reminder-settings-heading", text: "Channels"
+    assert_selector "form > section.rounded-xl", count: 4
     assert_selector "[data-reminder-settings-section='channels']"
     assert_selector "[data-reminder-settings-section='contacts']"
     assert_selector "[data-reminder-settings-section='birthdays']"
     assert_selector "[data-reminder-settings-section='other-dates']"
-    assert_selector "form[action='#{Rails.application.routes.url_helpers.settings_path}'][method='post']", visible: :all
+    assert_selector "form[action='#{Rails.application.routes.url_helpers.settings_reminders_path}'][method='post']", visible: :all
     assert_selector "input[name='user[reminder_in_app_enabled]'][type='checkbox']", count: 1
     assert_selector "input[name='user[reminder_in_app_enabled]'][type='checkbox']:not([checked])", count: 1
     assert_selector "input[name='user[reminder_email_enabled]'][type='checkbox'][checked]", count: 1
@@ -49,8 +50,8 @@ class ReminderSettingsComponentTest < ViewComponent::TestCase
     I18n.with_locale(:es) do
       render_inline ReminderSettingsComponent.new(user: users(:one))
 
-      assert_selector "#reminder-settings-heading", text: "Recordatorios"
-      assert_selector "[data-reminder-settings-section='contacts']", text: "Recordatorios de contacto"
+      assert_selector "#reminder-settings-heading", text: "Canales"
+      assert_selector "h2", text: "Recordatorios de contacto"
       assert_selector "select[name='user[contact_reminder_cadence]'] option[value='monthly']", text: "Mensual"
       assert_selector "option[value='months']", text: "Meses"
       assert_selector "button[type='submit']", text: "Guardar ajustes de recordatorios"

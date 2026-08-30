@@ -7,21 +7,22 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
     render_inline PeopleQueryControlsComponent.new(
       search:,
       categories: users(:one).categories.order(:normalized_name),
-      view: "grouped"
+      view: "grouped",
+      grouping_available: false
     )
 
     assert_selector "section[aria-label='Search and sort people']"
     assert_selector "form[data-controller='search'][data-turbo-frame='people_grid'][data-turbo-action='advance']"
     assert_selector "input[name='view'][value='']", visible: false
     assert_selector "input[type='search'][name='query']"
-    assert_selector "select[name='sort']"
+    assert_selector "select[name='sort']", visible: false
     %w[birthday last_contact category state contact_reminder date_reminder].each do |filter|
       assert_selector "select[name='#{filter}']", visible: false
     end
     assert_selector "fieldset", count: 2, visible: false
     assert_selector "input[type='checkbox'][name='has_blocks[]']", count: PersonSearch::BLOCK_TYPES.size, visible: false
     assert_selector "input[type='checkbox'][name='missing_blocks[]']", count: PersonSearch::BLOCK_TYPES.size, visible: false
-    assert_selector "details:not([open]) summary", text: "Advanced search"
+    assert_selector "details:not([open]) summary", text: "More options"
     assert_selector "button[data-search-target='clear'][hidden]", text: "Clear filters", visible: false
   end
 
@@ -44,7 +45,8 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
     render_inline PeopleQueryControlsComponent.new(
       search:,
       categories: users(:one).categories.order(:normalized_name),
-      view: "all"
+      view: "all",
+      grouping_available: true
     )
 
     assert_selector "input[name='view'][value='all']", visible: false
@@ -59,11 +61,27 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
     assert_selector "input[name='has_blocks[]'][value='birthday'][checked]"
     assert_selector "input[name='missing_blocks[]'][value='gift_list'][checked]"
     assert_selector "details[open] summary" do
-      assert_text "Advanced search"
-      assert_text "Filters on"
+      assert_text "More options"
+      assert_text "Options on"
     end
 
     assert_selector "button[data-search-target='clear'][data-action='search#clearFilters']:not([hidden])", text: "Clear filters"
+  end
+
+  test "keeps sorting with occasional people-finding options" do
+    search = PersonSearch.new(users(:one), nil, sort: "recently_contacted")
+
+    render_inline PeopleQueryControlsComponent.new(
+      search:,
+      categories: users(:one).categories.order(:normalized_name),
+      view: "grouped",
+      grouping_available: false
+    )
+
+    assert_selector "details[open] select[name='sort'][data-search-target='option']" do
+      assert_selector "option[value='recently_contacted'][selected]"
+      assert_selector "option[value='least_recently_contacted']"
+    end
   end
 
   test "lists only categories owned by the current user" do
@@ -72,10 +90,25 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
     render_inline PeopleQueryControlsComponent.new(
       search:,
       categories: users(:one).categories.order(:normalized_name),
-      view: "grouped"
+      view: "grouped",
+      grouping_available: false
     )
 
     assert_selector "select[name='category'] option[value='#{categories(:family).id}']", visible: false
     assert_no_selector "select[name='category'] option[value='#{categories(:family_for_user_two).id}']", visible: false
+  end
+
+  test "places the people view choice with otherwise quiet query controls" do
+    search = PersonSearch.new(users(:one), nil)
+
+    render_inline PeopleQueryControlsComponent.new(
+      search:,
+      categories: users(:one).categories.order(:normalized_name),
+      view: "grouped",
+      grouping_available: true
+    )
+
+    assert_selector "form nav[aria-label='People view']"
+    assert_selector "form a[aria-current='true'][href='#{Rails.application.routes.url_helpers.root_path}']", text: "Grouped"
   end
 end

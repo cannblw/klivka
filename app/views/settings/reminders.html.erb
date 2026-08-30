@@ -1,0 +1,5 @@
+<% content_for :title, t("settings.reminders_page.title") %>
+
+<%= render SettingsPageComponent.new(active: :reminders) do %>
+  <%= render ReminderSettingsComponent.new(user: @user) %>
+<% end %>

@@ -40,6 +40,22 @@ class PersonSearchTest < ActiveSupport::TestCase
       PersonSearch.call(@user, nil, sort: "updated_at desc; drop table people").map(&:name)
   end
 
+  test "sorts people by their most recent contact and places people without contact at the useful edge" do
+    never_contacted = Person.create!(user: @user, name: "Never Contacted")
+    contacted_earlier = Person.create!(user: @user, name: "Contacted Earlier")
+    contacted_later = Person.create!(user: @user, name: "Contacted Later")
+    Interaction.create!(person: contacted_earlier, occurred_on: Date.current - 20.days)
+    Interaction.create!(person: contacted_later, occurred_on: Date.current - 5.days)
+
+    recently_contacted = PersonSearch.call(@user, nil, sort: "recently_contacted")
+    least_recently_contacted = PersonSearch.call(@user, nil, sort: "least_recently_contacted")
+
+    assert_operator recently_contacted.index(contacted_later), :<, recently_contacted.index(contacted_earlier)
+    assert_operator recently_contacted.index(contacted_earlier), :<, recently_contacted.index(never_contacted)
+    assert_operator least_recently_contacted.index(never_contacted), :<, least_recently_contacted.index(contacted_earlier)
+    assert_operator least_recently_contacted.index(contacted_earlier), :<, least_recently_contacted.index(contacted_later)
+  end
+
   test "only searches the given user's people" do
     Person.create!(user: users(:two), name: "Bob")
 

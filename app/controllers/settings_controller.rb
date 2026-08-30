@@ -4,16 +4,32 @@ class SettingsController < ApplicationController
   def show
   end
 
-  def update
-    attributes = settings_params
+  def preferences
+  end
+
+  def reminders
+  end
+
+  def update_preferences
+    @user.assign_attributes(preference_params)
+
+    if @user.save
+      redirect_to settings_preferences_path, notice: settings_updated_notice
+    else
+      render :preferences, status: :unprocessable_entity
+    end
+  end
+
+  def update_reminders
+    attributes = reminder_params
     contact_reminders_enabled = attributes.delete(:contact_reminders_enabled)
     @user.assign_attributes(attributes)
     apply_contact_reminder_enabled_state(contact_reminders_enabled) unless contact_reminders_enabled.nil?
 
     if save_settings
-      redirect_to settings_path, notice: I18n.t("settings.update.updated", locale: demo_mode? ? I18n.default_locale : @user.locale)
+      redirect_to settings_reminders_path, notice: settings_updated_notice
     else
-      render :show, status: :unprocessable_entity
+      render :reminders, status: :unprocessable_entity
     end
   end
 
@@ -23,10 +39,13 @@ class SettingsController < ApplicationController
     @user = Current.user
   end
 
-  def settings_params
-    permitted_attributes = [
-      :locale,
-      :theme,
+  def preference_params
+    permitted = params.expect(user: %i[ locale theme ])
+    demo_mode? ? permitted.except(:locale) : permitted
+  end
+
+  def reminder_params
+    params.expect(user: [
       :reminder_in_app_enabled,
       :reminder_email_enabled,
       :default_reminder_lead_value,
@@ -36,9 +55,11 @@ class SettingsController < ApplicationController
       :birthday_reminder_lead_unit,
       :contact_reminder_cadence,
       :contact_reminders_enabled
-    ]
-    permitted = params.expect(user: permitted_attributes)
-    demo_mode? ? permitted.except(:locale) : permitted
+    ])
+  end
+
+  def settings_updated_notice
+    I18n.t("settings.update.updated", locale: demo_mode? ? I18n.default_locale : @user.locale)
   end
 
   def apply_contact_reminder_enabled_state(value)
