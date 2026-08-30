@@ -64,7 +64,16 @@ class SettingsController < ApplicationController
 
   def apply_contact_reminder_enabled_state(value)
     enabled = ActiveModel::Type::Boolean.new.cast(value)
-    @user.contact_reminders_enabled_on = enabled ? (@user.contact_reminders_enabled_on || @user.local_date) : nil
+    if enabled
+      @user.contact_reminders_enabled_on ||= @user.local_date
+      @user.contact_reminder_first_reminder_on ||= ContactReminder.default_first_reminder_on(
+        cadence: @user.contact_reminder_cadence,
+        on: @user.contact_reminders_enabled_on
+      )
+    else
+      @user.contact_reminders_enabled_on = nil
+      @user.contact_reminder_first_reminder_on = nil
+    end
   end
 
   def save_settings

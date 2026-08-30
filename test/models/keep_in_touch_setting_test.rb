@@ -4,12 +4,13 @@ require "test_helper"
 #
 # Table name: keep_in_touch_settings
 #
-#  id         :integer          not null, primary key
-#  cadence    :string           not null
-#  enabled_on :date
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  person_id  :integer          not null
+#  id                :integer          not null, primary key
+#  cadence           :string           not null
+#  enabled_on        :date
+#  first_reminder_on :date
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  person_id         :integer          not null
 #
 # Indexes
 #
@@ -40,6 +41,26 @@ class KeepInTouchSettingTest < ActiveSupport::TestCase
     assert_predicate setting.errors[:cadence], :present?
   end
 
+  test "requires an enabled reminder to start after its activation date" do
+    setting = KeepInTouchSetting.new(
+      person: people(:ada),
+      cadence: "weekly",
+      enabled_on: Date.new(2026, 8, 1),
+      first_reminder_on: Date.new(2026, 8, 1)
+    )
+
+    assert_not_predicate setting, :valid?
+    assert_predicate setting.errors[:first_reminder_on], :present?
+  end
+
+  test "the database requires enabled and first reminder dates to be consistent" do
+    setting = people(:ada).create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
+
+    assert_raises(ActiveRecord::StatementInvalid) do
+      setting.update_columns(first_reminder_on: nil)
+    end
+  end
+
   test "a disabled setting does not apply a person snooze" do
     person = people(:ada)
     person.update!(contact_reminder_snoozed_until: Date.current + 7.days)
@@ -53,6 +74,17 @@ class KeepInTouchSettingTest < ActiveSupport::TestCase
     setting = KeepInTouchSetting.new(person: people(:ada), cadence: "weekly", enabled_on: Date.new(2026, 8, 1))
 
     assert_equal Date.new(2026, 8, 8), setting.next_suggestion_on
+  end
+
+  test "calculates the first suggestion from an explicitly selected date" do
+    setting = KeepInTouchSetting.new(
+      person: people(:ada),
+      cadence: "weekly",
+      enabled_on: Date.new(2026, 8, 1),
+      first_reminder_on: Date.new(2026, 8, 3)
+    )
+
+    assert_equal Date.new(2026, 8, 3), setting.next_suggestion_on
   end
 
   test "calculates a daily cadence" do

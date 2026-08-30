@@ -4,25 +4,26 @@ require "test_helper"
 #
 # Table name: users
 #
-#  id                           :integer          not null, primary key
-#  birthday_reminder_lead_unit  :string           default("months"), not null
-#  birthday_reminder_lead_value :integer          default(1), not null
-#  birthday_reminders_enabled   :boolean          default(TRUE), not null
-#  confirmed_at                 :datetime
-#  contact_reminder_cadence     :string           default("monthly"), not null
-#  contact_reminders_enabled_on :date
-#  default_reminder_lead_unit   :string           default("months"), not null
-#  default_reminder_lead_value  :integer          default(1), not null
-#  email_address                :string           not null
-#  locale                       :string
-#  password_digest              :string           not null
-#  reminder_email_enabled       :boolean          default(TRUE), not null
-#  reminder_in_app_enabled      :boolean          default(TRUE), not null
-#  reminders_scanned_through_on :date
-#  theme                        :string
-#  time_zone                    :string           not null
-#  created_at                   :datetime         not null
-#  updated_at                   :datetime         not null
+#  id                                 :integer          not null, primary key
+#  birthday_reminder_lead_unit        :string           default("months"), not null
+#  birthday_reminder_lead_value       :integer          default(1), not null
+#  birthday_reminders_enabled         :boolean          default(TRUE), not null
+#  confirmed_at                       :datetime
+#  contact_reminder_cadence           :string           default("monthly"), not null
+#  contact_reminder_first_reminder_on :date
+#  contact_reminders_enabled_on       :date
+#  default_reminder_lead_unit         :string           default("months"), not null
+#  default_reminder_lead_value        :integer          default(1), not null
+#  email_address                      :string           not null
+#  locale                             :string
+#  password_digest                    :string           not null
+#  reminder_email_enabled             :boolean          default(TRUE), not null
+#  reminder_in_app_enabled            :boolean          default(TRUE), not null
+#  reminders_scanned_through_on       :date
+#  theme                              :string
+#  time_zone                          :string           not null
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
 #
 # Indexes
 #
@@ -59,6 +60,28 @@ class UserTest < ActiveSupport::TestCase
 
     assert_raises(ActiveRecord::StatementInvalid) do
       user.update_column(:contact_reminder_cadence, "hourly")
+    end
+  end
+
+  test "requires an enabled global contact reminder to start after its activation date" do
+    user = users(:one)
+    user.assign_attributes(
+      contact_reminders_enabled_on: Date.new(2026, 8, 1),
+      contact_reminder_first_reminder_on: Date.new(2026, 8, 1)
+    )
+
+    assert_not_predicate user, :valid?
+    assert_predicate user.errors[:contact_reminder_first_reminder_on], :present?
+  end
+
+  test "the database requires global contact reminder dates to be consistent" do
+    user = users(:one)
+
+    assert_raises(ActiveRecord::StatementInvalid) do
+      user.update_columns(
+        contact_reminders_enabled_on: Date.new(2026, 8, 1),
+        contact_reminder_first_reminder_on: nil
+      )
     end
   end
 

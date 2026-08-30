@@ -68,6 +68,31 @@ class ContactReminderTest < ActiveSupport::TestCase
     assert_equal Date.new(2026, 8, 24), reminder.next_suggestion_on(latest_interaction_on: Date.new(2026, 8, 10))
   end
 
+  test "uses the selected first reminder before any later interaction" do
+    user = users(:one)
+    user.update!(
+      contact_reminder_cadence: "weekly",
+      contact_reminders_enabled_on: Date.new(2026, 8, 1),
+      contact_reminder_first_reminder_on: Date.new(2026, 8, 3)
+    )
+    reminder = ContactReminder.new(person: people(:ada), setting: nil, user:)
+
+    assert_equal Date.new(2026, 8, 3), reminder.next_suggestion_on(latest_interaction_on: nil)
+  end
+
+  test "a later interaction replaces the selected first reminder as the cadence anchor" do
+    setting = KeepInTouchSetting.new(
+      person: people(:ada),
+      cadence: "weekly",
+      enabled_on: Date.new(2026, 8, 1),
+      first_reminder_on: Date.new(2026, 8, 15)
+    )
+    reminder = ContactReminder.new(person: people(:ada), setting:)
+
+    assert_equal Date.new(2026, 8, 14),
+      reminder.next_suggestion_on(latest_interaction_on: Date.new(2026, 8, 7))
+  end
+
   test "using the default removes an individual setting and snooze" do
     person = people(:ada)
     person.create_keep_in_touch_setting!(cadence: "weekly", enabled_on: Date.current)
@@ -90,6 +115,7 @@ class ContactReminderTest < ActiveSupport::TestCase
 
     assert_equal "monthly", reminder.setting.cadence
     assert_equal Date.new(2026, 8, 28), reminder.setting.enabled_on
+    assert_equal Date.new(2026, 9, 28), reminder.setting.first_reminder_on
     assert_nil person.reload.contact_reminder_snoozed_until
   end
 
@@ -103,6 +129,7 @@ class ContactReminderTest < ActiveSupport::TestCase
 
     assert_equal "quarterly", reminder.setting.cadence
     assert_nil reminder.setting.enabled_on
+    assert_nil reminder.setting.first_reminder_on
     assert_predicate reminder, :opted_out?
   end
 end

@@ -96,7 +96,11 @@ class SampleSeedData
   def seed_reminders
     today = user.local_date
     user.people.active.order(:id).first(3).each do |person|
-      person.create_keep_in_touch_setting!(cadence: "daily", enabled_on: today.yesterday)
+      person.create_keep_in_touch_setting!(
+        cadence: "daily",
+        enabled_on: today.yesterday,
+        first_reminder_on: today
+      )
     end
 
     seed_birthday_reminder(on: today)

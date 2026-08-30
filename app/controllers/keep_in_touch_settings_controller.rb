@@ -16,7 +16,9 @@ class KeepInTouchSettingsController < ApplicationController
   end
 
   def update
-    update_setting { @keep_in_touch_setting.change_cadence!(cadence: setting_params.fetch(:cadence)) }
+    update_setting do
+      @keep_in_touch_setting.change_cadence!(cadence: setting_params.fetch(:cadence), on: local_date)
+    end
   end
 
   def enable

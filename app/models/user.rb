@@ -2,25 +2,26 @@
 #
 # Table name: users
 #
-#  id                           :integer          not null, primary key
-#  birthday_reminder_lead_unit  :string           default("months"), not null
-#  birthday_reminder_lead_value :integer          default(1), not null
-#  birthday_reminders_enabled   :boolean          default(TRUE), not null
-#  confirmed_at                 :datetime
-#  contact_reminder_cadence     :string           default("monthly"), not null
-#  contact_reminders_enabled_on :date
-#  default_reminder_lead_unit   :string           default("months"), not null
-#  default_reminder_lead_value  :integer          default(1), not null
-#  email_address                :string           not null
-#  locale                       :string
-#  password_digest              :string           not null
-#  reminder_email_enabled       :boolean          default(TRUE), not null
-#  reminder_in_app_enabled      :boolean          default(TRUE), not null
-#  reminders_scanned_through_on :date
-#  theme                        :string
-#  time_zone                    :string           not null
-#  created_at                   :datetime         not null
-#  updated_at                   :datetime         not null
+#  id                                 :integer          not null, primary key
+#  birthday_reminder_lead_unit        :string           default("months"), not null
+#  birthday_reminder_lead_value       :integer          default(1), not null
+#  birthday_reminders_enabled         :boolean          default(TRUE), not null
+#  confirmed_at                       :datetime
+#  contact_reminder_cadence           :string           default("monthly"), not null
+#  contact_reminder_first_reminder_on :date
+#  contact_reminders_enabled_on       :date
+#  default_reminder_lead_unit         :string           default("months"), not null
+#  default_reminder_lead_value        :integer          default(1), not null
+#  email_address                      :string           not null
+#  locale                             :string
+#  password_digest                    :string           not null
+#  reminder_email_enabled             :boolean          default(TRUE), not null
+#  reminder_in_app_enabled            :boolean          default(TRUE), not null
+#  reminders_scanned_through_on       :date
+#  theme                              :string
+#  time_zone                          :string           not null
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
 #
 # Indexes
 #
@@ -51,6 +52,7 @@ class User < ApplicationRecord
   attribute :birthday_reminder_lead_unit, :string, default: -> { Rails.application.config.x.reminder_default_lead_unit }
 
   after_initialize :set_default_time_zone, if: :new_record?
+  before_validation :normalize_contact_reminder_dates
 
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :time_zone, presence: true
@@ -60,6 +62,7 @@ class User < ApplicationRecord
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: Klivka::MAX_INT32 }
   validates :default_reminder_lead_unit, :birthday_reminder_lead_unit, inclusion: { in: REMINDER_LEAD_UNITS.keys }
   validates :contact_reminder_cadence, inclusion: { in: ContactReminder::CADENCES }
+  validate :contact_reminder_dates_are_consistent
 
   # The seeded development account deliberately uses a short, local-only password.
   validates :password, length: { minimum: 8 }, allow_nil: true, unless: -> { Rails.env.development? }
@@ -127,5 +130,30 @@ class User < ApplicationRecord
 
   def create_provided_contact_methods
     ContactMethod.create_provided_for!(self, locale: locale.presence || I18n.locale)
+  end
+
+  def normalize_contact_reminder_dates
+    self.contact_reminder_first_reminder_on = nil if contact_reminders_enabled_on.nil?
+    return if contact_reminders_enabled_on.nil?
+    return unless ContactReminder::CADENCES.include?(contact_reminder_cadence)
+
+    if will_save_change_to_contact_reminder_cadence? && !will_save_change_to_contact_reminder_first_reminder_on?
+      self.contact_reminder_first_reminder_on = nil
+    end
+    return if contact_reminder_first_reminder_on.present?
+
+    self.contact_reminder_first_reminder_on = ContactReminder.default_first_reminder_on(
+      cadence: contact_reminder_cadence,
+      on: contact_reminders_enabled_on
+    )
+  end
+
+  def contact_reminder_dates_are_consistent
+    return unless ContactReminder::CADENCES.include?(contact_reminder_cadence)
+    return if contact_reminders_enabled_on.nil? && contact_reminder_first_reminder_on.nil?
+    return if contact_reminders_enabled_on.present? && contact_reminder_first_reminder_on.present? &&
+      contact_reminder_first_reminder_on > contact_reminders_enabled_on
+
+    errors.add(:contact_reminder_first_reminder_on, :invalid)
   end
 end

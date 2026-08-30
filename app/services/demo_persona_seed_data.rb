@@ -440,7 +440,15 @@ class DemoPersonaSeedData
       )
     end
     seed_interaction_history(person, persona.fetch(:interaction_history, {}))
-    person.create_keep_in_touch_setting!(cadence: persona.fetch(:cadence), enabled_on: date("2026-01-01")) if persona[:cadence]
+    if persona[:cadence]
+      enabled_on = date("2026-01-01")
+      cadence = persona.fetch(:cadence)
+      person.create_keep_in_touch_setting!(
+        cadence:,
+        enabled_on:,
+        first_reminder_on: ContactReminder.default_first_reminder_on(cadence:, on: enabled_on)
+      )
+    end
     person.archive!(at: Time.zone.parse(persona.fetch(:archived_at))) if persona[:archived_at]
   end
 

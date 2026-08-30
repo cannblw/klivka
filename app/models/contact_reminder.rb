@@ -55,6 +55,20 @@ class ContactReminder
     user.contact_reminders_enabled_on if inherited?
   end
 
+  def first_reminder_on
+    if overridden?
+      return setting.first_reminder_on || self.class.default_first_reminder_on(cadence:, on: enabled_on)
+    end
+
+    if inherited?
+      user.contact_reminder_first_reminder_on || self.class.default_first_reminder_on(cadence:, on: enabled_on)
+    end
+  end
+
+  def self.default_first_reminder_on(cadence:, on:)
+    on + CADENCE_INTERVALS.fetch(cadence)
+  end
+
   def next_suggestion_on(latest_interaction_on: LATEST_INTERACTION_UNSPECIFIED)
     return unless enabled?
 
@@ -86,11 +100,12 @@ class ContactReminder
     end
   end
 
-  def override!(cadence:, on:)
+  def override!(cadence:, on:, first_reminder_on: nil)
     person.transaction do
       @setting ||= person.build_keep_in_touch_setting
       setting.cadence = cadence
-      setting.enabled_on ||= on
+      setting.enabled_on = on
+      setting.first_reminder_on = first_reminder_on || default_first_reminder_on(cadence:, on:)
       setting.save!
       person.update!(contact_reminder_snoozed_until: nil)
     end
@@ -101,7 +116,7 @@ class ContactReminder
 
     person.transaction do
       @setting ||= person.build_keep_in_touch_setting
-      setting.update!(cadence: effective_cadence, enabled_on: nil)
+      setting.update!(cadence: effective_cadence, enabled_on: nil, first_reminder_on: nil)
       person.update!(contact_reminder_snoozed_until: nil)
     end
   end
@@ -117,8 +132,13 @@ class ContactReminder
 
   private
 
+  def default_first_reminder_on(cadence:, on:)
+    self.class.default_first_reminder_on(cadence:, on:) if CADENCES.include?(cadence)
+  end
+
   def cadence_date(latest_interaction_on:)
-    base_date = [ enabled_on, latest_interaction_on ].compact.max
-    base_date + CADENCE_INTERVALS.fetch(cadence)
+    return first_reminder_on if latest_interaction_on.nil? || latest_interaction_on < enabled_on
+
+    latest_interaction_on + CADENCE_INTERVALS.fetch(cadence)
   end
 end
