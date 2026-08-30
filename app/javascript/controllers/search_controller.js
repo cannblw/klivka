@@ -1,14 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "filter", "clear" ]
+  static targets = [ "filter", "option", "clear", "details", "active", "view" ]
   static values = { delay: Number }
 
   connect() {
     this.timeout = null
     this.restoreFromLocation = this.restoreFromLocation.bind(this)
     window.addEventListener("popstate", this.restoreFromLocation)
-    this.updateClearButton()
+    this.restoreFromLocation()
   }
 
   disconnect() {
@@ -23,7 +23,7 @@ export default class extends Controller {
 
   submit() {
     this.clearPendingSearch()
-    this.updateClearButton()
+    this.updateFilterState()
     this.element.requestSubmit()
   }
 
@@ -50,7 +50,8 @@ export default class extends Controller {
         control.value = parameters.get(control.name) || (control.name === "state" ? "active" : "")
       }
     })
-    this.updateClearButton()
+    this.updateViewState(parameters.get("view") === "all" ? "all" : "grouped")
+    this.updateFilterState()
   }
 
   prepareFormData(event) {
@@ -79,15 +80,23 @@ export default class extends Controller {
     }
   }
 
-  updateClearButton() {
-    if (!this.hasClearTarget) return
-
-    const active = this.filterTargets.some((control) => {
+  updateFilterState() {
+    const filterActive = this.filterTargets.some((control) => {
       if (control.type === "checkbox") return control.checked
       if (control.name === "state") return control.value !== "active"
 
       return control.value !== ""
     })
-    this.clearTarget.hidden = !active
+    const optionActive = filterActive || this.optionTargets.some((control) => control.value !== "")
+
+    if (this.hasClearTarget) this.clearTarget.hidden = !filterActive
+    if (this.hasActiveTarget) this.activeTarget.hidden = !optionActive
+    if (this.hasDetailsTarget && optionActive) this.detailsTarget.open = true
+  }
+
+  updateViewState(selectedView) {
+    this.viewTargets.forEach((link) => {
+      link.setAttribute("aria-current", String(link.dataset.personViewValue === selectedView))
+    })
   }
 }

@@ -2,7 +2,9 @@ class PersonSearch
   SORTS = {
     "name" => { name: :asc, id: :asc },
     "recently_added" => { created_at: :desc, name: :asc, id: :asc },
-    "recently_updated" => { updated_at: :desc, name: :asc, id: :asc }
+    "recently_updated" => { updated_at: :desc, name: :asc, id: :asc },
+    "recently_contacted" => nil,
+    "least_recently_contacted" => nil
   }.freeze
   DEFAULT_SORT = "name"
   DEFAULT_STATE = "active"
@@ -91,9 +93,10 @@ class PersonSearch
   end
 
   def call
-    return people.order(SORTS.fetch(sort)).to_a if query.blank?
+    ordered_people = people_in_sort_order
+    return ordered_people if query.blank?
 
-    ranked_person_ids = people.order(SORTS.fetch(sort)).pluck(:id, :name)
+    ranked_person_ids = ordered_people.map { [ _1.id, _1.name ] }
       .each_with_index
       .filter_map do |(id, name), sort_position|
         normalized_name = PersonNameNormalizer.call(name)
@@ -113,6 +116,22 @@ class PersonSearch
   private
 
   attr_reader :user, :people, :query_tokens, :on
+
+  def people_in_sort_order
+    return people.order(SORTS.fetch(sort)).to_a if SORTS.fetch(sort)
+
+    latest_contacts = Interaction.where(person_id: people.select(:id)).group(:person_id).maximum(:occurred_on)
+    people.to_a.sort_by do |person|
+      last_contact = latest_contacts[person.id]
+      contact_order = if sort == "recently_contacted"
+        [ last_contact ? 0 : 1, last_contact ? -last_contact.jd : 0 ]
+      else
+        [ last_contact ? 1 : 0, last_contact&.jd || 0 ]
+      end
+
+      [ *contact_order, PersonNameNormalizer.call(person.name), person.id ]
+    end
+  end
 
   def normalize_filters(filters)
     values = filters.to_h.symbolize_keys.slice(*FILTER_KEYS)

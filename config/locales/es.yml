@@ -682,6 +682,8 @@ es:
       title: "Personas"
       heading: "Personas"
       add_person: "Añadir a alguien"
+      add_multiple: "Añadir varias personas"
+      more_actions: "Más acciones"
       import_contacts: "Importar contactos"
       archived_people: "Personas archivadas"
       search_label: "Buscar personas"
@@ -691,10 +693,13 @@ es:
         name: "Nombre"
         recently_added: "Añadidos recientemente"
         recently_updated: "Actualizados recientemente"
+        recently_contacted: "Contactados recientemente"
+        least_recently_contacted: "Contactados hace más tiempo"
       filters:
         search_and_sort: "Buscar y ordenar personas"
-        advanced: "Búsqueda avanzada"
-        active: "Filtros activados"
+        advanced: "Más opciones"
+        active: "Opciones activadas"
+        heading: "Filtros"
         any: "Cualquiera"
         birthday:
           label: "Cumpleaños"
@@ -733,6 +738,7 @@ es:
       uncategorized: "Sin categoría"
       view_toggle:
         label: "Vista de personas"
+        heading: "Vista"
         grouped: "Por categoría"
         all: "Todos"
       no_results: "Nadie coincide con '%{query}'"

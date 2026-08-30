@@ -26,7 +26,12 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[data-search-delay-value='#{Rails.application.config.x.person_search_debounce_milliseconds}']"
     assert_select "input[type='search'][name='query']"
     assert_select "select[name='sort']"
-    assert_select "select[name='sort'] option", count: 3
+    assert_select "select[name='sort'] option", count: 5
+    assert_select "button", text: "Add someone"
+    assert_select "button[aria-haspopup='menu']", text: /More actions/
+    assert_select "[role='menu'] button", text: "Add several people"
+    assert_select "[role='menu'] a[href='#{new_vcard_import_path}']", text: "Import contacts"
+    assert_select "[role='menu'] a[href='#{archived_people_path}']", text: "Archived people"
     assert_select "header a[href='#{categories_path}']"
     assert_select "turbo-frame#people_grid"
     assert_select "main", /Ada Lovelace/
@@ -109,14 +114,17 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index shows an empty state when there are no people" do
+    person_paths = [ person_path(people(:ada)), person_path(people(:grace)) ]
     Person.destroy_all
 
     get root_url
 
     assert_response :success
     assert_select "turbo-frame#people_grid" do
-      assert_select "a[href^='/people/']", count: 0
-      assert_select "p", count: 2
+      person_paths.each { |path| assert_select "a[href='#{path}']", count: 0 }
+      assert_select "button", text: "Add someone"
+      assert_select "button", text: "Add several people"
+      assert_select "p", text: /No one here yet/
     end
   end
 

@@ -671,6 +671,8 @@ en:
       title: "People"
       heading: "People"
       add_person: "Add someone"
+      add_multiple: "Add several people"
+      more_actions: "More actions"
       import_contacts: "Import contacts"
       archived_people: "Archived people"
       search_label: "Search people"
@@ -680,10 +682,13 @@ en:
         name: "Name"
         recently_added: "Recently added"
         recently_updated: "Recently updated"
+        recently_contacted: "Recently contacted"
+        least_recently_contacted: "Contacted least recently"
       filters:
         search_and_sort: "Search and sort people"
-        advanced: "Advanced search"
-        active: "Filters on"
+        advanced: "More options"
+        active: "Options on"
+        heading: "Filters"
         any: "Any"
         birthday:
           label: "Birthday"
@@ -722,6 +727,7 @@ en:
       uncategorized: "Uncategorized"
       view_toggle:
         label: "People view"
+        heading: "View"
         grouped: "Grouped"
         all: "All people"
       no_results: "No people matching '%{query}'"
