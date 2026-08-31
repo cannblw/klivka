@@ -54,6 +54,39 @@ class RemindersTest < ApplicationSystemTestCase
     assert_current_path root_path
   end
 
+  test "contact reminder calendar controls show and save a new account schedule" do
+    @user.update!(
+      contact_reminder_cadence: "monthly",
+      contact_reminders_enabled_on: @today,
+      contact_reminder_first_reminder_on: @today.next_month
+    )
+    target_weekday = (@today.wday + 1) % 7
+
+    visit settings_reminders_path
+
+    within("[data-reminder-settings-section='contacts']") do
+      assert_selector "[data-contact-reminder-schedule-target='savedSchedule']"
+      assert_operator page.html.index("savedSchedule"), :<, page.html.index("user_contact_reminder_cadence")
+
+      select I18n.t("contact_reminder.cadences.weekly"), from: "user_contact_reminder_cadence"
+
+      assert_selector "select[name='user[first_reminder_weekday]']:not([disabled])"
+      assert_selector ".hidden[data-contact-reminder-schedule-target='savedSchedule']", visible: :all
+      assert_selector "[data-contact-reminder-schedule-target='unsavedSchedule']:not(.hidden)"
+      select I18n.t("date.day_names")[target_weekday], from: "account-contact-reminder-weekly-first-reminder-weekday"
+    end
+
+    click_button I18n.t("settings.reminders.save")
+
+    assert_current_path settings_reminders_path
+    assert_equal "weekly", @user.reload.contact_reminder_cadence
+    assert_equal @today.tomorrow, @user.contact_reminder_first_reminder_on
+    within("[data-reminder-settings-section='contacts']") do
+      assert_selector "[data-contact-reminder-schedule-target='savedSchedule']"
+      assert_no_selector "[data-contact-reminder-schedule-target='unsavedSchedule']:not(.hidden)"
+    end
+  end
+
   private
 
   def seed_contact_reminder(name)
