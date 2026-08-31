@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_29_121000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_30_120000) do
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -128,9 +128,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_121000) do
     t.string "cadence", null: false
     t.datetime "created_at", null: false
     t.date "enabled_on"
+    t.date "first_reminder_on"
     t.integer "person_id", null: false
     t.datetime "updated_at", null: false
     t.index ["person_id"], name: "index_keep_in_touch_settings_on_person_id", unique: true
+    t.check_constraint "(enabled_on IS NULL AND first_reminder_on IS NULL) OR (enabled_on IS NOT NULL AND first_reminder_on IS NOT NULL AND first_reminder_on > enabled_on)", name: "keep_in_touch_settings_reminder_dates_are_consistent"
     t.check_constraint "cadence IN ('daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly')", name: "keep_in_touch_settings_cadence_is_supported"
   end
 
@@ -193,6 +195,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_121000) do
     t.boolean "birthday_reminders_enabled", default: true, null: false
     t.datetime "confirmed_at"
     t.string "contact_reminder_cadence", default: "monthly", null: false
+    t.date "contact_reminder_first_reminder_on"
     t.date "contact_reminders_enabled_on"
     t.datetime "created_at", null: false
     t.string "default_reminder_lead_unit", default: "months", null: false
@@ -208,6 +211,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_121000) do
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["reminders_scanned_through_on"], name: "index_users_on_reminders_scanned_through_on"
+    t.check_constraint "(contact_reminders_enabled_on IS NULL AND contact_reminder_first_reminder_on IS NULL) OR (contact_reminders_enabled_on IS NOT NULL AND contact_reminder_first_reminder_on IS NOT NULL AND contact_reminder_first_reminder_on > contact_reminders_enabled_on)", name: "users_contact_reminder_dates_are_consistent"
     t.check_constraint "birthday_reminder_lead_value BETWEEN 0 AND 2147483647 AND birthday_reminder_lead_unit IN ('days', 'months', 'years')", name: "users_birthday_reminder_lead_is_supported"
     t.check_constraint "birthday_reminders_enabled IN (TRUE, FALSE)", name: "users_birthday_reminders_enabled_is_boolean"
     t.check_constraint "contact_reminder_cadence IN ('daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly')", name: "users_contact_reminder_cadence_is_supported"

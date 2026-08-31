@@ -1,4 +1,6 @@
 class ContactReminder
+  class InvalidSchedule < StandardError; end
+
   CADENCE_INTERVALS = {
     "daily" => 1.day,
     "weekly" => 1.week,
@@ -55,6 +57,66 @@ class ContactReminder
     user.contact_reminders_enabled_on if inherited?
   end
 
+  def first_reminder_on
+    if overridden?
+      return setting.first_reminder_on || self.class.default_first_reminder_on(cadence:, on: enabled_on)
+    end
+
+    if inherited?
+      user.contact_reminder_first_reminder_on || self.class.default_first_reminder_on(cadence:, on: enabled_on)
+    end
+  end
+
+  def self.default_first_reminder_on(cadence:, on:)
+    on + CADENCE_INTERVALS.fetch(cadence)
+  end
+
+  def self.resolve_first_reminder_on(cadence:, on:, selection: {})
+    case cadence
+    when "daily" then on.tomorrow
+    when "weekly" then next_weekday(on:, weekday: Integer(selection.fetch(:first_reminder_weekday), 10))
+    when "biweekly" then Date.iso8601(selection.fetch(:first_reminder_date)).tap { raise InvalidSchedule unless _1 > on }
+    when "monthly" then next_month_day(on:, day: Integer(selection.fetch(:first_reminder_day), 10), interval: 1)
+    when "quarterly" then next_cycle_date(on:, selection:, interval: 3)
+    when "yearly" then next_cycle_date(on:, selection:, interval: 12)
+    else raise InvalidSchedule
+    end
+  rescue ArgumentError, KeyError
+    raise InvalidSchedule
+  end
+
+  def self.next_weekday(on:, weekday:)
+    raise InvalidSchedule unless (0..6).cover?(weekday)
+
+    days = (weekday - on.wday) % 7
+    on + (days.zero? ? 7 : days).days
+  end
+
+  def self.next_month_day(on:, day:, interval:)
+    raise InvalidSchedule unless (1..31).cover?(day)
+
+    candidate = clamped_date(year: on.year, month: on.month, day:)
+    if candidate <= on
+      next_month = on >> interval
+      candidate = clamped_date(year: next_month.year, month: next_month.month, day:)
+    end
+    candidate
+  end
+
+  def self.next_cycle_date(on:, selection:, interval:)
+    month = Integer(selection.fetch(:first_reminder_month), 10)
+    day = Integer(selection.fetch(:first_reminder_day), 10)
+    raise InvalidSchedule unless (1..12).cover?(month) && (1..31).cover?(day)
+
+    candidate = clamped_date(year: on.year, month:, day:)
+    candidate = clamped_date(year: (candidate >> interval).year, month: (candidate >> interval).month, day:) while candidate <= on
+    candidate
+  end
+
+  def self.clamped_date(year:, month:, day:)
+    Date.new(year, month, [ day, Date.new(year, month, -1).day ].min)
+  end
+
   def next_suggestion_on(latest_interaction_on: LATEST_INTERACTION_UNSPECIFIED)
     return unless enabled?
 
@@ -86,11 +148,12 @@ class ContactReminder
     end
   end
 
-  def override!(cadence:, on:)
+  def override!(cadence:, on:, first_reminder_on: nil)
     person.transaction do
       @setting ||= person.build_keep_in_touch_setting
       setting.cadence = cadence
-      setting.enabled_on ||= on
+      setting.enabled_on = on
+      setting.first_reminder_on = first_reminder_on || default_first_reminder_on(cadence:, on:)
       setting.save!
       person.update!(contact_reminder_snoozed_until: nil)
     end
@@ -101,7 +164,7 @@ class ContactReminder
 
     person.transaction do
       @setting ||= person.build_keep_in_touch_setting
-      setting.update!(cadence: effective_cadence, enabled_on: nil)
+      setting.update!(cadence: effective_cadence, enabled_on: nil, first_reminder_on: nil)
       person.update!(contact_reminder_snoozed_until: nil)
     end
   end
@@ -117,8 +180,13 @@ class ContactReminder
 
   private
 
+  def default_first_reminder_on(cadence:, on:)
+    self.class.default_first_reminder_on(cadence:, on:) if CADENCES.include?(cadence)
+  end
+
   def cadence_date(latest_interaction_on:)
-    base_date = [ enabled_on, latest_interaction_on ].compact.max
-    base_date + CADENCE_INTERVALS.fetch(cadence)
+    return first_reminder_on if latest_interaction_on.nil? || latest_interaction_on < enabled_on
+
+    latest_interaction_on + CADENCE_INTERVALS.fetch(cadence)
   end
 end

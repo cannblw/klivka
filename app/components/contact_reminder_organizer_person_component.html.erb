@@ -5,14 +5,18 @@
       <p class="mt-0.5 text-xs text-stone-500 dark:text-stone-400" data-contact-reminder-state><%= state_label %></p>
     </div>
 
-    <%= form_with url: helpers.contact_reminder_path(person), method: :patch, scope: :contact_reminder, class: "flex w-full items-end gap-2 sm:w-auto" do |form| %>
-      <div class="min-w-0 flex-1 sm:w-64">
+    <%= form_with url: helpers.contact_reminder_path(person), method: :patch, scope: :contact_reminder, class: "w-full space-y-2 sm:w-72", data: { controller: "contact-reminder-schedule" } do |form| %>
+      <%= render ContactReminderScheduleStatusComponent.new(first_reminder_on: reminder.first_reminder_on) %>
+      <div class="flex items-end gap-2">
+       <div class="min-w-0 flex-1">
         <%= form.label :selection, t("contact_reminders.organizer.setting_for", name: person.name), for: selection_id, class: "sr-only" %>
-        <%= render SelectFieldComponent.new(form, :selection, choices:, selected: selected_value, id: selection_id) %>
+        <%= render SelectFieldComponent.new(form, :selection, choices:, selected: selected_value, id: selection_id, data: { contact_reminder_schedule_target: "cadence", action: "change->contact-reminder-schedule#change" }) %>
+       </div>
+       <%= render ButtonComponent.new(type: :submit, size: :sm) do %>
+         <%= t("contact_reminders.organizer.save") %>
+       <% end %>
       </div>
-      <%= render ButtonComponent.new(type: :submit, size: :sm) do %>
-        <%= t("contact_reminders.organizer.save") %>
-      <% end %>
+      <%= render ContactReminderScheduleFieldsComponent.new(scope: "contact_reminder", cadence: selected_value, first_reminder_on: reminder.first_reminder_on, today: person.user.local_date, id_prefix: "contact-reminder-#{person.id}") %>
     <% end %>
   </div>
 </li>

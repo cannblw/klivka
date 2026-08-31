@@ -446,6 +446,19 @@ es:
       monthly: "Mensual"
       quarterly: "Cada tres meses"
       yearly: "Anual"
+    schedule:
+      future_hint: "El primer recordatorio siempre será en una fecha futura. Un contacto posterior reinicia el calendario."
+      currently_scheduled: "Programado actualmente: %{date}"
+      save_to_update: "Guarda los cambios para actualizar esta fecha."
+      unsaved: "El nuevo calendario aparecerá después de guardar."
+      daily: "El primer recordatorio será mañana."
+      weekday: "Día de la semana del primer recordatorio"
+      first_date: "Fecha del primer recordatorio"
+      day_of_month: "Día del primer recordatorio"
+      month_and_day: "Mes y día del primer recordatorio"
+      month: "Mes"
+      day: "Día"
+      invalid: "Elige una fecha futura válida"
 
   contact_reminders:
     update:

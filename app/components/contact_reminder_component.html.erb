@@ -42,14 +42,18 @@
     <div class="mt-4 flex flex-col gap-2 border-t border-stone-200 pt-3 sm:flex-row sm:items-start sm:justify-between dark:border-stone-700">
       <details class="min-w-0">
         <summary class="cursor-pointer py-1.5 text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"><%= t("contact_reminder.change_frequency") %></summary>
-        <%= form_with url: person_keep_in_touch_setting_path(person), method: frequency_form_method, scope: :keep_in_touch_setting, class: "mt-3 flex flex-col gap-3 sm:flex-row sm:items-end" do |form| %>
+        <%= form_with url: person_keep_in_touch_setting_path(person), method: frequency_form_method, scope: :keep_in_touch_setting, class: "mt-3 space-y-3", data: { controller: "contact-reminder-schedule" } do |form| %>
+          <%= render ContactReminderScheduleStatusComponent.new(first_reminder_on: reminder.first_reminder_on) %>
           <div class="w-full sm:w-56">
             <%= form.label :cadence, t("contact_reminder.frequency"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-            <%= render SelectFieldComponent.new(form, :cadence, choices: cadence_options, selected: selected_cadence, wrapper_class: "mt-1") %>
+            <%= render SelectFieldComponent.new(form, :cadence, choices: cadence_options, selected: selected_cadence, wrapper_class: "mt-1", data: { contact_reminder_schedule_target: "cadence", action: "change->contact-reminder-schedule#change" }) %>
           </div>
-          <%= render ButtonComponent.new(type: :submit) do %>
-            <%= t("contact_reminder.save_frequency") %>
-          <% end %>
+          <%= render ContactReminderScheduleFieldsComponent.new(scope: "keep_in_touch_setting", cadence: selected_cadence, first_reminder_on: reminder.first_reminder_on, today: person.user.local_date, id_prefix: "person-contact-reminder-change") %>
+          <div>
+            <%= render ButtonComponent.new(type: :submit) do %>
+              <%= t("contact_reminder.save_frequency") %>
+            <% end %>
+          </div>
         <% end %>
       </details>
 
@@ -70,16 +74,18 @@
   <% else %>
     <p class="mt-2 text-sm text-stone-600 dark:text-stone-300"><%= t(opted_out? ? "contact_reminder.off_for_person" : "contact_reminder.description") %></p>
 
-    <%= form_with url: activation_form_action, method: activation_form_method, scope: :keep_in_touch_setting, class: "mt-4 flex flex-col gap-3 sm:flex-row sm:items-end" do |form| %>
+    <%= form_with url: activation_form_action, method: activation_form_method, scope: :keep_in_touch_setting, class: "mt-4 space-y-3", data: { controller: "contact-reminder-schedule" } do |form| %>
+      <%= render ContactReminderScheduleStatusComponent.new(first_reminder_on: setting&.first_reminder_on) %>
       <div class="w-full sm:w-56">
         <%= form.label :cadence, t("contact_reminder.frequency"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-        <%= render SelectFieldComponent.new(form, :cadence, choices: cadence_options, selected: selected_cadence, wrapper_class: "mt-1") %>
+        <%= render SelectFieldComponent.new(form, :cadence, choices: cadence_options, selected: selected_cadence, wrapper_class: "mt-1", data: { contact_reminder_schedule_target: "cadence", action: "change->contact-reminder-schedule#change" }) %>
       </div>
-      <% if setting %>
-      <% end %>
-      <%= render ButtonComponent.new(type: :submit) do %>
-        <%= t("contact_reminder.turn_on") %>
-      <% end %>
+      <%= render ContactReminderScheduleFieldsComponent.new(scope: "keep_in_touch_setting", cadence: selected_cadence, first_reminder_on: setting&.first_reminder_on, today: person.user.local_date, id_prefix: "person-contact-reminder-enable") %>
+      <div>
+        <%= render ButtonComponent.new(type: :submit) do %>
+          <%= t("contact_reminder.turn_on") %>
+        <% end %>
+      </div>
     <% end %>
 
     <% if opted_out? %>

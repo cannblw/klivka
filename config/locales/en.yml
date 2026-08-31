@@ -435,6 +435,19 @@ en:
       monthly: "Monthly"
       quarterly: "Every three months"
       yearly: "Yearly"
+    schedule:
+      future_hint: "The first reminder will always be on a future date. Contact after setup resets the schedule."
+      currently_scheduled: "Currently scheduled: %{date}"
+      save_to_update: "Save your changes to update this date."
+      unsaved: "Your new schedule will appear after you save."
+      daily: "The first reminder will be tomorrow."
+      weekday: "First reminder weekday"
+      first_date: "First reminder date"
+      day_of_month: "First reminder day"
+      month_and_day: "First reminder month and day"
+      month: "Month"
+      day: "Day"
+      invalid: "Choose a valid future date"
 
   contact_reminders:
     update:

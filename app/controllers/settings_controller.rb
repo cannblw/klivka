@@ -23,14 +23,31 @@ class SettingsController < ApplicationController
   def update_reminders
     attributes = reminder_params
     contact_reminders_enabled = attributes.delete(:contact_reminders_enabled)
+    schedule = attributes.extract!(
+      :contact_reminder_schedule_changed,
+      :first_reminder_weekday,
+      :first_reminder_date,
+      :first_reminder_day,
+      :first_reminder_month
+    )
+    original_cadence = @user.contact_reminder_cadence
+    was_enabled = @user.contact_reminders_enabled?
     @user.assign_attributes(attributes)
-    apply_contact_reminder_enabled_state(contact_reminders_enabled) unless contact_reminders_enabled.nil?
+    apply_contact_reminder_policy(
+      enabled_value: contact_reminders_enabled,
+      schedule:,
+      original_cadence:,
+      was_enabled:
+    )
 
     if save_settings
       redirect_to settings_reminders_path, notice: settings_updated_notice
     else
       render :reminders, status: :unprocessable_entity
     end
+  rescue ContactReminder::InvalidSchedule
+    @user.errors.add(:contact_reminder_first_reminder_on, :invalid)
+    render :reminders, status: :unprocessable_entity
   end
 
   private
@@ -54,7 +71,12 @@ class SettingsController < ApplicationController
       :birthday_reminder_lead_value,
       :birthday_reminder_lead_unit,
       :contact_reminder_cadence,
-      :contact_reminders_enabled
+      :contact_reminders_enabled,
+      :contact_reminder_schedule_changed,
+      :first_reminder_weekday,
+      :first_reminder_date,
+      :first_reminder_day,
+      :first_reminder_month
     ])
   end
 
@@ -62,9 +84,34 @@ class SettingsController < ApplicationController
     I18n.t("settings.update.updated", locale: demo_mode? ? I18n.default_locale : @user.locale)
   end
 
-  def apply_contact_reminder_enabled_state(value)
-    enabled = ActiveModel::Type::Boolean.new.cast(value)
-    @user.contact_reminders_enabled_on = enabled ? (@user.contact_reminders_enabled_on || @user.local_date) : nil
+  def apply_contact_reminder_policy(enabled_value:, schedule:, original_cadence:, was_enabled:)
+    enabled = enabled_value.nil? ? was_enabled : ActiveModel::Type::Boolean.new.cast(enabled_value)
+    if enabled
+      schedule_changed = !was_enabled || original_cadence != @user.contact_reminder_cadence ||
+        schedule[:contact_reminder_schedule_changed] == "1"
+      return unless schedule_changed
+
+      @user.contact_reminders_enabled_on = @user.local_date
+      @user.contact_reminder_first_reminder_on = resolved_first_reminder_on(schedule)
+    else
+      @user.contact_reminders_enabled_on = nil
+      @user.contact_reminder_first_reminder_on = nil
+    end
+  end
+
+  def resolved_first_reminder_on(schedule)
+    return unless ContactReminder::CADENCES.include?(@user.contact_reminder_cadence)
+
+    selection = schedule.except(:contact_reminder_schedule_changed)
+    if selection.values.all?(&:blank?)
+      return ContactReminder.default_first_reminder_on(cadence: @user.contact_reminder_cadence, on: @user.local_date)
+    end
+
+    ContactReminder.resolve_first_reminder_on(
+      cadence: @user.contact_reminder_cadence,
+      on: @user.local_date,
+      selection:
+    )
   end
 
   def save_settings

@@ -28,7 +28,7 @@
   <% end %>
 
   <%= render SectionComponent.new(title: t("settings.reminders.contacts.heading"), description: t("settings.reminders.contacts.description"), id: "contact-reminders") do %>
-    <div class="max-w-xl space-y-4" data-reminder-settings-section="contacts">
+    <div class="max-w-xl space-y-4" data-reminder-settings-section="contacts" data-controller="contact-reminder-schedule">
       <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
         <%= form.check_box :contact_reminders_enabled, class: "mt-0.5 size-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
         <span>
@@ -37,14 +37,23 @@
         </span>
       </label>
 
+      <%= render ContactReminderScheduleStatusComponent.new(first_reminder_on: user.contact_reminder_first_reminder_on) %>
+
       <div class="max-w-xs">
         <%= form.label :contact_reminder_cadence, t("settings.reminders.contacts.frequency"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
         <p class="mt-1 text-sm text-stone-600 dark:text-stone-300"><%= t("settings.reminders.contacts.frequency_hint") %></p>
-        <%= render SelectFieldComponent.new(form, :contact_reminder_cadence, choices: contact_cadence_options, selected: user.contact_reminder_cadence, wrapper_class: "mt-2") %>
+        <%= render SelectFieldComponent.new(form, :contact_reminder_cadence, choices: contact_cadence_options, selected: user.contact_reminder_cadence, wrapper_class: "mt-2", data: { contact_reminder_schedule_target: "cadence", action: "change->contact-reminder-schedule#change" }) %>
         <% user.errors.full_messages_for(:contact_reminder_cadence).each do |message| %>
           <p class="mt-1 text-sm text-red-600 dark:text-red-400"><%= message %></p>
         <% end %>
       </div>
+      <%= render ContactReminderScheduleFieldsComponent.new(
+            scope: "user",
+            cadence: user.contact_reminder_cadence,
+            first_reminder_on: user.contact_reminder_first_reminder_on,
+            today: user.local_date,
+            id_prefix: "account-contact-reminder"
+          ) %>
     </div>
   <% end %>
 

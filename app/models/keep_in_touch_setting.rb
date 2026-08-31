@@ -2,12 +2,13 @@
 #
 # Table name: keep_in_touch_settings
 #
-#  id         :integer          not null, primary key
-#  cadence    :string           not null
-#  enabled_on :date
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  person_id  :integer          not null
+#  id                :integer          not null, primary key
+#  cadence           :string           not null
+#  enabled_on        :date
+#  first_reminder_on :date
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  person_id         :integer          not null
 #
 # Indexes
 #
@@ -25,6 +26,9 @@ class KeepInTouchSetting < ApplicationRecord
 
   belongs_to :person
   validates :cadence, inclusion: { in: CADENCES }
+  validate :reminder_dates_are_consistent
+
+  before_validation :normalize_reminder_dates
 
   def enabled?
     enabled_on.present?
@@ -42,18 +46,21 @@ class KeepInTouchSetting < ApplicationRecord
     contact_reminder.snoozed?
   end
 
-  def enable!(on:, cadence: self.cadence)
+  def enable!(on:, cadence: self.cadence, first_reminder_on: nil)
     transaction do
       self.cadence = cadence
       self.enabled_on = on
+      self.first_reminder_on = first_reminder_on || default_first_reminder_on(cadence:, on:)
       save!
       person.update!(contact_reminder_snoozed_until: nil)
     end
   end
 
-  def change_cadence!(cadence:)
+  def change_cadence!(cadence:, on: enabled_on, first_reminder_on: nil)
     transaction do
       self.cadence = cadence
+      self.enabled_on = on
+      self.first_reminder_on = first_reminder_on || default_first_reminder_on(cadence:, on:)
       save!
       person.update!(contact_reminder_snoozed_until: nil)
     end
@@ -66,6 +73,7 @@ class KeepInTouchSetting < ApplicationRecord
   def disable!
     transaction do
       self.enabled_on = nil
+      self.first_reminder_on = nil
       save!
       person.update!(contact_reminder_snoozed_until: nil)
     end
@@ -77,5 +85,26 @@ class KeepInTouchSetting < ApplicationRecord
 
   def contact_reminder
     ContactReminder.new(person:, setting: self)
+  end
+
+  private
+
+  def default_first_reminder_on(cadence:, on:)
+    ContactReminder.default_first_reminder_on(cadence:, on:) if CADENCES.include?(cadence)
+  end
+
+  def normalize_reminder_dates
+    self.first_reminder_on = nil if enabled_on.nil?
+    return if enabled_on.nil? || first_reminder_on.present? || !CADENCES.include?(cadence)
+
+    self.first_reminder_on = ContactReminder.default_first_reminder_on(cadence:, on: enabled_on)
+  end
+
+  def reminder_dates_are_consistent
+    return unless CADENCES.include?(cadence)
+    return if enabled_on.nil? && first_reminder_on.nil?
+    return if enabled_on.present? && first_reminder_on.present? && first_reminder_on > enabled_on
+
+    errors.add(:first_reminder_on, :invalid)
   end
 end

@@ -1,0 +1,28 @@
+<div class="space-y-3" data-contact-reminder-schedule-target="fields">
+  <%= hidden_field_tag field_name(:contact_reminder_schedule_changed), "0", data: { contact_reminder_schedule_target: "changed" } %>
+  <p class="text-xs text-stone-500 dark:text-stone-400"><%= t("contact_reminder.schedule.future_hint") %></p>
+
+  <% ContactReminder::CADENCES.each do |panel_cadence| %>
+    <div class="<%= "hidden" unless cadence == panel_cadence %>" data-contact-reminder-schedule-target="panel" data-cadence="<%= panel_cadence %>">
+      <% case panel_cadence %>
+      <% when "daily" %>
+        <p class="text-sm text-stone-600 dark:text-stone-300"><%= t("contact_reminder.schedule.daily") %></p>
+      <% when "weekly" %>
+        <%= label_tag field_id(:first_reminder_weekday, panel_cadence), t("contact_reminder.schedule.weekday"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= select_tag field_name(:first_reminder_weekday), options_for_select(weekday_options, first_reminder_on.wday), id: field_id(:first_reminder_weekday, panel_cadence), disabled: cadence != panel_cadence, data: { contact_reminder_schedule_target: "input", action: "change->contact-reminder-schedule#markChanged" }, class: "mt-1 #{input_classes}" %>
+      <% when "biweekly" %>
+        <%= label_tag field_id(:first_reminder_date, panel_cadence), t("contact_reminder.schedule.first_date"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= date_field_tag field_name(:first_reminder_date), first_reminder_on, id: field_id(:first_reminder_date, panel_cadence), min: today.tomorrow, required: true, disabled: cadence != panel_cadence, data: { contact_reminder_schedule_target: "input", action: "change->contact-reminder-schedule#markChanged" }, class: "mt-1 #{input_classes}" %>
+      <% when "monthly" %>
+        <%= label_tag field_id(:first_reminder_day, panel_cadence), t("contact_reminder.schedule.day_of_month"), class: "block text-sm font-medium text-stone-700 dark:text-stone-200" %>
+        <%= select_tag field_name(:first_reminder_day), options_for_select(day_options, first_reminder_on.day), id: field_id(:first_reminder_day, panel_cadence), disabled: cadence != panel_cadence, data: { contact_reminder_schedule_target: "input", action: "change->contact-reminder-schedule#markChanged" }, class: "mt-1 #{input_classes}" %>
+      <% when "quarterly", "yearly" %>
+        <p class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("contact_reminder.schedule.month_and_day") %></p>
+        <div class="mt-1 grid grid-cols-2 gap-2">
+          <%= select_tag field_name(:first_reminder_month), options_for_select(month_options, first_reminder_on.month), id: field_id(:first_reminder_month, panel_cadence), aria: { label: t("contact_reminder.schedule.month") }, disabled: cadence != panel_cadence, data: { contact_reminder_schedule_target: "input", action: "change->contact-reminder-schedule#markChanged" }, class: input_classes %>
+          <%= select_tag field_name(:first_reminder_day), options_for_select(day_options, first_reminder_on.day), id: field_id(:first_reminder_day, panel_cadence), aria: { label: t("contact_reminder.schedule.day") }, disabled: cadence != panel_cadence, data: { contact_reminder_schedule_target: "input", action: "change->contact-reminder-schedule#markChanged" }, class: input_classes %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
