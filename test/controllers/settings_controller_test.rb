@@ -145,6 +145,26 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal Date.new(2026, 8, 9), user.contact_reminders_enabled_on
   end
 
+  test "enables weekly account contact reminders on the selected weekday" do
+    user = users(:one)
+    user.update!(time_zone: "Europe/London", contact_reminders_enabled_on: nil)
+
+    travel_to Time.zone.local(2026, 8, 30, 12) do
+      patch settings_reminders_path, params: {
+        user: {
+          contact_reminders_enabled: "1",
+          contact_reminder_cadence: "weekly",
+          contact_reminder_schedule_changed: "1",
+          first_reminder_weekday: "2"
+        }
+      }
+    end
+
+    user.reload
+    assert_equal Date.new(2026, 8, 30), user.contact_reminders_enabled_on
+    assert_equal Date.new(2026, 9, 1), user.contact_reminder_first_reminder_on
+  end
+
   test "changing account contact reminders clears inherited snoozes only" do
     user = users(:one)
     user.update!(contact_reminders_enabled_on: user.local_date)

@@ -88,6 +88,22 @@ class ContactRemindersControllerTest < ActionDispatch::IntegrationTest
     assert_equal Date.new(2026, 8, 9), setting.enabled_on
   end
 
+  test "the organizer saves a custom yearly first reminder" do
+    travel_to Time.zone.local(2026, 8, 30, 12) do
+      patch contact_reminder_url(people(:ada)), params: {
+        contact_reminder: {
+          selection: "yearly",
+          contact_reminder_schedule_changed: "1",
+          first_reminder_month: "2",
+          first_reminder_day: "29"
+        }
+      }
+    end
+
+    setting = people(:ada).reload.keep_in_touch_setting
+    assert_equal Date.new(2027, 2, 28), setting.first_reminder_on
+  end
+
   test "organizer rejects unsupported selections" do
     assert_no_difference "KeepInTouchSetting.count" do
       patch contact_reminder_url(people(:ada)), params: { contact_reminder: { selection: "hourly" } }

@@ -5,24 +5,41 @@ class KeepInTouchSettingsController < ApplicationController
   def create
     return redirect_to @person, alert: t(".already_exists") if @person.keep_in_touch_setting.present?
 
-    @keep_in_touch_setting = @person.build_keep_in_touch_setting(setting_params)
-    @keep_in_touch_setting.enable!(on: local_date)
+    @keep_in_touch_setting = @person.build_keep_in_touch_setting(cadence: setting_params.fetch(:cadence))
+    cadence = setting_params.fetch(:cadence)
+    @keep_in_touch_setting.enable!(on: local_date, first_reminder_on: resolved_first_reminder_on(cadence))
 
     redirect_to @person, notice: t(".enabled")
   rescue ActiveRecord::RecordInvalid
     redirect_to @person, alert: invalid_setting_message
+  rescue ContactReminder::InvalidSchedule
+    redirect_to @person, alert: invalid_schedule_message
   rescue ActiveRecord::RecordNotUnique
     redirect_to @person, alert: t(".already_exists")
   end
 
   def update
     update_setting do
-      @keep_in_touch_setting.change_cadence!(cadence: setting_params.fetch(:cadence), on: local_date)
+      cadence = setting_params.fetch(:cadence)
+      unless cadence == @keep_in_touch_setting.cadence && !schedule_changed?
+        @keep_in_touch_setting.change_cadence!(
+          cadence:,
+          on: local_date,
+          first_reminder_on: resolved_first_reminder_on(cadence)
+        )
+      end
     end
   end
 
   def enable
-    update_setting { @keep_in_touch_setting.enable!(on: local_date, cadence: setting_params.fetch(:cadence)) }
+    update_setting do
+      cadence = setting_params.fetch(:cadence)
+      @keep_in_touch_setting.enable!(
+        on: local_date,
+        cadence:,
+        first_reminder_on: resolved_first_reminder_on(cadence)
+      )
+    end
   end
 
   def disable
@@ -42,6 +59,8 @@ class KeepInTouchSettingsController < ApplicationController
     redirect_to @person, notice: t(".updated")
   rescue ActiveRecord::RecordInvalid
     redirect_to @person, alert: invalid_setting_message
+  rescue ContactReminder::InvalidSchedule
+    redirect_to @person, alert: invalid_schedule_message
   rescue ActiveRecord::RecordNotUnique
     redirect_to @person, alert: t(".already_updated")
   end
@@ -87,7 +106,14 @@ class KeepInTouchSettingsController < ApplicationController
   end
 
   def setting_params
-    params.expect(keep_in_touch_setting: [ :cadence ])
+    params.expect(keep_in_touch_setting: [
+      :cadence,
+      :contact_reminder_schedule_changed,
+      :first_reminder_weekday,
+      :first_reminder_date,
+      :first_reminder_day,
+      :first_reminder_month
+    ])
   end
 
   def local_date
@@ -104,9 +130,30 @@ class KeepInTouchSettingsController < ApplicationController
     redirect_to @person, notice: t(".updated")
   rescue ActiveRecord::RecordInvalid
     redirect_to @person, alert: invalid_setting_message
+  rescue ContactReminder::InvalidSchedule
+    redirect_to @person, alert: invalid_schedule_message
   end
 
   def invalid_setting_message
     t(".invalid", reason: @keep_in_touch_setting.errors.full_messages.to_sentence)
+  end
+
+  def invalid_schedule_message
+    t(".invalid", reason: t("contact_reminder.schedule.invalid"))
+  end
+
+  def schedule_changed?
+    setting_params[:contact_reminder_schedule_changed] == "1"
+  end
+
+  def resolved_first_reminder_on(cadence)
+    return unless ContactReminder::CADENCES.include?(cadence)
+
+    schedule = setting_params.slice(
+      :first_reminder_weekday, :first_reminder_date, :first_reminder_day, :first_reminder_month
+    )
+    return ContactReminder.default_first_reminder_on(cadence:, on: local_date) if schedule.values.all?(&:blank?)
+
+    ContactReminder.resolve_first_reminder_on(cadence:, on: local_date, selection: schedule)
   end
 end

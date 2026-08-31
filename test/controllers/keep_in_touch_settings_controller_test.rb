@@ -32,6 +32,21 @@ class KeepInTouchSettingsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to person_url(people(:ada))
   end
 
+  test "creates a monthly contact reminder on the selected calendar day" do
+    travel_to Time.zone.local(2026, 8, 30, 12) do
+      post person_keep_in_touch_setting_url(people(:ada)), params: {
+        keep_in_touch_setting: {
+          cadence: "monthly",
+          contact_reminder_schedule_changed: "1",
+          first_reminder_day: "31"
+        }
+      }
+    end
+
+    setting = people(:ada).reload.keep_in_touch_setting
+    assert_equal Date.new(2026, 8, 31), setting.first_reminder_on
+  end
+
   test "rejects an invalid cadence" do
     assert_no_difference "KeepInTouchSetting.count" do
       post person_keep_in_touch_setting_url(people(:ada)), params: {

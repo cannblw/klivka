@@ -1,6 +1,46 @@
 require "test_helper"
 
 class ContactReminderTest < ActiveSupport::TestCase
+  test "resolves daily and weekly first reminders strictly after today" do
+    today = Date.new(2026, 8, 30)
+
+    assert_equal Date.new(2026, 8, 31),
+      ContactReminder.resolve_first_reminder_on(cadence: "daily", on: today)
+    assert_equal Date.new(2026, 9, 6), ContactReminder.resolve_first_reminder_on(
+      cadence: "weekly", on: today, selection: { first_reminder_weekday: "0" }
+    )
+  end
+
+  test "uses an explicit future date for a biweekly first reminder" do
+    assert_equal Date.new(2026, 9, 10), ContactReminder.resolve_first_reminder_on(
+      cadence: "biweekly",
+      on: Date.new(2026, 8, 30),
+      selection: { first_reminder_date: "2026-09-10" }
+    )
+
+    assert_raises(ContactReminder::InvalidSchedule) do
+      ContactReminder.resolve_first_reminder_on(
+        cadence: "biweekly",
+        on: Date.new(2026, 8, 30),
+        selection: { first_reminder_date: "2026-08-30" }
+      )
+    end
+  end
+
+  test "clamps monthly quarterly and yearly first reminders to valid future dates" do
+    today = Date.new(2026, 1, 31)
+
+    assert_equal Date.new(2026, 2, 28), ContactReminder.resolve_first_reminder_on(
+      cadence: "monthly", on: today, selection: { first_reminder_day: "31" }
+    )
+    assert_equal Date.new(2026, 4, 30), ContactReminder.resolve_first_reminder_on(
+      cadence: "quarterly", on: today, selection: { first_reminder_month: "4", first_reminder_day: "31" }
+    )
+    assert_equal Date.new(2028, 2, 29), ContactReminder.resolve_first_reminder_on(
+      cadence: "yearly", on: Date.new(2027, 3, 1), selection: { first_reminder_month: "2", first_reminder_day: "29" }
+    )
+  end
+
   test "is off when neither an individual nor global policy is enabled" do
     reminder = ContactReminder.for(people(:ada))
 

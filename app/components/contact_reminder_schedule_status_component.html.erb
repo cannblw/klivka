@@ -1,0 +1,7 @@
+<% if first_reminder_on %>
+  <div data-contact-reminder-schedule-target="savedSchedule">
+    <p class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t("contact_reminder.schedule.currently_scheduled", date: l(first_reminder_on, format: :long)) %></p>
+    <p class="mt-1 text-xs text-stone-500 dark:text-stone-400"><%= t("contact_reminder.schedule.save_to_update") %></p>
+  </div>
+  <p class="hidden text-sm font-medium text-stone-700 dark:text-stone-200" data-contact-reminder-schedule-target="unsavedSchedule"><%= t("contact_reminder.schedule.unsaved") %></p>
+<% end %>
