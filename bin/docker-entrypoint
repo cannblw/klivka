@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+klivka_signing_key_path="/rails/storage/.secret_key_base"
+ruby -Ilib -rklivka/signing_key -e 'Klivka::SigningKey.ensure_file!(ARGV.fetch(0))' "${klivka_signing_key_path}"
+SECRET_KEY_BASE="$(< "${klivka_signing_key_path}")"
+export SECRET_KEY_BASE
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare

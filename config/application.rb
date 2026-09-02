@@ -157,9 +157,9 @@ module Klivka
     config.x.reminder_delivery_claim_timeout = Integer(ENV.fetch("REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES", "30"), 10).minutes
     raise ArgumentError, "REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES must be positive" unless config.x.reminder_delivery_claim_timeout.positive?
 
-    config.x.resend_api_key = ENV["RESEND_API_KEY"].presence || Rails.application.credentials.dig(:resend, :api_key)
+    config.x.resend_api_key = ENV["RESEND_API_KEY"].presence
     if config.x.reminder_mail_transport == "resend" && config.x.resend_api_key.blank?
-      raise ArgumentError, "RESEND_API_KEY or credentials.resend.api_key is required for the Resend reminder transport"
+      raise ArgumentError, "RESEND_API_KEY is required for the Resend reminder transport"
     end
 
     config.x.job_processes = Integer(ENV.fetch("JOB_CONCURRENCY", "1"), 10)
