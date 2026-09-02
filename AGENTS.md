@@ -29,6 +29,7 @@
 - Adding a person requires a name. Nothing else, ever. All other data is optional `Entry` records (typed blocks: phone, note, etc.).
 - Don't add required fields or mandatory steps to any flow without explicit discussion.
 - When adding or changing a product feature, revisit people search, filters, and sorting to decide whether the new information or state should be searchable, filterable, or sortable. Add retrieval behavior only when it helps users find or organize people; otherwise explicitly keep the feature out of search, filters, and sorting.
+- When adding or changing a product feature, revisit the versioned account export to decide whether the new information or state should be included. Update the export contract and its stability tests when it stores durable user data; otherwise explicitly keep operational or temporary data out of the export.
 
 ## Code conventions
 
