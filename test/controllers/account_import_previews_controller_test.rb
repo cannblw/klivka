@@ -58,6 +58,22 @@ class AccountImportPreviewsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_equal "no-store", response.headers["Cache-Control"]
     assert_not response.parsed_body["valid"]
+    assert_equal "invalid_json", response.parsed_body["code"]
+  end
+
+  test "account import preview identifies an unsupported export version" do
+    payload = JSON.parse(export_json)
+    payload["format_version"] = 2
+    unsupported_file = Rack::Test::UploadedFile.new(
+      StringIO.new(JSON.generate(payload)),
+      "application/json",
+      original_filename: "unsupported.json"
+    )
+
+    post account_import_preview_path, params: { account_import: { file: unsupported_file } }
+
+    assert_response :unprocessable_entity
+    assert_equal "unsupported_version", response.parsed_body["code"]
   end
 
   test "account import preview limits repeated uploads per account" do

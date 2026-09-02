@@ -24,5 +24,74 @@
         <% end %>
       </div>
     <% end %>
+
+    <% unless demo_mode? %>
+      <%= render SectionComponent.new(title: t(".data_import"), description: t(".data_import_description")) do %>
+        <%= form_with scope: :account_import, url: account_import_path, id: "account-import-form",
+              data: {
+                controller: "account-import",
+                action: "change->account-import#fileChanged submit->account-import#import",
+                turbo: false,
+                account_import_preview_url_value: account_import_preview_path,
+                account_import_retry_error_value: t(".data_import_retry_error")
+              },
+              class: "max-w-xl space-y-4" do |form| %>
+          <%= render FileFieldComponent.new(
+                form:,
+                field: :file,
+                label: t(".data_import_file_label"),
+                hint: t(".data_import_file_hint", size: number_to_human_size(Rails.application.config.x.account_import_max_file_size_bytes)),
+                choose_label: t(".data_import_choose_file"),
+                empty_label: t(".data_import_no_file"),
+                accept: ".json,application/json") %>
+
+          <p class="text-sm text-stone-500 dark:text-stone-400"><%= t(".data_import_privacy") %></p>
+          <p data-account-import-target="error" role="alert" hidden class="text-sm text-red-600 dark:text-red-400"></p>
+
+          <%= render ButtonComponent.new(
+                data: { action: "account-import#preview", account_import_target: "previewButton" }
+              ) do %>
+            <%= t(".data_import_preview") %>
+          <% end %>
+
+          <div data-account-import-target="review" hidden class="space-y-4">
+            <div aria-live="polite" class="rounded-lg border border-stone-200 bg-stone-100 p-4 dark:border-stone-700 dark:bg-stone-900">
+              <h3 class="text-sm font-medium text-stone-700 dark:text-stone-200"><%= t(".data_import_review_heading") %></h3>
+              <dl class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <% %w[people archived_people entries interactions categories contact_methods reminders].each do |key| %>
+                  <div>
+                    <dt class="text-xs text-stone-500 dark:text-stone-400"><%= t(".data_import_summary.#{key}") %></dt>
+                    <dd data-account-import-target="summary" data-summary-key="<%= key %>" class="text-sm font-medium">0</dd>
+                  </div>
+                <% end %>
+              </dl>
+            </div>
+
+            <%= render InlineNoticeComponent.new do %>
+              <%= t(".data_import_warning") %>
+            <% end %>
+
+            <%= render ButtonComponent.new(
+                  disabled: true,
+                  data: { action: "account-import#confirm", account_import_target: "confirmButton" }
+                ) do %>
+              <%= t(".data_import_continue") %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <%= render PasswordConfirmDialogComponent.new(
+            id: "account-import-dialog",
+            title: t(".data_import_confirm_title"),
+            body: t(".data_import_confirm_body"),
+            form_id: "account-import-form",
+            password_name: "account_import[password]",
+            password_label: t(".data_import_password_label"),
+            password_hint: t(".data_import_password_hint"),
+            confirm_label: t(".data_import_confirm"),
+            cancel_label: t(".data_import_cancel")
+          ) %>
+    <% end %>
   </div>
 <% end %>

@@ -101,6 +101,8 @@ module AccountImport
       invalid!(:invalid_value) unless account["email_address"].match?(URI::MailTo::EMAIL_REGEXP)
       nullable_string!(account["locale"])
       nullable_string!(account["theme"])
+      invalid!(:invalid_value) unless account["locale"].nil? || I18n.available_locales.map(&:to_s).include?(account["locale"])
+      invalid!(:invalid_value) unless account["theme"].nil? || %w[light dark].include?(account["theme"])
       string!(account["time_zone"])
       TZInfo::Timezone.get(account["time_zone"])
       boolean!(account["reminder_in_app_enabled"])

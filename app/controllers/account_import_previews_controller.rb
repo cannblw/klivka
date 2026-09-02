@@ -17,8 +17,8 @@ class AccountImportPreviewsController < ApplicationController
 
     response.headers["Cache-Control"] = "no-store"
     render json: { valid: true, summary: document.summary }
-  rescue AccountImport::Document::InvalidDocument
-    render_error(:invalid_file)
+  rescue AccountImport::Document::InvalidDocument => error
+    render_error(error.code)
   end
 
   private
@@ -29,12 +29,16 @@ class AccountImportPreviewsController < ApplicationController
 
   def render_error(error, **options)
     response.headers["Cache-Control"] = "no-store"
-    render json: { valid: false, error: t("account_imports.errors.#{error}", **options) },
+    render json: { valid: false, code: error, error: t("account_imports.errors.#{error}", **options) },
       status: :unprocessable_entity
   end
 
   def respond_to_upload_rate_limit
     response.headers["Cache-Control"] = "no-store"
-    render json: { valid: false, error: t("account_imports.errors.rate_limited") }, status: :too_many_requests
+    render json: {
+      valid: false,
+      code: :rate_limited,
+      error: t("account_imports.errors.rate_limited")
+    }, status: :too_many_requests
   end
 end

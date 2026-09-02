@@ -22,6 +22,15 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{contact_methods_path}']", text: "Contact methods"
     assert_select "section h2", text: "Download your data"
     assert_select "a[href='#{account_export_path}']", text: /Download your Klivka data/
+    assert_select "section h2", text: "Restore your data"
+    assert_select "form#account-import-form[action='#{account_import_path}']" do
+      assert_select "input[type='file'][name='account_import[file]']"
+      assert_select "button[data-action='account-import#preview']", text: "Review this import"
+    end
+    assert_select "dialog#account-import-dialog" do
+      assert_select "input[type='password'][name='account_import[password]'][form='account-import-form'][required]"
+      assert_select "button[form='account-import-form']", text: "Replace my data"
+    end
     assert_select "input[name^='user[']", count: 0
   end
 

@@ -71,4 +71,5 @@ class ConfirmDialogComponentTest < ViewComponent::TestCase
 
     assert_no_selector "a[data-turbo-method]"
   end
+
 end

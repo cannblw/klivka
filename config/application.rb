@@ -65,10 +65,10 @@ module Klivka
       raise ArgumentError, "ACCOUNT_IMPORT_MAX_FILE_SIZE_BYTES must be positive"
     end
 
-    config.x.account_import_upload_rate_limit = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_LIMIT", "5"), 10)
+    config.x.account_import_upload_rate_limit = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_LIMIT", "3"), 10)
     raise ArgumentError, "ACCOUNT_IMPORT_UPLOAD_RATE_LIMIT must be positive" unless config.x.account_import_upload_rate_limit.positive?
 
-    config.x.account_import_upload_rate_window = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_WINDOW_MINUTES", "60"), 10).minutes
+    config.x.account_import_upload_rate_window = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_WINDOW_MINUTES", "1"), 10).minutes
     unless config.x.account_import_upload_rate_window.positive?
       raise ArgumentError, "ACCOUNT_IMPORT_UPLOAD_RATE_WINDOW_MINUTES must be positive"
     end

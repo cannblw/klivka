@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   patch "settings/reminders", to: "settings#update_reminders"
   resource :account_export, only: :show, path: "settings/export"
   resource :account_import_preview, only: :create, path: "settings/import/preview"
+  resource :account_import, only: :create, path: "settings/import"
   resources :contact_methods, path: "settings/contact-methods", only: %i[ index create update destroy ] do
     patch :enable, on: :member
     patch :disable, on: :member
