@@ -585,7 +585,7 @@ es:
       data_import_review_heading: "Esta exportación está lista para restaurarse"
       data_import_password_label: "Contraseña actual"
       data_import_password_hint: "Confirma la contraseña de esta cuenta antes de sustituir sus datos."
-      data_import_warning: "Esto sustituye tus ajustes, personas, entradas, interacciones y recordatorios actuales. Tu correo de acceso y contraseña no cambian."
+      data_import_warning: "Esto sustituye tus ajustes, personas, entradas, interacciones y recordatorios actuales. Si quieres conservar una copia de seguridad, descarga primero tus datos actuales de Klivka. Tu correo de acceso y contraseña no cambian."
       data_import_continue: "Continuar a la confirmación"
       data_import_confirm_title: "¿Quieres sustituir tus datos de Klivka?"
       data_import_confirm_body: "Tus datos actuales de Klivka se sustituirán por esta exportación. Esta acción no se puede deshacer."

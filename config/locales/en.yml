@@ -574,7 +574,7 @@ en:
       data_import_review_heading: "This export is ready to restore"
       data_import_password_label: "Current password"
       data_import_password_hint: "Confirm the password for this account before replacing its data."
-      data_import_warning: "This replaces your current settings, people, entries, interactions, and reminders. Your login email and password stay the same."
+      data_import_warning: "This replaces your current settings, people, entries, interactions, and reminders. Download your current Klivka data first if you want a backup. Your login email and password stay the same."
       data_import_continue: "Continue to confirmation"
       data_import_confirm_title: "Replace your Klivka data?"
       data_import_confirm_body: "Your current Klivka data will be replaced with this export. This cannot be undone."
