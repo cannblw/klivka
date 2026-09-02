@@ -26,8 +26,8 @@ class AccountExportsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, export["format_version"]
     assert_equal "2026-09-02T12:34:56.000000Z", export["generated_at"]
     assert_equal users(:one).email_address, export.dig("account", "email_address")
-    assert_equal users(:one).people.order(:id).pluck(:id), export["people"].pluck("id")
-    assert_not_includes export["people"].pluck("id"), people(:bob).id
+    assert_equal users(:one).people.order(:id).pluck(:name), export["people"].pluck("name")
+    assert_not_includes export["people"].pluck("name"), people(:bob).name
   end
 
   test "uses the authenticated account even when another account identifier is supplied" do

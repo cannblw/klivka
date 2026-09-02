@@ -33,7 +33,6 @@ class AccountExportSerializer
 
   def account
     {
-      "id" => user.id,
       "email_address" => user.email_address,
       "locale" => user.locale,
       "theme" => user.theme,
@@ -56,7 +55,6 @@ class AccountExportSerializer
   def categories
     user.categories.order(:id).map do |category|
       {
-        "id" => category.id,
         "name" => category.name,
         "created_at" => timestamp(category.created_at),
         "updated_at" => timestamp(category.updated_at)
@@ -67,7 +65,6 @@ class AccountExportSerializer
   def contact_methods
     user.contact_methods.order(:id).map do |contact_method|
       {
-        "id" => contact_method.id,
         "name" => contact_method.name,
         "icon_library" => contact_method.icon_library,
         "icon_name" => contact_method.icon_name,
@@ -82,17 +79,16 @@ class AccountExportSerializer
 
   def people
     user.people
-      .includes(:keep_in_touch_setting, :interactions, entries: :entry_reminder)
+      .includes(:category, :keep_in_touch_setting, :interactions, entries: :entry_reminder)
       .order(:id)
       .map { |person| person_payload(person) }
   end
 
   def person_payload(person)
     {
-      "id" => person.id,
       "name" => person.name,
       "slug" => person.slug,
-      "category_id" => person.category_id,
+      "category" => person.category&.name,
       "archived_at" => timestamp(person.archived_at),
       "contact_reminder_snoozed_until" => date(person.contact_reminder_snoozed_until),
       "created_at" => timestamp(person.created_at),
@@ -107,7 +103,6 @@ class AccountExportSerializer
     return unless setting
 
     {
-      "id" => setting.id,
       "cadence" => setting.cadence,
       "enabled_on" => date(setting.enabled_on),
       "first_reminder_on" => date(setting.first_reminder_on),
@@ -118,7 +113,6 @@ class AccountExportSerializer
 
   def entry_payload(entry)
     {
-      "id" => entry.id,
       "type" => ENTRY_TYPES.fetch(entry.type),
       "position" => entry.position,
       "content" => entry.content || {},
@@ -134,7 +128,6 @@ class AccountExportSerializer
     return unless reminder
 
     {
-      "id" => reminder.id,
       "lead_value" => reminder.lead_value,
       "lead_unit" => reminder.lead_unit,
       "recurrence" => reminder.recurrence,
@@ -145,7 +138,6 @@ class AccountExportSerializer
 
   def interaction_payload(interaction)
     {
-      "id" => interaction.id,
       "occurred_on" => date(interaction.occurred_on),
       "contact_method_name" => interaction.contact_method_name,
       "contact_method_icon_library" => interaction.contact_method_icon_library,
