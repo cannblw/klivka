@@ -559,6 +559,9 @@ en:
       email: "Email"
       password_note: "To change your password, click"
       password_link: "here"
+      data_export: "Download your data"
+      data_export_description: "Save a versioned JSON copy of your account settings, people, entries, interactions, and reminders."
+      download_data: "Download your Klivka data"
     preferences:
       title: "Appearance and language | Settings"
       heading: "Appearance and language"

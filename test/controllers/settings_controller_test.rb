@@ -20,6 +20,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{settings_preferences_path}']", text: "Appearance and language"
     assert_select "a[href='#{settings_reminders_path}']", text: "Reminders"
     assert_select "a[href='#{contact_methods_path}']", text: "Contact methods"
+    assert_select "section h2", text: "Download your data"
+    assert_select "a[href='#{account_export_path}']", text: /Download your Klivka data/
     assert_select "input[name^='user[']", count: 0
   end
 

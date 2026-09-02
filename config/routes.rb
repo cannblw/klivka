@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   patch "settings/preferences", to: "settings#update_preferences"
   get "settings/reminders", to: "settings#reminders", as: :settings_reminders
   patch "settings/reminders", to: "settings#update_reminders"
+  resource :account_export, only: :show, path: "settings/export"
   resources :contact_methods, path: "settings/contact-methods", only: %i[ index create update destroy ] do
     patch :enable, on: :member
     patch :disable, on: :member

@@ -570,6 +570,9 @@ es:
       email: "Correo electrónico"
       password_note: "Para cambiar tu contraseña, haz clic"
       password_link: "aquí"
+      data_export: "Descarga tus datos"
+      data_export_description: "Guarda una copia JSON versionada de los ajustes de tu cuenta, las personas, las entradas, las interacciones y los recordatorios."
+      download_data: "Descarga tus datos de Klivka"
     preferences:
       title: "Apariencia e idioma | Ajustes"
       heading: "Apariencia e idioma"
