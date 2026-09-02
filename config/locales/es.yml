@@ -969,6 +969,13 @@ es:
       open_person: "Ver a %{name}"
       settings: "Gestionar ajustes de recordatorios"
 
+  account_imports:
+    errors:
+      file_too_large: "Elige un archivo de hasta %{size}."
+      invalid_file: "Ese archivo no es una exportación compatible de Klivka."
+      missing_file: "Elige un archivo de exportación de Klivka para continuar."
+      rate_limited: "Vuelve a intentarlo dentro de un rato."
+
   vcard_import:
     anniversary: "Aniversario"
 

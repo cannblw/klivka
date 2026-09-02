@@ -958,6 +958,13 @@ en:
       open_person: "Open %{name}"
       settings: "Manage reminder settings"
 
+  account_imports:
+    errors:
+      file_too_large: "Choose a file up to %{size}."
+      invalid_file: "That file is not a supported Klivka export."
+      missing_file: "Choose a Klivka export file to continue."
+      rate_limited: "Try uploading again in a little while."
+
   vcard_import:
     anniversary: "Anniversary"
 

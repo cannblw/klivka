@@ -60,6 +60,19 @@ module Klivka
       raise ArgumentError, "VCARD_IMPORT_UPLOAD_RATE_WINDOW_MINUTES must be positive"
     end
 
+    config.x.account_import_max_file_size_bytes = Integer(ENV.fetch("ACCOUNT_IMPORT_MAX_FILE_SIZE_BYTES", 25.megabytes.to_s), 10)
+    unless config.x.account_import_max_file_size_bytes.positive?
+      raise ArgumentError, "ACCOUNT_IMPORT_MAX_FILE_SIZE_BYTES must be positive"
+    end
+
+    config.x.account_import_upload_rate_limit = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_LIMIT", "5"), 10)
+    raise ArgumentError, "ACCOUNT_IMPORT_UPLOAD_RATE_LIMIT must be positive" unless config.x.account_import_upload_rate_limit.positive?
+
+    config.x.account_import_upload_rate_window = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_WINDOW_MINUTES", "60"), 10).minutes
+    unless config.x.account_import_upload_rate_window.positive?
+      raise ArgumentError, "ACCOUNT_IMPORT_UPLOAD_RATE_WINDOW_MINUTES must be positive"
+    end
+
     # Optional email confirmation for registrations; see .env.example
     config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
 

@@ -30,6 +30,9 @@ class ApplicationConfigurationTest < ActiveSupport::TestCase
     assert_equal 1.hour, configuration.vcard_import_preview_lifetime
     assert_equal 10, configuration.vcard_import_upload_rate_limit
     assert_equal 60.minutes, configuration.vcard_import_upload_rate_window
+    assert_equal 25.megabytes, configuration.account_import_max_file_size_bytes
+    assert_equal 5, configuration.account_import_upload_rate_limit
+    assert_equal 60.minutes, configuration.account_import_upload_rate_window
   end
 
   test "application defines safe reminder email delivery defaults" do
