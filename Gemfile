@@ -72,7 +72,7 @@ group :test do
 end
 
 gem "tailwindcss-rails", "~> 4.6"
-gem "view_component", "~> 4.12"
+gem "view_component", "~> 4.15"
 
 gem "rails-i18n", "~> 8.1"
 
@@ -80,12 +80,12 @@ gem "jaro_winkler", "~> 1.7"
 
 gem "friendly_id", "~> 5.7"
 
-gem "dotiw", "~> 5.5"
+gem "dotiw", "~> 5.6"
 
 # vcard is pre-1.0, so minor releases may contain breaking changes. Allow only 0.4.x patches.
 gem "vcard", "~> 0.4.0"
 
-gem "resend", "~> 1.10"
+gem "resend", "~> 1.13"
 
 gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
 
