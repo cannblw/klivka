@@ -154,6 +154,14 @@ module Klivka
     config.x.reminder_delivery_retry_attempts = Integer(ENV.fetch("REMINDER_DELIVERY_RETRY_ATTEMPTS", "5"), 10)
     raise ArgumentError, "REMINDER_DELIVERY_RETRY_ATTEMPTS must be positive" unless config.x.reminder_delivery_retry_attempts.positive?
 
+    config.x.account_deletion_cleanup_retry_attempts = Integer(
+      ENV.fetch("ACCOUNT_DELETION_CLEANUP_RETRY_ATTEMPTS", "5"), 10
+    )
+    unless config.x.account_deletion_cleanup_retry_attempts.positive?
+      raise ArgumentError, "ACCOUNT_DELETION_CLEANUP_RETRY_ATTEMPTS must be positive"
+    end
+    config.x.account_deletion_cleanup_handlers = []
+
     config.x.reminder_delivery_claim_timeout = Integer(ENV.fetch("REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES", "30"), 10).minutes
     raise ArgumentError, "REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES must be positive" unless config.x.reminder_delivery_claim_timeout.positive?
 

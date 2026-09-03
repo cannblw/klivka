@@ -91,6 +91,10 @@ es:
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."
 
+  account_deletions:
+    destroyed: "Tu cuenta de Klivka se ha eliminado."
+    invalid_password: "Introduce tu contraseña actual para eliminar tu cuenta."
+
   nav:
     birthdays: "Cumpleaños"
     categories: "Categorías"

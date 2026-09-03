@@ -80,6 +80,10 @@ en:
   auth:
     rate_limited: "Try again later."
 
+  account_deletions:
+    destroyed: "Your Klivka account has been deleted."
+    invalid_password: "Enter your current password to delete your account."
+
   nav:
     birthdays: "Birthdays"
     categories: "Categories"

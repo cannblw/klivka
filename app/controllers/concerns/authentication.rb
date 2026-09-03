@@ -51,4 +51,10 @@ module Authentication
       Current.session.destroy
       cookies.delete(:session_id)
     end
+
+    def forget_session
+      Current.session = nil
+      cookies.delete(:session_id)
+      reset_session
+    end
 end

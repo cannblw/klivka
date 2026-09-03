@@ -43,6 +43,8 @@ class ApplicationConfigurationTest < ActiveSupport::TestCase
     assert_equal "rails", configuration.reminder_mail_transport
     assert_equal 5, configuration.reminder_delivery_retry_attempts
     assert_equal 30.minutes, configuration.reminder_delivery_claim_timeout
+    assert_equal 5, configuration.account_deletion_cleanup_retry_attempts
+    assert_empty configuration.account_deletion_cleanup_handlers
     assert_nil configuration.resend_api_key
   end
 end

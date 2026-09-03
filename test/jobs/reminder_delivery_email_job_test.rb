@@ -1,6 +1,10 @@
 require "test_helper"
 
 class ReminderDeliveryEmailJobTest < ActiveJob::TestCase
+  test "finishes safely when account deletion removed the delivery work" do
+    assert_nothing_raised { ReminderDeliveryEmailJob.perform_now(-1) }
+  end
+
   test "retries a failed individual date email with only its ledger identifier" do
     delivery = ReminderDelivery.create!(
       user: users(:one), source: entries(:ada_birthday), channel: "email",
