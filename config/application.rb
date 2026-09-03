@@ -60,6 +60,19 @@ module Klivka
       raise ArgumentError, "VCARD_IMPORT_UPLOAD_RATE_WINDOW_MINUTES must be positive"
     end
 
+    config.x.account_import_max_file_size_bytes = Integer(ENV.fetch("ACCOUNT_IMPORT_MAX_FILE_SIZE_BYTES", 25.megabytes.to_s), 10)
+    unless config.x.account_import_max_file_size_bytes.positive?
+      raise ArgumentError, "ACCOUNT_IMPORT_MAX_FILE_SIZE_BYTES must be positive"
+    end
+
+    config.x.account_import_upload_rate_limit = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_LIMIT", "3"), 10)
+    raise ArgumentError, "ACCOUNT_IMPORT_UPLOAD_RATE_LIMIT must be positive" unless config.x.account_import_upload_rate_limit.positive?
+
+    config.x.account_import_upload_rate_window = Integer(ENV.fetch("ACCOUNT_IMPORT_UPLOAD_RATE_WINDOW_MINUTES", "1"), 10).minutes
+    unless config.x.account_import_upload_rate_window.positive?
+      raise ArgumentError, "ACCOUNT_IMPORT_UPLOAD_RATE_WINDOW_MINUTES must be positive"
+    end
+
     # Optional email confirmation for registrations; see .env.example
     config.x.require_email_confirmation = ENV["REQUIRE_EMAIL_CONFIRMATION"] == "true"
 
@@ -144,9 +157,9 @@ module Klivka
     config.x.reminder_delivery_claim_timeout = Integer(ENV.fetch("REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES", "30"), 10).minutes
     raise ArgumentError, "REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES must be positive" unless config.x.reminder_delivery_claim_timeout.positive?
 
-    config.x.resend_api_key = ENV["RESEND_API_KEY"].presence || Rails.application.credentials.dig(:resend, :api_key)
+    config.x.resend_api_key = ENV["RESEND_API_KEY"].presence
     if config.x.reminder_mail_transport == "resend" && config.x.resend_api_key.blank?
-      raise ArgumentError, "RESEND_API_KEY or credentials.resend.api_key is required for the Resend reminder transport"
+      raise ArgumentError, "RESEND_API_KEY is required for the Resend reminder transport"
     end
 
     config.x.job_processes = Integer(ENV.fetch("JOB_CONCURRENCY", "1"), 10)

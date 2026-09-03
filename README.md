@@ -29,6 +29,34 @@ Klivka is designed for private, personal use. Its progressive interface keeps th
 
 ## Getting started
 
+Run Klivka with Docker:
+
+```bash
+docker run -d --name klivka --restart unless-stopped -p 80:80 -v klivka_storage:/rails/storage ghcr.io/cannblw/klivka:development
+```
+
+Klivka is now available at http://localhost. The `klivka_storage` volume keeps your data when the container restarts or is replaced. Keep this volume and include it in your backups.
+
+Or use Docker Compose:
+
+```yaml
+services:
+  klivka:
+    image: ghcr.io/cannblw/klivka:development
+    ports:
+      - "80:80"
+    volumes:
+      - klivka_storage:/rails/storage
+    restart: unless-stopped
+
+volumes:
+  klivka_storage:
+```
+
+Save this as `compose.yml`, run `docker compose up -d`, then open http://localhost.
+
+## Development
+
 ```bash
 bin/setup
 bin/rails db:seed # Optionally seed mock data
@@ -43,8 +71,6 @@ In development, a default user with mock data is available after running `bin/ra
 - Password: `admin`
 
 Set `DEVELOPMENT_SEED_EMAIL_ADDRESS` and `DEVELOPMENT_SEED_PASSWORD` to use different credentials.
-
-## Development
 
 - `bin/dev` — run the app (Rails server + Tailwind watcher)
 - `bin/rails test` — run the test suite (Minitest)
@@ -62,7 +88,7 @@ Optional settings are read from environment variables; see [.env.example](.env.e
 - `REMINDER_MAIL_TRANSPORT` (default `rails`): reminder transport. `rails` uses the configured Action Mailer delivery method; `resend` uses the Resend API.
 - `REMINDER_DELIVERY_RETRY_ATTEMPTS` (default `5`): maximum transport attempts for one reminder delivery job.
 - `REMINDER_DELIVERY_CLAIM_TIMEOUT_MINUTES` (default `30`): how long an abandoned delivery claim remains active before it can be retried.
-- `RESEND_API_KEY`: required when `REMINDER_MAIL_TRANSPORT=resend`. Provide it as a deployment secret, or store the key as `resend.api_key` in Rails credentials.
+- `RESEND_API_KEY`: required when `REMINDER_MAIL_TRANSPORT=resend`. Provide it as a deployment secret.
 
 Mail transports are registered in [`config/initializers/mail_transports.rb`](config/initializers/mail_transports.rb). Each adapter has its own file under [`app/services/mail_transports`](app/services/mail_transports) and implements `deliver(message:, delivery_id:)`. New mail features can use the same registry without coupling their delivery policy or templates to a provider.
 
