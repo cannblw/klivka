@@ -339,7 +339,7 @@ en:
       button: "Contacted today"
     follow_up:
       heading: "Record contact with %{name}"
-      hint: "Add as much or as little context as you like."
+      hint: "Save the contact that feels useful to remember. Details are optional."
       occurred_on: "Date"
       contact_method: "How you connected"
       method_blank: "Not specified"
@@ -383,7 +383,7 @@ en:
       deleted: "Interaction removed."
     last_contacted:
       label: "Last contact"
-      never: "No contact yet"
+      not_logged: "No contact logged yet"
       today: "today"
       ago: "%{duration} ago"
 

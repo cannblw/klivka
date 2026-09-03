@@ -312,7 +312,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "button[aria-controls='#{QuickInteractionComponent::DOM_ID}']", text: "Contacted today"
     assert_select "[data-controller~='dialog'][data-dialog-open-value='false'] dialog##{QuickInteractionComponent::DOM_ID}"
     assert_select "form[action='#{person_interactions_path(people(:ada))}']"
-    assert_select "p", text: /No contact yet/
+    assert_select "#last-contacted", count: 0
     assert_select "#contact-reminder-heading", text: "Keep in touch"
     assert_select "form[action='#{person_keep_in_touch_setting_path(people(:ada))}']"
     assert_select "form[action='#{person_category_assignment_path(people(:ada))}'] select[name='category_assignment[category_id]']"
@@ -390,6 +390,16 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#last-contacted", text: /Last contact/
     assert_select "#last-contacted", text: /2 days ago/
+  end
+
+  test "show distinguishes an active reminder without logged contact" do
+    user = users(:one)
+    user.update!(contact_reminders_enabled_on: user.local_date)
+
+    get person_url(people(:ada))
+
+    assert_response :success
+    assert_select "#last-contacted", text: "No contact logged yet"
   end
 
   test "show displays the most recent interaction date when multiple exist" do

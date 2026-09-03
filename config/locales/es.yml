@@ -350,7 +350,7 @@ es:
       button: "He contactado hoy"
     follow_up:
       heading: "Registra el contacto con %{name}"
-      hint: "Añade tanto o tan poco contexto como quieras."
+      hint: "Guarda el contacto que te resulte útil recordar. Los detalles son opcionales."
       occurred_on: "Fecha"
       contact_method: "Cómo os pusisteis en contacto"
       method_blank: "Sin especificar"
@@ -394,7 +394,7 @@ es:
       deleted: "Interacción eliminada."
     last_contacted:
       label: "Último contacto"
-      never: "Aún sin contacto"
+      not_logged: "Aún no has registrado ningún contacto"
       today: "hoy"
       ago: "hace %{duration}"
 
