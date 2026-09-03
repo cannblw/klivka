@@ -315,6 +315,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "#last-contacted", count: 0
     assert_select "#contact-reminder-heading", text: "Keep in touch"
     assert_select "form[action='#{person_keep_in_touch_setting_path(people(:ada))}']"
+    assert_operator response.body.index("interactions-history"), :<, response.body.index("contact-reminder")
     assert_select "form[action='#{person_category_assignment_path(people(:ada))}'] select[name='category_assignment[category_id]']"
     assert_select "[data-controller='archive-person'][data-archive-person-url='#{archive_person_path(people(:ada))}']", text: /Archive person/
     assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(people(:ada))}']", text: /Delete permanently/

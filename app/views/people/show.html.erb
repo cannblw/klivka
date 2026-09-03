@@ -127,8 +127,6 @@
 
   <%= render PersonCategoryComponent.new(person: @person, categories: @categories) %>
 
-  <%= render ContactReminderComponent.new(person: @person, reminder: @contact_reminder, class: "mt-6") %>
-
   <%= render PersonContactActionsComponent.new(entries: ordered_entries) %>
 
   <%= render InteractionHistoryComponent.new(
@@ -137,6 +135,8 @@
         total_count: @interaction_count,
         heading_key: "interactions.history.last_heading"
       ) %>
+
+  <%= render ContactReminderComponent.new(person: @person, reminder: @contact_reminder, class: "mt-8") %>
 
   <%= render EntryTypePickerComponent.new(person: @person, types: EntryTypePickerComponent::COMMON_TYPES) %>
 
