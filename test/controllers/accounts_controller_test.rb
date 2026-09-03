@@ -20,8 +20,11 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
       delete account_path, params: { account: { password: "wrong-password" } }
     end
 
-    assert_redirected_to settings_url
+    assert_response :unprocessable_entity
     assert User.exists?(@user.id)
+    assert_select "dialog#account-deletion-dialog[data-dialog-open-value='true']"
+    assert_select "#account-deletion-dialog-error[role='alert']:not([hidden])",
+      text: I18n.t("account_deletions.invalid_password")
   end
 
   test "deletes only the authenticated account and invalidates every session" do

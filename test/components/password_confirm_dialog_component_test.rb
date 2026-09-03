@@ -20,4 +20,23 @@ class PasswordConfirmDialogComponentTest < ViewComponent::TestCase
     assert_selector "button[type='submit'][form='restore-form'].bg-red-600", text: "Replace"
     assert_selector "button[type='button']", text: "Cancel"
   end
+
+  test "reopens with an inline password error after a failed submission" do
+    render_inline PasswordConfirmDialogComponent.new(
+      id: "deletion-dialog",
+      title: "Delete your account?",
+      body: "This cannot be undone.",
+      form_id: "deletion-form",
+      password_name: "account[password]",
+      password_label: "Current password",
+      password_hint: "Confirm your password.",
+      confirm_label: "Delete",
+      cancel_label: "Cancel",
+      error: "Enter your current password.",
+      open: true
+    )
+
+    assert_selector "dialog[data-dialog-open-value='true']"
+    assert_selector "p#deletion-dialog-error[role='alert']:not([hidden])", text: "Enter your current password."
+  end
 end

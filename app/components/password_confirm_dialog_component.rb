@@ -1,5 +1,6 @@
 class PasswordConfirmDialogComponent < ViewComponent::Base
-  def initialize(id:, title:, body:, form_id:, password_name:, password_label:, password_hint:, confirm_label:, cancel_label:)
+  def initialize(id:, title:, body:, form_id:, password_name:, password_label:, password_hint:, confirm_label:, cancel_label:,
+    error: nil, open: false)
     @id = id
     @title = title
     @body = body
@@ -9,12 +10,14 @@ class PasswordConfirmDialogComponent < ViewComponent::Base
     @password_hint = password_hint
     @confirm_label = confirm_label
     @cancel_label = cancel_label
+    @error = error
+    @open = open
   end
 
   private
 
   attr_reader :id, :title, :body, :form_id, :password_name, :password_label, :password_hint,
-    :confirm_label, :cancel_label
+    :confirm_label, :cancel_label, :error, :open
 
   def title_id
     "#{id}-title"

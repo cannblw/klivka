@@ -14,6 +14,12 @@ class ButtonComponentTest < ViewComponent::TestCase
     assert_no_selector ".bg-amber-600"
   end
 
+  test "destructive variant uses the destructive palette" do
+    render_inline(ButtonComponent.new(variant: :destructive)) { "Delete" }
+
+    assert_selector "button.bg-red-600.hover\\:bg-red-500", text: "Delete"
+  end
+
   test "passes through type, data attributes and extra classes" do
     render_inline(ButtonComponent.new(type: :submit, class: "w-full", data: { action: "dialog#open" })) { "Go" }
 

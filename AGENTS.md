@@ -96,7 +96,7 @@ Use these shared components instead of writing equivalent markup inline. Do not 
 
 | Component | Purpose | When to use |
 |-----------|---------|-------------|
-| `ButtonComponent` | `<button>` with variant and size styling | Every standard clickable button. Variants: `:primary` and `:ghost`. Sizes: `:sm` and `:md`. |
+| `ButtonComponent` | `<button>` with variant and size styling | Every standard clickable button. Variants: `:primary`, `:destructive`, and `:ghost`. Sizes: `:sm` and `:md`. |
 | `SectionComponent` | Responsive, full-width bordered card with an optional heading and description | Related content in a visual section, such as settings panels and upload forms. Use `heading_id:` when the section needs an accessible name. Do not hand-write the equivalent card container. |
 | `InputFieldComponent` | Text, email, password, search, number, or date input with consistent styling and inline errors | Supported form-builder-backed input fields. |
 | `TextareaFieldComponent` | Textarea with consistent styling and inline errors | Every form-builder-backed textarea. |

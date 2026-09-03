@@ -4,7 +4,9 @@ class AccountsController < ApplicationController
   def destroy
     user = Current.user
     unless user.authenticate(params.dig(:account, :password))
-      return redirect_to settings_path, alert: t("account_deletions.invalid_password")
+      @user = user
+      @account_deletion_error = t("account_deletions.invalid_password")
+      return render "settings/show", status: :unprocessable_entity
     end
 
     locale = I18n.locale
