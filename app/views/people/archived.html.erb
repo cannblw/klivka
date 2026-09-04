@@ -18,12 +18,19 @@
                   <%= t(".restore") %>
                 <% end %>
               <% end %>
-              <%= render ButtonComponent.new(
-                    variant: :ghost,
-                    size: :sm,
-                    class: "text-red-600 hover:text-red-500 dark:text-red-400",
-                    data: { controller: "delete-person", delete_person_url: person_path(person), action: "click->delete-person#click" }
-                  ) do %>
+            <%= render ButtonComponent.new(
+                  variant: :ghost,
+                  size: :sm,
+                  class: "text-red-600 hover:text-red-500 dark:text-red-400",
+                  data: ConfirmDialogComponent.trigger_data(
+                    url: person_path(person),
+                    title: t("people.delete_confirm.title"),
+                    body: t("people.delete_confirm.body"),
+                    confirm_label: t("people.delete_confirm.confirm"),
+                    cancel_label: t("people.delete_confirm.cancel"),
+                    turbo_method: :delete
+                  )
+                ) do %>
                 <%= t(".delete_permanently") %>
               <% end %>
             </div>

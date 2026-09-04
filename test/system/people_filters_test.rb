@@ -58,7 +58,9 @@ class PeopleFiltersTest < ApplicationSystemTestCase
     click_button "More actions"
     click_button "Add several people"
 
-    assert_selector "dialog[open]"
+    dialog = find("#people-creation-dialog[open]")
+    assert_equal "batch-person-creation-heading", dialog[:"aria-labelledby"]
+    assert_selector "#batch-person-names:focus"
     assert_no_current_path(/batch=true/)
 
     within("dialog") { click_button "Cancel" }

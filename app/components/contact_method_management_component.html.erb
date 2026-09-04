@@ -40,12 +40,14 @@
               variant: :ghost,
               size: :sm,
               class: "text-red-600 hover:text-red-500 dark:text-red-400",
-              data: {
-                controller: "delete-contact-method",
-                action: "click->delete-contact-method#click",
-                delete_contact_method_url: contact_method_path(contact_method),
-                delete_contact_method_message: t("contact_methods.delete.body", name: contact_method.name)
-              }
+              data: ConfirmDialogComponent.trigger_data(
+                url: contact_method_path(contact_method),
+                title: t("contact_methods.delete.title"),
+                body: t("contact_methods.delete.body", name: contact_method.name),
+                confirm_label: t("contact_methods.actions.delete"),
+                cancel_label: t("contact_methods.actions.cancel"),
+                turbo_method: :delete
+              )
             ) do %>
           <%= t("contact_methods.actions.delete") %>
         <% end %>

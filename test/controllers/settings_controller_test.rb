@@ -34,7 +34,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "section h2", text: "Delete your account"
     assert_select "form#account-deletion-form[action='#{account_path}'][method='post']" do
       assert_select "input[name='_method'][value='delete']", visible: :all
-      assert_select "button[data-action='account-deletion#confirm']", text: "Delete my account"
+      assert_select "button[data-controller='dialog-trigger'][data-action='dialog-trigger#open'][data-dialog-trigger-dialog-id-value='account-deletion-dialog']", text: "Delete my account"
     end
     assert_select "a[href='#{account_export_path}']", text: /Download your Klivka data/, count: 2
     assert_select "dialog#account-deletion-dialog[data-dialog-open-value='false']" do

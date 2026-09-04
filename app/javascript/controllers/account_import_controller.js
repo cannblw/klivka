@@ -97,10 +97,6 @@ export default class extends Controller {
     }
   }
 
-  confirm() {
-    document.getElementById("account-import-dialog")?.showModal()
-  }
-
   resetReview() {
     this.reviewTarget.hidden = true
     this.confirmButtonTarget.disabled = true

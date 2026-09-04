@@ -1,6 +1,6 @@
 <% content_for :title, t(".title") %>
 
-<div data-controller="dialog toggle"
+<div data-controller="dialog people-creation-dialog"
      data-dialog-open-value="<%= @person.errors.any? || @batch_mode %>"
      data-dialog-clear-param-value="batch">
   <div class="flex flex-wrap items-start justify-between gap-4">
@@ -9,11 +9,18 @@
     <%= render PeopleCollectionActionsComponent.new(demo_mode: demo_mode?) %>
   </div>
 
-  <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
-          class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
+  <%= render DialogComponent.new(
+        id: "people-creation-dialog",
+        labelledby: @batch_mode ? "batch-person-creation-heading" : "person-creation-heading",
+        data: {
+          dialog_target: "dialog",
+          people_creation_dialog_target: "dialog",
+          action: "click->dialog#closeOnBackdrop"
+        }
+      ) do %>
     <div class="p-6">
-      <div data-toggle-target="content" class="<%= "hidden" if @batch_mode %>">
-        <h2 class="text-lg font-semibold dark:text-stone-100"><%= t(".modal.heading") %></h2>
+      <div data-people-creation-dialog-target="content" data-heading-id="person-creation-heading" class="<%= "hidden" if @batch_mode %>">
+        <h2 id="person-creation-heading" class="text-lg font-semibold dark:text-stone-100"><%= t(".modal.heading") %></h2>
         <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".modal.hint") %></p>
 
         <%= form_with model: @person, class: "mt-4" do |form| %>
@@ -22,12 +29,13 @@
                   placeholder: t(".modal.name_placeholder"),
                   autofocus: !@batch_mode,
                   autocomplete: "off",
+                  data: { people_creation_dialog_target: "focus" },
                   class: "w-full") %>
             <%= render ButtonComponent.new(
                   variant: :ghost,
                   size: :sm,
                   class: "border border-stone-300 dark:border-stone-600",
-                  data: { action: "toggle#toggle" }
+                  data: { action: "people-creation-dialog#toggle" }
                 ) do %>
               <%= t(".modal.add_multiple") %>
             <% end %>
@@ -43,8 +51,8 @@
         <% end %>
       </div>
 
-      <div data-toggle-target="content" class="<%= "hidden" unless @batch_mode %>">
-        <h2 class="text-lg font-semibold dark:text-stone-100"><%= t(".batch_modal.heading") %></h2>
+      <div data-people-creation-dialog-target="content" data-heading-id="batch-person-creation-heading" class="<%= "hidden" unless @batch_mode %>">
+        <h2 id="batch-person-creation-heading" class="text-lg font-semibold dark:text-stone-100"><%= t(".batch_modal.heading") %></h2>
         <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t(".batch_modal.hint") %></p>
 
         <%= form_with url: preview_batch_person_creation_path,
@@ -59,6 +67,7 @@
                     id: "batch-person-names",
                     rows: 8,
                     autofocus: @batch_mode,
+                    data: { people_creation_dialog_target: "focus" },
                     class: "block #{FormStyling::TEXTAREA_CLASSES}",
                     placeholder: t(".batch_modal.placeholder"),
                     aria: { describedby: ("batch-person-errors" if @batch_creation.errors.any?), invalid: @batch_creation.errors.any? } %>
@@ -70,7 +79,7 @@
                   variant: :ghost,
                   size: :sm,
                   class: "border border-stone-300 dark:border-stone-600",
-                  data: { action: "toggle#toggle" }
+                  data: { action: "people-creation-dialog#toggle" }
                 ) do %>
               <%= t(".batch_modal.add_one") %>
             <% end %>
@@ -86,7 +95,7 @@
         <% end %>
       </div>
     </div>
-  </dialog>
+  <% end %>
 <%= turbo_frame_tag "people_grid" do %>
   <%= render PeopleQueryControlsComponent.new(
         search: @person_search,

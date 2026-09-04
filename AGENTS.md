@@ -48,6 +48,10 @@
 - Views: hybrid. UI that is reusable, parameterized, or logic-bearing is a ViewComponent (Ruby class + template + test) with an explicit initializer interface. Plain ERB for layouts, page templates, and one-off page chrome. No shared partials — anything rendered from 2+ places becomes a component.
 - Prefer componentizing any HTML that is expected to be reused, even within a single feature. Buttons, form controls, avatars, and similar primitives should be components by default; don't wait for a second usage to extract them.
 - Before adding a JavaScript utility, search for existing code that solves the same browser concern and extract one shared implementation when appropriate.
+- Keep Stimulus controllers focused on one UI responsibility. Shared structural components must not inject undocumented controller targets or actions; declare behavior explicitly at each integration boundary.
+- Cross-controller browser events must describe a specific completed intent and use an explicit payload contract. Do not use a generic global event when unrelated workflows could observe it, and do not signal successful completion before the relevant operation or navigation can proceed.
+- JavaScript may toggle state and documented variant classes, but must not replace a component's complete class list. Keep structural and design-system classes owned by the rendering component.
+- Tests locate interactive UI through stable IDs or explicit component/controller hooks. Use ARIA attributes to assert accessibility semantics, not as behavioral selectors.
 - Never silence a caught error completely. Best-effort behavior may recover or continue when failure is safe, but it must report enough non-sensitive context through the appropriate logger or `console.error` so the problem remains diagnosable. Never include user content or personal data in diagnostic output.
 - Before adding a platform or adapter-specific implementation, search for an existing reusable abstraction and extend it when appropriate.
 - Tailwind is used as intended: utilities inline in markup; deduplicate by extracting components, never with `@apply`.
@@ -105,9 +109,13 @@ Use these shared components instead of writing equivalent markup inline. Do not 
 | `FilterSearchFieldComponent` | Search input wired to client-side list filtering | Filterable lists that use the `filter-list` controller. |
 | `TogglePillGroupComponent` | Radio buttons styled as horizontal pills | Small exclusive choice sets such as language and theme. Supply a stable tooltip ID when disabled guidance is shown. |
 | `ConfirmDialogComponent` | Accessible confirmation dialog with confirm and cancel actions | Every destructive-action confirmation. Do not write inline confirmation dialogs. |
+| `DialogComponent` | Structural native dialog shell with required accessible naming | Every modal dialog. Supply `labelledby:` for a visible heading when practical, or an explicit `aria-label`; declare all Stimulus behavior at the call site. |
+| `PasswordConfirmDialogComponent` | Password reauthentication dialog attached to an existing form | Sensitive account operations that require the current password before submission. |
 | `CardComponent` | Narrow centered card | Authentication screens such as sign in, registration, and password reset. |
 | `FlashComponent` | Toast notification | Flash messages, normally rendered by the application layout. |
 | `InlineNoticeComponent` | Inline warning banner | Non-dismissible warnings within page content. |
+
+Dialog triggers are buttons unless they have a genuine navigation fallback. Opening, closing, changing modes, failed submissions, and successful completion must leave focus in a logical place. Do not use `role="menu"` unless the complete keyboard interaction pattern is implemented.
 
 ### Shared form styling
 

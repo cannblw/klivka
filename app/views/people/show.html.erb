@@ -22,7 +22,14 @@
         <%= render ButtonComponent.new(
               variant: :ghost,
               class: "text-red-600 hover:text-red-500 dark:text-red-400",
-              data: { controller: "delete-person", delete_person_url: person_path(@person), action: "click->delete-person#click" }
+              data: ConfirmDialogComponent.trigger_data(
+                url: person_path(@person),
+                title: t("people.delete_confirm.title"),
+                body: t("people.delete_confirm.body"),
+                confirm_label: t("people.delete_confirm.confirm"),
+                cancel_label: t("people.delete_confirm.cancel"),
+                turbo_method: :delete
+              )
             ) do %>
           <%= t(".delete_permanently") %>
         <% end %>
@@ -95,6 +102,7 @@
 
       <div data-controller="dropdown" class="relative">
         <%= render ButtonComponent.new(
+              id: "person-actions-menu-trigger",
               variant: :ghost,
               size: :sm,
               class: "text-stone-400 dark:text-stone-500",
@@ -108,12 +116,41 @@
 
         <div data-dropdown-target="menu" data-action="click->dropdown#close"
              class="absolute right-0 z-40 mt-1 hidden w-44 rounded-lg border border-stone-200 bg-stone-50 py-1 shadow-lg dark:border-stone-700 dark:bg-stone-800">
-          <%= link_to t(".archive"), "#",
-                data: { controller: "archive-person", archive_person_url: archive_person_path(@person), action: "click->archive-person#click" },
-                class: "block px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700" %>
-          <%= link_to t(".delete_permanently"), "#",
-                data: { controller: "delete-person", delete_person_url: person_path(@person), action: "click->delete-person#click" },
-                class: "block px-4 py-2 text-sm text-red-600 hover:bg-stone-100 dark:text-red-400 dark:hover:bg-stone-700" %>
+          <%= render ButtonComponent.new(
+                variant: :ghost,
+                size: :sm,
+                data: ConfirmDialogComponent.trigger_data(
+                  url: archive_person_path(@person),
+                  title: t("people.archive_confirm.title"),
+                  body: t("people.archive_confirm.body"),
+                  confirm_label: t("people.archive_confirm.confirm"),
+                  cancel_label: t("people.archive_confirm.cancel"),
+                  turbo_method: :patch,
+                  destructive: false,
+                  focus_id: "person-actions-menu-trigger"
+                ).merge(action: "click->dropdown#close click->confirm-dialog-trigger#open"),
+                role: "menuitem",
+                class: "w-full justify-start text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700"
+              ) do %>
+            <%= t(".archive") %>
+          <% end %>
+          <%= render ButtonComponent.new(
+                variant: :ghost,
+                size: :sm,
+                data: ConfirmDialogComponent.trigger_data(
+                  url: person_path(@person),
+                  title: t("people.delete_confirm.title"),
+                  body: t("people.delete_confirm.body"),
+                  confirm_label: t("people.delete_confirm.confirm"),
+                  cancel_label: t("people.delete_confirm.cancel"),
+                  turbo_method: :delete,
+                  focus_id: "person-actions-menu-trigger"
+                ).merge(action: "click->dropdown#close click->confirm-dialog-trigger#open"),
+                role: "menuitem",
+                class: "w-full justify-start text-red-600 hover:bg-stone-100 dark:text-red-400 dark:hover:bg-stone-700"
+              ) do %>
+            <%= t(".delete_permanently") %>
+          <% end %>
         </div>
       </div>
     </div>

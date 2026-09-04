@@ -11,7 +11,7 @@ class ContactMethodManagementComponentTest < ViewComponent::TestCase
     assert_selector "[data-contact-method-sortable-target='handle'][aria-label]"
     assert_selector "form[action='#{routes.disable_contact_method_path(contact_method)}']"
     assert_selector "form[action='#{routes.contact_method_path(contact_method)}'] input[name='contact_method[name]']"
-    assert_no_selector "[data-controller='delete-contact-method']"
+    assert_no_selector "[data-controller='confirm-dialog-trigger']"
   end
 
   test "custom methods render confirmed permanent deletion" do
@@ -20,7 +20,7 @@ class ContactMethodManagementComponentTest < ViewComponent::TestCase
 
     render_inline ContactMethodManagementComponent.new(contact_method:)
 
-    assert_selector "[data-controller='delete-contact-method'][data-delete-contact-method-url='#{routes.contact_method_path(contact_method)}']"
+    assert_selector "[data-controller='confirm-dialog-trigger'][data-confirm-dialog-url='#{routes.contact_method_path(contact_method)}'][data-confirm-dialog-turbo-method='delete']"
     assert_no_selector "form[action='#{routes.disable_contact_method_path(contact_method)}']"
   end
 

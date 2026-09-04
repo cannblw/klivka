@@ -50,13 +50,3 @@
     <% end %>
   <% end %>
 </div>
-
-<%= render ConfirmDialogComponent.new(
-      id: "delete-category-dialog",
-      title: t("categories.delete.title"),
-      body: t("categories.delete.body", count: 0),
-      confirm_label: t("categories.delete.confirm"),
-      cancel_label: t("categories.actions.cancel"),
-      confirm_link_id: "delete-category-confirm-link",
-      turbo_method: :delete
-    ) %>

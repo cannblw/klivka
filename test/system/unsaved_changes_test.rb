@@ -14,7 +14,7 @@ class UnsavedChangesTest < ApplicationSystemTestCase
     click_link "Settings"
     assert_dialog_open
 
-    click_link "Discard"
+    click_button "Discard"
 
     assert_current_path settings_path
   end
@@ -32,7 +32,7 @@ class UnsavedChangesTest < ApplicationSystemTestCase
 
     click_link "Cancel"
     assert_dialog_open
-    click_link "Discard"
+    click_button "Discard"
 
     assert_current_path person_path(@person)
   end
@@ -43,14 +43,14 @@ class UnsavedChangesTest < ApplicationSystemTestCase
     click_button "Save changes"
 
     assert_text "555-9876"
-    assert_no_selector "#discard-changes-dialog[open]"
+    assert_no_selector "##{ConfirmDialogComponent::DOM_ID}[open]"
 
     visit person_path(@person)
     visit edit_person_entry_path(@person, entries(:phone))
     click_link "Cancel"
 
     assert_current_path person_path(@person)
-    assert_no_selector "#discard-changes-dialog[open]"
+    assert_no_selector "##{ConfirmDialogComponent::DOM_ID}[open]"
   end
 
   test "navigation from an unguarded page remains unchanged" do
@@ -58,12 +58,12 @@ class UnsavedChangesTest < ApplicationSystemTestCase
     click_link "Settings"
 
     assert_current_path settings_path
-    assert_no_selector "#discard-changes-dialog[open]"
+    assert_no_selector "##{ConfirmDialogComponent::DOM_ID}[open]"
   end
 
   private
 
   def assert_dialog_open
-    assert_selector "#discard-changes-dialog[open]"
+    assert_selector "##{ConfirmDialogComponent::DOM_ID}[open]"
   end
 end

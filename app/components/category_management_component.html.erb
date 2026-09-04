@@ -63,12 +63,14 @@
             variant: :ghost,
             size: :sm,
             class: "text-red-600 hover:text-red-500 dark:text-red-400",
-            data: {
-              controller: "delete-category",
-              action: "click->delete-category#click",
-              delete_category_url: category_path(category),
-              delete_category_message: t("categories.delete.body", count: person_count)
-            }
+            data: ConfirmDialogComponent.trigger_data(
+              url: category_path(category),
+              title: t("categories.delete.title"),
+              body: t("categories.delete.body", count: person_count),
+              confirm_label: t("categories.delete.confirm"),
+              cancel_label: t("categories.actions.cancel"),
+              turbo_method: :delete
+            )
           ) do %>
         <%= t("categories.actions.delete") %>
       <% end %>

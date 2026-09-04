@@ -28,6 +28,8 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='sort']"
     assert_select "select[name='sort'] option", count: 5
     assert_select "button", text: "Add someone"
+    assert_select "dialog#people-creation-dialog[aria-labelledby='person-creation-heading'] h2#person-creation-heading", text: "Add someone"
+    assert_select "h2#batch-person-creation-heading", text: "Add several people"
     assert_select "button[aria-haspopup='menu']", text: /More actions/
     assert_select "[role='menu'] button", text: "Add several people"
     assert_select "[role='menu'] a[href='#{new_vcard_import_path}']", text: "Import contacts"
@@ -317,9 +319,9 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='#{person_keep_in_touch_setting_path(people(:ada))}']"
     assert_operator response.body.index("interactions-history"), :<, response.body.index("contact-reminder")
     assert_select "form[action='#{person_category_assignment_path(people(:ada))}'] select[name='category_assignment[category_id]']"
-    assert_select "[data-controller='archive-person'][data-archive-person-url='#{archive_person_path(people(:ada))}']", text: /Archive person/
-    assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(people(:ada))}']", text: /Delete permanently/
-    assert_select "dialog#archive-person-dialog", text: /reminders will stop/
+    assert_select "[data-controller='confirm-dialog-trigger'][data-confirm-dialog-url='#{archive_person_path(people(:ada))}'][data-confirm-dialog-turbo-method='patch']", text: /Archive person/
+    assert_select "[data-controller='confirm-dialog-trigger'][data-confirm-dialog-url='#{person_path(people(:ada))}'][data-confirm-dialog-turbo-method='delete']", text: /Delete permanently/
+    assert_select "dialog##{ConfirmDialogComponent::DOM_ID}", count: 1
   end
 
   test "show renders an archived person and their saved information without mutation controls" do
@@ -333,7 +335,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-archived-person-notice]", text: /read-only/
     assert_select "h1", text: person.name
     assert_select "form[action='#{restore_person_path(person)}']"
-    assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(person)}']"
+    assert_select "[data-controller='confirm-dialog-trigger'][data-confirm-dialog-url='#{person_path(person)}']"
     assert_select "a[href='#{archived_people_path}'][data-controller='history-back']", text: /Back/
     assert_select "#interactions-history", text: /#{interaction.note}/
     assert_select "#entries-feed", text: /555-1234/
@@ -355,7 +357,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "Archived people"
     assert_select "a[href='#{person_path(people(:ada))}']", text: people(:ada).name
     assert_select "form[action='#{restore_person_path(people(:ada))}']"
-    assert_select "[data-controller='delete-person'][data-delete-person-url='#{person_path(people(:ada))}']"
+    assert_select "[data-controller='confirm-dialog-trigger'][data-confirm-dialog-url='#{person_path(people(:ada))}']"
     assert_select "main", text: /#{people(:bob).name}/, count: 0
     assert_select "main", text: /#{people(:grace).name}/, count: 0
   end

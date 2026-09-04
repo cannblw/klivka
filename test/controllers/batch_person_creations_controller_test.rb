@@ -26,7 +26,7 @@ class BatchPersonCreationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{new_batch_person_creation_path}']", count: 0
     assert_select "form[action='#{people_path}'] input[name='person[name]']"
     assert_select "form[action='#{preview_batch_person_creation_path}'][data-turbo='false'] textarea[name='batch_person_creation[names]']"
-    assert_select "[data-action='toggle#toggle']", minimum: 2
+    assert_select "[data-action='people-creation-dialog#toggle']", minimum: 2
   end
 
   test "batch person dialog renders in the user's locale" do

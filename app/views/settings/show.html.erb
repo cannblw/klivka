@@ -73,7 +73,12 @@
 
             <%= render ButtonComponent.new(
                   disabled: true,
-                  data: { action: "account-import#confirm", account_import_target: "confirmButton" }
+                  data: {
+                    controller: "dialog-trigger",
+                    action: "dialog-trigger#open",
+                    dialog_trigger_dialog_id_value: "account-import-dialog",
+                    account_import_target: "confirmButton"
+                  }
                 ) do %>
               <%= t(".data_import_continue") %>
             <% end %>
@@ -94,8 +99,7 @@
           ) %>
 
       <%= render SectionComponent.new(title: t(".account_deletion"), description: t(".account_deletion_description")) do %>
-        <div class="max-w-xl space-y-4" data-controller="account-deletion"
-             data-account-deletion-dialog-id-value="account-deletion-dialog">
+        <div class="max-w-xl space-y-4">
           <p class="text-sm text-stone-600 dark:text-stone-300"><%= t(".account_deletion_warning") %></p>
           <p class="text-sm text-stone-600 dark:text-stone-300">
             <%= t(".account_deletion_export_prompt") %>
@@ -107,7 +111,11 @@
                 data: { turbo: false } do %>
             <%= render ButtonComponent.new(
                   variant: :destructive,
-                  data: { action: "account-deletion#confirm" }
+                  data: {
+                    controller: "dialog-trigger",
+                    action: "dialog-trigger#open",
+                    dialog_trigger_dialog_id_value: "account-deletion-dialog"
+                  }
                 ) do %>
               <%= t(".account_deletion_open") %>
             <% end %>

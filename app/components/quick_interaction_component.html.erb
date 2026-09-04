@@ -9,11 +9,11 @@
     <%= button_label %>
   <% end %>
 
-  <dialog id="<%= dom_id %>"
-          data-dialog-target="dialog"
-          data-action="click->dialog#closeOnBackdrop"
-          aria-labelledby="<%= heading_id %>"
-          class="m-auto w-full max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
+  <%= render DialogComponent.new(
+        id: dom_id,
+        labelledby: heading_id,
+        data: { dialog_target: "dialog", action: "click->dialog#closeOnBackdrop" }
+      ) do %>
     <div class="p-6">
       <h2 id="<%= heading_id %>" class="text-lg font-semibold dark:text-stone-100"><%= t("interactions.follow_up.heading", name: person.name) %></h2>
       <p class="mt-1 text-sm text-stone-500 dark:text-stone-400"><%= t("interactions.follow_up.hint") %></p>
@@ -64,5 +64,5 @@
         </div>
       <% end %>
     </div>
-  </dialog>
+  <% end %>
 </div>

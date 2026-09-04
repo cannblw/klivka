@@ -18,7 +18,7 @@ class EntryFormComponentTest < ViewComponent::TestCase
 
     assert_selector "input[name='entry[type]']", count: 0
     assert_selector "#phone-fields"
-    assert_selector "a", text: "Delete"
+    assert_selector "button[data-controller='confirm-dialog-trigger']", text: "Delete"
   end
 
   test "renders reminder controls for a date entry using the account defaults" do

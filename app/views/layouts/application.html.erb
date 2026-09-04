@@ -86,44 +86,6 @@
     <main class="mx-auto max-w-6xl px-4 py-8">
       <%= yield %>
     </main>
-    <%= render ConfirmDialogComponent.new(
-          id: "discard-changes-dialog",
-          title: t("discard_changes.title"),
-          body: t("discard_changes.body"),
-          confirm_label: t("discard_changes.discard"),
-          cancel_label: t("discard_changes.keep_editing"),
-          confirm_link_id: "discard-changes-confirm-link"
-        ) %>
-
-    <%= render ConfirmDialogComponent.new(
-          id: "delete-entry-dialog",
-          title: t("entries.delete_confirm_title"),
-          body: t("entries.delete_confirm_body"),
-          confirm_label: t("entries.delete"),
-          cancel_label: t("entries.cancel"),
-          confirm_link_id: "delete-entry-confirm-link",
-          turbo_method: :delete
-        ) %>
-
-    <%= render ConfirmDialogComponent.new(
-          id: "archive-person-dialog",
-          title: t("people.archive_confirm.title"),
-          body: t("people.archive_confirm.body"),
-          confirm_label: t("people.archive_confirm.confirm"),
-          cancel_label: t("people.archive_confirm.cancel"),
-          confirm_link_id: "archive-person-confirm-link",
-          destructive: false,
-          turbo_method: :patch
-        ) %>
-
-    <%= render ConfirmDialogComponent.new(
-          id: "delete-person-dialog",
-          title: t("people.delete_confirm.title"),
-          body: t("people.delete_confirm.body"),
-          confirm_label: t("people.delete_confirm.confirm"),
-          cancel_label: t("people.delete_confirm.cancel"),
-          confirm_link_id: "delete-person-confirm-link",
-          turbo_method: :delete
-        ) %>
+    <%= render ConfirmDialogComponent.new %>
   </body>
 </html>

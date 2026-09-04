@@ -1,11 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
-const DIALOG_ID = "discard-changes-dialog"
-const CONFIRM_LINK_ID = "discard-changes-confirm-link"
-
 export default class extends Controller {
+  static values = {
+    confirmLabel: String,
+    cancelLabel: String,
+    title: String,
+    body: String
+  }
+
   connect() {
     this.isDirty = false
+    this.allowNextVisit = false
     this.snapshots = new Map()
     this.snapshotFields()
 
@@ -20,7 +25,7 @@ export default class extends Controller {
     this.element.addEventListener("submit", this.boundHandleSubmit)
     document.addEventListener("turbo:before-visit", this.boundHandleBeforeVisit)
     window.addEventListener("beforeunload", this.boundHandleBeforeUnload)
-    document.getElementById(CONFIRM_LINK_ID)?.addEventListener("click", this.boundHandleDiscard)
+    window.addEventListener("unsaved-changes:discard-confirmed", this.boundHandleDiscard)
   }
 
   disconnect() {
@@ -29,7 +34,7 @@ export default class extends Controller {
     this.element.removeEventListener("submit", this.boundHandleSubmit)
     document.removeEventListener("turbo:before-visit", this.boundHandleBeforeVisit)
     window.removeEventListener("beforeunload", this.boundHandleBeforeUnload)
-    document.getElementById(CONFIRM_LINK_ID)?.removeEventListener("click", this.boundHandleDiscard)
+    window.removeEventListener("unsaved-changes:discard-confirmed", this.boundHandleDiscard)
   }
 
   snapshotFields() {
@@ -58,16 +63,31 @@ export default class extends Controller {
   }
 
   handleBeforeVisit(event) {
+    if (this.allowNextVisit) {
+      this.allowNextVisit = false
+      this.isDirty = false
+      return
+    }
+
     if (!this.isDirty) return
     event.preventDefault()
 
-    const link = document.getElementById(CONFIRM_LINK_ID)
-    if (link) link.href = event.detail.url
-    document.getElementById(DIALOG_ID)?.showModal()
+    window.dispatchEvent(new CustomEvent("confirm-dialog:open", {
+      detail: {
+        confirmDialogUrl: event.detail.url,
+        confirmDialogTitle: this.titleValue,
+        confirmDialogBody: this.bodyValue,
+        confirmDialogConfirmLabel: this.confirmLabelValue,
+        confirmDialogCancelLabel: this.cancelLabelValue,
+        confirmDialogDestructive: "true",
+        confirmDialogConfirmationEvent: "unsaved-changes:discard-confirmed",
+        opener: document.activeElement
+      }
+    }))
   }
 
   handleDiscard() {
-    this.isDirty = false
+    this.allowNextVisit = true
   }
 
   handleBeforeUnload(event) {
