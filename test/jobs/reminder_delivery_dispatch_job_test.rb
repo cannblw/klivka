@@ -1,6 +1,12 @@
 require "test_helper"
 
 class ReminderDeliveryDispatchJobTest < ActiveJob::TestCase
+  test "finishes safely when the account was deleted after dispatch" do
+    assert_no_enqueued_jobs do
+      ReminderDeliveryDispatchJob.perform_now(-1, at: Time.utc(2026, 8, 8, 12))
+    end
+  end
+
   test "dispatches one contact digest and keeps date reminder emails individual" do
     user = users(:one)
     contact_delivery = create_contact_delivery(people(:ada), user:, reminder_on: Date.new(2026, 8, 8))

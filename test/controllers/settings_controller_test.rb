@@ -31,6 +31,16 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
       assert_select "input[type='password'][name='account_import[password]'][form='account-import-form'][required]"
       assert_select "button[form='account-import-form']", text: "Replace my data"
     end
+    assert_select "section h2", text: "Delete your account"
+    assert_select "form#account-deletion-form[action='#{account_path}'][method='post']" do
+      assert_select "input[name='_method'][value='delete']", visible: :all
+      assert_select "button[data-action='account-deletion#confirm']", text: "Delete my account"
+    end
+    assert_select "a[href='#{account_export_path}']", text: /Download your Klivka data/, count: 2
+    assert_select "dialog#account-deletion-dialog[data-dialog-open-value='false']" do
+      assert_select "input[type='password'][name='account[password]'][form='account-deletion-form'][required]"
+      assert_select "button[form='account-deletion-form']", text: "Permanently delete my account"
+    end
     assert_select "input[name^='user[']", count: 0
   end
 

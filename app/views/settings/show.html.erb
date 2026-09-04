@@ -92,6 +92,42 @@
             confirm_label: t(".data_import_confirm"),
             cancel_label: t(".data_import_cancel")
           ) %>
+
+      <%= render SectionComponent.new(title: t(".account_deletion"), description: t(".account_deletion_description")) do %>
+        <div class="max-w-xl space-y-4" data-controller="account-deletion"
+             data-account-deletion-dialog-id-value="account-deletion-dialog">
+          <p class="text-sm text-stone-600 dark:text-stone-300"><%= t(".account_deletion_warning") %></p>
+          <p class="text-sm text-stone-600 dark:text-stone-300">
+            <%= t(".account_deletion_export_prompt") %>
+            <%= link_to t(".account_deletion_export"), account_export_path,
+                  class: "font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+          </p>
+
+          <%= form_with scope: :account, url: account_path, method: :delete, id: "account-deletion-form",
+                data: { turbo: false } do %>
+            <%= render ButtonComponent.new(
+                  variant: :destructive,
+                  data: { action: "account-deletion#confirm" }
+                ) do %>
+              <%= t(".account_deletion_open") %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= render PasswordConfirmDialogComponent.new(
+            id: "account-deletion-dialog",
+            title: t(".account_deletion_confirm_title"),
+            body: t(".account_deletion_confirm_body"),
+            form_id: "account-deletion-form",
+            password_name: "account[password]",
+            password_label: t(".account_deletion_password_label"),
+            password_hint: t(".account_deletion_password_hint"),
+            confirm_label: t(".account_deletion_confirm"),
+            cancel_label: t(".account_deletion_cancel"),
+            error: @account_deletion_error,
+            open: @account_deletion_error.present?
+          ) %>
     <% end %>
   </div>
 <% end %>

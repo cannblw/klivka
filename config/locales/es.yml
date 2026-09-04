@@ -91,6 +91,10 @@ es:
   auth:
     rate_limited: "Inténtalo de nuevo más tarde."
 
+  account_deletions:
+    destroyed: "Tu cuenta de Klivka se ha eliminado."
+    invalid_password: "Introduce tu contraseña actual para eliminar tu cuenta."
+
   nav:
     birthdays: "Cumpleaños"
     categories: "Categorías"
@@ -591,6 +595,18 @@ es:
       data_import_confirm_body: "Tus datos actuales de Klivka se sustituirán por esta exportación. Esta acción no se puede deshacer."
       data_import_confirm: "Sustituir mis datos"
       data_import_cancel: "Conservar mis datos actuales"
+      account_deletion: "Elimina tu cuenta"
+      account_deletion_description: "Elimina para siempre tu cuenta de Klivka y todo lo que contiene."
+      account_deletion_warning: "Tus personas, entradas, interacciones, recordatorios, ajustes y datos de acceso se eliminarán para siempre. Esta acción no se puede deshacer."
+      account_deletion_export_prompt: "¿Quieres guardar una copia antes de irte?"
+      account_deletion_export: "Descarga tus datos de Klivka"
+      account_deletion_open: "Eliminar mi cuenta"
+      account_deletion_confirm_title: "¿Quieres eliminar tu cuenta de Klivka?"
+      account_deletion_confirm_body: "Todo lo que contiene esta cuenta se eliminará para siempre. Esta acción no se puede deshacer."
+      account_deletion_password_label: "Contraseña actual"
+      account_deletion_password_hint: "Confirma tu contraseña actual para eliminar esta cuenta."
+      account_deletion_confirm: "Eliminar mi cuenta para siempre"
+      account_deletion_cancel: "Conservar mi cuenta"
       data_import_summary:
         people: "Personas"
         archived_people: "Archivadas"

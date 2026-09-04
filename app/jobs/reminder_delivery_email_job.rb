@@ -5,6 +5,18 @@ class ReminderDeliveryEmailJob < ApplicationJob
     wait: :polynomially_longer
 
   def perform(delivery_id)
-    ReminderDeliveryEmailDelivery.call(delivery_id:)
+    account_id = ReminderDelivery.where(id: delivery_id).pick(:user_id)
+    return unless account_id
+
+    failure = nil
+    result = AccountOperationLock.with(account_id) do
+      ReminderDeliveryEmailDelivery.call(delivery_id:)
+    rescue StandardError => error
+      failure = error
+      nil
+    end
+    raise failure if failure
+
+    result
   end
 end

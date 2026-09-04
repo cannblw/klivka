@@ -1,6 +1,10 @@
 require "test_helper"
 
 class ContactReminderDigestEmailJobTest < ActiveJob::TestCase
+  test "finishes safely when account deletion removed the digest" do
+    assert_nothing_raised { ContactReminderDigestEmailJob.perform_now(-1) }
+  end
+
   test "retries a failed digest with only its stable identifier" do
     user = users(:one)
     digest = ContactReminderDigest.create!(user:, delivery_on: user.local_date)

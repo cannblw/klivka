@@ -80,6 +80,10 @@ en:
   auth:
     rate_limited: "Try again later."
 
+  account_deletions:
+    destroyed: "Your Klivka account has been deleted."
+    invalid_password: "Enter your current password to delete your account."
+
   nav:
     birthdays: "Birthdays"
     categories: "Categories"
@@ -580,6 +584,18 @@ en:
       data_import_confirm_body: "Your current Klivka data will be replaced with this export. This cannot be undone."
       data_import_confirm: "Replace my data"
       data_import_cancel: "Keep my current data"
+      account_deletion: "Delete your account"
+      account_deletion_description: "Permanently remove your Klivka account and everything it contains."
+      account_deletion_warning: "Your people, entries, interactions, reminders, settings, and login will be permanently deleted. This cannot be undone."
+      account_deletion_export_prompt: "Want a copy before you go?"
+      account_deletion_export: "Download your Klivka data"
+      account_deletion_open: "Delete my account"
+      account_deletion_confirm_title: "Delete your Klivka account?"
+      account_deletion_confirm_body: "Everything in this account will be permanently deleted. This cannot be undone."
+      account_deletion_password_label: "Current password"
+      account_deletion_password_hint: "Confirm your current password to delete this account."
+      account_deletion_confirm: "Permanently delete my account"
+      account_deletion_cancel: "Keep my account"
       data_import_summary:
         people: "People"
         archived_people: "Archived"
