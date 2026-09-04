@@ -1,0 +1,8 @@
+<p id="last-contacted" data-contact-tracking-state="<%= contact_logged? ? "logged" : "not-logged" %>" class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+  <% if contact_logged? %>
+    <%= t("interactions.last_contacted.label") %>:
+    <%= contacted_today? ? t("interactions.last_contacted.today") : t("interactions.last_contacted.ago", duration: time_since_contact) %>
+  <% else %>
+    <%= t("interactions.last_contacted.not_logged") %>
+  <% end %>
+</p>
