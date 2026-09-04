@@ -3,7 +3,7 @@ require "test_helper"
 class AccountImport::DocumentTest < ActiveSupport::TestCase
   test "imports the format version currently produced by account exports" do
     assert_includes AccountImport::Document::SUPPORTED_FORMAT_VERSIONS, AccountExportSerializer::FORMAT_VERSION
-    assert_equal AccountExportSerializer::ENTRY_TYPES.values.sort, AccountImport::Document::ENTRY_TYPES.keys.sort
+    assert_equal AccountExportSerializer::ENTRY_TYPES.values.sort, AccountImport::Version1Validator::ENTRY_TYPES.keys.sort
   end
 
   test "accepts the complete version one export contract" do

@@ -102,6 +102,7 @@ Use Material Icons via `<span class="material-icons" style="font-size: Npx" aria
 ### Component catalog
 
 Use these shared components instead of writing equivalent markup inline. Do not duplicate the patterns they encapsulate.
+Whenever a reusable component is added or materially changed, review this catalog in the same changeset. Add or update its entry when it establishes an application-wide pattern; keep feature-specific presentation components uncatalogued unless they define a pattern future work must reuse.
 
 | Component | Purpose | When to use |
 |-----------|---------|-------------|
@@ -112,11 +113,19 @@ Use these shared components instead of writing equivalent markup inline. Do not 
 | `SelectFieldComponent` | Select with consistent styling and a chevron icon | Form-builder-backed select fields. |
 | `FilterSearchFieldComponent` | Search input wired to client-side list filtering | Filterable lists that use the `filter-list` controller. |
 | `TogglePillGroupComponent` | Radio buttons styled as horizontal pills | Small exclusive choice sets such as language and theme. Supply a stable tooltip ID when disabled guidance is shown. |
+| `FileFieldComponent` | Styled file input with filename feedback and accessible guidance | Every form-builder-backed file upload. Supply all user-facing labels and an optional accepted-file contract. |
+| `BackLinkComponent` | History-aware back navigation with a server fallback | Back actions that should return to prior browser context when available. Always supply a safe `fallback_path:`. |
+| `SettingsPageComponent` | Responsive settings navigation and content layout | Every settings destination. Pass one of its declared `active:` destinations and place page content in the component body. |
 | `ConfirmDialogComponent` | Accessible confirmation dialog with confirm and cancel actions | Every destructive-action confirmation. Do not write inline confirmation dialogs. |
 | `DialogComponent` | Structural native dialog shell with required accessible naming | Every modal dialog. Supply `labelledby:` for a visible heading when practical, or an explicit `aria-label`; declare all Stimulus behavior at the call site. |
 | `PasswordConfirmDialogComponent` | Password reauthentication dialog attached to an existing form | Sensitive account operations that require the current password before submission. |
 | `InteractionFieldsComponent` | Shared interaction date, contact-method, note, and validation fields | Every interaction form. Pass the active form builder, interaction, and context-appropriate note row count; keep submit controls and workflow-specific hidden fields in the owning form. |
 | `ContactEntryValueComponent` | Linked phone or email value with copy action and optional label | Phone and email entry cards. Pass an `Entry::Phone` or `Entry::Email`; use `PersonContactActionsComponent` for profile-level contact actions. |
+| `MailerButtonComponent` | Email-safe call-to-action link styling | Primary links in application mailers. Supply a translated `label:` and absolute `url:`. |
+| `PersonAvatarComponent` | Consistent initials avatar for a person | Every standard person avatar. Pass the person rather than deriving initials at the call site. |
+| `ContactMethodIconComponent` | Validated Material or Simple Icons contact-method icon | Every contact-method icon. Supply the stored library and icon name plus an optional size; the component renders nothing for invalid values. |
+| `QuickInteractionComponent` | Profile interaction dialog and trigger | The established quick “contacted today” workflow. Pass the person, interaction, authoritative time zone, and optional open/return state. |
+| `ContactReminderScheduleFieldsComponent` | Cadence-specific first-reminder controls | Every editable contact-reminder schedule. Supply the form scope, cadence, saved date, authoritative local date, and a unique ID prefix. |
 | `CardComponent` | Narrow centered card | Authentication screens such as sign in, registration, and password reset. |
 | `FlashComponent` | Toast notification | Flash messages, normally rendered by the application layout. |
 | `InlineNoticeComponent` | Inline warning banner | Non-dismissible warnings within page content. |

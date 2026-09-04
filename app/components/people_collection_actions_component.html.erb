@@ -6,18 +6,18 @@
   <div data-controller="dropdown" data-action="keydown.esc->dropdown#closeAndFocus" class="relative">
     <%= render ButtonComponent.new(
           variant: :ghost,
+          id: "people-collection-actions-trigger",
           data: { dropdown_target: "trigger", action: "dropdown#toggle" },
-          aria: { expanded: "false", haspopup: "menu" }
+          aria: { expanded: "false" }
         ) do %>
       <span><%= t("people.index.more_actions") %></span>
       <span class="material-icons align-middle" style="font-size: 18px" aria-hidden="true">expand_more</span>
     <% end %>
 
-    <div data-dropdown-target="menu" role="menu"
+    <div id="people-collection-actions-dropdown" data-dropdown-target="menu"
          class="absolute right-0 z-40 mt-1 hidden w-56 rounded-lg border border-stone-200 bg-stone-50 py-1 shadow-lg dark:border-stone-700 dark:bg-stone-800">
       <%= render ButtonComponent.new(
             variant: :ghost,
-            role: "menuitem",
             class: "w-full",
             style: "text-align: left",
             data: { action: "dropdown#close people-creation-dialog#toggle dialog#open" }
@@ -26,11 +26,9 @@
       <% end %>
       <% unless demo_mode? %>
         <%= link_to t("people.index.import_contacts"), helpers.new_vcard_import_path,
-              role: "menuitem",
               class: menu_item_classes %>
       <% end %>
       <%= link_to t("people.index.archived_people"), helpers.archived_people_path,
-            role: "menuitem",
             class: menu_item_classes %>
     </div>
   </div>

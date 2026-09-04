@@ -95,7 +95,7 @@ module AccountImport
         entry = person.entries.create!(record_attributes(
           attributes,
           %w[position content entry_date birthday_year_known]
-        ).merge(type: AccountImport::Document::ENTRY_TYPES.fetch(attributes.fetch("type"))))
+        ).merge(type: AccountImport::Version1Validator::ENTRY_TYPES.fetch(attributes.fetch("type"))))
 
         restore_entry_reminder(entry, attributes["reminder"])
       end

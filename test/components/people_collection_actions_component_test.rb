@@ -7,8 +7,8 @@ class PeopleCollectionActionsComponentTest < ViewComponent::TestCase
     render_inline PeopleCollectionActionsComponent.new(demo_mode: false)
 
     assert_button "Add someone"
-    assert_selector "button[aria-expanded='false'][aria-haspopup='menu']", text: "More actions"
-    assert_selector "[role='menu'].hidden" do
+    assert_selector "#people-collection-actions-trigger[aria-expanded='false']", text: "More actions"
+    assert_selector "#people-collection-actions-dropdown.hidden" do
       assert_button "Add several people"
       assert_link "Import contacts", href: routes.new_vcard_import_path
       assert_link "Archived people", href: routes.archived_people_path

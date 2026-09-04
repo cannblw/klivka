@@ -107,7 +107,7 @@
               size: :sm,
               class: "text-stone-400 dark:text-stone-500",
               data: { action: "dropdown#toggle" },
-              aria: { label: t(".more_actions"), haspopup: "menu" }
+              aria: { label: t(".more_actions") }
             ) do %>
           <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/>
@@ -129,7 +129,6 @@
                   destructive: false,
                   focus_id: "person-actions-menu-trigger"
                 ).merge(action: "click->dropdown#close click->confirm-dialog-trigger#open"),
-                role: "menuitem",
                 class: "w-full justify-start text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700"
               ) do %>
             <%= t(".archive") %>
@@ -146,7 +145,6 @@
                   turbo_method: :delete,
                   focus_id: "person-actions-menu-trigger"
                 ).merge(action: "click->dropdown#close click->confirm-dialog-trigger#open"),
-                role: "menuitem",
                 class: "w-full justify-start text-red-600 hover:bg-stone-100 dark:text-red-400 dark:hover:bg-stone-700"
               ) do %>
             <%= t(".delete_permanently") %>

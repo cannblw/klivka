@@ -9,7 +9,7 @@ class ConfirmationDialogTest < ApplicationSystemTestCase
   test "a shared confirmation dialog archives a person and returns focus after cancellation" do
     visit person_path(@person)
 
-    find("button[aria-haspopup='menu']").click
+    find("#person-actions-menu-trigger").click
     click_button "Archive person"
 
     within("##{ConfirmDialogComponent::DOM_ID}[open]") do
@@ -20,7 +20,7 @@ class ConfirmationDialogTest < ApplicationSystemTestCase
     end
     assert_selector "#person-actions-menu-trigger:focus"
 
-    find("button[aria-haspopup='menu']").click
+    find("#person-actions-menu-trigger").click
     click_button "Archive person"
     within("##{ConfirmDialogComponent::DOM_ID}[open]") { click_button "Archive person" }
 

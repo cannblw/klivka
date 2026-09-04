@@ -30,10 +30,10 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "button", text: "Add someone"
     assert_select "dialog#people-creation-dialog[aria-labelledby='person-creation-heading'] h2#person-creation-heading", text: "Add someone"
     assert_select "h2#batch-person-creation-heading", text: "Add several people"
-    assert_select "button[aria-haspopup='menu']", text: /More actions/
-    assert_select "[role='menu'] button", text: "Add several people"
-    assert_select "[role='menu'] a[href='#{new_vcard_import_path}']", text: "Import contacts"
-    assert_select "[role='menu'] a[href='#{archived_people_path}']", text: "Archived people"
+    assert_select "#people-collection-actions-trigger", text: /More actions/
+    assert_select "#people-collection-actions-dropdown button", text: "Add several people"
+    assert_select "#people-collection-actions-dropdown a[href='#{new_vcard_import_path}']", text: "Import contacts"
+    assert_select "#people-collection-actions-dropdown a[href='#{archived_people_path}']", text: "Archived people"
     assert_select "header a[href='#{categories_path}']"
     assert_select "turbo-frame#people_grid"
     assert_select "main", /Ada Lovelace/
@@ -292,7 +292,7 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", /Ada Lovelace/
-    assert_select "button[aria-label][aria-haspopup='menu']"
+    assert_select "#person-actions-menu-trigger[aria-label]"
     assert_select "[data-controller='toggle'] input[name='person[name]']"
     assert_select "#contact-actions-heading", text: "Contact actions"
     assert_select "[aria-labelledby='contact-actions-heading'] a[href='tel:555-1234'] .break-all", text: "555-1234"
