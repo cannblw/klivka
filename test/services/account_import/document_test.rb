@@ -3,7 +3,11 @@ require "test_helper"
 class AccountImport::DocumentTest < ActiveSupport::TestCase
   test "imports the format version currently produced by account exports" do
     assert_includes AccountImport::Document::SUPPORTED_FORMAT_VERSIONS, AccountExportSerializer::FORMAT_VERSION
-    assert_equal AccountExportSerializer::ENTRY_TYPES.values.sort, AccountImport::Version1Validator::ENTRY_TYPES.keys.sort
+
+    document = AccountImport::Document.parse(export_json)
+    AccountExportSerializer::ENTRY_TYPES.each do |internal_type, exported_type|
+      assert_equal internal_type, document.entry_type_for(exported_type)
+    end
   end
 
   test "accepts the complete version one export contract" do
@@ -30,6 +34,12 @@ class AccountImport::DocumentTest < ActiveSupport::TestCase
     assert_equal :invalid_json, error.code
   end
 
+  test "rejects parseable values that are not complete import envelopes" do
+    [ nil, [], "text", 1, {}, { "format_version" => 1 } ].each do |payload|
+      assert_equal :invalid_structure, assert_invalid(payload).code
+    end
+  end
+
   test "rejects an unsupported format version" do
     payload = export_payload
     payload["format_version"] = 2
@@ -40,11 +50,14 @@ class AccountImport::DocumentTest < ActiveSupport::TestCase
   end
 
   test "rejects missing and unknown fields" do
+    unknown_root_field = export_payload
+    unknown_root_field["extra"] = true
     missing_field = export_payload
     missing_field["account"].delete("time_zone")
     unknown_field = export_payload
     unknown_field["people"].first["relationship_score"] = 100
 
+    assert_equal :invalid_structure, assert_invalid(unknown_root_field).code
     assert_equal :invalid_structure, assert_invalid(missing_field).code
     assert_equal :invalid_structure, assert_invalid(unknown_field).code
   end

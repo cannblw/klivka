@@ -1,6 +1,5 @@
 module AccountImport
-  class Version1Validator
-    ROOT_KEYS = %w[format_version generated_at account categories contact_methods people].freeze
+  class Version1
     ACCOUNT_KEYS = %w[
       email_address locale theme time_zone reminder_in_app_enabled reminder_email_enabled
       default_reminder_lead_value default_reminder_lead_unit birthday_reminders_enabled
@@ -42,7 +41,6 @@ module AccountImport
     end
 
     def validate!
-      object!(payload, ROOT_KEYS)
       invalid!(:unsupported_version) unless payload["format_version"] == 1
       timestamp!(payload["generated_at"])
       validate_account(payload["account"])
@@ -53,6 +51,8 @@ module AccountImport
     rescue ArgumentError, TypeError, TZInfo::InvalidTimezoneIdentifier
       invalid!(:invalid_value)
     end
+
+    def entry_type_for(type) = ENTRY_TYPES.fetch(type)
 
     private
 
