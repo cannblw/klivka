@@ -45,7 +45,7 @@ class PeopleController < ApplicationController
   def archive
     person = Current.user.people.active.friendly.find(params[:id])
     person.archive!
-    ReminderDeliveryReconciler.call(user: Current.user)
+    ReminderDelivery::Reconciler.call(user: Current.user)
 
     redirect_to root_path, notice: t(".archived", name: person.name)
   end

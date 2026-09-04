@@ -1,4 +1,4 @@
-class ContactReminderDigestEmailDelivery
+class ContactReminderDigest::EmailDelivery
   CurrentMembership = Struct.new(:count, :preview_people, keyword_init: true)
 
   def self.call(digest_id:, at: Time.current, transport: nil)
@@ -12,7 +12,7 @@ class ContactReminderDigestEmailDelivery
   end
 
   def call
-    return unless (claim = ContactReminderDigestClaim.call(digest_id:, at:))
+    return unless (claim = ContactReminderDigest::Claim.call(digest_id:, at:))
 
     @claim_token = claim.token
     digest = claim.digest
@@ -47,7 +47,7 @@ class ContactReminderDigestEmailDelivery
 
     member_deliveries(digest).in_batches(of: batch_size) do |batch|
       deliveries = batch.preload(:source).to_a
-      current = ReminderDeliveryReconciler.current(deliveries:, user: digest.user, at:)
+      current = ReminderDelivery::Reconciler.current(deliveries:, user: digest.user, at:)
       cancel_deliveries(deliveries - current)
       count += current.size
       preview_deliveries = (preview_deliveries + current).sort_by do |delivery|

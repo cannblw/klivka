@@ -1,12 +1,12 @@
 require "test_helper"
 
-class SampleSeedDataTest < ActiveSupport::TestCase
+class SampleSeederTest < ActiveSupport::TestCase
   setup do
     @user = User.create!(email_address: "seed-data@example.com", password: "password")
   end
 
   test "creates a varied set of one hundred people" do
-    SampleSeedData.call(user: @user)
+    SampleSeeder.call(user: @user)
 
     assert_equal 100, @user.people.count
     assert_equal 98, @user.people.active.count
@@ -20,17 +20,17 @@ class SampleSeedDataTest < ActiveSupport::TestCase
   end
 
   test "archives two Faker-generated people while preserving their generated entries" do
-    SampleSeedData.call(user: @user)
+    SampleSeeder.call(user: @user)
 
     archived_people = @user.people.archived.order(:archived_at).to_a
 
-    assert_equal SampleSeedData::ARCHIVED_PERSON_COUNT, archived_people.size
+    assert_equal SampleSeeder::ARCHIVED_PERSON_COUNT, archived_people.size
     assert archived_people.all? { |person| person.entries.any? }
     assert archived_people.all? { |person| person.archived_at.present? }
   end
 
   test "creates people for contact action scenarios" do
-    SampleSeedData.call(user: @user)
+    SampleSeeder.call(user: @user)
 
     contact_actions, phone_overflow, email_overflow, email_entry = @user.people.order(:id).first(4)
 
@@ -44,7 +44,7 @@ class SampleSeedDataTest < ActiveSupport::TestCase
   end
 
   test "creates mock contact, birthday, and date reminders for interface development" do
-    SampleSeedData.call(user: @user)
+    SampleSeeder.call(user: @user)
 
     reminders = InAppRemindersQuery.call(user: @user)
 
@@ -58,13 +58,13 @@ class SampleSeedDataTest < ActiveSupport::TestCase
     other_user = User.create!(email_address: "other-seed-data@example.com", password: "password")
     other_person = other_user.people.create!(name: "Other Person")
 
-    SampleSeedData.call(user: @user)
+    SampleSeeder.call(user: @user)
     replaced_person = @user.people.first
     seeded_email = @user.people.order(:id).fourth.entries.find_by!(type: "Entry::Email").email
     replaced_person.update!(name: "Changed Seed Person")
     @user.people.create!(name: "Temporary Person")
 
-    SampleSeedData.call(user: @user)
+    SampleSeeder.call(user: @user)
 
     assert_equal 100, @user.people.count
     assert_equal 153, Entry.joins(:person).where(people: { user_id: @user.id }).count

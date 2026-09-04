@@ -74,7 +74,7 @@ class ReminderDeliveryDispatchJobTest < ActiveJob::TestCase
     user = users(:one)
     delivery = create_contact_delivery(people(:ada), user:, reminder_on: Date.new(2026, 8, 8))
     at = local_time(user, Date.new(2026, 8, 8), 8)
-    digest = ContactReminderDigestBuilder.call(user:, at:)
+    digest = ContactReminderDigest::Builder.call(user:, at:)
     digest.update!(status: ContactReminderDigest::FAILED_STATUS, failed_at: at)
 
     assert_no_enqueued_jobs do

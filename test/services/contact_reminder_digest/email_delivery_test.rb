@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
+class ContactReminderDigest::EmailDeliveryTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
     @delivery_time = Time.utc(2026, 8, 8, 12)
@@ -13,7 +13,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     digest = create_digest(first, second)
     transport = RecordingTransport.new
 
-    result = ContactReminderDigestEmailDelivery.call(
+    result = ContactReminderDigest::EmailDelivery.call(
       digest_id: digest.id, at: @delivery_time, transport:
     )
 
@@ -34,7 +34,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     digest = create_digest(delivery)
     transport = RecordingTransport.new
 
-    ContactReminderDigestEmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
+    ContactReminderDigest::EmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
 
     assert_equal "contact-reminder-digest/#{digest.id}", transport.delivery_id
     assert_includes transport.message.text_part.body.to_s, people(:ada).name
@@ -50,7 +50,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     original_limit = configuration.contact_reminder_digest_preview_limit
     configuration.contact_reminder_digest_preview_limit = 1
 
-    ContactReminderDigestEmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
+    ContactReminderDigest::EmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
 
     body = transport.message.text_part.body.to_s
     assert_includes body, people(:ada).name
@@ -67,7 +67,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     people(:grace).keep_in_touch_setting.disable!
     transport = RecordingTransport.new
 
-    ContactReminderDigestEmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
+    ContactReminderDigest::EmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
 
     assert_equal ReminderDelivery::DELIVERED_STATUS, current.reload.status
     assert_equal ReminderDelivery::CANCELED_STATUS, stale.reload.status
@@ -81,7 +81,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     people(:ada).keep_in_touch_setting.disable!
     transport = RecordingTransport.new
 
-    assert_nil ContactReminderDigestEmailDelivery.call(
+    assert_nil ContactReminderDigest::EmailDelivery.call(
       digest_id: digest.id, at: @delivery_time, transport:
     )
 
@@ -95,7 +95,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     digest = create_digest(delivery)
 
     assert_raises MailTransports::DeliveryError do
-      ContactReminderDigestEmailDelivery.call(
+      ContactReminderDigest::EmailDelivery.call(
         digest_id: digest.id, at: @delivery_time, transport: FailingTransport.new
       )
     end
@@ -104,7 +104,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     assert_equal 1, digest.attempts
     assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
 
-    ContactReminderDigestEmailDelivery.call(
+    ContactReminderDigest::EmailDelivery.call(
       digest_id: digest.id, at: @delivery_time + 1.minute, transport: RecordingTransport.new
     )
 
@@ -119,7 +119,7 @@ class ContactReminderDigestEmailDeliveryTest < ActiveSupport::TestCase
     replaced_at = @delivery_time + 1.minute
     transport = ReplacingTransport.new(digest:, delivery:, replaced_at:)
 
-    ContactReminderDigestEmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
+    ContactReminderDigest::EmailDelivery.call(digest_id: digest.id, at: @delivery_time, transport:)
 
     assert_equal replaced_at, digest.reload.delivered_at
     assert_equal replaced_at, delivery.reload.delivered_at

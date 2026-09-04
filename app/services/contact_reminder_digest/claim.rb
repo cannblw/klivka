@@ -1,6 +1,6 @@
 require "securerandom"
 
-class ContactReminderDigestClaim
+class ContactReminderDigest::Claim
   Result = Struct.new(:digest, :token, keyword_init: true)
 
   def self.call(digest_id:, at: Time.current)

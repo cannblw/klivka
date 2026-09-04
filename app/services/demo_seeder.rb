@@ -1,6 +1,6 @@
 require "securerandom"
 
-class DemoSeedData
+class DemoSeeder
   def self.call(email_address: Rails.application.config.x.demo_user_email_address)
     new(email_address:).call
   end
@@ -22,7 +22,7 @@ class DemoSeedData
         user.save!
       end
 
-      DemoPersonaSeedData.call(user:) if user.people.none?
+      DemoPersonaSeeder.call(user:) if user.people.none?
       DemoState.current
       user
     end
@@ -34,7 +34,7 @@ class DemoSeedData
       reset_profile(user)
       user.contact_methods.destroy_all
       ContactMethod.create_provided_for!(user)
-      DemoPersonaSeedData.call(user:)
+      DemoPersonaSeeder.call(user:)
       user
     end
   end

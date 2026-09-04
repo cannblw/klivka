@@ -1,6 +1,6 @@
 require "securerandom"
 
-class ReminderDeliveryEmailDelivery
+class ReminderDelivery::EmailDelivery
   def self.call(delivery_id:, at: Time.current, transport: nil)
     new(delivery_id:, at:, transport:).call
   end
@@ -17,7 +17,7 @@ class ReminderDeliveryEmailDelivery
 
     return unless (delivery = claim_delivery)
 
-    unless ReminderDeliveryReconciler.current?(delivery, at:)
+    unless ReminderDelivery::Reconciler.current?(delivery, at:)
       cancel_delivery(delivery)
       return
     end

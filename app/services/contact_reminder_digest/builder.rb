@@ -1,4 +1,4 @@
-class ContactReminderDigestBuilder
+class ContactReminderDigest::Builder
   def self.call(user:, at: Time.current)
     new(user:, at:).call
   end

@@ -1,7 +1,7 @@
 require "faker"
 require "set"
 
-class SampleSeedData
+class SampleSeeder
   PERSON_COUNT = 100
   ARCHIVED_PERSON_COUNT = 2
   RANDOM_SEED = 20_260_802
@@ -105,7 +105,7 @@ class SampleSeedData
 
     seed_birthday_reminder(on: today)
     seed_date_reminder(on: today)
-    ReminderDeliveryScheduler.call(user:)
+    ReminderDelivery::Scheduler.call(user:)
   end
 
   def seed_birthday_reminder(on:)

@@ -19,7 +19,7 @@ class ReminderDeliveryDispatchJob < ApplicationJob
   private
 
   def dispatch_contact_digest(user, at:)
-    digest = ContactReminderDigestBuilder.call(user:, at:)
+    digest = ContactReminderDigest::Builder.call(user:, at:)
     return unless digest&.status == ContactReminderDigest::PENDING_STATUS
 
     ContactReminderDigestEmailJob.perform_later(digest.id)

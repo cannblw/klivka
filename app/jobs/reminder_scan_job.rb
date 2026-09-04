@@ -4,8 +4,8 @@ class ReminderScanJob < ApplicationJob
 
   def perform(user_id, at: Time.current)
     AccountOperationLock.with(user_id) do |user|
-      ReminderDeliveryScheduler.call(user:, at:)
-      ReminderDeliveryReconciler.call(user:, at:)
+      ReminderDelivery::Scheduler.call(user:, at:)
+      ReminderDelivery::Reconciler.call(user:, at:)
       ReminderDeliveryDispatchJob.perform_later(user.id, at:)
     end
   end

@@ -10,7 +10,7 @@ class ReminderDeliveryEmailJob < ApplicationJob
 
     failure = nil
     result = AccountOperationLock.with(account_id) do
-      ReminderDeliveryEmailDelivery.call(delivery_id:)
+      ReminderDelivery::EmailDelivery.call(delivery_id:)
     rescue StandardError => error
       failure = error
       nil

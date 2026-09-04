@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
+class ReminderDelivery::SchedulerTest < ActiveSupport::TestCase
   test "records each enabled channel for a due inherited contact reminder" do
     user = users(:one)
     user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
@@ -368,7 +368,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
       person: people(:ada), entry_date: Date.new(2026, 8, 11), lead_value: 0, recurrence: "one_time"
     )
     mark_scanned(user, through: Date.new(2026, 8, 10))
-    failing_scheduler = Class.new(ReminderDeliveryScheduler) do
+    failing_scheduler = Class.new(ReminderDelivery::Scheduler) do
       private
 
       def record_deliveries(*)
@@ -400,7 +400,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
     second_reminder = create_date_reminder(
       person: people(:grace), entry_date: Date.new(2026, 8, 12), lead_value: 0, recurrence: "one_time"
     )
-    scheduler_class = Class.new(ReminderDeliveryScheduler) do
+    scheduler_class = Class.new(ReminderDelivery::Scheduler) do
       private
 
       def batch_size
@@ -418,7 +418,7 @@ class ReminderDeliverySchedulerTest < ActiveSupport::TestCase
   private
 
   def schedule(user, at:)
-    ReminderDeliveryScheduler.call(user:, at:)
+    ReminderDelivery::Scheduler.call(user:, at:)
   end
 
   def create_setting(person, enabled_on:)

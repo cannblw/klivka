@@ -1,4 +1,4 @@
-class ReminderDeliveryReconciler
+class ReminderDelivery::Reconciler
   def self.current?(delivery, at: Time.current)
     new(user: delivery.user, at:).current_delivery?(delivery)
   end

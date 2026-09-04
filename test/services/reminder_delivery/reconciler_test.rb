@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
+class ReminderDelivery::ReconcilerTest < ActiveSupport::TestCase
   test "keeps pending inherited contact reminder work that matches the global policy" do
     user = users(:one)
     user.update!(contact_reminder_cadence: "weekly", contact_reminders_enabled_on: Date.new(2026, 8, 1))
@@ -147,7 +147,7 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
     in_app_delivery = create_delivery(setting.person, channel: ReminderDelivery::IN_APP_CHANNEL)
     users(:one).update!(reminder_email_enabled: false, reminder_in_app_enabled: false)
 
-    ReminderDeliveryReconciler.call(
+    ReminderDelivery::Reconciler.call(
       user: users(:one),
       at: Time.utc(2026, 8, 8, 12),
       channel: ReminderDelivery::IN_APP_CHANNEL
@@ -294,6 +294,6 @@ class ReminderDeliveryReconcilerTest < ActiveSupport::TestCase
   end
 
   def reconcile
-    ReminderDeliveryReconciler.call(user: users(:one), at: Time.utc(2026, 8, 8, 12))
+    ReminderDelivery::Reconciler.call(user: users(:one), at: Time.utc(2026, 8, 8, 12))
   end
 end

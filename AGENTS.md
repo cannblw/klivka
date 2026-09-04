@@ -54,6 +54,10 @@
 - Tests locate interactive UI through stable IDs or explicit component/controller hooks. Use ARIA attributes to assert accessibility semantics, not as behavioral selectors.
 - Never silence a caught error completely. Best-effort behavior may recover or continue when failure is safe, but it must report enough non-sensitive context through the appropriate logger or `console.error` so the problem remains diagnosable. Never include user content or personal data in diagnostic output.
 - Before adding a platform or adapter-specific implementation, search for an existing reusable abstraction and extend it when appropriate.
+- Namespace application operations under an established domain when that domain clearly owns the work, such as scheduling, reconciling, claiming, building, or delivering its records. Do not create a namespace merely to shorten a class name; it must communicate real ownership.
+- Name objects that populate or reset seed data with the `Seeder` suffix. Reserve `*Data` names for passive data containers.
+- Keep pure transformations, domain policies, and value objects with the model/domain layer rather than presenting them as application services. Service-style directories are for operations that coordinate work or side effects.
+- Follow Zeitwerk naming and file-path conventions for application and test code. When an internal class is renamed or moved, update every caller, test class, and test path to the current name instead of adding a compatibility alias.
 - Tailwind is used as intended: utilities inline in markup; deduplicate by extracting components, never with `@apply`.
 - Validations live in the model AND as DB constraints (`null: false`, FKs) — both, not either.
 - Responsive design is mandatory: mobile-first (base styles target small screens, `sm:`/`md:`/`lg:` scale up), but layouts must feel natural on desktop too — no mobile-only or desktop-only UI.

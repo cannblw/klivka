@@ -1,4 +1,4 @@
-class DemoPersonaSeedData
+class DemoPersonaSeeder
   PERSONAS = [
     {
       name: "Anna Roberts",
@@ -391,7 +391,7 @@ class DemoPersonaSeedData
     seed_birthday_reminder(on: today)
     seed_date_reminder(on: today)
     user.update!(reminder_in_app_enabled: true, reminders_scanned_through_on: nil)
-    ReminderDeliveryScheduler.call(user:)
+    ReminderDelivery::Scheduler.call(user:)
   end
 
   def seed_birthday_reminder(on:)

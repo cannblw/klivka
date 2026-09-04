@@ -5,7 +5,7 @@ class DemoResetJobTest < ActiveJob::TestCase
     now = Time.zone.parse("2026-08-04 12:00:00")
 
     with_demo_mode do |demo_user|
-      DemoPersonaSeedData.call(user: demo_user)
+      DemoPersonaSeeder.call(user: demo_user)
       demo_user.people.create!(name: "Visitor addition")
       demo_user.update!(
         locale: "es",
@@ -25,7 +25,7 @@ class DemoResetJobTest < ActiveJob::TestCase
       DemoResetJob.perform_now(at: now)
 
       demo_user.reload
-      assert_equal DemoPersonaSeedData::PERSON_COUNT, demo_user.people.count
+      assert_equal DemoPersonaSeeder::PERSON_COUNT, demo_user.people.count
       assert_not demo_user.people.exists?(name: "Visitor addition")
       assert_nil demo_user.locale
       assert_nil demo_user.theme

@@ -1,4 +1,4 @@
-class ReminderDeliveryScheduler
+class ReminderDelivery::Scheduler
   def self.call(user:, at: Time.current)
     new(user:, at:).call
   end

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
+class ReminderDelivery::EmailDeliveryTest < ActiveSupport::TestCase
   test "delivers birthday and significant-date work through their individual mailers" do
     birthday_delivery = create_birthday_delivery
     date_entry = Entry::Date.create!(person: people(:ada), entry_date: Date.new(2026, 9, 7), content: { "label" => "Moving day" })
@@ -8,8 +8,8 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
     date_delivery = create_delivery(date_reminder, reminder_on: Date.new(2026, 9, 6), occurrence_on: Date.new(2026, 9, 7))
     transport = RecordingTransport.new
 
-    ReminderDeliveryEmailDelivery.call(delivery_id: birthday_delivery.id, at: delivery_time, transport:)
-    ReminderDeliveryEmailDelivery.call(delivery_id: date_delivery.id, at: delivery_time, transport:)
+    ReminderDelivery::EmailDelivery.call(delivery_id: birthday_delivery.id, at: delivery_time, transport:)
+    ReminderDelivery::EmailDelivery.call(delivery_id: date_delivery.id, at: delivery_time, transport:)
 
     birthday_message, date_message = transport.messages
     assert_equal 2, transport.messages.size
@@ -24,7 +24,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
     delivery = create_birthday_delivery
 
     assert_raises MailTransports::DeliveryError do
-      ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport: FailingTransport.new)
+      ReminderDelivery::EmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport: FailingTransport.new)
     end
 
     assert_equal ReminderDelivery::FAILED_STATUS, delivery.reload.status
@@ -32,7 +32,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
     assert_equal delivery_time, delivery.failed_at
     assert_nil delivery.claimed_at
 
-    ReminderDeliveryEmailDelivery.call(
+    ReminderDelivery::EmailDelivery.call(
       delivery_id: delivery.id, at: delivery_time + 1.minute, transport: RecordingTransport.new
     )
 
@@ -46,7 +46,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
     delivery = create_delivery(person, reminder_on: Date.new(2026, 8, 8), occurrence_on: Date.new(2026, 8, 8))
     transport = RecordingTransport.new
 
-    assert_nil ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
+    assert_nil ReminderDelivery::EmailDelivery.call(delivery_id: delivery.id, at: delivery_time, transport:)
 
     assert_equal ReminderDelivery::PENDING_STATUS, delivery.reload.status
     assert_empty transport.messages
@@ -60,7 +60,7 @@ class ReminderDeliveryEmailDeliveryTest < ActiveSupport::TestCase
       claim_token: "abandoned-claim"
     )
 
-    ReminderDeliveryEmailDelivery.call(delivery_id: delivery.id, at: delivery_time)
+    ReminderDelivery::EmailDelivery.call(delivery_id: delivery.id, at: delivery_time)
 
     assert_equal ReminderDelivery::FAILED_STATUS, delivery.reload.status
     assert_equal delivery_time, delivery.failed_at

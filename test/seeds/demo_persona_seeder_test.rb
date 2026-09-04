@@ -1,16 +1,16 @@
 require "test_helper"
 
-class DemoPersonaSeedDataTest < ActiveSupport::TestCase
+class DemoPersonaSeederTest < ActiveSupport::TestCase
   setup do
     @user = User.create!(email_address: "demo-personas@example.com", password: "password")
-    DemoPersonaSeedData.call(user: @user)
+    DemoPersonaSeeder.call(user: @user)
   end
 
   test "creates seventeen detailed fictional personas" do
-    assert_equal DemoPersonaSeedData::PERSON_COUNT, @user.people.count
+    assert_equal DemoPersonaSeeder::PERSON_COUNT, @user.people.count
     assert_equal 15, @user.people.active.count
     assert_equal 2, @user.people.archived.count
-    assert_equal DemoPersonaSeedData::PERSONAS.map { |persona| persona.fetch(:name) }, @user.people.order(:id).pluck(:name)
+    assert_equal DemoPersonaSeeder::PERSONAS.map { |persona| persona.fetch(:name) }, @user.people.order(:id).pluck(:name)
     assert_operator @user.people.joins(:entries).where(entries: { type: "Entry::Note" }).count, :>=, 15
     assert_equal 17, @user.people.joins(:entries).where(entries: { type: "Entry::Birthday" }).count
     assert_equal 17, @user.people.joins(:entries).where(entries: { type: "Entry::FirstMet" }).count
@@ -74,9 +74,9 @@ class DemoPersonaSeedDataTest < ActiveSupport::TestCase
     other_person = other_user.people.create!(name: "Unaffected person")
     @user.people.create!(name: "Visitor addition")
 
-    DemoPersonaSeedData.call(user: @user)
+    DemoPersonaSeeder.call(user: @user)
 
-    assert_equal DemoPersonaSeedData::PERSON_COUNT, @user.people.count
+    assert_equal DemoPersonaSeeder::PERSON_COUNT, @user.people.count
     assert_not @user.people.exists?(name: "Visitor addition")
     assert_equal other_person, other_user.people.find_by(name: "Unaffected person")
   end
