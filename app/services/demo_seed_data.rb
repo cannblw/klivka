@@ -32,6 +32,8 @@ class DemoSeedData
     User.transaction do
       user = User.find_by!(email_address:)
       reset_profile(user)
+      user.contact_methods.destroy_all
+      ContactMethod.create_provided_for!(user)
       DemoPersonaSeedData.call(user:)
       user
     end
