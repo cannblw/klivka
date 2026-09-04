@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
   static values = {
@@ -10,7 +11,6 @@ export default class extends Controller {
 
   connect() {
     this.isDirty = false
-    this.allowNextVisit = false
     this.snapshots = new Map()
     this.snapshotFields()
 
@@ -63,12 +63,6 @@ export default class extends Controller {
   }
 
   handleBeforeVisit(event) {
-    if (this.allowNextVisit) {
-      this.allowNextVisit = false
-      this.isDirty = false
-      return
-    }
-
     if (!this.isDirty) return
     event.preventDefault()
 
@@ -86,8 +80,15 @@ export default class extends Controller {
     }))
   }
 
-  handleDiscard() {
-    this.allowNextVisit = true
+  handleDiscard(event) {
+    const destination = event.detail?.destinationUrl
+    if (!destination) {
+      console.error("Discard confirmation destination is unavailable")
+      return
+    }
+
+    this.isDirty = false
+    Turbo.visit(destination)
   }
 
   handleBeforeUnload(event) {

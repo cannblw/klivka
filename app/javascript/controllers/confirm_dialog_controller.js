@@ -30,8 +30,13 @@ export default class extends Controller {
     if (this.element.open) this.element.close()
   }
 
-  confirm() {
-    if (this.confirmationEvent) window.dispatchEvent(new CustomEvent(this.confirmationEvent))
+  confirm(event) {
+    if (!this.confirmationEvent) return
+
+    event.preventDefault()
+    window.dispatchEvent(new CustomEvent(this.confirmationEvent, {
+      detail: { destinationUrl: this.formTarget.action }
+    }))
   }
 
   closeAfterSubmit(event) {
