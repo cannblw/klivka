@@ -112,6 +112,7 @@ Use these shared components instead of writing equivalent markup inline. Do not 
 | `DialogComponent` | Structural native dialog shell with required accessible naming | Every modal dialog. Supply `labelledby:` for a visible heading when practical, or an explicit `aria-label`; declare all Stimulus behavior at the call site. |
 | `PasswordConfirmDialogComponent` | Password reauthentication dialog attached to an existing form | Sensitive account operations that require the current password before submission. |
 | `InteractionFieldsComponent` | Shared interaction date, contact-method, note, and validation fields | Every interaction form. Pass the active form builder, interaction, and context-appropriate note row count; keep submit controls and workflow-specific hidden fields in the owning form. |
+| `ContactEntryValueComponent` | Linked phone or email value with copy action and optional label | Phone and email entry cards. Pass an `Entry::Phone` or `Entry::Email`; use `PersonContactActionsComponent` for profile-level contact actions. |
 | `CardComponent` | Narrow centered card | Authentication screens such as sign in, registration, and password reset. |
 | `FlashComponent` | Toast notification | Flash messages, normally rendered by the application layout. |
 | `InlineNoticeComponent` | Inline warning banner | Non-dismissible warnings within page content. |

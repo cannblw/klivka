@@ -9,8 +9,7 @@ class PeopleController < ApplicationController
   def show
     @person = Current.user.people.friendly.find(params[:id])
     prepare_return_navigation
-    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
-    @interaction_count = @person.interactions.count
+    prepare_interaction_summary
     unless @person.archived?
       prepare_quick_interaction
       prepare_categories
@@ -28,6 +27,7 @@ class PeopleController < ApplicationController
     if @person.update(person_params)
       redirect_to person_path(@person, **@return_params)
     else
+      prepare_interaction_summary
       prepare_quick_interaction
       prepare_categories
       render :show, status: :unprocessable_entity
@@ -119,12 +119,15 @@ class PeopleController < ApplicationController
   end
 
   def prepare_quick_interaction
-    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
-    @interaction_count = @person.interactions.count
     @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @person.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = params[:quick_interaction] == "today"
     @contact_reminder = ContactReminder.for(@person)
+  end
+
+  def prepare_interaction_summary
+    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
+    @interaction_count = @person.interactions.count
   end
 
   def prepare_categories
