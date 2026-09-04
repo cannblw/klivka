@@ -9,7 +9,7 @@ class ConfirmationDialogTest < ApplicationSystemTestCase
   test "a shared confirmation dialog archives a person and returns focus after cancellation" do
     visit person_path(@person)
 
-    find("#person-actions-menu-trigger").click
+    find("#person-actions-trigger").click
     click_button "Archive person"
 
     within("##{ConfirmDialogComponent::DOM_ID}[open]") do
@@ -18,9 +18,9 @@ class ConfirmationDialogTest < ApplicationSystemTestCase
       assert_selector "button.bg-amber-600", text: "Archive person"
       click_button "Cancel"
     end
-    assert_selector "#person-actions-menu-trigger:focus"
+    assert_selector "#person-actions-trigger:focus"
 
-    find("#person-actions-menu-trigger").click
+    find("#person-actions-trigger").click
     click_button "Archive person"
     within("##{ConfirmDialogComponent::DOM_ID}[open]") { click_button "Archive person" }
 
