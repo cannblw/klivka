@@ -1,17 +1,17 @@
 require "test_helper"
 
-class PersonSearchTest < ActiveSupport::TestCase
+class PeopleQueryTest < ActiveSupport::TestCase
   setup { @user = users(:one) }
 
   test "returns all people alphabetically for a blank query" do
-    assert_equal [ "Ada Lovelace", "Grace Hopper" ], PersonSearch.call(@user, "  ").map(&:name)
+    assert_equal [ "Ada Lovelace", "Grace Hopper" ], PeopleQuery.call(@user, "  ").map(&:name)
   end
 
   test "excludes archived people from blank and matching searches" do
     people(:ada).archive!
 
-    assert_equal [ "Grace Hopper" ], PersonSearch.call(@user, nil).map(&:name)
-    assert_empty PersonSearch.call(@user, "ada")
+    assert_equal [ "Grace Hopper" ], PeopleQuery.call(@user, nil).map(&:name)
+    assert_empty PeopleQuery.call(@user, "ada")
   end
 
   test "supports each sort and direction for matching queries" do
@@ -31,13 +31,13 @@ class PersonSearchTest < ActiveSupport::TestCase
     }
 
     sort_cases.each do |sort, expected_names|
-      assert_equal expected_names, PersonSearch.call(@user, "contact", sort: sort).map(&:name), sort
+      assert_equal expected_names, PeopleQuery.call(@user, "contact", sort: sort).map(&:name), sort
     end
   end
 
   test "falls back to name sorting for an invalid sort" do
     assert_equal [ "Ada Lovelace", "Grace Hopper" ],
-      PersonSearch.call(@user, nil, sort: "updated_at desc; drop table people").map(&:name)
+      PeopleQuery.call(@user, nil, sort: "updated_at desc; drop table people").map(&:name)
   end
 
   test "sorts people by their most recent contact and places people without contact at the useful edge" do
@@ -47,8 +47,8 @@ class PersonSearchTest < ActiveSupport::TestCase
     Interaction.create!(person: contacted_earlier, occurred_on: Date.current - 20.days)
     Interaction.create!(person: contacted_later, occurred_on: Date.current - 5.days)
 
-    recently_contacted = PersonSearch.call(@user, nil, sort: "recently_contacted")
-    least_recently_contacted = PersonSearch.call(@user, nil, sort: "least_recently_contacted")
+    recently_contacted = PeopleQuery.call(@user, nil, sort: "recently_contacted")
+    least_recently_contacted = PeopleQuery.call(@user, nil, sort: "least_recently_contacted")
 
     assert_operator recently_contacted.index(contacted_later), :<, recently_contacted.index(contacted_earlier)
     assert_operator recently_contacted.index(contacted_earlier), :<, recently_contacted.index(never_contacted)
@@ -59,14 +59,14 @@ class PersonSearchTest < ActiveSupport::TestCase
   test "only searches the given user's people" do
     Person.create!(user: users(:two), name: "Bob")
 
-    assert_empty PersonSearch.call(@user, "Bob")
+    assert_empty PeopleQuery.call(@user, "Bob")
   end
 
   test "ranks exact names before prefix matches" do
     Person.create!(user: @user, name: "John")
     Person.create!(user: @user, name: "Johnny Appleseed")
 
-    assert_equal [ "John", "Johnny Appleseed" ], PersonSearch.call(@user, "john").map(&:name)
+    assert_equal [ "John", "Johnny Appleseed" ], PeopleQuery.call(@user, "john").map(&:name)
   end
 
   test "ranks matches by relevance before name" do
@@ -78,9 +78,9 @@ class PersonSearchTest < ActiveSupport::TestCase
     Person.create!(user: @user, name: "Carrol Cole")
     Person.create!(user: @user, name: "Carter Kirlin")
 
-    assert_equal "Adolph Rempel", PersonSearch.call(@user, "adolp").first.name
-    assert_equal "Benjamin Nienow VM", PersonSearch.call(@user, "jam").first.name
-    assert_equal [ "Carrol Cole", "Carter Kirlin" ], PersonSearch.call(@user, "car").first(2).map(&:name)
+    assert_equal "Adolph Rempel", PeopleQuery.call(@user, "adolp").first.name
+    assert_equal "Benjamin Nienow VM", PeopleQuery.call(@user, "jam").first.name
+    assert_equal [ "Carrol Cole", "Carter Kirlin" ], PeopleQuery.call(@user, "car").first(2).map(&:name)
   end
 
   test "uses the selected sort only to break relevance ties" do
@@ -92,7 +92,7 @@ class PersonSearchTest < ActiveSupport::TestCase
     prefix.update_columns(created_at: now + 2.minutes, updated_at: now + 2.minutes)
 
     %w[recently_added recently_updated].each do |sort|
-      assert_equal [ "Contact", "Contact Person" ], PersonSearch.call(@user, "contact", sort: sort).map(&:name), sort
+      assert_equal [ "Contact", "Contact Person" ], PeopleQuery.call(@user, "contact", sort: sort).map(&:name), sort
     end
   end
 
@@ -107,7 +107,7 @@ class PersonSearchTest < ActiveSupport::TestCase
     ]
     names.each { |name| Person.create!(user: @user, name: name) }
 
-    results = PersonSearch.call(@user, "john").map(&:name)
+    results = PeopleQuery.call(@user, "john").map(&:name)
 
     names.each_cons(2) { |stronger, weaker| assert_operator results.index(stronger), :<, results.index(weaker) }
   end
@@ -115,59 +115,59 @@ class PersonSearchTest < ActiveSupport::TestCase
   test "matches prefixes on every name token" do
     Person.create!(user: @user, name: "John Smith")
 
-    assert_equal [ "John Smith" ], PersonSearch.call(@user, "smi").map(&:name)
+    assert_equal [ "John Smith" ], PeopleQuery.call(@user, "smi").map(&:name)
   end
 
   test "matches substrings within names" do
-    assert_equal [ "Ada Lovelace" ], PersonSearch.call(@user, "ovel").map(&:name)
+    assert_equal [ "Ada Lovelace" ], PeopleQuery.call(@user, "ovel").map(&:name)
   end
 
   test "matches initials" do
     Person.create!(user: @user, name: "John Smith")
 
-    assert_equal [ "John Smith" ], PersonSearch.call(@user, "js").map(&:name)
+    assert_equal [ "John Smith" ], PeopleQuery.call(@user, "js").map(&:name)
   end
 
   test "matches names without diacritics" do
     Person.create!(user: @user, name: "José Álvarez")
 
-    assert_equal [ "José Álvarez" ], PersonSearch.call(@user, "jose").map(&:name)
+    assert_equal [ "José Álvarez" ], PeopleQuery.call(@user, "jose").map(&:name)
   end
 
   test "matches misspellings" do
     Person.create!(user: @user, name: "Jonathan")
 
-    assert_equal [ "Jonathan" ], PersonSearch.call(@user, "jonatahn").map(&:name)
+    assert_equal [ "Jonathan" ], PeopleQuery.call(@user, "jonatahn").map(&:name)
   end
 
   test "matches reordered name tokens" do
     Person.create!(user: @user, name: "John Smith")
 
-    assert_equal [ "John Smith" ], PersonSearch.call(@user, "smith john").map(&:name)
+    assert_equal [ "John Smith" ], PeopleQuery.call(@user, "smith john").map(&:name)
   end
 
   test "does not use fuzzy matching for one-character queries" do
     Person.create!(user: @user, name: "Zoe")
 
-    assert_empty PersonSearch.call(@user, "q")
+    assert_empty PeopleQuery.call(@user, "q")
   end
 
   test "rejects weak fuzzy matches" do
-    assert_empty PersonSearch.call(@user, "zzzz")
+    assert_empty PeopleQuery.call(@user, "zzzz")
   end
 
   test "orders equal scores alphabetically" do
     Person.create!(user: @user, name: "Alicia")
     Person.create!(user: @user, name: "Alison")
 
-    assert_equal [ "Alicia", "Alison" ], PersonSearch.call(@user, "ali").map(&:name)
+    assert_equal [ "Alicia", "Alison" ], PeopleQuery.call(@user, "ali").map(&:name)
   end
 
   test "limits non-empty searches to the configured maximum" do
     maximum_results = Rails.application.config.x.person_search_max_results
     (maximum_results + 1).times { |index| Person.create!(user: @user, name: "Alex #{index}") }
 
-    assert_equal maximum_results, PersonSearch.call(@user, "alex").size
+    assert_equal maximum_results, PeopleQuery.call(@user, "alex").size
   end
 
   test "applies the result limit after relevance ranking" do
@@ -175,7 +175,7 @@ class PersonSearchTest < ActiveSupport::TestCase
     maximum_results.times { |index| Person.create!(user: @user, name: "A John #{index}") }
     Person.create!(user: @user, name: "John")
 
-    results = PersonSearch.call(@user, "john")
+    results = PeopleQuery.call(@user, "john")
 
     assert_equal maximum_results, results.size
     assert_equal "John", results.first.name
@@ -190,21 +190,21 @@ class PersonSearchTest < ActiveSupport::TestCase
     )
     no_birthday = Person.create!(user: @user, name: "No Birthday")
 
-    assert_equal [ no_birthday ], PersonSearch.call(@user, nil, filters: { birthday: "missing" })
-    assert_equal [ unknown_year ], PersonSearch.call(@user, nil, filters: { birthday: "year_unknown" })
+    assert_equal [ no_birthday ], PeopleQuery.call(@user, nil, filters: { birthday: "missing" })
+    assert_equal [ unknown_year ], PeopleQuery.call(@user, nil, filters: { birthday: "year_unknown" })
   end
 
   test "filters people by category and uncategorized state" do
     people(:ada).update!(category: categories(:family))
 
-    assert_equal [ people(:ada) ], PersonSearch.call(@user, nil, filters: { category: categories(:family).id })
-    assert_equal [ people(:grace) ], PersonSearch.call(@user, nil, filters: { category: "uncategorized" })
+    assert_equal [ people(:ada) ], PeopleQuery.call(@user, nil, filters: { category: categories(:family).id })
+    assert_equal [ people(:grace) ], PeopleQuery.call(@user, nil, filters: { category: "uncategorized" })
   end
 
   test "does not accept another user's category filter" do
     people(:ada).update!(category: categories(:family))
 
-    results = PersonSearch.call(@user, nil, filters: { category: categories(:family_for_user_two).id })
+    results = PeopleQuery.call(@user, nil, filters: { category: categories(:family_for_user_two).id })
 
     assert_equal [ "Ada Lovelace", "Grace Hopper" ], results.map(&:name)
   end
@@ -212,16 +212,16 @@ class PersonSearchTest < ActiveSupport::TestCase
   test "filters active, archived, and all people" do
     people(:ada).archive!
 
-    assert_equal [ people(:grace) ], PersonSearch.call(@user, nil)
-    assert_equal [ people(:ada) ], PersonSearch.call(@user, nil, filters: { state: "archived" })
+    assert_equal [ people(:grace) ], PeopleQuery.call(@user, nil)
+    assert_equal [ people(:ada) ], PeopleQuery.call(@user, nil, filters: { state: "archived" })
     assert_equal [ people(:ada), people(:grace) ].sort_by(&:name),
-      PersonSearch.call(@user, nil, filters: { state: "all" })
+      PeopleQuery.call(@user, nil, filters: { state: "all" })
   end
 
   test "filters people who have never been contacted" do
     people(:ada).interactions.create!(occurred_on: Date.new(2026, 8, 1))
 
-    assert_equal [ people(:grace) ], PersonSearch.call(
+    assert_equal [ people(:grace) ], PeopleQuery.call(
       @user,
       nil,
       filters: { last_contact: "never" },
@@ -254,7 +254,7 @@ class PersonSearchTest < ActiveSupport::TestCase
     }
 
     expected_ages.each do |filter, ages|
-      results = PersonSearch.call(@user, nil, filters: { last_contact: filter }, on:)
+      results = PeopleQuery.call(@user, nil, filters: { last_contact: filter }, on:)
       assert_equal ages.map { people_by_age.fetch(_1) }.sort_by(&:name), results, filter
     end
   end
@@ -265,8 +265,8 @@ class PersonSearchTest < ActiveSupport::TestCase
     person.interactions.create!(occurred_on: on - 100.days, validation_date: on)
     person.interactions.create!(occurred_on: on - 10.days, validation_date: on)
 
-    assert_includes PersonSearch.call(@user, nil, filters: { last_contact: "within_30_days" }, on:), person
-    assert_not_includes PersonSearch.call(@user, nil, filters: { last_contact: "91_to_180_days" }, on:), person
+    assert_includes PeopleQuery.call(@user, nil, filters: { last_contact: "within_30_days" }, on:), person
+    assert_not_includes PeopleQuery.call(@user, nil, filters: { last_contact: "91_to_180_days" }, on:), person
   end
 
   test "composes filters with search and sorting" do
@@ -277,7 +277,7 @@ class PersonSearchTest < ActiveSupport::TestCase
       person.interactions.create!(occurred_on: Date.new(2026, 8, 1))
     end
 
-    results = PersonSearch.call(
+    results = PeopleQuery.call(
       @user,
       "alex",
       sort: "recently_updated",
@@ -295,7 +295,7 @@ class PersonSearchTest < ActiveSupport::TestCase
       items: [ { "text" => "Book" } ]
     )
 
-    results = PersonSearch.call(
+    results = PeopleQuery.call(
       @user,
       nil,
       filters: { has_blocks: %w[phone birthday], missing_blocks: %w[note gift_list] }
@@ -306,7 +306,7 @@ class PersonSearchTest < ActiveSupport::TestCase
   end
 
   test "a contradictory block-presence filter returns no people" do
-    results = PersonSearch.call(
+    results = PeopleQuery.call(
       @user,
       nil,
       filters: { has_blocks: [ "email" ], missing_blocks: [ "email" ] }
@@ -316,25 +316,25 @@ class PersonSearchTest < ActiveSupport::TestCase
   end
 
   test "block filters match exact entry types" do
-    assert_equal [ people(:ada) ], PersonSearch.call(@user, nil, filters: { has_blocks: [ "email" ] })
-    assert_equal [ people(:grace) ], PersonSearch.call(@user, nil, filters: { missing_blocks: [ "email" ] })
+    assert_equal [ people(:ada) ], PeopleQuery.call(@user, nil, filters: { has_blocks: [ "email" ] })
+    assert_equal [ people(:grace) ], PeopleQuery.call(@user, nil, filters: { missing_blocks: [ "email" ] })
     assert_equal [ people(:ada), people(:grace) ],
-      PersonSearch.call(@user, nil, filters: { missing_blocks: [ "date" ] })
+      PeopleQuery.call(@user, nil, filters: { missing_blocks: [ "date" ] })
   end
 
   test "filters effective contact reminders while the global policy is off" do
     ContactReminder.for(people(:ada)).override!(cadence: "monthly", on: @user.local_date)
 
-    assert_equal [ people(:ada) ], PersonSearch.call(@user, nil, filters: { contact_reminder: "on" })
-    assert_equal [ people(:grace) ], PersonSearch.call(@user, nil, filters: { contact_reminder: "off" })
+    assert_equal [ people(:ada) ], PeopleQuery.call(@user, nil, filters: { contact_reminder: "on" })
+    assert_equal [ people(:grace) ], PeopleQuery.call(@user, nil, filters: { contact_reminder: "off" })
   end
 
   test "filters inherited reminders and individual opt-outs while the global policy is on" do
     @user.update!(contact_reminders_enabled_on: @user.local_date)
     ContactReminder.for(people(:grace)).opt_out!
 
-    assert_equal [ people(:ada) ], PersonSearch.call(@user, nil, filters: { contact_reminder: "on" })
-    assert_equal [ people(:grace) ], PersonSearch.call(@user, nil, filters: { contact_reminder: "off" })
+    assert_equal [ people(:ada) ], PeopleQuery.call(@user, nil, filters: { contact_reminder: "on" })
+    assert_equal [ people(:grace) ], PeopleQuery.call(@user, nil, filters: { contact_reminder: "off" })
   end
 
   test "filters meaningful dates with and without reminders" do
@@ -342,8 +342,8 @@ class PersonSearchTest < ActiveSupport::TestCase
     reminded_date.create_entry_reminder!
     Entry::Date.create!(person: people(:grace), entry_date: Date.new(2026, 11, 1), label: "Event")
 
-    assert_equal [ people(:ada) ], PersonSearch.call(@user, nil, filters: { date_reminder: "present" })
-    assert_equal [ people(:grace) ], PersonSearch.call(@user, nil, filters: { date_reminder: "missing" })
+    assert_equal [ people(:ada) ], PeopleQuery.call(@user, nil, filters: { date_reminder: "present" })
+    assert_equal [ people(:grace) ], PeopleQuery.call(@user, nil, filters: { date_reminder: "missing" })
   end
 
   test "a person can have both reminded and unreminded meaningful dates" do
@@ -351,19 +351,19 @@ class PersonSearchTest < ActiveSupport::TestCase
     reminded_date.create_entry_reminder!
     Entry::Date.create!(person: people(:ada), entry_date: Date.new(2027, 1, 1), label: "Renewal")
 
-    assert_includes PersonSearch.call(@user, nil, filters: { date_reminder: "present" }), people(:ada)
-    assert_includes PersonSearch.call(@user, nil, filters: { date_reminder: "missing" }), people(:ada)
+    assert_includes PeopleQuery.call(@user, nil, filters: { date_reminder: "present" }), people(:ada)
+    assert_includes PeopleQuery.call(@user, nil, filters: { date_reminder: "missing" }), people(:ada)
   end
 
   test "people without meaningful dates match neither date-reminder filter" do
     person = Person.create!(user: @user, name: "No Dates")
 
-    assert_not_includes PersonSearch.call(@user, nil, filters: { date_reminder: "present" }), person
-    assert_not_includes PersonSearch.call(@user, nil, filters: { date_reminder: "missing" }), person
+    assert_not_includes PeopleQuery.call(@user, nil, filters: { date_reminder: "present" }), person
+    assert_not_includes PeopleQuery.call(@user, nil, filters: { date_reminder: "missing" }), person
   end
 
   test "normalizes invalid filters and exposes canonical URL parameters" do
-    search = PersonSearch.new(
+    search = PeopleQuery.new(
       @user,
       "  ada  ",
       sort: "created_at desc",
@@ -389,7 +389,7 @@ class PersonSearchTest < ActiveSupport::TestCase
   end
 
   test "exposes nondefault filters as canonical URL parameters" do
-    search = PersonSearch.new(
+    search = PeopleQuery.new(
       @user,
       nil,
       sort: "recently_added",
@@ -425,7 +425,7 @@ class PersonSearchTest < ActiveSupport::TestCase
   test "filters remain tenant isolated when archived people are included" do
     people(:bob).archive!
 
-    results = PersonSearch.call(@user, nil, filters: { state: "all" })
+    results = PeopleQuery.call(@user, nil, filters: { state: "all" })
 
     assert_not_includes results, people(:bob)
   end

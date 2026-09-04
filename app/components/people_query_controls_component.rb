@@ -17,45 +17,45 @@ class PeopleQueryControlsComponent < ViewComponent::Base
   end
 
   def options_active?
-    search.filtered? || search.sort != PersonSearch::DEFAULT_SORT
+    search.filtered? || search.sort != PeopleQuery::DEFAULT_SORT
   end
 
   def sort_choices
-    PersonSearch::SORTS.keys.map do |sort|
-      value = sort == PersonSearch::DEFAULT_SORT ? "" : sort
+    PeopleQuery::SORTS.keys.map do |sort|
+      value = sort == PeopleQuery::DEFAULT_SORT ? "" : sort
       [ t("people.index.sort_options.#{sort}"), value ]
     end
   end
 
   def birthday_choices
-    filter_choices(:birthday, PersonSearch::BIRTHDAY_FILTERS)
+    filter_choices(:birthday, PeopleQuery::BIRTHDAY_FILTERS)
   end
 
   def last_contact_choices
-    filter_choices(:last_contact, PersonSearch::LAST_CONTACT_FILTERS)
+    filter_choices(:last_contact, PeopleQuery::LAST_CONTACT_FILTERS)
   end
 
   def state_choices
-    PersonSearch::STATE_FILTERS.map do |state|
+    PeopleQuery::STATE_FILTERS.map do |state|
       [ t("people.index.filters.state.#{state}"), state ]
     end
   end
 
   def contact_reminder_choices
-    filter_choices(:contact_reminder, PersonSearch::CONTACT_REMINDER_FILTERS)
+    filter_choices(:contact_reminder, PeopleQuery::CONTACT_REMINDER_FILTERS)
   end
 
   def date_reminder_choices
-    filter_choices(:date_reminder, PersonSearch::DATE_REMINDER_FILTERS)
+    filter_choices(:date_reminder, PeopleQuery::DATE_REMINDER_FILTERS)
   end
 
   def category_choices
-    choices = [ [ t("people.index.filters.any"), "" ], [ t("people.index.filters.category.uncategorized"), PersonSearch::UNCATEGORIZED_FILTER ] ]
+    choices = [ [ t("people.index.filters.any"), "" ], [ t("people.index.filters.category.uncategorized"), PeopleQuery::UNCATEGORIZED_FILTER ] ]
     choices.concat(categories.map { [ _1.name, _1.id.to_s ] })
   end
 
   def block_types
-    PersonSearch::BLOCK_TYPES.keys
+    PeopleQuery::BLOCK_TYPES.keys
   end
 
   def block_label(block)

@@ -38,7 +38,7 @@
         <%= form.label :sort, t("people.index.sort_label"), class: "mb-1 block text-sm font-medium text-stone-700 dark:text-stone-200" %>
         <%= render SelectFieldComponent.new(form, :sort,
               choices: sort_choices,
-              selected: search.sort == PersonSearch::DEFAULT_SORT ? "" : search.sort,
+              selected: search.sort == PeopleQuery::DEFAULT_SORT ? "" : search.sort,
               data: { search_target: "option", action: "change->search#submit" }) %>
       </div>
 

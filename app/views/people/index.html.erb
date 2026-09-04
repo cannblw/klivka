@@ -98,7 +98,7 @@
   <% end %>
 <%= turbo_frame_tag "people_grid" do %>
   <%= render PeopleQueryControlsComponent.new(
-        search: @person_search,
+        search: @people_query,
         categories: @filter_categories,
         view: @view,
         grouping_available: @grouping_available
@@ -130,14 +130,14 @@
         <%= render PersonCardComponent.with_collection(@people, show_category: true) %>
       </div>
     <% end %>
-  <% elsif @person_search.filtered? %>
+  <% elsif @people_query.filtered? %>
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400" data-filtered-people-empty>
       <p class="text-lg font-medium"><%= t(".filters.no_results") %></p>
       <p class="mt-1 text-sm"><%= t(".filters.no_results_hint") %></p>
     </div>
-  <% elsif @person_search.query.present? %>
+  <% elsif @people_query.query.present? %>
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400">
-      <p class="text-lg font-medium"><%= t(".no_results", query: @person_search.query) %></p>
+      <p class="text-lg font-medium"><%= t(".no_results", query: @people_query.query) %></p>
     </div>
   <% else %>
     <div class="mt-16 text-center text-stone-500 dark:text-stone-400">

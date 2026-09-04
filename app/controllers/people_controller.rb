@@ -73,23 +73,23 @@ class PeopleController < ApplicationController
   private
 
   def prepare_people_index
-    @person_search = PersonSearch.new(
+    @people_query = PeopleQuery.new(
       Current.user,
       params[:query],
       sort: params[:sort],
-      filters: person_search_filter_params
+      filters: people_query_filter_params
     )
-    @sort = @person_search.sort
+    @sort = @people_query.sort
     @view = params[:view] == "all" ? "all" : "grouped"
-    @people = @person_search.call
+    @people = @people_query.call
     @filter_categories = Current.user.categories.order(:normalized_name).to_a
     ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
     @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?
-    @grouped_view = @grouping_available && @view == "grouped" && @person_search.query.blank? && !@person_search.filtered?
+    @grouped_view = @grouping_available && @view == "grouped" && @people_query.query.blank? && !@people_query.filtered?
     prepare_person_groups if @grouped_view
   end
 
-  def person_search_filter_params
+  def people_query_filter_params
     params.permit(
       :birthday,
       :last_contact,
