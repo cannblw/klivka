@@ -4,6 +4,7 @@
 
 - `bin/dev` — run the app (Rails server + Tailwind watcher)
 - `bin/rails test` — run tests (Minitest + fixtures)
+- `bin/rails zeitwerk:check` — verify autoloading and constant naming
 - `bin/rubocop` — lint (rubocop-rails-omakase)
 - `bin/erb_lint` — lint ERB templates
 - `bin/ci` — full CI suite locally

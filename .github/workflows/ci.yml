@@ -92,6 +92,11 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Verify application autoloading
+        env:
+          RAILS_ENV: test
+        run: bin/rails zeitwerk:check
+
       - name: Run tests (SQLite)
         env:
           RAILS_ENV: test
