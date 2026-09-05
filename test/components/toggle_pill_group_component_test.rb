@@ -24,7 +24,7 @@ class TogglePillGroupComponentTest < ViewComponent::TestCase
       form: FakeForm.new, field: :theme, choices: [ [ :light, "Light" ], [ :dark, "Dark" ] ], selected: :light
     )
 
-    assert_selector "label.border-amber-600", text: "Light"
+    assert_selector "label.border-brand-focus", text: "Light"
     assert_selector "label.border-stone-200", text: "Dark"
   end
 

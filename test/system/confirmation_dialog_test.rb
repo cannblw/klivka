@@ -11,11 +11,13 @@ class ConfirmationDialogTest < ApplicationSystemTestCase
 
     find("#person-actions-trigger").click
     click_button "Archive person"
+    assert_selector "##{ConfirmDialogComponent::DOM_ID}[open]"
+    assert_accessible_page
 
     within("##{ConfirmDialogComponent::DOM_ID}[open]") do
       assert_text "Archive this person?"
       assert_selector "input[name='_method'][value='patch']", visible: :all
-      assert_selector "button.bg-amber-600", text: "Archive person"
+      assert_selector "button.bg-brand-action", text: "Archive person"
       click_button "Cancel"
     end
     assert_selector "#person-actions-trigger:focus"
@@ -33,6 +35,8 @@ class ConfirmationDialogTest < ApplicationSystemTestCase
     visit edit_person_entry_path(@person, entry)
 
     click_button "Delete"
+    assert_selector "##{ConfirmDialogComponent::DOM_ID}[open]"
+    assert_accessible_page
 
     within("##{ConfirmDialogComponent::DOM_ID}[open]") do
       assert_text "Delete this entry?"

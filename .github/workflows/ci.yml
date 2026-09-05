@@ -68,6 +68,9 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+      - name: Lint ERB templates
+        run: bin/erb_lint --format compact --lint-all
+
   test-sqlite:
     runs-on: ubuntu-latest
 
@@ -89,10 +92,20 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Verify application autoloading
+        env:
+          RAILS_ENV: test
+        run: bin/rails zeitwerk:check
+
       - name: Run tests (SQLite)
         env:
           RAILS_ENV: test
         run: bin/rails db:test:prepare test
+
+      - name: Run system tests (SQLite)
+        env:
+          RAILS_ENV: test
+        run: bin/rails test:system
 
   test-postgresql:
     runs-on: ubuntu-latest

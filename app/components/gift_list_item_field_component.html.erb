@@ -2,7 +2,7 @@
   <button type="button"
           data-gift-list-target="handle"
           data-action="keydown->gift-list#moveWithKeyboard"
-          class="-my-1.5 -ml-2 flex w-10 shrink-0 items-center justify-center rounded-l-lg cursor-grab touch-none text-stone-300 hover:bg-stone-100 hover:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-amber-600 active:cursor-grabbing dark:text-stone-600 dark:hover:bg-stone-700 dark:hover:text-stone-400"
+          class="-my-1.5 -ml-2 flex w-10 shrink-0 items-center justify-center rounded-l-lg cursor-grab touch-none text-stone-300 hover:bg-stone-100 hover:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand-focus active:cursor-grabbing dark:text-stone-600 dark:hover:bg-stone-700 dark:hover:text-stone-400"
           aria-label="<%= t("entries.gift_list_drag_item", number: position) %>">
     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
       <circle cx="7" cy="5" r="1.25"/><circle cx="13" cy="5" r="1.25"/>
@@ -14,7 +14,7 @@
   <%= hidden_field_tag field_name("id"), item["id"] if item["id"].present? %>
   <%= check_box_tag field_name("checked"), "1", item["checked"],
         aria: { label: t("entries.gift_list_toggle_item", number: position) },
-        class: "peer h-5 w-5 shrink-0 rounded border-stone-400 bg-white text-amber-600 focus:ring-amber-500 dark:border-stone-500 dark:bg-stone-700 dark:text-amber-500 dark:focus:ring-amber-400" %>
+        class: "peer h-5 w-5 shrink-0 rounded border-stone-400 bg-white text-brand-focus focus:ring-brand-focus dark:border-stone-500 dark:bg-stone-700 dark:text-brand-on-dark dark:focus:ring-brand-on-dark" %>
   <%= text_field_tag field_name("text"), item["text"],
         placeholder: t("entries.gift_list_item_placeholder"),
         aria: { label: t("entries.gift_list_item_label", number: position) },
@@ -23,7 +23,7 @@
 
   <button type="button"
           data-action="gift-list#remove"
-          class="shrink-0 rounded p-1 text-stone-300 opacity-100 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 dark:text-stone-600 dark:hover:text-red-400"
+          class="shrink-0 rounded p-1 text-stone-300 opacity-100 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-focus sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 dark:text-stone-600 dark:hover:text-red-400"
           aria-label="<%= t("entries.gift_list_remove_item", number: position) %>">
     <span class="material-icons" style="font-size:18px" aria-hidden="true">close</span>
   </button>

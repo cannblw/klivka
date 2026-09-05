@@ -7,7 +7,7 @@ class ContactEntryValueComponentTest < ViewComponent::TestCase
     render_inline ContactEntryValueComponent.new(entry:)
 
     assert_selector "a[href='tel:555-1234']", text: "555-1234"
-    assert_selector "button[data-controller='clipboard'][data-clipboard-text-value='555-1234'][aria-label]"
+    assert_selector "button.size-6[data-controller='clipboard'][data-clipboard-text-value='555-1234'][aria-label]"
     assert_selector ".material-icons[aria-hidden='true']", text: "content_copy"
   end
 

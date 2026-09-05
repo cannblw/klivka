@@ -49,7 +49,7 @@ class VcardImport::EntryMapping
 
     date = Date.new(Entry::Birthday::UNKNOWN_YEAR_ANCHOR, Integer(match[1], 10), Integer(match[2], 10))
     { entry_date: date.iso8601, birthday_year_known: false }
-  rescue Date::Error, ArgumentError
+  rescue ArgumentError
     nil
   end
   private_class_method :birthday_attributes

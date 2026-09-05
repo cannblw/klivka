@@ -2,7 +2,7 @@ class InlineNoticeComponent < ViewComponent::Base
   KINDS = {
     warning: {
       role: :note,
-      classes: "bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
+      classes: "bg-brand-surface text-brand-ink dark:bg-brand-dark-surface/40 dark:text-brand-on-dark"
     }
   }.freeze
 

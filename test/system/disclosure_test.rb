@@ -16,6 +16,7 @@ class DisclosureTest < ApplicationSystemTestCase
 
     assert_equal "true", trigger["aria-expanded"]
     assert_selector "#people-collection-actions-panel:not(.hidden)"
+    assert_accessible_page
 
     trigger.send_keys(:escape)
 

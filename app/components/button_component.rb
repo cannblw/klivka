@@ -1,6 +1,6 @@
 class ButtonComponent < ViewComponent::Base
   VARIANTS = {
-    primary: "bg-amber-600 text-white hover:bg-amber-500",
+    primary: "bg-brand-action text-white hover:bg-brand-action-hover",
     destructive: "bg-red-600 text-white hover:bg-red-500",
     ghost: "text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700"
   }.freeze

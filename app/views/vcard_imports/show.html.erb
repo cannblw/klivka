@@ -7,7 +7,7 @@
       <p class="mt-2 text-stone-600 dark:text-stone-300"><%= t(".description") %></p>
     </div>
     <%= link_to t(".upload_another"), new_vcard_import_path,
-          class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+          class: "text-sm font-medium text-brand-link hover:text-brand-link-hover dark:text-brand-on-dark dark:hover:text-brand-on-dark-hover" %>
   </div>
 
   <% if @vcard_import.rejected_count.positive? %>
