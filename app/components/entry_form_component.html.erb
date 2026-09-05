@@ -152,9 +152,21 @@
       <%= link_to t("entries.cancel"), person, data: { turbo_frame: "_top" }, class: "rounded-lg px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200 dark:text-stone-300 dark:hover:bg-stone-700" %>
     </div>
     <% if entry.persisted? %>
-      <%= link_to t("entries.delete"), "#delete-entry-dialog",
-            data: { controller: "delete-entry", delete_entry_url: person_entry_path(person, entry), action: "click->delete-entry#click" },
-            class: "rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20" %>
+      <%= render ButtonComponent.new(
+            variant: :ghost,
+            size: :sm,
+            data: ConfirmDialogComponent.trigger_data(
+              url: person_entry_path(person, entry),
+              title: t("entries.delete_confirm_title"),
+              body: t("entries.delete_confirm_body"),
+              confirm_label: t("entries.delete"),
+              cancel_label: t("entries.cancel"),
+              turbo_method: :delete
+            ),
+            class: "text-red-600 hover:bg-red-50 hover:text-red-500 dark:text-red-400 dark:hover:bg-red-900/20"
+          ) do %>
+        <%= t("entries.delete") %>
+      <% end %>
     <% end %>
   </div>
 <% end %>

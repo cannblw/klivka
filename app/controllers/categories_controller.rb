@@ -10,7 +10,7 @@ class CategoriesController < ApplicationController
     category = Current.user.categories.find(params[:category_id])
     return render json: [] if params[:query].blank?
 
-    people = PersonSearch.call(Current.user, params[:query]).reject { |person| person.category_id == category.id }
+    people = PeopleQuery.call(Current.user, params[:query]).reject { |person| person.category_id == category.id }
     ActiveRecord::Associations::Preloader.new(records: people, associations: :category).call
 
     render json: people.map { |person| suggestion_for(person) }

@@ -57,13 +57,7 @@ class KeepInTouchSetting < ApplicationRecord
   end
 
   def change_cadence!(cadence:, on: enabled_on, first_reminder_on: nil)
-    transaction do
-      self.cadence = cadence
-      self.enabled_on = on
-      self.first_reminder_on = first_reminder_on || default_first_reminder_on(cadence:, on:)
-      save!
-      person.update!(contact_reminder_snoozed_until: nil)
-    end
+    enable!(cadence:, on:, first_reminder_on:)
   end
 
   def snooze!(on:)
@@ -94,16 +88,13 @@ class KeepInTouchSetting < ApplicationRecord
   end
 
   def normalize_reminder_dates
-    self.first_reminder_on = nil if enabled_on.nil?
-    return if enabled_on.nil? || first_reminder_on.present? || !CADENCES.include?(cadence)
-
-    self.first_reminder_on = ContactReminder.default_first_reminder_on(cadence:, on: enabled_on)
+    self.enabled_on, self.first_reminder_on = ContactReminderSchedule.normalize_dates(
+      cadence:, enabled_on:, first_reminder_on:
+    )
   end
 
   def reminder_dates_are_consistent
-    return unless CADENCES.include?(cadence)
-    return if enabled_on.nil? && first_reminder_on.nil?
-    return if enabled_on.present? && first_reminder_on.present? && first_reminder_on > enabled_on
+    return if ContactReminderSchedule.dates_consistent?(cadence:, enabled_on:, first_reminder_on:)
 
     errors.add(:first_reminder_on, :invalid)
   end

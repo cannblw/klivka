@@ -13,7 +13,7 @@ module AccountImport
 
     def initialize(user:, document:)
       @user = user
-      @payload = document.payload
+      @document = document
     end
 
     def call
@@ -35,7 +35,9 @@ module AccountImport
 
     private
 
-    attr_reader :user, :payload
+    attr_reader :user, :document
+
+    def payload = document.payload
 
     def remove_existing_data
       user.reminder_deliveries.delete_all
@@ -95,7 +97,7 @@ module AccountImport
         entry = person.entries.create!(record_attributes(
           attributes,
           %w[position content entry_date birthday_year_known]
-        ).merge(type: AccountImport::Document::ENTRY_TYPES.fetch(attributes.fetch("type"))))
+        ).merge(type: document.entry_type_for(attributes.fetch("type"))))
 
         restore_entry_reminder(entry, attributes["reminder"])
       end

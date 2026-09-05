@@ -26,8 +26,4 @@ class QuickInteractionComponent < ViewComponent::Base
   def heading_id
     "#{dom_id}-heading"
   end
-
-  def enabled_contact_methods
-    @enabled_contact_methods ||= person.user.contact_methods.enabled.ordered.to_a
-  end
 end

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { eventTargetsDialogBackdrop } from "controllers/dialog_events"
 
 export default class extends Controller {
   static targets = ["dialog"]
@@ -7,7 +8,7 @@ export default class extends Controller {
   connect() {
     // Reopens the modal after a failed submit re-renders the page with errors
     if (this.openValue) {
-      this.dialogTarget.showModal()
+      this.show()
       this.clearLocationParam()
     }
 
@@ -20,17 +21,18 @@ export default class extends Controller {
   }
 
   open(event) {
+    if (this.dialogTarget.open) return
+
     this.opener = event.detail?.opener || event.currentTarget
-    this.dialogTarget.showModal()
+    this.show()
   }
 
   close() {
-    this.dialogTarget.close()
+    if (this.dialogTarget.open) this.dialogTarget.close()
   }
 
   closeOnBackdrop(event) {
-    // The dialog element is only the click target when the backdrop itself is clicked
-    if (event.target === this.dialogTarget) this.dialogTarget.close()
+    if (eventTargetsDialogBackdrop(this.dialogTarget, event)) this.close()
   }
 
   restoreFocus() {
@@ -46,5 +48,9 @@ export default class extends Controller {
 
     url.searchParams.delete(this.clearParamValue)
     window.history.replaceState(window.history.state, "", url)
+  }
+
+  show() {
+    if (!this.dialogTarget.open) this.dialogTarget.showModal()
   }
 }

@@ -133,26 +133,21 @@ class User < ApplicationRecord
   end
 
   def normalize_contact_reminder_dates
-    self.contact_reminder_first_reminder_on = nil if contact_reminders_enabled_on.nil?
-    return if contact_reminders_enabled_on.nil?
-    return unless ContactReminder::CADENCES.include?(contact_reminder_cadence)
-
-    if will_save_change_to_contact_reminder_cadence? && !will_save_change_to_contact_reminder_first_reminder_on?
-      self.contact_reminder_first_reminder_on = nil
-    end
-    return if contact_reminder_first_reminder_on.present?
-
-    self.contact_reminder_first_reminder_on = ContactReminder.default_first_reminder_on(
+    self.contact_reminders_enabled_on, self.contact_reminder_first_reminder_on = ContactReminderSchedule.normalize_dates(
       cadence: contact_reminder_cadence,
-      on: contact_reminders_enabled_on
+      enabled_on: contact_reminders_enabled_on,
+      first_reminder_on: contact_reminder_first_reminder_on,
+      reset_first_reminder: will_save_change_to_contact_reminder_cadence? &&
+        !will_save_change_to_contact_reminder_first_reminder_on?
     )
   end
 
   def contact_reminder_dates_are_consistent
-    return unless ContactReminder::CADENCES.include?(contact_reminder_cadence)
-    return if contact_reminders_enabled_on.nil? && contact_reminder_first_reminder_on.nil?
-    return if contact_reminders_enabled_on.present? && contact_reminder_first_reminder_on.present? &&
-      contact_reminder_first_reminder_on > contact_reminders_enabled_on
+    return if ContactReminderSchedule.dates_consistent?(
+      cadence: contact_reminder_cadence,
+      enabled_on: contact_reminders_enabled_on,
+      first_reminder_on: contact_reminder_first_reminder_on
+    )
 
     errors.add(:contact_reminder_first_reminder_on, :invalid)
   end

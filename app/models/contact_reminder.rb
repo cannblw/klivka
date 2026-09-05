@@ -68,53 +68,11 @@ class ContactReminder
   end
 
   def self.default_first_reminder_on(cadence:, on:)
-    on + CADENCE_INTERVALS.fetch(cadence)
+    ContactReminderSchedule.default_first_reminder_on(cadence:, on:)
   end
 
   def self.resolve_first_reminder_on(cadence:, on:, selection: {})
-    case cadence
-    when "daily" then on.tomorrow
-    when "weekly" then next_weekday(on:, weekday: Integer(selection.fetch(:first_reminder_weekday), 10))
-    when "biweekly" then Date.iso8601(selection.fetch(:first_reminder_date)).tap { raise InvalidSchedule unless _1 > on }
-    when "monthly" then next_month_day(on:, day: Integer(selection.fetch(:first_reminder_day), 10), interval: 1)
-    when "quarterly" then next_cycle_date(on:, selection:, interval: 3)
-    when "yearly" then next_cycle_date(on:, selection:, interval: 12)
-    else raise InvalidSchedule
-    end
-  rescue ArgumentError, KeyError
-    raise InvalidSchedule
-  end
-
-  def self.next_weekday(on:, weekday:)
-    raise InvalidSchedule unless (0..6).cover?(weekday)
-
-    days = (weekday - on.wday) % 7
-    on + (days.zero? ? 7 : days).days
-  end
-
-  def self.next_month_day(on:, day:, interval:)
-    raise InvalidSchedule unless (1..31).cover?(day)
-
-    candidate = clamped_date(year: on.year, month: on.month, day:)
-    if candidate <= on
-      next_month = on >> interval
-      candidate = clamped_date(year: next_month.year, month: next_month.month, day:)
-    end
-    candidate
-  end
-
-  def self.next_cycle_date(on:, selection:, interval:)
-    month = Integer(selection.fetch(:first_reminder_month), 10)
-    day = Integer(selection.fetch(:first_reminder_day), 10)
-    raise InvalidSchedule unless (1..12).cover?(month) && (1..31).cover?(day)
-
-    candidate = clamped_date(year: on.year, month:, day:)
-    candidate = clamped_date(year: (candidate >> interval).year, month: (candidate >> interval).month, day:) while candidate <= on
-    candidate
-  end
-
-  def self.clamped_date(year:, month:, day:)
-    Date.new(year, month, [ day, Date.new(year, month, -1).day ].min)
+    ContactReminderSchedule.new(cadence:, on:, attributes: selection).first_reminder_on
   end
 
   def next_suggestion_on(latest_interaction_on: LATEST_INTERACTION_UNSPECIFIED)

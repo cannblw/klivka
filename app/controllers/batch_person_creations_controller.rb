@@ -7,7 +7,8 @@ class BatchPersonCreationsController < ApplicationController
     @creation = BatchPersonCreation.preview(user: Current.user, names: names_param)
 
     if @creation.valid?
-      render :preview
+      # Turbo renders a non-redirecting form response only when its status indicates further user action is required.
+      render :preview, status: :unprocessable_entity
     else
       prepare_people_index
       render "people/index", status: :unprocessable_entity
@@ -47,10 +48,10 @@ class BatchPersonCreationsController < ApplicationController
   end
 
   def prepare_people_index
-    @person_search = PersonSearch.new(Current.user, nil)
-    @sort = @person_search.sort
+    @people_query = PeopleQuery.new(Current.user, nil)
+    @sort = @people_query.sort
     @view = "grouped"
-    @people = @person_search.call
+    @people = @people_query.call
     @filter_categories = Current.user.categories.order(:normalized_name).to_a
     ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
     @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?

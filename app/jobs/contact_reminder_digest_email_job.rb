@@ -10,7 +10,7 @@ class ContactReminderDigestEmailJob < ApplicationJob
 
     failure = nil
     result = AccountOperationLock.with(account_id) do
-      ContactReminderDigestEmailDelivery.call(digest_id:)
+      ContactReminderDigest::EmailDelivery.call(digest_id:)
     rescue StandardError => error
       failure = error
       nil

@@ -2,7 +2,7 @@ require "test_helper"
 
 class PeopleQueryControlsComponentTest < ViewComponent::TestCase
   test "renders every query control with default values omitted" do
-    search = PersonSearch.new(users(:one), nil)
+    search = PeopleQuery.new(users(:one), nil)
 
     render_inline PeopleQueryControlsComponent.new(
       search:,
@@ -20,14 +20,14 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
       assert_selector "select[name='#{filter}']", visible: false
     end
     assert_selector "fieldset", count: 2, visible: false
-    assert_selector "input[type='checkbox'][name='has_blocks[]']", count: PersonSearch::BLOCK_TYPES.size, visible: false
-    assert_selector "input[type='checkbox'][name='missing_blocks[]']", count: PersonSearch::BLOCK_TYPES.size, visible: false
+    assert_selector "input[type='checkbox'][name='has_blocks[]']", count: PeopleQuery::BLOCK_TYPES.size, visible: false
+    assert_selector "input[type='checkbox'][name='missing_blocks[]']", count: PeopleQuery::BLOCK_TYPES.size, visible: false
     assert_selector "details:not([open]) summary", text: "More options"
     assert_selector "button[data-search-target='clear'][hidden]", text: "Clear filters", visible: false
   end
 
   test "restores selected filters and exposes the clear action" do
-    search = PersonSearch.new(
+    search = PeopleQuery.new(
       users(:one),
       "ada",
       sort: "recently_updated",
@@ -69,7 +69,7 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
   end
 
   test "keeps sorting with occasional people-finding options" do
-    search = PersonSearch.new(users(:one), nil, sort: "recently_contacted")
+    search = PeopleQuery.new(users(:one), nil, sort: "recently_contacted")
 
     render_inline PeopleQueryControlsComponent.new(
       search:,
@@ -85,7 +85,7 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
   end
 
   test "lists only categories owned by the current user" do
-    search = PersonSearch.new(users(:one), nil)
+    search = PeopleQuery.new(users(:one), nil)
 
     render_inline PeopleQueryControlsComponent.new(
       search:,
@@ -99,7 +99,7 @@ class PeopleQueryControlsComponentTest < ViewComponent::TestCase
   end
 
   test "places the people view choice with otherwise quiet query controls" do
-    search = PersonSearch.new(users(:one), nil)
+    search = PeopleQuery.new(users(:one), nil)
 
     render_inline PeopleQueryControlsComponent.new(
       search:,

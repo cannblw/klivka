@@ -28,9 +28,11 @@
       </div>
 
       <% if overflow? %>
-        <dialog data-dialog-target="dialog" data-action="click->dialog#closeOnBackdrop"
-              aria-labelledby="contact-methods-title"
-              class="m-auto w-[calc(100%_-_2rem)] max-w-lg rounded-xl p-0 shadow-xl backdrop:bg-stone-900/50 dark:bg-stone-800">
+        <%= render DialogComponent.new(
+              labelledby: "contact-methods-title",
+              size: :lg,
+              data: { dialog_target: "dialog", action: "click->dialog#closeOnBackdrop" }
+            ) do %>
         <div class="p-6">
           <div class="flex items-center justify-between gap-4">
             <h2 id="contact-methods-title" class="text-lg font-semibold dark:text-stone-100"><%= t("contact_actions.title") %></h2>
@@ -70,7 +72,7 @@
             <% end %>
           </div>
         </div>
-        </dialog>
+        <% end %>
       <% end %>
     </div>
   <% end %>

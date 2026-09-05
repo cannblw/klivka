@@ -45,9 +45,21 @@
             <div class="mt-2 flex gap-3 text-xs">
             <%= link_to t("interactions.history.edit"), edit_person_interaction_path(person, interaction),
                   class: "font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
-            <%= link_to t("interactions.history.delete"), "#delete-interaction-dialog",
-                  data: { controller: "delete-interaction", delete_interaction_url: person_interaction_path(person, interaction), action: "click->delete-interaction#click" },
-                  class: "font-medium text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300" %>
+            <%= render ButtonComponent.new(
+                  variant: :ghost,
+                  size: :sm,
+                  data: ConfirmDialogComponent.trigger_data(
+                    url: person_interaction_path(person, interaction),
+                    title: t("interactions.delete_confirm.title"),
+                    body: t("interactions.delete_confirm.body"),
+                    confirm_label: t("interactions.history.delete"),
+                    cancel_label: t("interactions.delete_confirm.cancel"),
+                    turbo_method: :delete
+                  ),
+                  class: "text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300"
+                ) do %>
+              <%= t("interactions.history.delete") %>
+            <% end %>
             </div>
           <% end %>
         </li>
@@ -55,14 +67,3 @@
     </ol>
   <% end %>
 </section>
-
-<% if editable? %>
-  <%= render ConfirmDialogComponent.new(
-      id: "delete-interaction-dialog",
-      title: t("interactions.delete_confirm.title"),
-      body: t("interactions.delete_confirm.body"),
-      confirm_label: t("interactions.history.delete"),
-      cancel_label: t("interactions.delete_confirm.cancel"),
-      confirm_link_id: "delete-interaction-confirm-link"
-      ) %>
-<% end %>

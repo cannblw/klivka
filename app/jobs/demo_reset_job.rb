@@ -8,7 +8,7 @@ class DemoResetJob < ApplicationJob
     state.with_lock do
       return unless state.reset_due?(at:)
 
-      DemoSeedData.reset!
+      DemoSeeder.reset!
       state.begin_new_cycle!(at:)
       Rails.logger.info("Shared demo data reset")
     end

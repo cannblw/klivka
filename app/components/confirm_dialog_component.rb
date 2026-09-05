@@ -1,40 +1,34 @@
 class ConfirmDialogComponent < ViewComponent::Base
-  def initialize(id:, title:, body:, confirm_label:, cancel_label:, confirm_link_id:, destructive: true, turbo_method: nil)
-    @id = id
-    @title = title
-    @body = body
-    @confirm_label = confirm_label
-    @cancel_label = cancel_label
-    @confirm_link_id = confirm_link_id
-    @destructive = destructive
-    @turbo_method = turbo_method
+  DOM_ID = "confirmation-dialog"
+
+  def self.trigger_data(url:, title:, body:, confirm_label:, cancel_label:, turbo_method: nil, destructive: true,
+    focus_id: nil, confirmation_event: nil)
+    {
+      controller: "confirm-dialog-trigger",
+      action: "click->confirm-dialog-trigger#open",
+      confirm_dialog_url: url,
+      confirm_dialog_title: title,
+      confirm_dialog_body: body,
+      confirm_dialog_confirm_label: confirm_label,
+      confirm_dialog_cancel_label: cancel_label,
+      confirm_dialog_turbo_method: turbo_method,
+      confirm_dialog_destructive: destructive,
+      confirm_dialog_focus_id: focus_id,
+      confirm_dialog_confirmation_event: confirmation_event
+    }.compact
   end
 
   private
 
-  attr_reader :id, :title, :body, :confirm_label, :cancel_label, :confirm_link_id, :turbo_method
-
-  def destructive?
-    @destructive
-  end
-
-  def confirm_classes
-    base = "cursor-pointer rounded-lg px-4 py-2 text-sm font-medium text-white"
-    color = destructive? ? "bg-red-600 hover:bg-red-500" : "bg-amber-600 hover:bg-amber-500"
-    "#{base} #{color}"
-  end
-
-  def confirm_data
-    data = { action: "click->dialog#close" }
-    data[:turbo_method] = turbo_method if turbo_method
-    data
+  def variant_classes(variant)
+    ButtonComponent::VARIANTS.fetch(variant)
   end
 
   def title_id
-    "#{id}-title"
+    "#{DOM_ID}-title"
   end
 
   def body_id
-    "#{id}-body"
+    "#{DOM_ID}-body"
   end
 end

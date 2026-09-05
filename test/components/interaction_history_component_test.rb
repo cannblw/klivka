@@ -56,6 +56,6 @@ class InteractionHistoryComponentTest < ViewComponent::TestCase
     assert_selector "a[href='#{Rails.application.routes.url_helpers.person_interactions_path(person)}']"
     assert_no_selector "a[href='#{Rails.application.routes.url_helpers.new_person_interaction_path(person)}']"
     assert_no_selector "a[href='#{Rails.application.routes.url_helpers.edit_person_interaction_path(person, interaction)}']"
-    assert_no_selector "#delete-interaction-dialog"
+    assert_no_selector "[data-controller='confirm-dialog-trigger']"
   end
 end

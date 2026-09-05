@@ -14,11 +14,12 @@ class ContactRemindersController < ApplicationController
     when ContactReminder::OFF_SELECTION
       reminder.opt_out!
     else
-      unless reminder.overridden? && reminder.cadence == selection && !schedule_changed?
+      schedule = contact_reminder_schedule(cadence: selection)
+      unless reminder.overridden? && reminder.cadence == selection && !schedule.changed?
         reminder.override!(
           cadence: selection,
           on: Current.user.local_date,
-          first_reminder_on: resolved_first_reminder_on(selection)
+          first_reminder_on: schedule.first_reminder_on
         )
       end
     end
@@ -40,26 +41,15 @@ class ContactRemindersController < ApplicationController
   def contact_reminder_params
     params.expect(contact_reminder: [
       :selection,
-      :contact_reminder_schedule_changed,
-      :first_reminder_weekday,
-      :first_reminder_date,
-      :first_reminder_day,
-      :first_reminder_month
+      *ContactReminderSchedule::PARAMETER_KEYS
     ])
   end
 
-  def schedule_changed?
-    contact_reminder_params[:contact_reminder_schedule_changed] == "1"
-  end
-
-  def resolved_first_reminder_on(cadence)
-    return unless ContactReminder::CADENCES.include?(cadence)
-
-    schedule = contact_reminder_params.slice(
-      :first_reminder_weekday, :first_reminder_date, :first_reminder_day, :first_reminder_month
+  def contact_reminder_schedule(cadence:)
+    ContactReminderSchedule.new(
+      cadence:,
+      on: Current.user.local_date,
+      attributes: contact_reminder_params
     )
-    return ContactReminder.default_first_reminder_on(cadence:, on: Current.user.local_date) if schedule.values.all?(&:blank?)
-
-    ContactReminder.resolve_first_reminder_on(cadence:, on: Current.user.local_date, selection: schedule)
   end
 end

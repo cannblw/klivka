@@ -71,13 +71,3 @@
   <% end %>
   </div>
 <% end %>
-
-<%= render ConfirmDialogComponent.new(
-      id: "delete-contact-method-dialog",
-      title: t("contact_methods.delete.title"),
-      body: t("contact_methods.delete.body", name: ""),
-      confirm_label: t("contact_methods.actions.delete"),
-      cancel_label: t("contact_methods.actions.cancel"),
-      confirm_link_id: "delete-contact-method-confirm-link",
-      turbo_method: :delete
-    ) %>

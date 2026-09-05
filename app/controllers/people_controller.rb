@@ -9,8 +9,7 @@ class PeopleController < ApplicationController
   def show
     @person = Current.user.people.friendly.find(params[:id])
     prepare_return_navigation
-    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
-    @interaction_count = @person.interactions.count
+    prepare_interaction_summary
     unless @person.archived?
       prepare_quick_interaction
       prepare_categories
@@ -28,6 +27,7 @@ class PeopleController < ApplicationController
     if @person.update(person_params)
       redirect_to person_path(@person, **@return_params)
     else
+      prepare_interaction_summary
       prepare_quick_interaction
       prepare_categories
       render :show, status: :unprocessable_entity
@@ -45,7 +45,7 @@ class PeopleController < ApplicationController
   def archive
     person = Current.user.people.active.friendly.find(params[:id])
     person.archive!
-    ReminderDeliveryReconciler.call(user: Current.user)
+    ReminderDelivery::Reconciler.call(user: Current.user)
 
     redirect_to root_path, notice: t(".archived", name: person.name)
   end
@@ -73,23 +73,23 @@ class PeopleController < ApplicationController
   private
 
   def prepare_people_index
-    @person_search = PersonSearch.new(
+    @people_query = PeopleQuery.new(
       Current.user,
       params[:query],
       sort: params[:sort],
-      filters: person_search_filter_params
+      filters: people_query_filter_params
     )
-    @sort = @person_search.sort
+    @sort = @people_query.sort
     @view = params[:view] == "all" ? "all" : "grouped"
-    @people = @person_search.call
+    @people = @people_query.call
     @filter_categories = Current.user.categories.order(:normalized_name).to_a
     ActiveRecord::Associations::Preloader.new(records: @people, associations: :category).call
     @grouping_available = Current.user.people.active.where.not(category_id: nil).exists?
-    @grouped_view = @grouping_available && @view == "grouped" && @person_search.query.blank? && !@person_search.filtered?
+    @grouped_view = @grouping_available && @view == "grouped" && @people_query.query.blank? && !@people_query.filtered?
     prepare_person_groups if @grouped_view
   end
 
-  def person_search_filter_params
+  def people_query_filter_params
     params.permit(
       :birthday,
       :last_contact,
@@ -119,12 +119,15 @@ class PeopleController < ApplicationController
   end
 
   def prepare_quick_interaction
-    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
-    @interaction_count = @person.interactions.count
     @last_interaction = @recent_interactions.first
     @interaction_to_enrich = @person.interactions.new(occurred_on: Date.current)
     @open_interaction_modal = params[:quick_interaction] == "today"
     @contact_reminder = ContactReminder.for(@person)
+  end
+
+  def prepare_interaction_summary
+    @recent_interactions = @person.interactions.recent.limit(interaction_profile_preview_limit).to_a
+    @interaction_count = @person.interactions.count
   end
 
   def prepare_categories

@@ -25,8 +25,8 @@ class BatchPersonCreationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "a[href='#{new_batch_person_creation_path}']", count: 0
     assert_select "form[action='#{people_path}'] input[name='person[name]']"
-    assert_select "form[action='#{preview_batch_person_creation_path}'][data-turbo='false'] textarea[name='batch_person_creation[names]']"
-    assert_select "[data-action='toggle#toggle']", minimum: 2
+    assert_select "form[action='#{preview_batch_person_creation_path}']:not([data-turbo='false']) textarea[name='batch_person_creation[names]']"
+    assert_select "[data-action='people-creation-dialog#toggle']", minimum: 2
   end
 
   test "batch person dialog renders in the user's locale" do
@@ -45,7 +45,7 @@ class BatchPersonCreationsControllerTest < ActionDispatch::IntegrationTest
       batch_person_creation: { names: "  Marie   Curie \n Katherine Johnson " }
     }
 
-    assert_response :success
+    assert_response :unprocessable_entity
     assert_select "form[action='#{batch_person_creation_path}']"
     assert_select "input[type='text'][value='Marie Curie']"
     assert_select "input[type='text'][value='Katherine Johnson']"
@@ -57,7 +57,7 @@ class BatchPersonCreationsControllerTest < ActionDispatch::IntegrationTest
       batch_person_creation: { names: "Ada Lovelace\nada lovelace" }
     }
 
-    assert_response :success
+    assert_response :unprocessable_entity
     assert_select "li [role='note']", count: 2
     assert_select "input[type='checkbox'][checked]", count: 2
   end

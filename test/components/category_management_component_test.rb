@@ -11,7 +11,7 @@ class CategoryManagementComponentTest < ViewComponent::TestCase
     assert_selector "section[aria-labelledby='category-#{category.id}-heading']"
     assert_selector "h2#category-#{category.id}-heading", text: category.name
     assert_selector "form[action='#{path}'] input[name='category[name]']"
-    assert_selector "[data-controller='delete-category'][data-delete-category-url='#{path}']"
+    assert_selector "[data-controller='confirm-dialog-trigger'][data-confirm-dialog-url='#{path}'][data-confirm-dialog-turbo-method='delete']"
     assert_selector "[data-person-count='1']"
     assert_selector "[data-controller='person-autocomplete']"
     assignment_path = Rails.application.routes.url_helpers.person_category_assignment_path(people(:ada))

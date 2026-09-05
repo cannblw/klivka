@@ -7,7 +7,7 @@ class KeepInTouchSettingsController < ApplicationController
 
     @keep_in_touch_setting = @person.build_keep_in_touch_setting(cadence: setting_params.fetch(:cadence))
     cadence = setting_params.fetch(:cadence)
-    @keep_in_touch_setting.enable!(on: local_date, first_reminder_on: resolved_first_reminder_on(cadence))
+    @keep_in_touch_setting.enable!(on: local_date, first_reminder_on: contact_reminder_schedule(cadence:).first_reminder_on)
 
     redirect_to @person, notice: t(".enabled")
   rescue ActiveRecord::RecordInvalid
@@ -21,11 +21,12 @@ class KeepInTouchSettingsController < ApplicationController
   def update
     update_setting do
       cadence = setting_params.fetch(:cadence)
-      unless cadence == @keep_in_touch_setting.cadence && !schedule_changed?
+      schedule = contact_reminder_schedule(cadence:)
+      unless cadence == @keep_in_touch_setting.cadence && !schedule.changed?
         @keep_in_touch_setting.change_cadence!(
           cadence:,
           on: local_date,
-          first_reminder_on: resolved_first_reminder_on(cadence)
+          first_reminder_on: schedule.first_reminder_on
         )
       end
     end
@@ -37,7 +38,7 @@ class KeepInTouchSettingsController < ApplicationController
       @keep_in_touch_setting.enable!(
         on: local_date,
         cadence:,
-        first_reminder_on: resolved_first_reminder_on(cadence)
+        first_reminder_on: contact_reminder_schedule(cadence:).first_reminder_on
       )
     end
   end
@@ -108,11 +109,7 @@ class KeepInTouchSettingsController < ApplicationController
   def setting_params
     params.expect(keep_in_touch_setting: [
       :cadence,
-      :contact_reminder_schedule_changed,
-      :first_reminder_weekday,
-      :first_reminder_date,
-      :first_reminder_day,
-      :first_reminder_month
+      *ContactReminderSchedule::PARAMETER_KEYS
     ])
   end
 
@@ -142,18 +139,11 @@ class KeepInTouchSettingsController < ApplicationController
     t(".invalid", reason: t("contact_reminder.schedule.invalid"))
   end
 
-  def schedule_changed?
-    setting_params[:contact_reminder_schedule_changed] == "1"
-  end
-
-  def resolved_first_reminder_on(cadence)
-    return unless ContactReminder::CADENCES.include?(cadence)
-
-    schedule = setting_params.slice(
-      :first_reminder_weekday, :first_reminder_date, :first_reminder_day, :first_reminder_month
+  def contact_reminder_schedule(cadence:)
+    ContactReminderSchedule.new(
+      cadence:,
+      on: local_date,
+      attributes: setting_params
     )
-    return ContactReminder.default_first_reminder_on(cadence:, on: local_date) if schedule.values.all?(&:blank?)
-
-    ContactReminder.resolve_first_reminder_on(cadence:, on: local_date, selection: schedule)
   end
 end

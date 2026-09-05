@@ -19,6 +19,12 @@ class EntryFormComponent < ViewComponent::Base
   end
 
   def reminder_date_values
-    { reminder_date_yearly_recurrence_value: EntryReminder::YEARLY_RECURRENCE }
+    {
+      reminder_date_yearly_recurrence_value: EntryReminder::YEARLY_RECURRENCE,
+      unsaved_changes_title_value: t("discard_changes.title"),
+      unsaved_changes_body_value: t("discard_changes.body"),
+      unsaved_changes_confirm_label_value: t("discard_changes.discard"),
+      unsaved_changes_cancel_label_value: t("discard_changes.keep_editing")
+    }
   end
 end

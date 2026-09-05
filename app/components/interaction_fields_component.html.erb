@@ -1,0 +1,39 @@
+<div>
+  <%= form.label :occurred_on, t("interactions.follow_up.occurred_on"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
+  <div class="relative mt-1">
+    <%= form.date_field :occurred_on,
+          required: true,
+          max: Date.current,
+          data: { interaction_date_target: "date" },
+          class: "interaction-date-input w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-2 pr-10 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100" %>
+    <button type="button"
+            data-action="interaction-date#openPicker"
+            aria-label="<%= t("interactions.follow_up.occurred_on") %>"
+            class="absolute inset-y-0 right-3 flex items-center text-stone-500 dark:text-stone-300">
+      <span class="material-icons" style="font-size: 20px" aria-hidden="true">calendar_today</span>
+    </button>
+  </div>
+  <% interaction.errors.full_messages_for(:occurred_on).each do |message| %>
+    <p class="mt-1 text-sm text-red-600"><%= message %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= render InteractionContactMethodPickerComponent.new(
+        form:, interaction:, contact_methods: enabled_contact_methods
+      ) %>
+  <% interaction.errors.full_messages_for(:contact_method_name).each do |message| %>
+    <p class="mt-1 text-sm text-red-600"><%= message %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= form.label :note, t("interactions.follow_up.note"), class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
+  <%= render TextareaFieldComponent.new(
+        form,
+        :note,
+        rows: note_rows,
+        placeholder: t("interactions.follow_up.note_placeholder"),
+        class: "mt-1"
+      ) %>
+</div>

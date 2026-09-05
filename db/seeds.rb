@@ -8,9 +8,9 @@ if Rails.env.development?
   admin.password = Rails.application.config.x.development_seed_password
   admin.save!
 
-  SampleSeedData.call(user: admin)
+  SampleSeeder.call(user: admin)
 end
 
 if Rails.application.config.x.demo_mode
-  DemoSeedData.call
+  DemoSeeder.call
 end

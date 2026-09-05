@@ -61,11 +61,10 @@ class LocaleTest < ActionDispatch::IntegrationTest
     assert_select "html[data-theme='']"
   end
 
-  test "layout renders discard changes dialog" do
+  test "layout renders the shared confirmation dialog" do
     get root_url
 
-    assert_select "dialog#discard-changes-dialog"
-    assert_select "#discard-changes-confirm-link"
+    assert_select "dialog##{ConfirmDialogComponent::DOM_ID}[data-controller='confirm-dialog']", count: 1
   end
 
   test "layout renders the hidden timezone suggestion" do

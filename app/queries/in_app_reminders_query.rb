@@ -40,7 +40,7 @@ class InAppRemindersQuery
   attr_reader :user, :at
 
   def reconcile
-    ReminderDeliveryReconciler.call(user:, at:, channel: ReminderDelivery::IN_APP_CHANNEL)
+    ReminderDelivery::Reconciler.call(user:, at:, channel: ReminderDelivery::IN_APP_CHANNEL)
   end
 
   def pending_due_deliveries
