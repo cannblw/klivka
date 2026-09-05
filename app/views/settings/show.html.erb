@@ -9,7 +9,7 @@
         <% unless demo_mode? %>
           <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
             <%= t(".password_note") %>
-            <%= link_to t(".password_link"), new_password_path, class: "font-medium text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300" %>.
+            <%= link_to t(".password_link"), new_password_path, class: "font-medium text-brand-link hover:text-brand-link-hover dark:text-brand-on-dark dark:hover:text-brand-on-dark-hover" %>.
           </p>
         <% end %>
       </div>
@@ -18,7 +18,7 @@
     <%= render SectionComponent.new(title: t(".data_export"), description: t(".data_export_description")) do %>
       <div class="max-w-xl">
         <%= link_to account_export_path,
-              class: "inline-flex items-center gap-2 text-sm font-medium text-amber-700 hover:text-amber-600 focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-amber-400 dark:hover:text-amber-300" do %>
+              class: "inline-flex items-center gap-2 text-sm font-medium text-brand-link hover:text-brand-link-hover focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-focus dark:text-brand-on-dark dark:hover:text-brand-on-dark-hover" do %>
           <span class="material-icons" style="font-size: 18px" aria-hidden="true">download</span>
           <%= t(".download_data") %>
         <% end %>
@@ -104,7 +104,7 @@
           <p class="text-sm text-stone-600 dark:text-stone-300">
             <%= t(".account_deletion_export_prompt") %>
             <%= link_to t(".account_deletion_export"), account_export_path,
-                  class: "font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+                  class: "font-medium text-brand-link hover:text-brand-link-hover dark:text-brand-on-dark dark:hover:text-brand-on-dark-hover" %>
           </p>
 
           <%= form_with scope: :account, url: account_path, method: :delete, id: "account-deletion-form",

@@ -5,7 +5,7 @@
     </h2>
     <% unless searchable? %>
       <%= link_to t("entries.type_picker.view_all"), new_person_entry_path(person),
-            class: "text-sm font-medium text-amber-700 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300" %>
+            class: "text-sm font-medium text-brand-link hover:text-brand-link-hover dark:text-brand-on-dark dark:hover:text-brand-on-dark-hover" %>
     <% end %>
   </div>
 
@@ -30,7 +30,7 @@
           </div>
         <% else %>
           <%= link_to new_person_entry_path(person, type: type),
-                class: "flex h-full items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-3 text-sm font-medium text-stone-700 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-amber-700 dark:hover:bg-amber-900/20 dark:hover:text-amber-300" do %>
+                class: "flex h-full items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-3 text-sm font-medium text-stone-700 transition hover:border-brand-border hover:bg-brand-surface hover:text-brand-link focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-focus dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-brand-on-dark dark:hover:bg-brand-dark-surface/20 dark:hover:text-brand-on-dark-hover" do %>
             <span class="material-icons text-stone-400" style="font-size:18px" aria-hidden="true"><%= icon_for(type) %></span>
             <span><%= label_for(type) %></span>
           <% end %>

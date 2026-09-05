@@ -6,12 +6,12 @@
         <% [ :phone, :email ].each do |kind| %>
           <% initial_entries_for(kind).each do |entry| %>
             <%= link_to href_for(entry),
-                  class: "inline-flex max-w-full items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50",
+                  class: "inline-flex max-w-full items-center gap-1.5 rounded-lg bg-brand-surface px-3 py-2 text-sm font-medium text-brand-link hover:bg-brand-surface-strong dark:bg-brand-dark-surface/30 dark:text-brand-on-dark dark:hover:bg-brand-dark-surface/50",
                   aria: { label: action_label_for(entry) } do %>
               <span class="material-icons" style="font-size:18px" aria-hidden="true"><%= action_icon_for(entry) %></span>
               <span class="min-w-0">
                 <% if label_for(entry).present? %>
-                  <span class="block text-xs font-normal opacity-75"><%= label_for(entry) %></span>
+                  <span class="block text-xs font-normal"><%= label_for(entry) %></span>
                 <% end %>
                 <span class="block break-all"><%= value_for(entry) %></span>
               </span>
@@ -51,7 +51,7 @@
                     <% kind_entries.each do |entry| %>
                       <li class="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800">
                         <div class="min-w-0">
-                          <%= link_to value_for(entry), href_for(entry), class: "block truncate text-sm font-medium text-amber-700 dark:text-amber-400", aria: { label: action_label_for(entry) } %>
+                          <%= link_to value_for(entry), href_for(entry), class: "block truncate text-sm font-medium text-brand-link dark:text-brand-on-dark", aria: { label: action_label_for(entry) } %>
                           <% if label_for(entry).present? %>
                             <p class="mt-1 text-xs text-stone-500 dark:text-stone-400"><%= label_for(entry) %></p>
                           <% end %>

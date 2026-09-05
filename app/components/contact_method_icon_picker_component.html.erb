@@ -7,7 +7,7 @@
         <%= form.radio_button :icon, value,
               checked: selected.to_s == value,
               class: "peer sr-only" %>
-        <span class="flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-stone-50 px-2 text-stone-600 hover:border-amber-500 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-amber-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:peer-checked:border-amber-400 dark:peer-checked:bg-amber-900/30 dark:peer-checked:text-amber-400">
+        <span class="flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-stone-50 px-2 text-stone-600 hover:border-brand-focus peer-checked:border-brand-focus peer-checked:bg-brand-surface peer-checked:text-brand-link peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-focus dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:peer-checked:border-brand-on-dark dark:peer-checked:bg-brand-dark-surface/30 dark:peer-checked:text-brand-on-dark">
           <% if library %>
             <%= render ContactMethodIconComponent.new(icon_library: library, icon_name: name, size: 20) %>
           <% else %>

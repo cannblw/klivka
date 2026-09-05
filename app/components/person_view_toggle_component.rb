@@ -15,7 +15,7 @@ class PersonViewToggleComponent < ViewComponent::Base
   end
 
   def link_classes(selected_view)
-    "rounded-lg px-3 py-1.5 text-sm font-medium text-stone-600 transition hover:bg-stone-100 aria-[current=true]:bg-amber-50 aria-[current=true]:text-amber-700 dark:text-stone-300 dark:hover:bg-stone-700 dark:aria-[current=true]:bg-amber-900/30 dark:aria-[current=true]:text-amber-400"
+    "rounded-lg px-3 py-1.5 text-sm font-medium text-stone-600 transition hover:bg-stone-100 aria-[current=true]:bg-brand-surface aria-[current=true]:text-brand-link dark:text-stone-300 dark:hover:bg-stone-700 dark:aria-[current=true]:bg-brand-dark-surface/30 dark:aria-[current=true]:text-brand-on-dark"
   end
 
   def link_options(selected_view)

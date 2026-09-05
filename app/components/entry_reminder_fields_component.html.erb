@@ -24,7 +24,7 @@
          class="mt-4 <%= "hidden" unless reminder_enabled %>">
       <div class="flex items-center <%= reminder.persisted? ? "justify-between" : "justify-end" %> gap-3">
         <% if reminder.persisted? %>
-          <p class="inline-flex items-center gap-1.5 text-sm font-medium text-amber-700 dark:text-amber-400"
+          <p class="inline-flex items-center gap-1.5 text-sm font-medium text-brand-link dark:text-brand-on-dark"
              data-entry-reminder-status="on">
             <span class="material-icons" style="font-size:18px" aria-hidden="true">notifications</span>
             <%= t("entries.reminder.on") %>
@@ -54,7 +54,7 @@
             <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-3 dark:border-stone-700">
               <%= reminder_form.radio_button :recurrence, recurrence,
                     data: { reminder_date_target: "recurrence", action: "change->reminder-date#update" },
-                    class: "mt-0.5 size-4 border-stone-300 text-amber-600 focus:ring-amber-500 dark:border-stone-600" %>
+                    class: "mt-0.5 size-4 border-stone-300 text-brand-focus focus:ring-brand-focus dark:border-stone-600" %>
               <span>
                 <span class="block text-sm font-medium"><%= t("entries.reminder.recurrence.#{recurrence}.label") %></span>
                 <span class="mt-0.5 block text-sm text-stone-600 dark:text-stone-300"><%= t("entries.reminder.recurrence.#{recurrence}.hint") %></span>

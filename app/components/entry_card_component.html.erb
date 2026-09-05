@@ -4,7 +4,7 @@
       <button type="button"
             data-entry-sortable-target="handle"
             data-action="keydown->entry-sortable#moveWithKeyboard"
-            class="-my-3 -ml-3 mr-3 flex w-10 self-stretch shrink-0 items-center justify-center rounded-l-lg cursor-grab touch-none text-stone-300 hover:bg-stone-100 hover:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-amber-600 active:cursor-grabbing dark:text-stone-600 dark:hover:bg-stone-700 dark:hover:text-stone-400"
+            class="-my-3 -ml-3 mr-3 flex w-10 self-stretch shrink-0 items-center justify-center rounded-l-lg cursor-grab touch-none text-stone-300 hover:bg-stone-100 hover:text-stone-500 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand-focus active:cursor-grabbing dark:text-stone-600 dark:hover:bg-stone-700 dark:hover:text-stone-400"
             aria-label="<%= t("entries.drag_handle") %>">
       <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <circle cx="7" cy="5" r="1.25"/><circle cx="13" cy="5" r="1.25"/>
@@ -18,7 +18,7 @@
       <% if reminder %>
         <div class="flex flex-wrap items-center gap-2">
           <div class="min-w-0"><%= render "entries/#{kind_key}", entry: entry %></div>
-          <p class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-xs font-medium leading-none text-amber-800 dark:bg-amber-900/30 dark:text-amber-200"
+          <p class="inline-flex items-center gap-1 rounded-full bg-brand-surface-strong px-2 py-1 text-xs font-medium leading-none text-brand-ink dark:bg-brand-dark-surface/30 dark:text-brand-on-dark"
              data-entry-reminder-summary>
             <span class="material-icons leading-none" style="font-size: 16px" aria-hidden="true">notifications_none</span>
             <span><%= reminder_summary %></span>
@@ -35,7 +35,7 @@
     <% if editable? %>
       <%= link_to edit_person_entry_path(person, entry),
           data: { turbo_frame: helpers.dom_id(entry) },
-          class: "ml-3 shrink-0 rounded text-stone-400 opacity-0 transition group-hover:opacity-100 hover:text-stone-600 focus:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-stone-500 dark:hover:text-stone-300",
+          class: "ml-3 shrink-0 rounded text-stone-400 opacity-0 transition group-hover:opacity-100 hover:text-stone-600 focus:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-focus dark:text-stone-500 dark:hover:text-stone-300",
           aria: { label: t("entries.edit_label") } do %>
       <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z"/>

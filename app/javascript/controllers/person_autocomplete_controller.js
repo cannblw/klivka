@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 const BLUR_DELAY_MILLISECONDS = 100
-const ACTIVE_OPTION_CLASSES = [ "bg-amber-50", "text-amber-700", "dark:bg-amber-900/30", "dark:text-amber-400" ]
+const ACTIVE_OPTION_CLASSES = [ "bg-brand-surface", "text-brand-link", "dark:bg-brand-dark-surface/30", "dark:text-brand-on-dark" ]
 
 export default class extends Controller {
   static targets = [ "input", "list", "status", "form" ]

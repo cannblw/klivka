@@ -1,5 +1,5 @@
 class TogglePillGroupComponent < ViewComponent::Base
-  ACTIVE_CLASSES = "border-amber-600 bg-amber-50 text-amber-700 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400".freeze
+  ACTIVE_CLASSES = "border-brand-focus bg-brand-surface text-brand-link dark:border-brand-on-dark dark:bg-brand-dark-surface/30 dark:text-brand-on-dark".freeze
   INACTIVE_CLASSES = "border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-stone-500".freeze
 
   def initialize(form:, field:, choices:, selected:, disabled: false, disabled_tooltip: nil, disabled_tooltip_id: nil, **radio_options)

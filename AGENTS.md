@@ -78,7 +78,9 @@ Heading hierarchy:
 ### Color palette
 
 - **Neutrals:** `stone-50` backgrounds, `stone-100` page background, `stone-200` borders, `stone-300` input borders, `stone-400`–`stone-500` muted text, `stone-600` secondary text, `stone-700` labels, `stone-800` dark cards, and `stone-900` dark pages/light body text.
-- **Brand:** `amber-700` primary buttons, `amber-800` primary-button hover, `amber-500` focus, `amber-700` light links, `amber-400` dark links, `amber-50` active pills, `amber-100` avatars, and `amber-900/30` dark accents.
+- **Brand actions and links:** `brand-action`/`brand-action-hover` are primary controls with white text. `brand-link`/`brand-link-hover` are light-mode links. Use `brand-on-dark`/`brand-on-dark-hover` for links and accents on dark surfaces.
+- **Brand UI states:** `brand-focus` is for focus rings, selected-control borders, checkbox accents, and meaningful status indicators. `brand-surface`/`brand-surface-strong`, `brand-border`, and `brand-ink` form light accent treatments; use `brand-dark-surface` with opacity for dark-mode accent backgrounds.
+- **Brand artwork:** `brand-mark` and `brand-highlight` match the logo and are only for the logo or decorative artwork. Their contrast is insufficient for normal-sized white-text controls. Do not use raw `amber-*` utilities for brand styling.
 - **Destructive:** `red-600` actions/errors, `red-500` hover, and `red-400` dark mode.
 - **Success:** `emerald-600` success flashes.
 - Do not introduce colors outside this palette; discuss any new semantic color first.

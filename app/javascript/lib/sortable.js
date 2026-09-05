@@ -145,7 +145,7 @@ class Sortable {
     const preview = item.cloneNode(true)
     preview.setAttribute("aria-hidden", "true")
     preview.inert = true
-    preview.classList.add("opacity-90", "shadow-xl", "ring-2", "ring-amber-400/40")
+    preview.classList.add("opacity-90", "shadow-xl", "ring-2", "ring-brand-highlight/40")
     preview.style.width = `${item.getBoundingClientRect().width}px`
     container.appendChild(preview)
 
@@ -165,7 +165,7 @@ class Sortable {
 
     this.clearDropIndicator()
     const indicator = document.createElement("div")
-    indicator.className = `pointer-events-none absolute inset-x-0 z-10 h-0.5 rounded-full bg-amber-500 ${edge === "top" ? "-top-1.5" : "-bottom-1.5"}`
+    indicator.className = `pointer-events-none absolute inset-x-0 z-10 h-0.5 rounded-full bg-brand-focus ${edge === "top" ? "-top-1.5" : "-bottom-1.5"}`
     indicator.setAttribute("aria-hidden", "true")
     target.element.appendChild(indicator)
     this.dropIndicator = indicator
