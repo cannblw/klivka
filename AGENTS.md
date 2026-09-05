@@ -81,7 +81,7 @@ Heading hierarchy:
 - **Brand actions and links:** `brand-action`/`brand-action-hover` are primary controls with white text. `brand-link`/`brand-link-hover` are light-mode links. Use `brand-on-dark`/`brand-on-dark-hover` for links and accents on dark surfaces.
 - **Brand UI states:** `brand-focus` is for focus rings, selected-control borders, checkbox accents, and meaningful status indicators. `brand-surface`/`brand-surface-strong`, `brand-border`, and `brand-ink` form light accent treatments; use `brand-dark-surface` with opacity for dark-mode accent backgrounds.
 - **Brand artwork:** `brand-mark` and `brand-highlight` match the logo and are only for the logo or decorative artwork. Their contrast is insufficient for normal-sized white-text controls. Do not use raw `amber-*` utilities for brand styling.
-- **Destructive:** `red-600` actions/errors, `red-500` hover, and `red-400` dark mode.
+- **Destructive:** the muted red scale is defined in the Tailwind theme. Use `red-600` for light-mode actions and errors, `red-500` for hover and alert backgrounds, `red-400` for dark-mode text, `red-300` for dark-mode text hover, `red-50` for light hover surfaces, and `red-900/20` for dark hover surfaces. Do not use undeclared red shades.
 - **Success:** `emerald-600` success flashes.
 - Do not introduce colors outside this palette; discuss any new semantic color first.
 

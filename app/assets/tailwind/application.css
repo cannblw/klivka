@@ -16,6 +16,12 @@
   --color-brand-on-dark-hover: #FFB354;
   --color-brand-ink: #763116;
   --color-brand-dark-surface: #763116;
+  --color-red-50: #F8EEEE;
+  --color-red-300: #E2AEAC;
+  --color-red-400: #D69A98;
+  --color-red-500: #A44542;
+  --color-red-600: #9F3A38;
+  --color-red-900: #5A2928;
 }
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
