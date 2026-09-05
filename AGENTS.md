@@ -5,6 +5,7 @@
 - `bin/dev` — run the app (Rails server + Tailwind watcher)
 - `bin/rails test` — run tests (Minitest + fixtures)
 - `bin/rubocop` — lint (rubocop-rails-omakase)
+- `bin/erb_lint` — lint ERB templates
 - `bin/ci` — full CI suite locally
 
 ## Database rules (dual SQLite/Postgres support)
@@ -106,7 +107,7 @@ Use these components instead of equivalent inline markup. Review this catalog wh
 | `PersonAvatarComponent`, `ContactMethodIconComponent` | Standard avatars and contact-method icons. Pass the person or stored icon library/name; invalid icons render nothing. |
 | `MailerButtonComponent`, `FlashComponent`, `InlineNoticeComponent` | Primary mailer links, toast messages, and inline non-dismissible warnings. Mailer buttons receive translated labels and absolute URLs. |
 
-Dialog triggers are buttons unless they have a genuine navigation fallback. Opening, closing, changing modes, failed submissions, and successful completion must leave focus in a logical place. Do not use `role="menu"` unless the complete keyboard interaction pattern is implemented.
+Dialog triggers are buttons unless they have a genuine navigation fallback. Opening, closing, changing modes, failed submissions, and successful completion must leave focus in a logical place. ERB lint rejects ARIA menu semantics by default; any intentional menu requires a narrow inline exemption that explains why and system tests for its complete keyboard and focus behavior.
 
 ### Shared form styling
 

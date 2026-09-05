@@ -1,0 +1,22 @@
+glob: "app/{components,views}/**/*.erb"
+EnableDefaultLinters: false
+
+linters:
+  CommentSyntax:
+    enabled: true
+  ErbSafety:
+    enabled: true
+  FinalNewline:
+    enabled: true
+  NoAriaMenuSemantics:
+    enabled: true
+  NoJavascriptTagHelper:
+    enabled: true
+  NoUnusedDisable:
+    enabled: true
+  ParserErrors:
+    enabled: true
+  PartialInstanceVariable:
+    enabled: true
+  TrailingWhitespace:
+    enabled: true
