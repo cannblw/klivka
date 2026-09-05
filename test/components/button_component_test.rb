@@ -4,14 +4,14 @@ class ButtonComponentTest < ViewComponent::TestCase
   test "defaults to a primary medium button" do
     render_inline(ButtonComponent.new) { "Save" }
 
-    assert_selector "button[type='button'].bg-amber-600.cursor-pointer", text: "Save"
+    assert_selector "button[type='button'].bg-brand-action.text-white.cursor-pointer", text: "Save"
   end
 
   test "ghost variant and small size" do
     render_inline(ButtonComponent.new(variant: :ghost, size: :sm)) { "Cancel" }
 
     assert_selector "button.text-stone-600.px-3", text: "Cancel"
-    assert_no_selector ".bg-amber-600"
+    assert_no_selector ".bg-brand-action"
   end
 
   test "destructive variant uses the destructive palette" do

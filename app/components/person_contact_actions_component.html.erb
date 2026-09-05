@@ -60,9 +60,9 @@
                                 data-controller="clipboard"
                                 data-clipboard-text-value="<%= value_for(entry) %>"
                                 data-action="click->clipboard#copy"
-                                class="shrink-0 cursor-pointer text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
+                                class="inline-flex size-6 shrink-0 cursor-pointer items-center justify-center text-stone-400 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-300"
                                 aria-label="<%= copy_label_for(entry) %>">
-                          <span class="material-icons" style="font-size:14px">content_copy</span>
+                          <span class="material-icons" style="font-size:14px" aria-hidden="true">content_copy</span>
                         </button>
                       </li>
                     <% end %>

@@ -13,6 +13,7 @@ class AccountDeletionTest < ApplicationSystemTestCase
     end
 
     assert_selector "dialog#account-deletion-dialog[open]"
+    assert_accessible_page
     fill_in "Current password", with: "wrong-password"
     click_button "Permanently delete my account"
 

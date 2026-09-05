@@ -72,6 +72,9 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+
+  # Run axe accessibility checks through the existing Capybara driver
+  gem "axe-core-api", "~> 4.13", require: false
 end
 
 gem "tailwindcss-rails", "~> 4.6"

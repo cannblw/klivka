@@ -2,6 +2,20 @@
 
 @theme {
   --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --color-brand-mark: #EF6A2E;
+  --color-brand-highlight: #FFB354;
+  --color-brand-action: #B85223;
+  --color-brand-action-hover: #93411C;
+  --color-brand-link: #B85223;
+  --color-brand-link-hover: #93411C;
+  --color-brand-focus: #D45C24;
+  --color-brand-surface: #FFF7F2;
+  --color-brand-surface-strong: #FFEBDD;
+  --color-brand-border: #F4B28E;
+  --color-brand-on-dark: #F98A4F;
+  --color-brand-on-dark-hover: #FFB354;
+  --color-brand-ink: #763116;
+  --color-brand-dark-surface: #763116;
 }
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

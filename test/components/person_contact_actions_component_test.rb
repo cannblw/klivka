@@ -39,6 +39,7 @@ class PersonContactActionsComponentTest < ViewComponent::TestCase
     assert_selector "button[data-action='dialog#open']", text: "View all contact methods (6)"
     assert_selector "dialog a[href^='tel:']", count: 3
     assert_selector "dialog a[href^='mailto:']", count: 3
+    assert_selector "dialog button.size-6 .material-icons[aria-hidden='true']", count: 6
     assert_selector "dialog .max-h-\\[70vh\\].overflow-y-auto"
   end
 

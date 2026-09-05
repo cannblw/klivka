@@ -92,7 +92,7 @@ class ContactReminderComponentTest < ViewComponent::TestCase
     assert_text "Contact reminder off for this person"
     assert_text "Your account default is Monthly."
     assert_selector "#contact-reminder > div form button.text-amber-700", text: "Use monthly reminder"
-    assert_no_selector "#contact-reminder > div form button.bg-amber-600", visible: :all
+    assert_no_selector "#contact-reminder > div form button.bg-brand-action", visible: :all
     assert_selector "details[data-contact-reminder-settings]:not([open]) > summary", text: "Choose a custom reminder"
     assert_no_selector "details form[action='#{person_keep_in_touch_setting_path(person)}'] input[name='_method'][value='delete']", visible: :all
   end

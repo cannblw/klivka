@@ -102,6 +102,11 @@ jobs:
           RAILS_ENV: test
         run: bin/rails db:test:prepare test
 
+      - name: Run system tests (SQLite)
+        env:
+          RAILS_ENV: test
+        run: bin/rails test:system
+
   test-postgresql:
     runs-on: ubuntu-latest
     services:

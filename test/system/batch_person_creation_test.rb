@@ -8,6 +8,8 @@ class BatchPersonCreationTest < ApplicationSystemTestCase
   test "batch review uses Turbo while showing validation and candidates" do
     click_button "More actions"
     click_button "Add several people"
+    assert_selector "#people-creation-dialog[open]"
+    assert_accessible_page
     page.execute_script("window.batchPreviewPageSentinel = true")
 
     within("#people-creation-dialog") { click_button "Review people" }

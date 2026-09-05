@@ -11,7 +11,7 @@
     </div>
     <% unless @person.archived? %>
       <%= link_to t("interactions.history.add"), new_person_interaction_path(@person),
-            class: "rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-500" %>
+            class: "rounded-lg bg-brand-action px-4 py-2 text-sm font-medium text-white hover:bg-brand-action-hover" %>
     <% end %>
   </div>
 

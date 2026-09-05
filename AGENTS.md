@@ -78,7 +78,7 @@ Heading hierarchy:
 ### Color palette
 
 - **Neutrals:** `stone-50` backgrounds, `stone-100` page background, `stone-200` borders, `stone-300` input borders, `stone-400`–`stone-500` muted text, `stone-600` secondary text, `stone-700` labels, `stone-800` dark cards, and `stone-900` dark pages/light body text.
-- **Brand:** `amber-600` primary/active, `amber-500` hover/focus, `amber-700` light links, `amber-400` dark links, `amber-50` active pills, `amber-100` avatars, and `amber-900/30` dark accents.
+- **Brand:** `amber-700` primary buttons, `amber-800` primary-button hover, `amber-500` focus, `amber-700` light links, `amber-400` dark links, `amber-50` active pills, `amber-100` avatars, and `amber-900/30` dark accents.
 - **Destructive:** `red-600` actions/errors, `red-500` hover, and `red-400` dark mode.
 - **Success:** `emerald-600` success flashes.
 - Do not introduce colors outside this palette; discuss any new semantic color first.
