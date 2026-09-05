@@ -7,7 +7,8 @@ class BatchPersonCreationsController < ApplicationController
     @creation = BatchPersonCreation.preview(user: Current.user, names: names_param)
 
     if @creation.valid?
-      render :preview
+      # Turbo renders a non-redirecting form response only when its status indicates further user action is required.
+      render :preview, status: :unprocessable_entity
     else
       prepare_people_index
       render "people/index", status: :unprocessable_entity

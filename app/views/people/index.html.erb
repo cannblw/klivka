@@ -57,8 +57,7 @@
 
         <%= form_with url: preview_batch_person_creation_path,
               scope: :batch_person_creation,
-              class: "mt-4",
-              data: { turbo: false } do |form| %>
+              class: "mt-4" do |form| %>
           <div class="space-y-2">
             <div>
               <label for="batch-person-names" class="sr-only"><%= t(".batch_modal.names_label") %></label>
